@@ -1,0 +1,266 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>AWS CLI Installation &mdash; Blacksmith 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="AWS EC2 Key Pairs" href="aws_ec2_keys.html" />
+    <link rel="prev" title="AWS Account Creation" href="aws_account_setup.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Blacksmith
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="aws_setup.html">AWS Setup</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="aws_setup.html#aws-cloudformation">AWS CloudFormation</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="aws_setup.html#aws-free-tier-account">AWS Free Tier Account</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="aws_account_setup.html">Account Creation</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">AWS CLI Setup</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pip-install">PIP Install</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configure-aws-creds">Configure AWS Creds</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="aws_ec2_keys.html">EC2 Key Pairs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="aws_setup.html#references">References</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Available Templates:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mordor.html">Mordor Environments</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Licenses:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">GNU General Public License V3</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Blacksmith</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="aws_setup.html">Amazon Web Services Setup</a> &raquo;</li>
+        
+      <li>AWS CLI Installation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/aws_cli_setup.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="aws-cli-installation">
+<h1>AWS CLI Installation<a class="headerlink" href="#aws-cli-installation" title="Permalink to this headline">¶</a></h1>
+<p>The AWS Command Line Interface (CLI) is a unified tool to manage your AWS services.
+With just one tool to download and configure, you can control multiple AWS services from the command line and automate them through scripts.</p>
+<div class="section" id="pip-install">
+<h2>PIP Install<a class="headerlink" href="#pip-install" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> pip3 install --upgrade --user awscli
+</pre></div>
+</div>
+<p>Add the install location to the beginning of your PATH variable:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span>/home/ec2-user/.local/bin:<span class="nv">$PATH</span>
+</pre></div>
+</div>
+<p>Add this command to the end of your profile’s startup script (for example, ~/.bashrc) to persist the change between command line sessions.</p>
+</div>
+<div class="section" id="configure-aws-creds">
+<h2>Configure AWS Creds<a class="headerlink" href="#configure-aws-creds" title="Permalink to this headline">¶</a></h2>
+<p>Once you have a user created under your root account, you can start using that account to interact with AWS services. You can run the <cite>configure</cite> command via the AWS CLI. When you type this command, the AWS CLI prompts you for four pieces of information (access key, secret access key, AWS Region, and output format). The blacksmith project supports the <strong>US-EAST-1</strong> region ONLY for now.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> aws configure
+</pre></div>
+</div>
+<p>Fill out your AWS credentials.
+Replace <strong>abc123</strong> with your own <strong>AWS Access Key ID</strong> and your <strong>AWS Secret Access Key</strong>.
+The AWS Access Key ID and AWS Secret Access Key are your AWS credentials.
+They are associated with the AWS Identity and Access Management (IAM) user or role that you created.
+Once again, for a tutorial on how to create a user with the IAM service, see <a class="reference external" href="https://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_create-admin-group.html">Creating Your First IAM Admin User and Group</a> in the IAM User Guide.</p>
+<p>This will reduce the risk of you commiting your AWS keys in templates or other documents that you share.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">AWS Access Key ID [None]: abc123</span>
+<span class="go">AWS Secret Access Key [None]: abc123</span>
+<span class="go">Default region name [None]: us-east-1</span>
+<span class="go">Default output format [None]:</span>
+</pre></div>
+</div>
+<div class="section" id="references">
+<h3>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.aws.amazon.com/cli/latest/userguide/install-linux-al2017.html">https://docs.aws.amazon.com/cli/latest/userguide/install-linux-al2017.html</a></p></li>
+<li><p><a class="reference external" href="https://aws.amazon.com/cli/">https://aws.amazon.com/cli/</a></p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="aws_ec2_keys.html" class="btn btn-neutral float-right" title="AWS EC2 Key Pairs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="aws_account_setup.html" class="btn btn-neutral float-left" title="AWS Account Creation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Roberto Rodriguez
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

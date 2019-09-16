@@ -1,0 +1,357 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Shire CloudFormation Deployment &mdash; Blacksmith 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Licenses" href="license.html" />
+    <link rel="prev" title="The Shire" href="mordor_shire.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Blacksmith
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="aws_setup.html">AWS Setup</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Available Templates:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="mordor.html">Mordor Environments</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="mordor_shire.html">The Shire</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mordor_shire.html#network-design">Network Design</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mordor_shire.html#data-sources-collected">Data Sources Collected</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="mordor_shire.html#deployment">Deployment</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">CloudFormation Deployment</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Licenses:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">GNU General Public License V3</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Blacksmith</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="mordor.html">Mordor Environments</a> &raquo;</li>
+        
+          <li><a href="mordor_shire.html">The Shire</a> &raquo;</li>
+        
+      <li>Shire CloudFormation Deployment</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/mordor_shire_cfn.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="shire-cloudformation-deployment">
+<h1>Shire CloudFormation Deployment<a class="headerlink" href="#shire-cloudformation-deployment" title="Permalink to this headline">¶</a></h1>
+<a class="reference internal image-reference" href="_static/aws-mordor-shire.png"><img alt="The Shire" src="_static/aws-mordor-shire.png" /></a>
+<div class="section" id="templates">
+<h2>Templates<a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 82%" />
+<col style="width: 18%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Template</p></th>
+<th class="head"><p>Format</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Mordor-Shire-EC2-Network</p></td>
+<td><p>JSON</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mordor-Shire-HELK-Server</p></td>
+<td><p>JSON</p></td>
+</tr>
+<tr class="row-even"><td><p>Mordor-Shire-C2-Server</p></td>
+<td><p>JSON</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mordor-Shire-Windows-DC</p></td>
+<td><p>JSON</p></td>
+</tr>
+<tr class="row-even"><td><p>Mordor-Shire-Windows-Workstations</p></td>
+<td><p>JSON</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="pre-requirements">
+<h2>Pre-Requirements<a class="headerlink" href="#pre-requirements" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>An existing AWS Account (Free tier is recommended)</p></li>
+<li><p>AWS CLI installed</p></li>
+<li><p>EC2 Key Pair Available</p></li>
+<li><p>20 mins of your day</p></li>
+</ul>
+</div>
+<div class="section" id="stacks-deployment-manual">
+<h2>Stacks Deployment (Manual)<a class="headerlink" href="#stacks-deployment-manual" title="Permalink to this headline">¶</a></h2>
+<p>First, make sure you you <strong>git clone</strong> the main repo:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git clone https://github.com/Cyb3rWard0g/Blacksmith
+<span class="gp">$</span> <span class="nb">cd</span> Blacksmith/aws/mordor/shire
+</pre></div>
+</div>
+<p>Pay attention with every command.
+There are only 2 things you will have to update with your own invormation:</p>
+<ul class="simple">
+<li><p>&lt;Key Pair Name&gt;</p></li>
+<li><p>&lt;Restrict Location&gt; (You can run <strong>curl ifconfig.io</strong> to get it)</p></li>
+</ul>
+<div class="section" id="ec2-network-resources">
+<h3>EC2 Network Resources<a class="headerlink" href="#ec2-network-resources" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Estimated Time: <code class="docutils literal notranslate"><span class="pre">2mins</span></code></p></li>
+<li><p>Deployed in Parallel: <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+<p>This template defines the virtual private cloud (VPC) parameters, security groups and subnets needed for the rest of the infrastructure.
+<strong>NOTE</strong>: Remember, you will have to wait until the stack is created before sending the next CloudFormation template to be processed by AWS resources.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> aws --region us-east-1 cloudformation deploy --template-file Mordor-Shire-EC2-Network.json --stack-name MordorNetworkStack --parameter-overrides <span class="nv">KeyName</span><span class="o">=</span>&lt;Key Pair Name&gt; <span class="nv">RestrictLocation</span><span class="o">=</span>&lt;Home Public IP Address&gt;/32
+</pre></div>
+</div>
+</div>
+<div class="section" id="helk-server">
+<h3>HELK Server<a class="headerlink" href="#helk-server" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Estimated Time: <code class="docutils literal notranslate"><span class="pre">10mins</span></code></p></li>
+<li><p>Depends On: <code class="docutils literal notranslate"><span class="pre">MordorNetworkStack</span></code></p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> aws --region us-east-1 cloudformation create-stack --stack-name MordorHELKStack --template-body file://./Mordor-Shire-HELK-Server.json --parameters <span class="nv">ParameterKey</span><span class="o">=</span>KeyName,ParameterValue<span class="o">=</span>&lt;Key Pair Name&gt; <span class="nv">ParameterKey</span><span class="o">=</span>NetworkStackName,ParameterValue<span class="o">=</span>MordorNetworkStack
+</pre></div>
+</div>
+</div>
+<div class="section" id="c2-server">
+<h3>C2 Server<a class="headerlink" href="#c2-server" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Estimated Time: <code class="docutils literal notranslate"><span class="pre">7mins</span></code></p></li>
+<li><p>Depends On: <code class="docutils literal notranslate"><span class="pre">MordorNetworkStack</span></code></p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> aws --region us-east-1 cloudformation create-stack --stack-name MordorC2Stack --template-body file://./Mordor-Shire-C2-Server.json --parameters <span class="nv">ParameterKey</span><span class="o">=</span>KeyName,ParameterValue<span class="o">=</span>&lt;Key Pair Name&gt; <span class="nv">ParameterKey</span><span class="o">=</span>NetworkStackName,ParameterValue<span class="o">=</span>MordorNetworkStack
+</pre></div>
+</div>
+</div>
+<div class="section" id="domain-controller">
+<h3>Domain Controller<a class="headerlink" href="#domain-controller" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Estimated Time: <code class="docutils literal notranslate"><span class="pre">14mins</span></code></p></li>
+<li><p>Depends On: <code class="docutils literal notranslate"><span class="pre">MordorNetworkStack</span></code></p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> aws --region us-east-1 cloudformation deploy --template-file Mordor-Shire-Windows-DC.json --stack-name MordorWindowsServersStack --parameter-overrides <span class="nv">KeyName</span><span class="o">=</span>&lt;Key Pair Name&gt; <span class="nv">NetworkStackName</span><span class="o">=</span>MordorNetworkStack
+</pre></div>
+</div>
+</div>
+<div class="section" id="workstations">
+<h3>Workstations<a class="headerlink" href="#workstations" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Estimated Time: <code class="docutils literal notranslate"><span class="pre">7mins</span></code></p></li>
+<li><p>Depends On: <code class="docutils literal notranslate"><span class="pre">MordorNetworkStack,</span> <span class="pre">MordorWindowsServersStack</span></code></p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> aws --region us-east-1 cloudformation create-stack --stack-name MordorWindowsWorkstationsStack --template-body file://./Mordor-Shire-Windows-Workstations.json --parameters <span class="nv">ParameterKey</span><span class="o">=</span>KeyName,ParameterValue<span class="o">=</span>&lt;Key Pair Name&gt; <span class="nv">ParameterKey</span><span class="o">=</span>NetworkStackName,ParameterValue<span class="o">=</span>MordorNetworkStack <span class="nv">ParameterKey</span><span class="o">=</span>DCStackName,ParameterValue<span class="o">=</span>MordorWindowsServersStack
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="monitor-stack-build-logs">
+<h2>Monitor Stack Build Logs<a class="headerlink" href="#monitor-stack-build-logs" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="manual-look">
+<h3>Manual Look<a class="headerlink" href="#manual-look" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> aws --region us-east-1 cloudformation describe-stack-events --stack-name MordorWindowsWorkstationsStack
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="connect-to-instances">
+<h2>Connect to Instances<a class="headerlink" href="#connect-to-instances" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ssh-linux">
+<h3>SSH (Linux)<a class="headerlink" href="#ssh-linux" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ssh -v -i &lt;Private Key File&gt;.pem ubuntu@&lt;public-DNS-name&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="delete-stacks">
+<h2>Delete Stacks<a class="headerlink" href="#delete-stacks" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> aws --region us-east-1 cloudformation delete-stack --stack-name MordorWindowsServersStack
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="license.html" class="btn btn-neutral float-right" title="Licenses" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="mordor_shire.html" class="btn btn-neutral float-left" title="The Shire" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Roberto Rodriguez
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,270 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Amazon Web Services Setup &mdash; Blacksmith 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="AWS Account Creation" href="aws_account_setup.html" />
+    <link rel="prev" title="The Blacksmith Project" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Blacksmith
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">AWS Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#aws-cloudformation">AWS CloudFormation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aws-free-tier-account">AWS Free Tier Account</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="aws_account_setup.html">Account Creation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="aws_cli_setup.html">AWS CLI Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="aws_ec2_keys.html">EC2 Key Pairs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Available Templates:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mordor.html">Mordor Environments</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Licenses:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">GNU General Public License V3</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Blacksmith</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Amazon Web Services Setup</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/aws_setup.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="amazon-web-services-setup">
+<h1>Amazon Web Services Setup<a class="headerlink" href="#amazon-web-services-setup" title="Permalink to this headline">¶</a></h1>
+<p>The Blacksmith project leverages Amazon Web Services (AWS) to host and manage the infrastructure that is created through the templates provided.
+Also, it uses CloudFormation to describe and provision all the infrastructure resources in AWS.</p>
+<div class="section" id="aws-cloudformation">
+<h2>AWS CloudFormation<a class="headerlink" href="#aws-cloudformation" title="Permalink to this headline">¶</a></h2>
+<p>CloudFormation allows you to use a simple text file to model and provision, in an automated and secure manner, all the resources needed for your applications across all regions and accounts.
+AWS CloudFormation is available at no additional charge, and you pay only for the AWS resources needed to run your applications.</p>
+</div>
+<div class="section" id="aws-free-tier-account">
+<h2>AWS Free Tier Account<a class="headerlink" href="#aws-free-tier-account" title="Permalink to this headline">¶</a></h2>
+<p>You can try some AWS services free of charge within certain usage limits.
+When you create an AWS account, you’re automatically signed up for the Free Tier for 12 months.
+Your Free Tier eligibility expires at the end of the 12-month period.
+When your Free Tier expires, AWS starts charging the regular rates for any AWS services and resources that you’re using.</p>
+<p>To avoid charges while on the Free Tier, you must keep your usage below the <a class="reference external" href="https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-limits.html">Free Tier limits</a>.
+You are charged for any usage that exceeds the limits. To help you stay within the limits, you can track your Free Tier usage and set a billing alarm to notify you if you start incurring charges.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://aws.amazon.com/free/?all-free-tier.sort-by=item.additionalFields.SortRank&amp;all-free-tier.sort-order=asc">Available AWS Free Tier Services</a></p></li>
+</ul>
+<p>When you sign up for Amazon Web Services (AWS), your AWS account is automatically signed up for all services in AWS.
+Remember that you are charged <strong>ONLY</strong> for the services that you use.
+Part of the sign-up procedure involves receiving a phone call and entering a verification code on the phone keypad.
+Note your AWS account ID and information.</p>
+<p>For the purpose of this project, remember that you will have to follow all those steps below <strong>ONCE</strong>.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="aws_account_setup.html">Account Creation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="aws_account_setup.html#add-iam-user">Add IAM User</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="aws_cli_setup.html">AWS CLI Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="aws_cli_setup.html#pip-install">PIP Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="aws_cli_setup.html#configure-aws-creds">Configure AWS Creds</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="aws_ec2_keys.html">EC2 Key Pairs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="aws_ec2_keys.html#create-key-pair">Create Key Pair</a></li>
+<li class="toctree-l2"><a class="reference internal" href="aws_ec2_keys.html#verify-key">Verify Key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="aws_ec2_keys.html#update-key-permissions">Update Key Permissions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="references">
+<h3>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://aws.amazon.com/cloudformation/">https://aws.amazon.com/cloudformation/</a></p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="aws_account_setup.html" class="btn btn-neutral float-right" title="AWS Account Creation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="The Blacksmith Project" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Roberto Rodriguez
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

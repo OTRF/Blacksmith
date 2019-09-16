@@ -1,0 +1,51 @@
+AWS CLI Installation
+====================
+
+The AWS Command Line Interface (CLI) is a unified tool to manage your AWS services.
+With just one tool to download and configure, you can control multiple AWS services from the command line and automate them through scripts.
+
+PIP Install
+###########
+
+.. code-block:: console
+
+    $ pip3 install --upgrade --user awscli
+
+Add the install location to the beginning of your PATH variable:
+
+.. code-block:: console
+
+    $ export PATH=/home/ec2-user/.local/bin:$PATH
+
+Add this command to the end of your profile's startup script (for example, ~/.bashrc) to persist the change between command line sessions.
+
+Configure AWS Creds
+###################
+
+Once you have a user created under your root account, you can start using that account to interact with AWS services. You can run the `configure` command via the AWS CLI. When you type this command, the AWS CLI prompts you for four pieces of information (access key, secret access key, AWS Region, and output format). The blacksmith project supports the **US-EAST-1** region ONLY for now.
+
+.. code-block:: console
+
+    $ aws configure
+
+
+Fill out your AWS credentials.
+Replace **abc123** with your own **AWS Access Key ID** and your **AWS Secret Access Key**.
+The AWS Access Key ID and AWS Secret Access Key are your AWS credentials.
+They are associated with the AWS Identity and Access Management (IAM) user or role that you created.
+Once again, for a tutorial on how to create a user with the IAM service, see `Creating Your First IAM Admin User and Group <https://docs.aws.amazon.com/IAM/latest/UserGuide/getting-started_create-admin-group.html>`_ in the IAM User Guide.
+
+This will reduce the risk of you commiting your AWS keys in templates or other documents that you share.
+
+.. code-block:: console
+
+    AWS Access Key ID [None]: abc123 
+    AWS Secret Access Key [None]: abc123
+    Default region name [None]: us-east-1
+    Default output format [None]:
+
+References
+**********
+
+* https://docs.aws.amazon.com/cli/latest/userguide/install-linux-al2017.html
+* https://aws.amazon.com/cli/

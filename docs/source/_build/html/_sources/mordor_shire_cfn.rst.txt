@@ -1,0 +1,130 @@
+Shire CloudFormation Deployment
+===============================
+
+.. image:: _static/aws-mordor-shire.png
+    :alt: The Shire
+    :scale: 60%
+
+Templates
+#########
+
++------------------------------------+--------+
+| Template                           | Format |
++====================================+========+
+| Mordor-Shire-EC2-Network           | JSON   |
++------------------------------------+--------+
+| Mordor-Shire-HELK-Server           | JSON   |
++------------------------------------+--------+
+| Mordor-Shire-C2-Server             | JSON   |
++------------------------------------+--------+
+| Mordor-Shire-Windows-DC            | JSON   |
++------------------------------------+--------+
+| Mordor-Shire-Windows-Workstations  | JSON   |
++------------------------------------+--------+
+
+Pre-Requirements
+################
+
+* An existing AWS Account (Free tier is recommended)
+* AWS CLI installed
+* EC2 Key Pair Available
+* 20 mins of your day
+
+Stacks Deployment (Manual)
+##########################
+
+First, make sure you you **git clone** the main repo:
+
+.. code-block:: console
+
+    $ git clone https://github.com/Cyb3rWard0g/Blacksmith
+    $ cd Blacksmith/aws/mordor/shire
+
+Pay attention with every command.
+There are only 2 things you will have to update with your own invormation:
+
+* <Key Pair Name>
+* <Restrict Location> (You can run **curl ifconfig.io** to get it)
+
+EC2 Network Resources
+*********************
+
+* Estimated Time: ``2mins``
+* Deployed in Parallel: ``False``
+
+This template defines the virtual private cloud (VPC) parameters, security groups and subnets needed for the rest of the infrastructure.
+**NOTE**: Remember, you will have to wait until the stack is created before sending the next CloudFormation template to be processed by AWS resources.
+
+.. code-block:: console
+
+    $ aws --region us-east-1 cloudformation deploy --template-file Mordor-Shire-EC2-Network.json --stack-name MordorNetworkStack --parameter-overrides KeyName=<Key Pair Name> RestrictLocation=<Home Public IP Address>/32
+
+HELK Server
+***********
+
+* Estimated Time: ``10mins``
+* Depends On: ``MordorNetworkStack``
+
+.. code-block:: console
+
+    $ aws --region us-east-1 cloudformation create-stack --stack-name MordorHELKStack --template-body file://./Mordor-Shire-HELK-Server.json --parameters ParameterKey=KeyName,ParameterValue=<Key Pair Name> ParameterKey=NetworkStackName,ParameterValue=MordorNetworkStack
+
+C2 Server
+***********
+
+* Estimated Time: ``7mins``
+* Depends On: ``MordorNetworkStack``
+
+.. code-block:: console
+
+    $ aws --region us-east-1 cloudformation create-stack --stack-name MordorC2Stack --template-body file://./Mordor-Shire-C2-Server.json --parameters ParameterKey=KeyName,ParameterValue=<Key Pair Name> ParameterKey=NetworkStackName,ParameterValue=MordorNetworkStack
+
+Domain Controller
+*****************
+
+* Estimated Time: ``14mins``
+* Depends On: ``MordorNetworkStack``
+
+.. code-block:: console
+
+    $ aws --region us-east-1 cloudformation deploy --template-file Mordor-Shire-Windows-DC.json --stack-name MordorWindowsServersStack --parameter-overrides KeyName=<Key Pair Name> NetworkStackName=MordorNetworkStack
+
+Workstations
+************
+
+* Estimated Time: ``7mins``
+* Depends On: ``MordorNetworkStack, MordorWindowsServersStack``
+
+.. code-block:: console
+
+    $ aws --region us-east-1 cloudformation create-stack --stack-name MordorWindowsWorkstationsStack --template-body file://./Mordor-Shire-Windows-Workstations.json --parameters ParameterKey=KeyName,ParameterValue=<Key Pair Name> ParameterKey=NetworkStackName,ParameterValue=MordorNetworkStack ParameterKey=DCStackName,ParameterValue=MordorWindowsServersStack
+
+
+Monitor Stack Build Logs
+########################
+
+Manual Look
+***********
+
+```
+aws --region us-east-1 cloudformation describe-stack-events --stack-name MordorWindowsWorkstationsStack --parameter-overrides KeyName=<Key Pair> RestrictLocation=108.44.176.36/32
+```
+
+Connect to Instances
+####################
+
+SSH (Linux)
+***********
+
+.. code-block:: console
+
+    ssh -v -i <Private Key File>.pem ubuntu@<public-DNS-name>
+
+
+Delete Stacks
+#############
+
+.. code-block:: console
+
+    aws --region us-east-1 cloudformation delete-stack --stack-name MordorWindowsServersStack
+

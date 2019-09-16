@@ -1,0 +1,379 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters" : {
+        "Owner": {
+            "Description": "Enter Team or Individual Name Responsible for the Stack.",
+            "Type": "String",
+            "Default": "Roberto Rodriguez"
+        },
+        "NetworkStackName": {
+            "Description": "Name of the active CloudFormation stack that contains the networking resources, such as the subnet and security group, that will be used in this stack.",
+            "Type": "String",
+            "MinLength" : 1,
+            "MaxLength" : 255,
+            "AllowedPattern" : "^[a-zA-Z][-a-zA-Z0-9]*$",
+            "Default" : "MordorBaseStack"
+        },
+        "KeyName": {
+            "Description" : "Name of an existing EC2 key pair for SSH access to the EC2 instance.",
+            "Type" : "AWS::EC2::KeyPair::KeyName",
+            "ConstraintDescription" : "must be the name of an existing EC2 KeyPair."
+        },
+        "ADServerInstanceType" : {
+            "Description" : "Active directory server EC2 instance type.",
+            "Type" : "String",
+            "Default" : "t2.medium",
+            "AllowedValues" : [ "t2.medium", "t2.large", "t2.xlarge", "t2.2xlarge" ]
+        },
+        "ADServer1NetBIOSName" : {
+            "Description" : "NetBIOS name of the first Active Directory server (up to 15 characters).",
+            "Type" : "String",
+            "Default" : "HFDC01",
+            "AllowedPattern" : "[a-zA-Z0-9\\-]+",
+            "MaxLength" : "15",
+            "MinLength" : "3"
+        },
+        "ADServer1PrivateIP" : {
+            "Description" : "Fixed private IP for the first Active Directory server.",
+            "Type" : "String",
+            "Default" : "172.18.39.5",
+            "AllowedPattern" : "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
+        },
+        "LocalAdminPassword" : {
+            "Description" : "Password for the Local Administrator. Must be at least 8 characters containing letters, numbers and symbols.",
+            "Type" : "String",
+            "Default" : "P1ls3n!",
+            "AllowedPattern" : "(?=^.{6,255}$)((?=.*\\d)(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[^A-Za-z0-9])(?=.*[a-z])|(?=.*[^A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[A-Z])(?=.*[^A-Za-z0-9]))^.*",
+            "MaxLength" : "32",
+            "MinLength" : "5",
+            "NoEcho" : "true"
+        },
+        "DomainAdminPassword" : {
+            "Description" : "Password for the domain admin user. Must be at least 8 characters containing letters, numbers and symbols.",
+            "Type" : "String",
+            "Default" : "W1n1!2019",
+            "AllowedPattern" : "(?=^.{6,255}$)((?=.*\\d)(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[^A-Za-z0-9])(?=.*[a-z])|(?=.*[^A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[A-Z])(?=.*[^A-Za-z0-9]))^.*",
+            "MaxLength" : "32",
+            "MinLength" : "5",
+            "NoEcho" : "true"
+        },
+        "DomainAdminUser" : {
+            "Description" : "User name for the account that will be added as Domain Administrator. This is separate from the default Administrator account.",
+            "Type" : "String",
+            "Default" : "pgustavo",
+            "AllowedPattern" : "[a-zA-Z0-9]*",
+            "MaxLength" : "25",
+            "MinLength" : "5"
+        },
+        "DomainDNSName" : {
+            "Description" : "Fully qualified domain name (FQDN) of the forest root domain e.g. example.com.",
+            "Type" : "String",
+            "Default" : "shire.com",
+            "AllowedPattern" : "[a-zA-Z0-9\\-]+\\..+",
+            "MaxLength" : "25",
+            "MinLength" : "2"
+        },
+        "DomainNetBIOSName" : {
+            "Description" : "NetBIOS name of the domain (up to 15 characters) for users of earlier versions of Windows e.g. EXAMPLE.",
+            "Type" : "String",
+            "Default" : "shire",
+            "AllowedPattern" : "[a-zA-Z0-9\\-]+",
+            "MaxLength" : "25",
+            "MinLength" : "2"
+        },
+        "LocalAdministratorSG" : {
+            "Description" : "",
+            "Type" : "String",
+            "Default" : "SG DL shire Workstation Administrators",
+            "MaxLength" : "60",
+            "MinLength" : "5"
+        }
+    },
+    "Mappings" : {
+        "WindowsServerAWSRegionArch2AMI" : {
+            "us-east-1" : { "HVM64" : "ami-06a4e829b8bbad61e" },
+            "us-west-1" : { "HVM64" : "ami-0069635df219ce9e5" },
+            "us-west-2" : { "HVM64" : "ami-04ad37d2932b886c0" }
+        }
+    },
+    "Resources" : {
+        "DHCPOptions": {
+            "Type": "AWS::EC2::DHCPOptions",
+            "DependsOn": [ "DomainController1" ],
+            "Properties": {
+                "DomainName": { "Ref": "DomainDNSName" },
+                "DomainNameServers": [ "AmazonProvidedDNS" ],
+                "NtpServers": [{ "Ref": "ADServer1PrivateIP" }],
+                "NetbiosNameServers": [{ "Ref": "ADServer1PrivateIP" }],
+                "NetbiosNodeType": "2"
+            }
+        },
+        "VPCDHCPOptionsAssociation": {
+            "Type": "AWS::EC2::VPCDHCPOptionsAssociation",
+            "Properties": {
+                "VpcId": { "Fn::ImportValue" : {"Fn::Sub": "${NetworkStackName}-VPCID" } },
+                "DhcpOptionsId": { "Ref": "DHCPOptions" }
+            }
+        },
+        "ADServer1WindowsENI" : {
+            "Type" : "AWS::EC2::NetworkInterface",
+            "Properties" : {
+                "GroupSet": [{ "Fn::ImportValue" :  {"Fn::Sub": "${NetworkStackName}-Windows-SecurityGroupID" } }],
+                "SubnetId": { "Fn::ImportValue" : {"Fn::Sub": "${NetworkStackName}-SubnetID" } },
+                "PrivateIpAddress": { "Ref" : "ADServer1PrivateIP" }
+            }
+        },
+        "DomainController1" : {
+            "Type" : "AWS::EC2::Instance",
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "configSets": {
+                        "config": [ "00-setup", "01-install", "02-configure", "03-finalize" ]
+                    },
+                    "00-setup": {
+                        "files": {
+                            "c:\\cfn\\cfn-hup.conf": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "[main]\n",
+                                            "stack=", { "Ref" : "AWS::StackId" }, "\n",
+                                            "region=", { "Ref" : "AWS::Region" }, "\n"
+                                        ]
+                                    ]
+                                }
+                            },
+                            "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "[cfn-auto-reloader-hook]\n",
+                                            "triggers=post.update\n",
+                                            "path=Resources.DomainController1.Metadata.AWS::CloudFormation::Init\n",
+                                            "action=cfn-init.exe -v -c config -s ", { "Ref" : "AWS::StackId" },
+                                            " --r DomainController1",
+                                            " --region ", { "Ref" : "AWS::Region" }, "\n"
+                                        ]
+                                    ]
+                                }
+                            },
+                            "c:\\cfn\\scripts\\Prepare-Box.ps1": {
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Prepare-Box.ps1"
+                            },
+                            "c:\\cfn\\scripts\\Set-StaticIP.ps1": {
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Set-StaticIP.ps1"
+                            },
+                            "c:\\cfn\\scripts\\Rename-Computer.ps1": {
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Rename-Computer.ps1"
+                            },
+                            "c:\\cfn\\scripts\\Deploy-Forest.ps1": {
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Deploy-Forest.ps1"
+                            },
+                            "c:\\cfn\\scripts\\Set-OUs.ps1": {
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Set-OUs.ps1"
+                            },
+                            "c:\\cfn\\scripts\\shire_users.csv": {
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/configs/shire_users.csv"
+                            },
+                            "c:\\cfn\\scripts\\Add-DomainUsers.ps1": {
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Add-DomainUsers.ps1"
+                            },
+                            "c:\\cfn\\scripts\\Create-SecurityGroup.ps1": {
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Create-SecurityGroup.ps1"
+                            },
+                            "c:\\cfn\\scripts\\Install-Sysmon.ps1": {
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Install-Sysmon.ps1"
+                            },
+                            "c:\\cfn\\scripts\\Import-GPO.ps1": {
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Import-GPO.ps1"
+                            }
+                        },
+                        "services": {
+                            "windows": {
+                                "cfn-hup": {
+                                    "enabled": "true",
+                                    "ensureRunning": "true",
+                                    "files": [
+                                        "c:\\cfn\\cfn-hup.conf",
+                                        "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
+                                    ]
+                                }
+                            }
+                        },
+                        "commands": {
+                            "a-set-prepare-box": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Prepare-Box.ps1",
+                                            " -LocalAdminPassword ", { "Ref" : "LocalAdminPassword" }
+                                        ]
+                                    ]
+                                },
+                                "waitAfterCompletion": "0"
+                            },
+                            "b-set-static-ip": {
+                                "command": "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Set-StaticIP.ps1",
+                                "waitAfterCompletion": "10"
+                            },
+                            "c-rename-computer-reboot": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Rename-Computer.ps1",
+                                            " -NewComputerName ", { "Ref" : "ADServer1NetBIOSName" },
+                                            " -reboot"
+                                        ]
+                                    ]
+                                },
+                                "waitAfterCompletion": "forever"
+                            }
+                        }
+                    },
+                    "01-install": {
+                        "commands": {
+                            "a-deploy-forest": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Deploy-Forest.ps1",
+                                            " -DomainName ", { "Ref" : "DomainDNSName" },
+                                            " -DomainNetBiosName ", { "Ref" : "DomainNetBIOSName" },
+                                            " -SafeModeAdministratorPassword ", { "Ref" : "LocalAdminPassword" }
+                                        ]
+                                    ]
+                                },
+                                "waitAfterCompletion": "forever"
+                            },
+                            "b-restart-service": {
+                                "command": "powershell.exe -Command Restart-Service NetLogon -EA 0",
+                                "waitAfterCompletion": "30"
+                            },
+                            "c-start-ADWS": {
+                                "command": "powershell.exe -Command $s = Get-Service -Name ADWS; while ($s.Status -ne 'Running'){ Start-Service ADWS; Start-Sleep 3 }",
+                                "waitAfterCompletion": "10"
+                            },
+                            "d-create-ous": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Set-OUs.ps1",
+                                            " -DomainNetBIOSName ", { "Ref" : "DomainNetBIOSName" }
+                                        ]
+                                    ]
+                                },
+                                "waitAfterCompletion": "0"
+                            }
+                        }
+                    },
+                    "02-configure": {
+                        "commands": {
+                            "a-add-domainusers": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Add-DomainUsers.ps1",
+                                            " -DomainDNSName ", { "Ref" : "DomainDNSName" },
+                                            " -Server ", { "Ref" : "ADServer1NetBIOSName"},
+                                            " -CSVFile c:\\cfn\\scripts\\shire_users.csv"
+                                        ]
+                                    ]
+                                },
+                                "waitAfterCompletion": "0"
+                            },
+                            "b-create-sg": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell.exe -ExecutionPolicy RemoteSigned -file c:\\cfn\\scripts\\Create-SecurityGroup.ps1",
+                                            " -SecurityGroup `\"", { "Ref" : "LocalAdministratorSG" }, "`\"",
+                                            " -DomainNetBIOSName ", { "Ref" : "DomainNetBIOSName" }
+                                        ]
+                                    ]
+                                },
+                                "waitAfterCompletion": "0"
+                            },
+                            "c-install-sysmon": {
+                                "command": "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Install-Sysmon.ps1",
+                                "waitAfterCompletion": "0"
+                            },
+                            "d-import-gpos": {
+                                "command": "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Import-GPO.ps1",
+                                "waitAfterCompletion": "0"
+                            }
+                        }
+                    },
+                    "03-finalize": {
+                        "commands": {
+                            "a-signal-success": {
+                                "command": {
+                                    "Fn::Join": ["", [ "cfn-signal.exe -e %ERRORLEVEL% --resource DomainController1 --stack ", { "Ref": "AWS::StackName" } ]]
+                                },
+                                "waitAfterCompletion": "0"
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties" : {
+                "InstanceType" : { "Ref" : "ADServerInstanceType" },
+                "ImageId" : { "Fn::FindInMap" : [ "WindowsServerAWSRegionArch2AMI", { "Ref" : "AWS::Region" }, "HVM64" ] },
+                "KeyName" : { "Ref" : "KeyName" },
+                "NetworkInterfaces" : [
+                    {
+                        "NetworkInterfaceId" : { "Ref" : "ADServer1WindowsENI"},
+                        "DeviceIndex": "0"
+                    }
+                ],
+                "BlockDeviceMappings" : [
+                    {
+                        "DeviceName" : "/dev/sda1",
+                        "Ebs" : {
+                            "DeleteOnTermination" : "true",
+                            "VolumeSize" : "50"
+                        }
+                    }
+                ],
+                "UserData" : {
+                    "Fn::Base64" : { 
+                        "Fn::Join" : [
+                            "\n", 
+                            [
+                                "<script>",
+                                "wmic product where \"description='aws-cfn-bootstrap' \" uninstall ",
+                                "start /wait c:\\Windows\\system32\\msiexec /passive /qn /i https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-win64-latest.msi",
+                                { "Fn::Sub" : "cfn-init.exe -v -c config -s ${AWS::StackName} --resource DomainController1 --region ${AWS::Region} " },
+                                "</script>"
+                            ]
+                        ]
+                    }
+                }
+            },
+            "CreationPolicy": {
+                "ResourceSignal": {
+                    "Count": "1",
+                    "Timeout": "PT20M"
+                }
+            }
+        }
+    },
+    "Outputs" : {
+        "DCPublicIPAddress" : {
+            "Description" : "Public IP address of the new EC2 instance",
+            "Value" : { "Fn::GetAtt" : [ "DomainController1", "PublicIp" ] }
+        },
+        "DCPrivateIp" : {
+            "Description" : "Private IP for Domain Controller",
+            "Value" : { "Ref" : "ADServer1PrivateIP" },
+            "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-DCPrivateIp"}}
+        }
+    }
+}

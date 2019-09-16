@@ -1,0 +1,14 @@
+AWS Account Creation
+====================
+
+To access any web service AWS offers, you must first create an AWS account at http://aws.amazon.com.
+
+* Follow these instructions: https://portal.aws.amazon.com/billing/signup.
+
+Add IAM User
+############
+
+It is not best practices to use your root AWS account for development.
+Therefore, I highly recommend to add an IAM user to your account and use it on a daily basis.
+
+* Follow these instructions: https://docs.aws.amazon.com/en_pv/IAM/latest/UserGuide/id_users_create.html
