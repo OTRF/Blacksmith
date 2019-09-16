@@ -4,19 +4,19 @@ Shire CloudFormation Deployment
 Templates
 #########
 
-+------------------------------------+--------+
-| Template                           | Format |
-+====================================+========+
-| Mordor-Shire-EC2-Network           | JSON   |
-+------------------------------------+--------+
-| Mordor-Shire-HELK-Server           | JSON   |
-+------------------------------------+--------+
-| Mordor-Shire-C2-Server             | JSON   |
-+------------------------------------+--------+
-| Mordor-Shire-Windows-DC            | JSON   |
-+------------------------------------+--------+
-| Mordor-Shire-Windows-Workstations  | JSON   |
-+------------------------------------+--------+
++------------------------------------+-------------------------------------------------------------------------------------------------------------------------+
+| Template                           | Format                                                                                                                  |
++====================================+=========================================================================================================================+
+| Mordor-Shire-EC2-Network           | `JSON <https://github.com/Cyb3rWard0g/Blacksmith/blob/master/aws/mordor/shire/Mordor-Shire-EC2-Network.json>`_          |
++------------------------------------+-------------------------------------------------------------------------------------------------------------------------+
+| Mordor-Shire-HELK-Server           | `JSON <https://github.com/Cyb3rWard0g/Blacksmith/blob/master/aws/mordor/shire/Mordor-Shire-HELK-Server.json>`_          |
++------------------------------------+-------------------------------------------------------------------------------------------------------------------------+
+| Mordor-Shire-C2-Server             | `JSON <https://github.com/Cyb3rWard0g/Blacksmith/blob/master/aws/mordor/shire/Mordor-Shire-C2-Server.json>`_            |
++------------------------------------+-------------------------------------------------------------------------------------------------------------------------+
+| Mordor-Shire-Windows-DC            | `JSON <https://github.com/Cyb3rWard0g/Blacksmith/blob/master/aws/mordor/shire/Mordor-Shire-Windows-DC.json>`_           |
++------------------------------------+-------------------------------------------------------------------------------------------------------------------------+
+| Mordor-Shire-Windows-Workstations  | `JSON <https://github.com/Cyb3rWard0g/Blacksmith/blob/master/aws/mordor/shire/Mordor-Shire-Windows-Workstations.json>`_ |
++------------------------------------+-------------------------------------------------------------------------------------------------------------------------+
 
 Pre-Requirements
 ################

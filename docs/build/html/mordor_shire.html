@@ -34,7 +34,9 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Licenses" href="license.html" />
+    <link rel="prev" title="Mordor Environments" href="mordor.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -81,6 +83,39 @@
               <p class="caption"><span class="caption-text">Getting Started:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="aws_setup.html">AWS Setup</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Available Templates:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="mordor.html">Mordor Environments</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">The Shire</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#templates">Templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pre-requirements">Pre-Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pre-deployment">Pre-Deployment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#manual-deployment">Manual Deployment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ec2-network-resources">EC2 Network Resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#helk-server">HELK Server</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c2-server">C2 Server</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#domain-controller">Domain Controller</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#workstations">Workstations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#automatic-deployment">Automatic Deployment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#monitor-stack-build-logs">Monitor Stack Build Logs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#aws-cli-view">AWS CLI View</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#aws-cloudformation-console">AWS CloudFormation Console</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#connect-to-instances">Connect to Instances</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ssh-linux">SSH (Linux)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rdp-windows">RDP (Windows)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#browser-helk-covenant-c2">Browser (HELK &amp; Covenant C2)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#delete-stacks">Delete Stacks</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">Licenses:</span></p>
 <ul>
@@ -130,6 +165,8 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
+          <li><a href="mordor.html">Mordor Environments</a> &raquo;</li>
+        
       <li>Shire CloudFormation Deployment</li>
     
     
@@ -155,8 +192,8 @@
 <h2>Templates<a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 82%" />
-<col style="width: 18%" />
+<col style="width: 23%" />
+<col style="width: 77%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Template</p></th>
@@ -165,19 +202,19 @@
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Mordor-Shire-EC2-Network</p></td>
-<td><p>JSON</p></td>
+<td><p><a class="reference external" href="https://github.com/Cyb3rWard0g/Blacksmith/blob/master/aws/mordor/shire/Mordor-Shire-EC2-Network.json">JSON</a></p></td>
 </tr>
 <tr class="row-odd"><td><p>Mordor-Shire-HELK-Server</p></td>
-<td><p>JSON</p></td>
+<td><p><a class="reference external" href="https://github.com/Cyb3rWard0g/Blacksmith/blob/master/aws/mordor/shire/Mordor-Shire-HELK-Server.json">JSON</a></p></td>
 </tr>
 <tr class="row-even"><td><p>Mordor-Shire-C2-Server</p></td>
-<td><p>JSON</p></td>
+<td><p><a class="reference external" href="https://github.com/Cyb3rWard0g/Blacksmith/blob/master/aws/mordor/shire/Mordor-Shire-C2-Server.json">JSON</a></p></td>
 </tr>
 <tr class="row-odd"><td><p>Mordor-Shire-Windows-DC</p></td>
-<td><p>JSON</p></td>
+<td><p><a class="reference external" href="https://github.com/Cyb3rWard0g/Blacksmith/blob/master/aws/mordor/shire/Mordor-Shire-Windows-DC.json">JSON</a></p></td>
 </tr>
 <tr class="row-even"><td><p>Mordor-Shire-Windows-Workstations</p></td>
-<td><p>JSON</p></td>
+<td><p><a class="reference external" href="https://github.com/Cyb3rWard0g/Blacksmith/blob/master/aws/mordor/shire/Mordor-Shire-Windows-Workstations.json">JSON</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -378,6 +415,15 @@ There are only 2 things you will have to update with your own information:</p>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="license.html" class="btn btn-neutral float-right" title="Licenses" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="mordor.html" class="btn btn-neutral float-left" title="Mordor Environments" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
