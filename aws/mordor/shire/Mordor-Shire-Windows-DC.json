@@ -255,9 +255,17 @@
                                 },
                                 "waitAfterCompletion": "forever"
                             },
-                            "b-restart-service": {
-                                "command": "powershell.exe -Command Restart-Service NetLogon -EA 0",
-                                "waitAfterCompletion": "30"
+                            "b-restart-netlogon-service": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell.exe -Command Restart-Service NetLogon -EA 0", "\n",
+                                            "powershell.exe -Command $s = Get-Service -Name NetLogon; while ($s.Status -ne 'Running'){ Start-Service NetLogon; Start-Sleep 3 }"
+                                        ]
+                                    ]
+                                },
+                                "waitAfterCompletion": "10"
                             },
                             "c-start-ADWS": {
                                 "command": "powershell.exe -Command $s = Get-Service -Name ADWS; while ($s.Status -ne 'Running'){ Start-Service ADWS; Start-Sleep 3 }",
