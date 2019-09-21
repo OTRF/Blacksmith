@@ -136,6 +136,11 @@
             "AllowedPattern" : "[a-zA-Z0-9\\-]+",
             "MaxLength" : "25",
             "MinLength" : "2"
+        },
+        "WEFSubscriptionsUrl" : {
+            "Description" : "WEF Subscriptions URL pointing to the file",
+            "Type" : "String",
+            "Default" : "https://github.com/Cyb3rWard0g/mordor/raw/master/environments/windows/wef-subscriptions/shire/ShireSubscriptions.zip"
         }
     },
     "Mappings" : {
@@ -218,22 +223,22 @@
                                 }
                             },
                             "c:\\cfn\\scripts\\Prepare-Box.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Prepare-Box.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Prepare-Box.ps1"
                             },
                             "c:\\cfn\\scripts\\Set-StaticIP.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Set-StaticIP.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Set-StaticIP.ps1"
                             },
                             "c:\\cfn\\scripts\\Rename-Computer.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Rename-Computer.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Rename-Computer.ps1"
                             },
                             "c:\\cfn\\scripts\\Configure-WEC.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Configure-WEC.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Configure-WEC.ps1"
                             },
                             "c:\\cfn\\scripts\\Join-Domain.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Join-Domain.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Join-Domain.ps1"
                             },
                             "c:\\cfn\\scripts\\Install-Winlogbeat.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Install-Winlogbeat.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/shire/Install-Winlogbeat.ps1"
                             }
                         },
                         "services": {
@@ -310,7 +315,15 @@
                     "01-install": {
                         "commands": {
                             "a-wec-setup": {
-                                "command": "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Configure-WEC.ps1",
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Configure-WEC.ps1",
+                                            " -SubscriptionsUrl ", { "Ref" : "WEFSubscriptionsUrl" } 
+                                        ]
+                                    ]
+                                },
                                 "waitAfterCompletion": "forever"
                             },
                             "b-install-winlogbeat": {
@@ -409,19 +422,19 @@
                                 }
                             },
                             "c:\\cfn\\scripts\\Prepare-Box.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Prepare-Box.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Prepare-Box.ps1"
                             },
                             "c:\\cfn\\scripts\\Set-StaticIP.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Set-StaticIP.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Set-StaticIP.ps1"
                             },
                             "c:\\cfn\\scripts\\Rename-Computer.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Rename-Computer.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Rename-Computer.ps1"
                             },
                             "c:\\cfn\\scripts\\Install-Sysmon.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Install-Sysmon.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/shire/Install-Sysmon.ps1"
                             },
                             "c:\\cfn\\scripts\\Join-Domain.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Join-Domain.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Join-Domain.ps1"
                             }
                         },
                         "services": {
@@ -593,19 +606,19 @@
                                 }
                             },
                             "c:\\cfn\\scripts\\Prepare-Box.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Prepare-Box.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/Prepare-Box.ps1"
                             },
                             "c:\\cfn\\scripts\\Set-StaticIP.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Set-StaticIP.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/Set-StaticIP.ps1"
                             },
                             "c:\\cfn\\scripts\\Rename-Computer.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Rename-Computer.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/Rename-Computer.ps1"
                             },
                             "c:\\cfn\\scripts\\Install-Sysmon.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Install-Sysmon.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/Install-Sysmon.ps1"
                             },
                             "c:\\cfn\\scripts\\Join-Domain.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Join-Domain.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/Join-Domain.ps1"
                             }
                         },
                         "services": {
@@ -777,19 +790,19 @@
                                 }
                             },
                             "c:\\cfn\\scripts\\Prepare-Box.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Prepare-Box.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/Prepare-Box.ps1"
                             },
                             "c:\\cfn\\scripts\\Set-StaticIP.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Set-StaticIP.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/Set-StaticIP.ps1"
                             },
                             "c:\\cfn\\scripts\\Rename-Computer.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Rename-Computer.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/Rename-Computer.ps1"
                             },
                             "c:\\cfn\\scripts\\Install-Sysmon.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Install-Sysmon.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/Install-Sysmon.ps1"
                             },
                             "c:\\cfn\\scripts\\Join-Domain.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Join-Domain.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/Join-Domain.ps1"
                             }
                         },
                         "services": {

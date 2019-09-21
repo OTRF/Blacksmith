@@ -87,6 +87,11 @@
             "Default" : "SG DL shire Workstation Administrators",
             "MaxLength" : "60",
             "MinLength" : "5"
+        },
+        "GPOUrl" : {
+            "Description": "URL for a GPO compressed folder",
+            "Type": "String",
+            "Default": "https://github.com/Cyb3rWard0g/mordor/raw/master/environments/windows/gpos/shire/ShireGPOBackup.zip"
         }
     },
     "Mappings" : {
@@ -160,34 +165,34 @@
                                 }
                             },
                             "c:\\cfn\\scripts\\Prepare-Box.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Prepare-Box.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Prepare-Box.ps1"
                             },
                             "c:\\cfn\\scripts\\Set-StaticIP.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Set-StaticIP.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Set-StaticIP.ps1"
                             },
                             "c:\\cfn\\scripts\\Rename-Computer.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Rename-Computer.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Rename-Computer.ps1"
                             },
                             "c:\\cfn\\scripts\\Deploy-Forest.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Deploy-Forest.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Deploy-Forest.ps1"
                             },
                             "c:\\cfn\\scripts\\Set-OUs.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Set-OUs.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Set-OUs.ps1"
                             },
                             "c:\\cfn\\scripts\\shire_users.csv": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/configs/shire_users.csv"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/configs/shire/shire_users.csv"
                             },
                             "c:\\cfn\\scripts\\Add-DomainUsers.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Add-DomainUsers.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Add-DomainUsers.ps1"
                             },
                             "c:\\cfn\\scripts\\Create-SecurityGroup.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Create-SecurityGroup.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Create-SecurityGroup.ps1"
                             },
                             "c:\\cfn\\scripts\\Install-Sysmon.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Install-Sysmon.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/shire/Install-Sysmon.ps1"
                             },
                             "c:\\cfn\\scripts\\Import-GPO.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environment/setup/scripts/Import-GPO.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Import-GPO.ps1"
                             }
                         },
                         "services": {
@@ -306,7 +311,16 @@
                                 "waitAfterCompletion": "0"
                             },
                             "d-import-gpos": {
-                                "command": "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Import-GPO.ps1",
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Import-GPO.ps1",
+                                            " -GPOUrl ", { "Ref" : "GPOUrl" },
+                                            " -DomainNetBIOSName ", { "Ref" : "DomainNetBIOSName" }
+                                        ]
+                                    ]
+                                },
                                 "waitAfterCompletion": "0"
                             }
                         }
