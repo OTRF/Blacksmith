@@ -510,7 +510,7 @@
                     },
                     "01-install": {
                         "commands": {
-                            "a-install-sysmon": {
+                            "a-install-silketw": {
                                 "command": "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Install-SilkETW.ps1",
                                 "waitAfterCompletion": "0"
                             }
