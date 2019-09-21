@@ -140,7 +140,7 @@
         "WEFSubscriptionsUrl" : {
             "Description" : "WEF Subscriptions URL pointing to the file",
             "Type" : "String",
-            "Default" : "https://github.com/Cyb3rWard0g/mordor/raw/master/environments/windows/wef-subscriptions/EreborSubscriptions/EreborSubscriptions.zip"
+            "Default" : "https://github.com/Cyb3rWard0g/mordor/raw/master/environments/windows/wef-subscriptions/EreborSubscriptions.zip"
         }
     },
     "Mappings" : {
