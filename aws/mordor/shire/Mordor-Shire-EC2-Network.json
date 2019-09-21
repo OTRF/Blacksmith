@@ -121,6 +121,12 @@
                         "CidrIp" : { "Ref" : "RestrictLocation" }
                     },
                     {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : "8888",
+                        "ToPort" : "8888",
+                        "CidrIp" : { "Ref" : "RestrictLocation" }
+                    },
+                    {
                         "IpProtocol" : "-1",
                         "FromPort" : "0",
                         "ToPort" : "0",
