@@ -34,7 +34,7 @@
         "RTODefaultC2": {
             "Description" : "Default C2 to run at startup. it could be empire or caldera or covenant.",
             "Type" : "String",
-            "Default" : "caldera"
+            "Default" : "covenant"
         },
         "CalderaAdminName" : {
             "Description" : "Admin name for Caldera user.",
