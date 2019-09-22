@@ -141,6 +141,11 @@
             "Description" : "WEF Subscriptions URL pointing to the file",
             "Type" : "String",
             "Default" : "https://github.com/Cyb3rWard0g/mordor/raw/master/environments/windows/wef-subscriptions/shire/ShireSubscriptions.zip"
+        },
+        "WinlogbeatConfigUrl" : {
+            "Description" : "Winlogbeat config used on WEC to send logs to HELK Kafka broker",
+            "Type" : "String",
+            "Default" : "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/configs/shire/shire_winlogbeat.yml"
         }
     },
     "Mappings" : {
@@ -238,7 +243,7 @@
                                 "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Join-Domain.ps1"
                             },
                             "c:\\cfn\\scripts\\Install-Winlogbeat.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/shire/Install-Winlogbeat.ps1"
+                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Install-Winlogbeat.ps1"
                             }
                         },
                         "services": {
@@ -327,7 +332,15 @@
                                 "waitAfterCompletion": "forever"
                             },
                             "b-install-winlogbeat": {
-                                "command": "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Install-Winlogbeat.ps1",
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Install-Winlogbeat.ps1",
+                                            " -WinlogbeatConfigUrl ", { "Ref" : "WinlogbeatConfigUrl" } 
+                                        ]
+                                    ]
+                                },
                                 "waitAfterCompletion": "0"
                             }
                         }
