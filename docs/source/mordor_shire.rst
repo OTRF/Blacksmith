@@ -9,8 +9,19 @@ First, make sure you **git clone** the main repo:
 .. code-block:: console
 
     $ git clone https://github.com/Cyb3rWard0g/Blacksmith
-    $ cd Blacksmith/aws/mordor/shire
+    $ cd Blacksmith/aws/mordor/
 
+
+Update Parameters File
+######################
+
+Once you are in Blacksmith/aws/mordor/, there will be a folder named **mordor-shire-parameters**.
+There you will find all the parameters that you can update to build the shire environment.
+Most of them are already filled out for you to build the standard environment that the mordor project uses.
+You will just have to update the following parameters to run the default build:
+
+* **RestrictLocation** in your shire-parameters-network.json (Thst is the public IP address that you want to whitelist)
+* **KeyName** in all the other templates (Pair Key Name you created for your stacks. Check the AWS EC2 Key Pairs document in this wiki)
 
 Automatic Deployment
 ####################

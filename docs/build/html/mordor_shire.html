@@ -89,9 +89,10 @@
 <li class="toctree-l1 current"><a class="reference internal" href="mordor.html">Mordor Environments</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="mordor.html#templates">Templates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mordor.html#pre-requirements">Pre-Requirements</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="mordor.html#environmets">Environmets</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="mordor.html#environments">Environments</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">The Shire</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pre-deployment">Pre-Deployment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#update-parameters-file">Update Parameters File</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#automatic-deployment">Automatic Deployment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#monitor-stack-build-logs">Monitor Stack Build Logs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#connect-to-instances">Connect to Instances</a></li>
@@ -178,9 +179,20 @@
 <h2>Pre-Deployment<a class="headerlink" href="#pre-deployment" title="Permalink to this headline">¶</a></h2>
 <p>First, make sure you <strong>git clone</strong> the main repo:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git clone https://github.com/Cyb3rWard0g/Blacksmith
-<span class="gp">$</span> <span class="nb">cd</span> Blacksmith/aws/mordor/shire
+<span class="gp">$</span> <span class="nb">cd</span> Blacksmith/aws/mordor/
 </pre></div>
 </div>
+</div>
+<div class="section" id="update-parameters-file">
+<h2>Update Parameters File<a class="headerlink" href="#update-parameters-file" title="Permalink to this headline">¶</a></h2>
+<p>Once you are in Blacksmith/aws/mordor/, there will be a folder named <strong>mordor-shire-parameters</strong>.
+There you will find all the parameters that you can update to build the shire environment.
+Most of them are already filled out for you to build the standard environment that the mordor project uses.
+You will just have to update the following parameters to run the default build:</p>
+<ul class="simple">
+<li><p><strong>RestrictLocation</strong> in your shire-parameters-network.json (Thst is the public IP address that you want to whitelist)</p></li>
+<li><p><strong>KeyName</strong> in all the other templates (Pair Key Name you created for your stacks. Check the AWS EC2 Key Pairs document in this wiki)</p></li>
+</ul>
 </div>
 <div class="section" id="automatic-deployment">
 <h2>Automatic Deployment<a class="headerlink" href="#automatic-deployment" title="Permalink to this headline">¶</a></h2>
