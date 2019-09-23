@@ -1,7 +1,7 @@
 Mordor Environments
 ===================
 
-The project provides pre-recorded datasets to the community to expedite analytics validation process.
+The mordor project provides pre-recorded datasets to the community to expedite the analytics validation process and allow hunters to learn more about adversarial techniques.
 Each Mordor environment was designed to replicate a very small network with the essential devices to colllect information from adversarial activities.
 The Blacksmith project maintains the design and code to deploy custom mordor network environments to simulate adversarial techniques and export all the data generated.
 
