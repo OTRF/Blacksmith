@@ -12,7 +12,7 @@
             "MinLength" : 1,
             "MaxLength" : 255,
             "AllowedPattern" : "^[a-zA-Z][-a-zA-Z0-9]*$",
-            "Default" : "MordorBaseStack"
+            "Default" : "MordorNetworkStack"
         },
         "KeyName": {
             "Description" : "Name of an existing EC2 key pair for SSH access to the EC2 instance.",
@@ -28,7 +28,6 @@
         "RTOPrivateIP" : {
             "Description" : "Fixed private IP for the RTO server.",
             "Type" : "String",
-            "Default" : "172.18.39.8",
             "AllowedPattern" : "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
         },
         "RTODefaultC2": {
@@ -38,13 +37,11 @@
         },
         "CalderaAdminName" : {
             "Description" : "Admin name for Caldera user.",
-            "Type" : "String",
-            "Default" : "wardog"
+            "Type" : "String"
         },
         "CalderaAdminPassword" : {
             "Description" : "Password for Caldera admin user.",
-            "Type" : "String",
-            "Default" : "B3tt3r!"
+            "Type" : "String"
         }
     },
     "Mappings" : {
@@ -150,6 +147,9 @@
                                         "",
                                         [
                                             "chmod +x /etc/cfn/Install-C2s.sh", "\n",
+                                            "export CALDERA_IP=", {"Ref" : "RTOPrivateIP"}, "\n",
+                                            "export CALDERA_ADMIN_NAME=", {"Ref" : "CalderaAdminName"}, "\n",
+                                            "export CALDERA_ADMIN_PASSWORD=", {"Ref" : "CalderaAdminPassword"}, "\n",
                                             "cd /etc/cfn/ && ./Install-C2s.sh",
                                             " -r ", { "Ref" : "RTODefaultC2" }
                                         ]
@@ -216,7 +216,8 @@
     "Outputs" : {
         "PublicIPAddress" : {
             "Description" : "Public IP address of the new EC2 instance",
-            "Value" : { "Fn::GetAtt" : [ "RTO", "PublicIp" ] }
+            "Value" : { "Fn::GetAtt" : [ "RTO", "PublicIp" ] },
+            "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-C2-PublicIp" }}
         }
     }
 }

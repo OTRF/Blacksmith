@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "RestrictLocation",
+    "ParameterValue": "108.44.178.166/32"
+  }, 
+  {
+    "ParameterKey": "VPCSubnetCidrBlock",
+    "ParameterValue": "172.18.0.0/16"
+  }, 
+  {
+    "ParameterKey": "PublicSubnetCidrBlock",
+    "ParameterValue": "172.18.39.0/24"
+  }
+]

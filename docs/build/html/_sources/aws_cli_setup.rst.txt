@@ -15,7 +15,7 @@ Add the install location to the beginning of your PATH variable:
 
 .. code-block:: console
 
-    $ export PATH=/home/ec2-user/.local/bin:$PATH
+    $ export PATH=$HOME/Library/Python/3.7/bin:$PATH
 
 Add this command to the end of your profile's startup script (for example, ~/.bashrc) to persist the change between command line sessions.
 

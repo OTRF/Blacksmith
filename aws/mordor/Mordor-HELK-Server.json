@@ -12,7 +12,7 @@
             "MinLength" : 1,
             "MaxLength" : 255,
             "AllowedPattern" : "^[a-zA-Z][-a-zA-Z0-9]*$",
-            "Default" : "MordorBaseStack"
+            "Default" : "MordorNetworkStack"
         },
         "KeyName": {
             "Description" : "Name of an existing EC2 key pair for SSH access to the EC2 instance.",
@@ -28,13 +28,11 @@
         "HELKPrivateIP" : {
             "Description" : "Fixed private IP for the HELK server.",
             "Type" : "String",
-            "Default" : "172.18.39.6",
             "AllowedPattern" : "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
         },
         "HELKPassword" : {
             "Description" : "Fixed private IP for the HELK server.",
             "Type" : "String",
-            "Default" : "hunt1ng!",
             "AllowedPattern" : "(?=^.{6,255}$)((?=.*\\d)(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[^A-Za-z0-9])(?=.*[a-z])|(?=.*[^A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z])|(?=.*\\d)(?=.*[A-Z])(?=.*[^A-Za-z0-9]))^.*",
             "MaxLength" : "32",
             "MinLength" : "5",

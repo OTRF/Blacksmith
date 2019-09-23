@@ -18,7 +18,6 @@
         "VPCSubnetCidrBlock": {
             "Description": "Enter VPC CIDR Block. (i.e. 10.0.0.0/16 = 10.0.0.0-10.0.255.255 = 256 Subnets - 65534 hosts)",
             "Type": "String",
-            "Default": "172.18.0.0/16",
             "MinLength": "10",
             "MaxLength": "18",
             "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
@@ -26,7 +25,6 @@
         "PublicSubnetCidrBlock": {
             "Description": "Enter Public subnet CIDR Block. (i.e. 10.0.0.0/16 = 10.0.0.0-10.0.255.255 = 256 Subnets - 65534 hosts)",
             "Type": "String",
-            "Default": "172.18.39.0/24",
             "MinLength": "10",
             "MaxLength": "18",
             "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
@@ -130,7 +128,7 @@
                         "IpProtocol" : "-1",
                         "FromPort" : "0",
                         "ToPort" : "0",
-                        "CidrIp" : { "Ref" : "PublicSubnetCidrBlock" }
+                        "CidrIp" : "172.18.39.0/24"
                     }
                 ],
                 "SecurityGroupEgress" : [
@@ -161,7 +159,7 @@
                         "IpProtocol" : "-1",
                         "FromPort" : "0",
                         "ToPort" : "0",
-                        "CidrIp" : { "Ref" : "PublicSubnetCidrBlock" }
+                        "CidrIp" : "172.18.39.0/24"
                     }
                 ],
                 "SecurityGroupEgress" : [

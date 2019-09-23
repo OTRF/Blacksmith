@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "aws-ubuntu-key"
+  },
+  {
+    "ParameterKey": "NetworkStackName",
+    "ParameterValue": "MordorNetworkStack"
+  },
+  {
+    "ParameterKey": "RTOInstanceType",
+    "ParameterValue": "t2.medium"
+  }, 
+  {
+    "ParameterKey": "RTOPrivateIP",
+    "ParameterValue": "172.18.39.8"
+  }, 
+  {
+    "ParameterKey": "RTODefaultC2",
+    "ParameterValue": "covenant"
+  }, 
+  {
+    "ParameterKey": "CalderaAdminName",
+    "ParameterValue": "wardog"
+  }, 
+  {
+    "ParameterKey": "CalderaAdminPassword",
+    "ParameterValue": "B3tt3r!"
+  }
+]
