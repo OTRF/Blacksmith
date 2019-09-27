@@ -60,6 +60,30 @@
     "ParameterValue": "172.18.39.100"
   },
   {
+    "ParameterKey": "HR001DefaultUser",
+    "ParameterValue": "nmartha"
+  },
+  {
+    "ParameterKey": "HR001DefaultPassword",
+    "ParameterValue": "S@l@m3!123"
+  },
+  {
+    "ParameterKey": "IT001DefaultUser",
+    "ParameterValue": "pgustavo"
+  },
+  {
+    "ParameterKey": "IT001DefaultPassword",
+    "ParameterValue": "W1n1!2019"
+  },
+  {
+    "ParameterKey": "ACCT001DefaultUser",
+    "ParameterValue": "lrodriguez"
+  },
+  {
+    "ParameterKey": "ACCT001DefaultPassword",
+    "ParameterValue": "T0d@y!2019"
+  },
+  {
     "ParameterKey": "EndpointAgent",
     "ParameterValue": "Sysmon"
   }

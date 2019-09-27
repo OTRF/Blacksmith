@@ -95,6 +95,48 @@
             "MaxLength" : "25",
             "MinLength" : "5"
         },
+        "HR001DefaultUser" : {
+            "Description" : "Default logon user for HR001",
+            "Type" : "String",
+            "AllowedPattern" : "[a-zA-Z0-9]*",
+            "MaxLength" : "25",
+            "MinLength" : "5"
+        },
+        "HR001DefaultPassword" : {
+            "Description" : "Default password for default user on HR001",
+            "Type" : "String",
+            "MaxLength" : "32",
+            "MinLength" : "5",
+            "NoEcho" : "true"
+        },
+        "IT001DefaultUser" : {
+            "Description" : "Default logon user for ITR001",
+            "Type" : "String",
+            "AllowedPattern" : "[a-zA-Z0-9]*",
+            "MaxLength" : "25",
+            "MinLength" : "5"
+        },
+        "IT001DefaultPassword" : {
+            "Description" : "Default password for default user on IT001",
+            "Type" : "String",
+            "MaxLength" : "32",
+            "MinLength" : "5",
+            "NoEcho" : "true"
+        },
+        "ACCT001DefaultUser" : {
+            "Description" : "Default logon user for ACCT001",
+            "Type" : "String",
+            "AllowedPattern" : "[a-zA-Z0-9]*",
+            "MaxLength" : "25",
+            "MinLength" : "5"
+        },
+        "ACCT001DefaultPassword" : {
+            "Description" : "Default password for default user on ACCT001",
+            "Type" : "String",
+            "MaxLength" : "32",
+            "MinLength" : "5",
+            "NoEcho" : "true"
+        },
         "DomainDNSName" : {
             "Description" : "Fully qualified domain name (FQDN) of the forest root domain e.g. example.com.",
             "Type" : "String",
@@ -258,8 +300,8 @@
                                             " -DomainAdminUser ", { "Ref" : "DomainAdminUser" },
                                             " -DomainAdminPassword ", { "Ref" : "DomainAdminPassword" },
                                             " -DomainNetBiosName ", { "Ref" : "DomainNetBIOSName" },
-                                            " -DefaultLogonUser \"Administrator\"",
-                                            " -DefaultLogonPassword ", { "Ref" : "LocalAdminPassword" },
+                                            " -DefaultLogonUser ", { "Ref" : "HR001DefaultUser" },
+                                            " -DefaultLogonPassword ", { "Ref" : "HR001DefaultPassword" },
                                             " -DomainDNSName ", { "Ref" : "DomainDNSName" }  
                                         ]
                                     ]
@@ -450,8 +492,8 @@
                                             " -DomainAdminUser ", { "Ref" : "DomainAdminUser" },
                                             " -DomainAdminPassword ", { "Ref" : "DomainAdminPassword" },
                                             " -DomainNetBiosName ", { "Ref" : "DomainNetBIOSName" },
-                                            " -DefaultLogonUser \"Administrator\"",
-                                            " -DefaultLogonPassword ", { "Ref" : "LocalAdminPassword" },
+                                            " -DefaultLogonUser ", { "Ref" : "IT001DefaultUser" },
+                                            " -DefaultLogonPassword ", { "Ref" : "IT001DefaultPassword" },
                                             " -DomainDNSName ", { "Ref" : "DomainDNSName" }  
                                         ]
                                     ]
@@ -642,8 +684,8 @@
                                             " -DomainAdminUser ", { "Ref" : "DomainAdminUser" },
                                             " -DomainAdminPassword ", { "Ref" : "DomainAdminPassword" },
                                             " -DomainNetBiosName ", { "Ref" : "DomainNetBIOSName" },
-                                            " -DefaultLogonUser \"Administrator\"",
-                                            " -DefaultLogonPassword ", { "Ref" : "LocalAdminPassword" },
+                                            " -DefaultLogonUser ", { "Ref" : "ACCT001DefaultUser" },
+                                            " -DefaultLogonPassword ", { "Ref" : "ACCT001DefaultPassword" },
                                             " -DomainDNSName ", { "Ref" : "DomainDNSName" }  
                                         ]
                                     ]
