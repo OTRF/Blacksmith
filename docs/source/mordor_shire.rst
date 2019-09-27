@@ -8,12 +8,12 @@ First, make sure you **git clone** the main repo:
 
 .. code-block:: console
 
-    $ git clone https://github.com/Cyb3rWard0g/Blacksmith
+    $ git clone https://github.com/hunters-forge/Blacksmith
     $ cd Blacksmith/aws/mordor/
 
 
 Update Parameters File
-######################
+**********************
 
 Once you are in Blacksmith/aws/mordor/, there will be a folder named **mordor-shire-parameters**.
 There you will find all the parameters that you can update to build the shire environment.

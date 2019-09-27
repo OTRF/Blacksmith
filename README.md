@@ -15,7 +15,7 @@ The Blacksmit project focuses on providing dynamic easy-to-use templates for sec
 
 # Projects Built by Blacksmith
 
-* [Mordor](https://github.com/Cyb3rWard0g/mordor)
+* [Mordor](https://github.com/hunters-forge/mordor)
 * [HELK](https://github.com/Cyb3rWard0g/HELK)
 
 # Authors
@@ -28,7 +28,7 @@ There are a few things that we would like to accomplish with this repo as shown 
 
 # License: GPL-3.0
 
-[ Blacksmith's GNU General Public License](https://github.com/Cyb3rWard0g/Blacksmith/blob/master/LICENSE)
+[ Blacksmith's GNU General Public License](https://github.com/hunters-forge/Blacksmith/blob/master/LICENSE)
 
 # To-Do
 
