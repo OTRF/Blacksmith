@@ -45,11 +45,11 @@
   },
   {
     "ParameterKey": "GPOUrl",
-    "ParameterValue": "https://github.com/Cyb3rWard0g/mordor/raw/master/environments/windows/gpos/shire/ShireGPOBackup.zip"
+    "ParameterValue": "https://github.com/hunters-forge/mordor/raw/master/environments/windows/gpos/shire/ShireGPOBackup.zip"
   },
   {
     "ParameterKey": "UsersCSV",
-    "ParameterValue": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/configs/shire/shire_users.csv"
+    "ParameterValue": "https://raw.githubusercontent.com/hunters-forge/mordor/master/environments/windows/configs/shire/shire_users.csv"
   },
   {
     "ParameterKey": "EndpointAgent",

@@ -45,10 +45,10 @@
   },
   {
     "ParameterKey": "WEFSubscriptionsUrl",
-    "ParameterValue": "https://github.com/Cyb3rWard0g/mordor/raw/master/environments/windows/wef-subscriptions/ShireSubscriptions.zip"
+    "ParameterValue": "https://github.com/hunters-forge/mordor/raw/master/environments/windows/wef-subscriptions/ShireSubscriptions.zip"
   },
   {
     "ParameterKey": "WinlogbeatConfigUrl",
-    "ParameterValue": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/configs/shire/shire_winlogbeat.yml"
+    "ParameterValue": "https://raw.githubusercontent.com/hunters-forge/mordor/master/environments/windows/configs/shire/shire_winlogbeat.yml"
   }
 ]

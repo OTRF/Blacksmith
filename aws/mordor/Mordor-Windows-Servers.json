@@ -145,22 +145,22 @@
                                 }
                             },
                             "c:\\cfn\\scripts\\Prepare-Box.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Prepare-Box.ps1"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/mordor/master/environments/windows/scripts/default/Prepare-Box.ps1"
                             },
                             "c:\\cfn\\scripts\\Set-StaticIP.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Set-StaticIP.ps1"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/mordor/master/environments/windows/scripts/default/Set-StaticIP.ps1"
                             },
                             "c:\\cfn\\scripts\\Rename-Computer.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Rename-Computer.ps1"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/mordor/master/environments/windows/scripts/default/Rename-Computer.ps1"
                             },
                             "c:\\cfn\\scripts\\Configure-WEC.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Configure-WEC.ps1"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/mordor/master/environments/windows/scripts/default/Configure-WEC.ps1"
                             },
                             "c:\\cfn\\scripts\\Join-Domain.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Join-Domain.ps1"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/mordor/master/environments/windows/scripts/default/Join-Domain.ps1"
                             },
                             "c:\\cfn\\scripts\\Install-Winlogbeat.ps1": {
-                                "source": "https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/scripts/default/Install-Winlogbeat.ps1"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/mordor/master/environments/windows/scripts/default/Install-Winlogbeat.ps1"
                             }
                         },
                         "services": {
