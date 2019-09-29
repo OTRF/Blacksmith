@@ -128,7 +128,7 @@
                         "IpProtocol" : "-1",
                         "FromPort" : "0",
                         "ToPort" : "0",
-                        "CidrIp" : "172.18.39.0/24"
+                        "CidrIp" : { "Ref" : "PublicSubnetCidrBlock" }
                     }
                 ],
                 "SecurityGroupEgress" : [
@@ -159,7 +159,7 @@
                         "IpProtocol" : "-1",
                         "FromPort" : "0",
                         "ToPort" : "0",
-                        "CidrIp" : "172.18.39.0/24"
+                        "CidrIp" : { "Ref" : "PublicSubnetCidrBlock" }
                     }
                 ],
                 "SecurityGroupEgress" : [
