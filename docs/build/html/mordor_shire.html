@@ -92,7 +92,6 @@
 <li class="toctree-l2 current"><a class="reference internal" href="mordor.html#environments">Environments</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">The Shire</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pre-deployment">Pre-Deployment</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#update-parameters-file">Update Parameters File</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#automatic-deployment">Automatic Deployment</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#monitor-stack-build-logs">Monitor Stack Build Logs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#connect-to-instances">Connect to Instances</a></li>
@@ -178,82 +177,29 @@
 <div class="section" id="pre-deployment">
 <h2>Pre-Deployment<a class="headerlink" href="#pre-deployment" title="Permalink to this headline">¶</a></h2>
 <p>First, make sure you <strong>git clone</strong> the main repo:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git clone https://github.com/Cyb3rWard0g/Blacksmith
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git clone https://github.com/hunters-forge/Blacksmith
 <span class="gp">$</span> <span class="nb">cd</span> Blacksmith/aws/mordor/
 </pre></div>
 </div>
-</div>
 <div class="section" id="update-parameters-file">
-<h2>Update Parameters File<a class="headerlink" href="#update-parameters-file" title="Permalink to this headline">¶</a></h2>
-<p>Once you are in Blacksmith/aws/mordor/, there will be a folder named <strong>mordor-shire-parameters</strong>.
-There you will find all the parameters that you can update to build the shire environment.
-Most of them are already filled out for you to build the standard environment that the mordor project uses.
-You will just have to update the following parameters to run the default build:</p>
+<h3>Update Parameters File<a class="headerlink" href="#update-parameters-file" title="Permalink to this headline">¶</a></h3>
+<p>You can update the parameters applied to the whole enfironment in the following folder:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">cd</span> cfn-parameters/shire
+</pre></div>
+</div>
+<p>Most of them are already filled out for you to build the official standard environment that the mordor project uses.
+However, you must upate the following parametes:</p>
 <ul class="simple">
-<li><p><strong>RestrictLocation</strong> in your shire-parameters-network.json (Thst is the public IP address that you want to whitelist)</p></li>
-<li><p><strong>KeyName</strong> in all the other templates (Pair Key Name you created for your stacks. Check the AWS EC2 Key Pairs document in this wiki)</p></li>
+<li><p>Parameter File: <strong>ec2-network-parameters</strong>, Parameter value for key: <strong>RestrictLocation</strong> (this is the public IP address that you want to whitelist for external connections)</p></li>
+<li><p>Parameter File: All Parameteres, Parameter value for key: <strong>KeyName</strong> (Pair Key Name you created for your stacks. Check the AWS EC2 Key Pairs document in this wiki)</p></li>
 </ul>
+</div>
 </div>
 <div class="section" id="automatic-deployment">
 <h2>Automatic Deployment<a class="headerlink" href="#automatic-deployment" title="Permalink to this headline">¶</a></h2>
-<p>You will just have to run the script named <strong>deploy-mordor-shire.sh</strong> in the same directory as the CloudFormation templates.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ./deploy-mordor-shire.sh
-
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] Creating MordorNetworkStack ..</span>
-
-<span class="go">{</span>
-<span class="go">    &quot;StackId&quot;: &quot;arn:aws:cloudformation:us-east-1:xxxxxxxxxxxxxx:stack/MordorNetworkStack/43fbb620-ddcb-11e9-8e4d-0eff07caa3c6&quot;</span>
-<span class="go">}</span>
-
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] EC2 Network stack template has been sent over to AWS and it is being processed remotely ..</span>
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] All other instances depend on it.</span>
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] Waiting for MordorNetworkStack to be created..</span>
-
-
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] MordorNetworkStack was created.</span>
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] Creating MordorHELKStack ..</span>
-
-<span class="go">{</span>
-<span class="go">    &quot;StackId&quot;: &quot;arn:aws:cloudformation:us-east-1:xxxxxxxxxxxxxx:stack/MordorHELKStack/69987710-ddcb-11e9-aab3-0e0ed2de56d2&quot;</span>
-<span class="go">}</span>
-
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] HELK stack template has been sent over to AWS and it is being processed remotely ..</span>
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] Creating MordorC2Stack ..</span>
-
-<span class="go">{</span>
-<span class="go">    &quot;StackId&quot;: &quot;arn:aws:cloudformation:us-east-1:xxxxxxxxxxxxxx:stack/MordorC2Stack/6a6256c0-ddcb-11e9-ade7-1253a26d999e&quot;</span>
-<span class="go">}</span>
-
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] C2 stack template has been sent over to AWS and it is being processed remotely ..</span>
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] Creating MordorWindowsDCStack ..</span>
-
-<span class="go">{</span>
-<span class="go">    &quot;StackId&quot;: &quot;arn:aws:cloudformation:us-east-1:xxxxxxxxxxxxxx:stack/MordorWindowsDCStack/6b4b3020-ddcb-11e9-8a04-124d1eab42ba&quot;</span>
-<span class="go">}</span>
-
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] DC stack template has been sent over to AWS and it is being processed remotely ..</span>
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] All other Windows instances depend on it.</span>
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] Waiting for MordorWindowsDCStack to be created..</span>
-
-
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] MordorWindowsDCStack was created.</span>
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] Creating MordorWindowsServersStack ..</span>
-
-<span class="go">{</span>
-<span class="go">    &quot;StackId&quot;: &quot;arn:aws:cloudformation:us-east-1:xxxxxxxxxxxxxx:stack/MordorWindowsServersStack/1360dca0-ddcd-11e9-909f-0eb49284c068&quot;</span>
-<span class="go">}</span>
-
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] Servers stack template has been sent over to AWS and it is being processed remotely ..</span>
-
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] Creating MordorWindowsWorkstationsStack ..</span>
-<span class="go">{</span>
-<span class="go">    &quot;StackId&quot;: &quot;arn:aws:cloudformation:us-east-1:xxxxxxxxxxxxxx:stack/MordorWindowsWorkstationsStack/14a6f130-ddcd-11e9-84eb-0a62acea77ae&quot;</span>
-<span class="go">}</span>
-
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] Workstations stack template has been sent over to AWS and it is being processed remotely ..</span>
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] No other stack depends on Workstations or Servers</span>
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] You can track deployment progress via your CloudFormation Console</span>
-<span class="go">[MORDOR-CLOUDFORMATION-INFO] CloudFormation Console: https://console.aws.amazon.com/cloudformation/home?region=us-east-1</span>
+<p>You will just have to run the script named <strong>deploy-mordor.sh</strong> with the arguments <strong>-e ‘shire’</strong> as shown below in the Blacksmith/aws/mordor/ path</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">cd</span> ../
+<span class="gp">$</span> ./deploy-mordor.sh -e <span class="s1">&#39;shire&#39;</span>
 </pre></div>
 </div>
 </div>
@@ -270,16 +216,16 @@ You will just have to update the following parameters to run the default build:<
 <p>You can use the AWS CloudFormation console to see all your stacks, their events, templates uploaded and more.</p>
 <a class="reference internal image-reference" href="_images/CFN-Services-CloudFormation.png"><img alt="The Shire" src="_images/CFN-Services-CloudFormation.png" style="width: 662.4000000000001px; height: 447.20000000000005px;" /></a>
 <p>All the templates that you sent over to AWS will start being processed immediately</p>
-<a class="reference internal image-reference" href="_images/CFN-Stacks-Console.png"><img alt="The Shire" src="_images/CFN-Stacks-Console.png" style="width: 799.6px; height: 277.2px;" /></a>
+<a class="reference internal image-reference" href="_images/CFN-Stacks-Console.png"><img alt="The Shire" src="_images/CFN-Stacks-Console.png" style="width: 799.6px; height: 282.40000000000003px;" /></a>
 <p>You can click on each stack and get more information about the deployment</p>
-<a class="reference internal image-reference" href="_images/CFN-Stack-HELK-Events.png"><img alt="The Shire" src="_images/CFN-Stack-HELK-Events.png" style="width: 799.6px; height: 384.0px;" /></a>
+<a class="reference internal image-reference" href="_images/CFN-Stack-Workstations-Events.png"><img alt="The Shire" src="_images/CFN-Stack-Workstations-Events.png" style="width: 799.6px; height: 390.8px;" /></a>
 <p>You can also see the specific template mapped to each stack</p>
-<a class="reference internal image-reference" href="_images/CFN-Stack-HELK-Template.png"><img alt="The Shire" src="_images/CFN-Stack-HELK-Template.png" style="width: 799.6px; height: 397.20000000000005px;" /></a>
+<a class="reference internal image-reference" href="_images/CFN-Stack-Workstations-Template.png"><img alt="The Shire" src="_images/CFN-Stack-Workstations-Template.png" style="width: 799.6px; height: 390.8px;" /></a>
 <p>Once a stack is complete you will be able to see it sending a successful signal back to the management console</p>
-<a class="reference internal image-reference" href="_images/CFN-Stack-C2-Complete.png"><img alt="The Shire" src="_images/CFN-Stack-C2-Complete.png" style="width: 799.6px; height: 392.40000000000003px;" /></a>
+<a class="reference internal image-reference" href="_images/CFN-Stack-DC-Complete.png"><img alt="The Shire" src="_images/CFN-Stack-DC-Complete.png" style="width: 799.6px; height: 407.20000000000005px;" /></a>
 <p>Once all your instances are up and running you will be able to see them via the CloudFormation and the EC2 instances dashboard</p>
-<a class="reference internal image-reference" href="_images/CFN-Stacks-AllComplete.png"><img alt="The Shire" src="_images/CFN-Stacks-AllComplete.png" style="width: 799.6px; height: 408.8px;" /></a>
-<a class="reference internal image-reference" href="_images/CFN-EC2-Running.png"><img alt="The Shire" src="_images/CFN-EC2-Running.png" style="width: 799.6px; height: 258.8px;" /></a>
+<a class="reference internal image-reference" href="_images/CFN-Stacks-AllComplete.png"><img alt="The Shire" src="_images/CFN-Stacks-AllComplete.png" style="width: 799.6px; height: 282.40000000000003px;" /></a>
+<a class="reference internal image-reference" href="_images/CFN-EC2-Running.png"><img alt="The Shire" src="_images/CFN-EC2-Running.png" style="width: 799.6px; height: 288.8px;" /></a>
 </div>
 </div>
 <div class="section" id="connect-to-instances">

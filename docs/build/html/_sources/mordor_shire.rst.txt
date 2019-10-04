@@ -8,85 +8,33 @@ First, make sure you **git clone** the main repo:
 
 .. code-block:: console
 
-    $ git clone https://github.com/Cyb3rWard0g/Blacksmith
+    $ git clone https://github.com/hunters-forge/Blacksmith
     $ cd Blacksmith/aws/mordor/
 
-
 Update Parameters File
-######################
+**********************
 
-Once you are in Blacksmith/aws/mordor/, there will be a folder named **mordor-shire-parameters**.
-There you will find all the parameters that you can update to build the shire environment.
-Most of them are already filled out for you to build the standard environment that the mordor project uses.
-You will just have to update the following parameters to run the default build:
+You can update the parameters applied to the whole enfironment in the following folder:
 
-* **RestrictLocation** in your shire-parameters-network.json (Thst is the public IP address that you want to whitelist)
-* **KeyName** in all the other templates (Pair Key Name you created for your stacks. Check the AWS EC2 Key Pairs document in this wiki)
+.. code-block:: console
+
+    $ cd cfn-parameters/shire
+
+Most of them are already filled out for you to build the official standard environment that the mordor project uses.
+However, you must upate the following parametes:
+
+* Parameter File: **ec2-network-parameters**, Parameter value for key: **RestrictLocation** (this is the public IP address that you want to whitelist for external connections)
+* Parameter File: All Parameteres, Parameter value for key: **KeyName** (Pair Key Name you created for your stacks. Check the AWS EC2 Key Pairs document in this wiki)
 
 Automatic Deployment
 ####################
 
-You will just have to run the script named **deploy-mordor-shire.sh** in the same directory as the CloudFormation templates.
+You will just have to run the script named **deploy-mordor.sh** with the arguments **-e 'shire'** as shown below in the Blacksmith/aws/mordor/ path
 
 .. code-block:: console
 
-    $ ./deploy-mordor-shire.sh
-
-    [MORDOR-CLOUDFORMATION-INFO] Creating MordorNetworkStack ..
-    
-    {
-        "StackId": "arn:aws:cloudformation:us-east-1:xxxxxxxxxxxxxx:stack/MordorNetworkStack/43fbb620-ddcb-11e9-8e4d-0eff07caa3c6"
-    }
-    
-    [MORDOR-CLOUDFORMATION-INFO] EC2 Network stack template has been sent over to AWS and it is being processed remotely ..
-    [MORDOR-CLOUDFORMATION-INFO] All other instances depend on it.
-    [MORDOR-CLOUDFORMATION-INFO] Waiting for MordorNetworkStack to be created..
-    
-    
-    [MORDOR-CLOUDFORMATION-INFO] MordorNetworkStack was created.
-    [MORDOR-CLOUDFORMATION-INFO] Creating MordorHELKStack ..
-    
-    {
-        "StackId": "arn:aws:cloudformation:us-east-1:xxxxxxxxxxxxxx:stack/MordorHELKStack/69987710-ddcb-11e9-aab3-0e0ed2de56d2"
-    }
-    
-    [MORDOR-CLOUDFORMATION-INFO] HELK stack template has been sent over to AWS and it is being processed remotely ..
-    [MORDOR-CLOUDFORMATION-INFO] Creating MordorC2Stack ..
-    
-    {
-        "StackId": "arn:aws:cloudformation:us-east-1:xxxxxxxxxxxxxx:stack/MordorC2Stack/6a6256c0-ddcb-11e9-ade7-1253a26d999e"
-    }
-    
-    [MORDOR-CLOUDFORMATION-INFO] C2 stack template has been sent over to AWS and it is being processed remotely ..
-    [MORDOR-CLOUDFORMATION-INFO] Creating MordorWindowsDCStack ..
-    
-    {
-        "StackId": "arn:aws:cloudformation:us-east-1:xxxxxxxxxxxxxx:stack/MordorWindowsDCStack/6b4b3020-ddcb-11e9-8a04-124d1eab42ba"
-    }
-    
-    [MORDOR-CLOUDFORMATION-INFO] DC stack template has been sent over to AWS and it is being processed remotely ..
-    [MORDOR-CLOUDFORMATION-INFO] All other Windows instances depend on it.
-    [MORDOR-CLOUDFORMATION-INFO] Waiting for MordorWindowsDCStack to be created..
-    
-    
-    [MORDOR-CLOUDFORMATION-INFO] MordorWindowsDCStack was created.
-    [MORDOR-CLOUDFORMATION-INFO] Creating MordorWindowsServersStack ..
-    
-    {
-        "StackId": "arn:aws:cloudformation:us-east-1:xxxxxxxxxxxxxx:stack/MordorWindowsServersStack/1360dca0-ddcd-11e9-909f-0eb49284c068"
-    }
-    
-    [MORDOR-CLOUDFORMATION-INFO] Servers stack template has been sent over to AWS and it is being processed remotely ..
-    
-    [MORDOR-CLOUDFORMATION-INFO] Creating MordorWindowsWorkstationsStack ..
-    {
-        "StackId": "arn:aws:cloudformation:us-east-1:xxxxxxxxxxxxxx:stack/MordorWindowsWorkstationsStack/14a6f130-ddcd-11e9-84eb-0a62acea77ae"
-    }
-    
-    [MORDOR-CLOUDFORMATION-INFO] Workstations stack template has been sent over to AWS and it is being processed remotely ..
-    [MORDOR-CLOUDFORMATION-INFO] No other stack depends on Workstations or Servers
-    [MORDOR-CLOUDFORMATION-INFO] You can track deployment progress via your CloudFormation Console
-    [MORDOR-CLOUDFORMATION-INFO] CloudFormation Console: https://console.aws.amazon.com/cloudformation/home?region=us-east-1 
+    $ cd ../
+    $ ./deploy-mordor.sh -e 'shire'
 
 Monitor Stack Build Logs
 ########################
@@ -115,19 +63,19 @@ All the templates that you sent over to AWS will start being processed immediate
 
 You can click on each stack and get more information about the deployment
 
-.. image:: _static/CFN-Stack-HELK-Events.png
+.. image:: _static/CFN-Stack-Workstations-Events.png
     :alt: The Shire
     :scale: 40%
 
 You can also see the specific template mapped to each stack
 
-.. image:: _static/CFN-Stack-HELK-Template.png
+.. image:: _static/CFN-Stack-Workstations-Template.png
     :alt: The Shire
     :scale: 40%
 
 Once a stack is complete you will be able to see it sending a successful signal back to the management console
 
-.. image:: _static/CFN-Stack-C2-Complete.png
+.. image:: _static/CFN-Stack-DC-Complete.png
     :alt: The Shire
     :scale: 40%
 

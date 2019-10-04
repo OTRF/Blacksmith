@@ -10,21 +10,21 @@ The project provides the following templates and parameter files for a more dyna
 Templates
 #########
 
-+------------------------------------+----------------------------------------------------------------------------------------------------------------+
-| Template                           | Format                                                                                                         |
-+====================================+================================================================================================================+
-| Mordor-EC2-Network                 | `JSON <https://github.com/Cyb3rWard0g/Blacksmith/blob/master/aws/mordor/Mordor-EC2-Network.json>`_             |
-+------------------------------------+----------------------------------------------------------------------------------------------------------------+
-| Mordor-HELK-Server                 | `JSON <https://github.com/Cyb3rWard0g/Blacksmith/blob/master/aws/mordor/Mordor-HELK-Server.json>`_             |
-+------------------------------------+----------------------------------------------------------------------------------------------------------------+
-| Mordor-C2-Server                   | `JSON <https://github.com/Cyb3rWard0g/Blacksmith/blob/master/aws/mordor/Mordor-C2-Server.json>`_               |
-+------------------------------------+----------------------------------------------------------------------------------------------------------------+
-| Mordor-Windows-DC                  | `JSON <https://github.com/Cyb3rWard0g/Blacksmith/blob/master/aws/mordor/Mordor-Windows-DC.json>`_              |
-+------------------------------------+----------------------------------------------------------------------------------------------------------------+
-| Mordor-Windows-Servers             | `JSON <https://github.com/Cyb3rWard0g/Blacksmith/blob/master/aws/mordor/Mordor-Windows-Servers.json>`_         |
-+------------------------------------+----------------------------------------------------------------------------------------------------------------+
-| Mordor-Windows-Workstations        | `JSON <https://github.com/Cyb3rWard0g/Blacksmith/blob/master/aws/mordor/Mordor-Windows-Workstations.json>`_    |
-+------------------------------------+----------------------------------------------------------------------------------------------------------------+
++------------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| Template                           | Format                                                                                                                           |
++====================================+==================================================================================================================================+
+| Mordor-EC2-Network                 | `JSON <https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-templates/ec2-network-template.json>`_             |
++------------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| Mordor-HELK-Server                 | `JSON <https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-templates/helk-server-template.json>`_             |
++------------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| Mordor-C2-Server                   | `JSON <https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-templates/c2-server-template.json>`_               |
++------------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| Mordor-Windows-DC                  | `JSON <https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-templates/windows-dc-template.json>`_              |
++------------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| Mordor-Windows-Servers             | `JSON <https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-templates/windows-servers-template.json>`_         |
++------------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| Mordor-Windows-Workstations        | `JSON <https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-templates/windows-workstations-template.json>`_    |
++------------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
 
 Pre-Requirements
 ################
