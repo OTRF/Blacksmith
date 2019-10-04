@@ -45,10 +45,22 @@ try {
     Start-Service winlogbeat
 
     write-Host "Verifying if Winlogbeat is running.."
-    $s = Get-Service -Name winlogbeat
-    while ($s.Status -ne 'Running'){Start-Service Winlogbeat; Start-Sleep 3}
-    Start-Sleep 5
-    
+    $ServiceName = 'winlogbeat'
+    $arrService = Get-Service -Name $ServiceName
+
+    while ($arrService.Status -ne 'Running')
+    {
+        Start-Service $ServiceName
+        write-host $arrService.status
+        write-host 'Service starting'
+        Start-Sleep -seconds 5
+        $arrService.Refresh()
+        if ($arrService.Status -eq 'Running')
+        {
+            Write-Host 'Service is now Running'
+        }
+
+    }
     write-Host "Winlogbeat is running.."
 }
 catch {

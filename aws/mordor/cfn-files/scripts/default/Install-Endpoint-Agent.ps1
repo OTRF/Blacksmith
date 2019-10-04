@@ -118,7 +118,22 @@ else
 
     Start-Sleep -s 10
 
-    # Restarting Service
-    write-host "Restarting SilkETW service.."
-    Restart-Service -Name SilkETW -Force
+    # Starting SilkETW Service
+    write-host "Starting SilkETW service.."
+    $ServiceName = 'SilkETW'
+    $arrService = Get-Service -Name $ServiceName
+
+    while ($arrService.Status -ne 'Running')
+    {
+        Start-Service $ServiceName
+        write-host $arrService.status
+        write-host 'Service starting'
+        Start-Sleep -seconds 5
+        $arrService.Refresh()
+        if ($arrService.Status -eq 'Running')
+        {
+            Write-Host 'Service is now Running'
+        }
+
+    }
 }
