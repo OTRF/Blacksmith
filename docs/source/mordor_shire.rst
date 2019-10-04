@@ -24,7 +24,7 @@ Most of them are already filled out for you to build the official standard envir
 However, you must upate the following parametes:
 
 * Parameter File: **ec2-network-parameters**, Parameter value for key: **RestrictLocation** (this is the public IP address that you want to whitelist for external connections)
-* Parameter File: All Parameteres, Parameter value for key: **KeyName** (Pair Key Name you created for your stacks. Check the AWS EC2 Key Pairs document in this wiki)
+* Parameter File: **All other parameters files**, Parameter value for key: **KeyName** (Pair Key Name you created for your stacks. Check the AWS EC2 Key Pairs document in this wiki)
 
 Automatic Deployment
 ####################
@@ -53,41 +53,41 @@ You can use the AWS CloudFormation console to see all your stacks, their events,
 
 .. image:: _static/CFN-Services-CloudFormation.png
     :alt: The Shire
-    :scale: 40%
+    :scale: 30%
 
 All the templates that you sent over to AWS will start being processed immediately
 
 .. image:: _static/CFN-Stacks-Console.png
     :alt: The Shire
-    :scale: 40%
+    :scale: 30%
 
 You can click on each stack and get more information about the deployment
 
 .. image:: _static/CFN-Stack-Workstations-Events.png
     :alt: The Shire
-    :scale: 40%
+    :scale: 30%
 
 You can also see the specific template mapped to each stack
 
 .. image:: _static/CFN-Stack-Workstations-Template.png
     :alt: The Shire
-    :scale: 40%
+    :scale: 30%
 
 Once a stack is complete you will be able to see it sending a successful signal back to the management console
 
 .. image:: _static/CFN-Stack-DC-Complete.png
     :alt: The Shire
-    :scale: 40%
+    :scale: 30%
 
 Once all your instances are up and running you will be able to see them via the CloudFormation and the EC2 instances dashboard
 
 .. image:: _static/CFN-Stacks-AllComplete.png
     :alt: The Shire
-    :scale: 40%
+    :scale: 30%
 
 .. image:: _static/CFN-EC2-Running.png
     :alt: The Shire
-    :scale: 40%
+    :scale: 30%
 
 Connect to Instances
 ####################
