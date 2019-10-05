@@ -3,8 +3,6 @@
   Author:   Roberto Rodriguez (@Cyb3rWard0g)
   License:  GPL-3.0
   Version:	0.0.1
-
-  References:   https://github.com/Cyb3rWard0g/mordor/blob/master/environments/windows/configs/erebor/erebor_SilkServiceConfig.xml
 -->
 <SilkServiceConfig>
     <!--
