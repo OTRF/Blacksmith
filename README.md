@@ -1,6 +1,6 @@
 # Blacksmith
 
-The Blacksmit project focuses on providing dynamic easy-to-use templates for security researches to model and provision resources needed to automatically deploy applications in the cloud. It currently leverages [AWS CloudFormation](https://aws.amazon.com/cloudformation/) to model infrastructure and architecture of applications in AWS.
+The Blacksmith project focuses on providing dynamic easy-to-use templates for security researches to model and provision resources needed to automatically deploy applications in the cloud. It currently leverages [AWS CloudFormation](https://aws.amazon.com/cloudformation/) to model infrastructure and architecture of applications in AWS.
 
 # Goals
 
