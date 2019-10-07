@@ -41,3 +41,4 @@ Environments
    :maxdepth: 2
 
    The Shire <mordor_shire>
+   Erebor <mordor_erebor>

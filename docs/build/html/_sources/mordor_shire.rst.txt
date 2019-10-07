@@ -105,18 +105,18 @@ RDP (Windows)
 
 .. image:: _static/CFN-Stack-DC-AD.png
     :alt: The Shire
-    :scale: 40%
+    :scale: 30%
 
 Browser (HELK & Covenant C2)
 ****************************
 
 .. image:: _static/CFN-Stack-HELK-Kibana.png
     :alt: The Shire
-    :scale: 40%
+    :scale: 30%
 
 .. image:: _static/CFN-Stack-C2-Covenant.png
     :alt: The Shire
-    :scale: 40%
+    :scale: 30%
 
 Delete Stacks
 #############

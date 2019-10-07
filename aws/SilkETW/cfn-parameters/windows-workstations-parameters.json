@@ -1,0 +1,34 @@
+[
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "aws-ubuntu-key"
+  },
+  {
+    "ParameterKey": "NetworkStackName",
+    "ParameterValue": "SilkETWNetworkStack"
+  },
+  {
+    "ParameterKey": "LocalAdminPassword",
+    "ParameterValue": "P1ls3n!"
+  }, 
+  {
+    "ParameterKey": "WorkstationInstanceType",
+    "ParameterValue": "t2.medium"
+  },
+  {
+    "ParameterKey": "WKSNetBIOSName",
+    "ParameterValue": "B33F001"
+  },
+  {
+    "ParameterKey": "WKSPrivateIP",
+    "ParameterValue": "192.168.1.106"
+  },
+  {
+    "ParameterKey": "EndpointAgent",
+    "ParameterValue": "SilkETW"
+  },
+  {
+    "ParameterKey": "WinlogbeatConfigUrl",
+    "ParameterValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/SilkETW/cfn-files/configs/silketw_winlogbeat.yml"
+  }
+]

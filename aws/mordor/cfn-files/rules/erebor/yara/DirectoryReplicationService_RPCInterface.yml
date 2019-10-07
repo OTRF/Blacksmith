@@ -1,0 +1,8 @@
+rule DirectoryReplicationService_RPCInterface
+{
+	strings:
+		$s1 = "E3514235-4B06-11D1-AB04-00C04FC2DCD2" ascii wide nocase
+	
+	condition:
+		$s1
+}

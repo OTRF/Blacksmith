@@ -32,7 +32,7 @@ done
 # *********** Validating subscription Input ***************
 case $MORDOR_ENVIRONMENT in
     shire);;
-    trial);;
+    erebor);;
     *)
         echo "[-] Not a valid subscription. Valid Options: shire or erebor"
         usage

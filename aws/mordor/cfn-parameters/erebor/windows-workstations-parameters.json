@@ -1,0 +1,90 @@
+[
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "aws-ubuntu-key"
+  },
+  {
+    "ParameterKey": "NetworkStackName",
+    "ParameterValue": "MordorNetworkStack"
+  },
+  {
+    "ParameterKey": "LocalAdminPassword",
+    "ParameterValue": "P1ls3n!"
+  }, 
+  {
+    "ParameterKey": "DomainAdminPassword",
+    "ParameterValue": "Dur1ngsK1ng!"
+  }, 
+  {
+    "ParameterKey": "DomainAdminUser",
+    "ParameterValue": "toakenshield"
+  }, 
+  {
+    "ParameterKey": "DomainDNSName",
+    "ParameterValue": "erebor.com"
+  }, 
+  {
+    "ParameterKey": "DomainNetBIOSName",
+    "ParameterValue": "erebor"
+  },
+  {
+    "ParameterKey": "DCStackName",
+    "ParameterValue": "MordorWindowsDCStack"
+  },
+  {
+    "ParameterKey": "WorkstationInstanceType",
+    "ParameterValue": "t2.medium"
+  },
+  {
+    "ParameterKey": "HRNetBIOSName",
+    "ParameterValue": "HR001"
+  },
+  {
+    "ParameterKey": "ITNetBIOSName",
+    "ParameterValue": "IT001"
+  },
+  {
+    "ParameterKey": "ACCTNetBIOSName",
+    "ParameterValue": "ACCT001"
+  },
+  {
+    "ParameterKey": "HRPrivateIP",
+    "ParameterValue": "10.0.1.106"
+  },
+  {
+    "ParameterKey": "ITPrivateIP",
+    "ParameterValue": "10.0.1.105"
+  },
+  {
+    "ParameterKey": "ACCTPrivateIP",
+    "ParameterValue": "10.0.1.100"
+  },
+  {
+    "ParameterKey": "HR001DefaultUser",
+    "ParameterValue": "bbaggins"
+  },
+  {
+    "ParameterKey": "HR001DefaultPassword",
+    "ParameterValue": "MyPr3c10us!"
+  },
+  {
+    "ParameterKey": "IT001DefaultUser",
+    "ParameterValue": "toakenshield"
+  },
+  {
+    "ParameterKey": "IT001DefaultPassword",
+    "ParameterValue": "Dur1ngsK1ng!"
+  },
+  {
+    "ParameterKey": "ACCT001DefaultUser",
+    "ParameterValue": "kfili"
+  },
+  {
+    "ParameterKey": "ACCT001DefaultPassword",
+    "ParameterValue": "T0d@y!2019"
+  },
+  {
+    "ParameterKey": "EndpointAgent",
+    "ParameterValue": "SilkETW"
+  }
+]

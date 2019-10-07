@@ -1,0 +1,30 @@
+[
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "aws-ubuntu-key"
+  },
+  {
+    "ParameterKey": "NetworkStackName",
+    "ParameterValue": "MordorNetworkStack"
+  },
+  {
+    "ParameterKey": "HELKInstanceType",
+    "ParameterValue": "t2.xlarge"
+  }, 
+  {
+    "ParameterKey": "HELKPrivateIP",
+    "ParameterValue": "10.0.1.6"
+  }, 
+  {
+    "ParameterKey": "HELKPassword",
+    "ParameterValue": "hunt1ng!"
+  }, 
+  {
+    "ParameterKey": "HELKLicense",
+    "ParameterValue": "basic"
+  }, 
+  {
+    "ParameterKey": "HELKBuild",
+    "ParameterValue": "helk-kibana-notebook-analysis"
+  }
+]

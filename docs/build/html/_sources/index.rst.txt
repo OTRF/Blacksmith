@@ -28,6 +28,7 @@ Goals
    :caption: Available Templates:
 
    Mordor Environments <mordor>
+   SilkETW <silketw>
 
 .. toctree::
    :maxdepth: 2

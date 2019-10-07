@@ -65,14 +65,4 @@
         <ProviderName>1418ef04-b0b4-4623-bf7e-d74ab47bbdaa</ProviderName>
         <OutputType>eventlog</OutputType>
     </ETWCollector>
-    <!--
-		This is a kernel collector (ImageLoad)
-	-->
-	<ETWCollector>
-		<Guid>870b50e1-04c2-43e4-82ac-817444a56364</Guid>
-		<CollectorType>kernel</CollectorType>
-		<KernelKeywords>ImageLoad</KernelKeywords>
-        <FilterValue>Image/Load</FilterValue>
-		<OutputType>eventlog</OutputType>
-	</ETWCollector>
 </SilkServiceConfig>

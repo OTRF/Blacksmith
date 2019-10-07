@@ -1,0 +1,58 @@
+[
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "aws-ubuntu-key"
+  },
+  {
+    "ParameterKey": "NetworkStackName",
+    "ParameterValue": "MordorNetworkStack"
+  },
+  {
+    "ParameterKey": "ADServerInstanceType",
+    "ParameterValue": "t2.medium"
+  }, 
+  {
+    "ParameterKey": "ADServer1NetBIOSName",
+    "ParameterValue": "HFDC01"
+  }, 
+  {
+    "ParameterKey": "ADServer1PrivateIP",
+    "ParameterValue": "10.0.1.5"
+  }, 
+  {
+    "ParameterKey": "LocalAdminPassword",
+    "ParameterValue": "P1ls3n!"
+  }, 
+  {
+    "ParameterKey": "DomainAdminPassword",
+    "ParameterValue": "W1n1!2019"
+  }, 
+  {
+    "ParameterKey": "DomainAdminUser",
+    "ParameterValue": "pgustavo"
+  }, 
+  {
+    "ParameterKey": "DomainDNSName",
+    "ParameterValue": "erebor.com"
+  }, 
+  {
+    "ParameterKey": "DomainNetBIOSName",
+    "ParameterValue": "erebor"
+  }, 
+  {
+    "ParameterKey": "LocalAdministratorSG",
+    "ParameterValue": "SG DL erebor Workstation Administrators"
+  },
+  {
+    "ParameterKey": "GPOUrl",
+    "ParameterValue": "https://github.com/Cyb3rWard0g/Blacksmith/raw/master/aws/mordor/cfn-files/gpos/erebor/EreborGPOBackup.zip"
+  },
+  {
+    "ParameterKey": "UsersCSV",
+    "ParameterValue": "https://raw.githubusercontent.com/Cyb3rWard0g/Blacksmith/master/aws/mordor/cfn-files/configs/erebor/erebor_users.csv"
+  },
+  {
+    "ParameterKey": "EndpointAgent",
+    "ParameterValue": "SilkETW"
+  }
+]
