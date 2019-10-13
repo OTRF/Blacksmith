@@ -48,7 +48,7 @@ else
     Import-Module ADDSDeployment
 
     Install-ADDSForest `
-    -SafeModeAdministratorPassword $SecuredSafeModeAdministratorPassword `
+    -SafeModeAdministratorPassword $SafeModeAdministratorPassword `
     -CreateDnsDelegation:$false `
     -DatabasePath "C:\Windows\NTDS" `
     -DomainMode "Default" `
