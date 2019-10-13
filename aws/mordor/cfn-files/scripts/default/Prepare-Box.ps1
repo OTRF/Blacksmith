@@ -37,3 +37,7 @@ $PowerConfig = $regex.Match($HPGuid).groups[1].value
 # Set TimeZone
 Write-host "Setting Time Zone to Eastern Standard Time"
 Set-TimeZone -Name "Eastern Standard Time"
+
+# Adding Authenticated Users to Remote Desktop Users
+write-Host "Adding Authenticated Users to Remote Desktop Users.."
+Add-LocalGroupMember -Group "Remote Desktop Users" -Member "Authenticated Users"

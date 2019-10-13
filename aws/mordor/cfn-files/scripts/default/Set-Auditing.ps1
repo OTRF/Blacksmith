@@ -20,12 +20,8 @@ param (
 Write-host 'Enabling WinRM..'
 winrm quickconfig -q
 
-write-Host "Setting Sysmon to start automatically.."
+write-Host "Setting WinRM to start automatically.."
 & sc.exe config WinRM start= auto
-
-# Adding the Network Service to the Event Log Readers group
-write-Host "Adding Network Service to Event Log Readers restricted group.."
-Add-LocalGroupMember -Group "Event Log Readers" -Member "Network Service"
 
 # Grant the Network Service account READ access to the event log by appending (A;;0x1;;;NS)
 write-Host "Granting the Network Service account READ access to the Security event log.."
@@ -91,12 +87,16 @@ regKey,name,value,type
 Write-host "Setting up Registry keys for auditing settings.."
 $regConfig | ConvertFrom-Csv | ForEach-Object {
     if(!(Test-Path $_.regKey)){
-        Write-Host $_.regKey+" does not exist.."
+        Write-Host $_.regKey " does not exist.."
         New-Item $_.regKey -Force
     }
-    Write-Host "Setting "+$_.regKey
+    Write-Host "Setting " $_.regKey
     New-ItemProperty -Path $_.regKey -Name $_.name -Value $_.value -PropertyType $_.type -force
 }
+
+# Adding the Network Service to the Event Log Readers group
+write-Host "Adding Network Service to Event Log Readers restricted group.."
+Add-LocalGroupMember -Group "Event Log Readers" -Member "Network Service"
 
 Write-host "Restarting Endpoint.."
 Restart-Computer -Force
