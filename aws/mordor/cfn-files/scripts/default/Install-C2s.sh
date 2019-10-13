@@ -80,10 +80,8 @@ cd /opt/Covenant/Covenant && docker build -t covenant . >> $LOGFILE 2>&1
 echo "$INFO_TAG Setting up Caldera.."
 mkdir /opt/Caldera
 mkdir /opt/Caldera/config
-curl -L https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/docker/caldera/docker-compose-caldera.yml -o /opt/Caldera/docker-compose-caldera.yml >> $LOGFILE 2>&1
-curl -L https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/docker/caldera/config/facts/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml -o /opt/Caldera/config/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml >> $LOGFILE 2>&1
-# **** FIX *******
-curl -L https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/docker/caldera/config/fix/defense-evasion/03afada1-1714-408f-bde5-f528b91dc89d.yml -o /opt/Caldera/config/03afada1-1714-408f-bde5-f528b91dc89d.yml >> $LOGFILE 2>&1
+curl -L https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/docker/caldera/docker-compose-caldera.yml -o /opt/Caldera/docker-compose-caldera.yml >> $LOGFILE 2>&1
+curl -L https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/docker/caldera/config/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml -o /opt/Caldera/config/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml >> $LOGFILE 2>&1
 
 # Downloading Impacker Binaries from https://github.com/ropnop/impacket_static_binaries
 echo "$INFO_TAG Downloading Impacket binaries.."

@@ -22,10 +22,6 @@
   {
     "ParameterKey": "DomainDNSName",
     "ParameterValue": "erebor.com"
-  }, 
-  {
-    "ParameterKey": "DomainNetBIOSName",
-    "ParameterValue": "erebor"
   },
   {
     "ParameterKey": "DCStackName",

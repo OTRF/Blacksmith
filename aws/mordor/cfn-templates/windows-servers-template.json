@@ -76,13 +76,6 @@
             "MaxLength" : "25",
             "MinLength" : "2"
         },
-        "DomainNetBIOSName" : {
-            "Description" : "NetBIOS name of the domain (up to 15 characters) for users of earlier versions of Windows e.g. EXAMPLE.",
-            "Type" : "String",
-            "AllowedPattern" : "[a-zA-Z0-9\\-]+",
-            "MaxLength" : "25",
-            "MinLength" : "2"
-        },
         "WEFSubscriptionsUrl" : {
             "Description" : "WEF Subscriptions URL pointing to the file",
             "Type" : "String"
@@ -223,7 +216,6 @@
                                             " -OU \"LogCollectors\"",
                                             " -DomainAdminUser ", { "Ref" : "DomainAdminUser" },
                                             " -DomainAdminPassword ", { "Ref" : "DomainAdminPassword" },
-                                            " -DomainNetBiosName ", { "Ref" : "DomainNetBIOSName" },
                                             " -DefaultLogonUser \"Administrator\"",
                                             " -DefaultLogonPassword ", { "Ref" : "LocalAdminPassword" },
                                             " -DomainDNSName ", { "Ref" : "DomainDNSName" }  

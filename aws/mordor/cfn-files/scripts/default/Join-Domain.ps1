@@ -21,17 +21,16 @@ param(
     [string]$DomainAdminPassword,
 
     [Parameter(Mandatory=$true, Position=4)]
-    [string]$DomainNetBiosName,
-
-    [Parameter(Mandatory=$true, Position=5)]
     [string]$DefaultLogonUser,
 
-    [Parameter(Mandatory=$true, Position=6)]
+    [Parameter(Mandatory=$true, Position=5)]
     [string]$DefaultLogonPassword,
 
-    [Parameter(Mandatory=$true, Position=7)]
+    [Parameter(Mandatory=$true, Position=6)]
     [string]$DomainDNSName
 )
+
+$DomainName1,$DomainName2 = $DomainDNSName.split('.')
 
 write-host "Setting $DefaultLogonUser as the default automatic logon user .."
 
@@ -56,11 +55,11 @@ Stop-Service wuauserv
 Set-Service TrustedInstaller -StartupType Disabled
 Stop-Service TrustedInstaller
 
-$OUPath = "OU=$OU,DC=$DomainNetBIOSName,DC=com"
+$OUPath = "OU=$OU,DC=$DomainName1,DC=$DomainName2"
 
 write-host "Adding $ComputerName to $OU in domain $DomainDNSName .."
 Add-Computer `
 -DomainName $DomainDNSName `
--Credential (New-Object System.Management.Automation.PSCredential("$DomainNetBIOSName\$DomainAdminUser", (ConvertTo-SecureString $DomainAdminPassword -AsPlainText -Force))) `
+-Credential (New-Object System.Management.Automation.PSCredential("$DomainName1\$DomainAdminUser", (ConvertTo-SecureString $DomainAdminPassword -AsPlainText -Force))) `
 -OUPath $OUPath `
 -Restart

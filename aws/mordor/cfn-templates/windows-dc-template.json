@@ -75,6 +75,14 @@
             "MaxLength" : "25",
             "MinLength" : "2"
         },
+        "WECNetBIOSName" : {
+            "Description" : "NetBIOS name of the WEC server (up to 15 characters).",
+            "Type" : "String",
+            "Default" : "WECServer",
+            "AllowedPattern" : "[a-zA-Z0-9\\-]+",
+            "MaxLength" : "15",
+            "MinLength" : "3"
+        },
         "LocalAdministratorSG" : {
             "Description" : "",
             "Type" : "String",
@@ -186,6 +194,9 @@
                             "c:\\cfn\\scripts\\Create-SecurityGroup.ps1": {
                                 "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/scripts/default/Create-SecurityGroup.ps1"
                             },
+                            "c:\\cfn\\scripts\\Set-Auditing.ps1": {
+                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/scripts/default/Set-Auditing.ps1"
+                            },
                             "c:\\cfn\\scripts\\Install-Endpoint-Agent.ps1": {
                                 "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/scripts/default/Install-Endpoint-Agent.ps1"
                             },
@@ -247,7 +258,7 @@
                                             "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Deploy-Forest.ps1",
                                             " -DomainName ", { "Ref" : "DomainDNSName" },
                                             " -DomainNetBiosName ", { "Ref" : "DomainNetBIOSName" },
-                                            " -SafeModeAdministratorPassword ", { "Ref" : "LocalAdminPassword" }
+                                            " -SafeModeAdministratorPassword (ConvertTo-SecureString -String ", { "Ref" : "LocalAdminPassword" }, " -AsPlainText -Force)"
                                         ]
                                     ]
                                 },
@@ -263,7 +274,7 @@
                                         "",
                                         [
                                             "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Set-OUs.ps1",
-                                            " -DomainNetBIOSName ", { "Ref" : "DomainNetBIOSName" }
+                                            " -DomainDNSName ", { "Ref" : "DomainDNSName" }
                                         ]
                                     ]
                                 },
@@ -294,13 +305,26 @@
                                         [
                                             "powershell.exe -ExecutionPolicy RemoteSigned -file c:\\cfn\\scripts\\Create-SecurityGroup.ps1",
                                             " -SecurityGroup \"", { "Ref" : "LocalAdministratorSG" }, "\"",
-                                            " -DomainNetBIOSName ", { "Ref" : "DomainNetBIOSName" }
+                                            " -DomainDNSName ", { "Ref" : "DomainDNSName" }
                                         ]
                                     ]
                                 },
                                 "waitAfterCompletion": "0"
                             },
-                            "c-install-endpoint-agent": {
+                            "c-import-gpos": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Import-GPO.ps1",
+                                            " -GPOUrl ", { "Ref" : "GPOUrl" },
+                                            " -DomainDNSName ", { "Ref" : "DomainDNSName" }
+                                        ]
+                                    ]
+                                },
+                                "waitAfterCompletion": "0"
+                            },
+                            "d-install-endpoint-agent": {
                                 "command": {
                                     "Fn::Join": [
                                         "",
@@ -312,18 +336,19 @@
                                 },
                                 "waitAfterCompletion": "0"
                             },
-                            "d-import-gpos": {
+                            "e-set-auditing": {
                                 "command": {
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Import-GPO.ps1",
-                                            " -GPOUrl ", { "Ref" : "GPOUrl" },
-                                            " -DomainNetBIOSName ", { "Ref" : "DomainNetBIOSName" }
+                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Set-Auditing.ps1",
+                                            " -DomainDNSName ", { "Ref" : "DomainDNSName" },
+                                            " -WECNetBIOSName ", { "Ref" : "WECNetBIOSName" },
+                                            " -SetDC"
                                         ]
                                     ]
                                 },
-                                "waitAfterCompletion": "0"
+                                "waitAfterCompletion": "forever"
                             }
                         }
                     },

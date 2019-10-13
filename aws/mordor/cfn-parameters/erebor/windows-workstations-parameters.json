@@ -22,10 +22,6 @@
   {
     "ParameterKey": "DomainDNSName",
     "ParameterValue": "erebor.com"
-  }, 
-  {
-    "ParameterKey": "DomainNetBIOSName",
-    "ParameterValue": "erebor"
   },
   {
     "ParameterKey": "DCStackName",
@@ -46,6 +42,10 @@
   {
     "ParameterKey": "ACCTNetBIOSName",
     "ParameterValue": "ACCT001"
+  },
+  {
+    "ParameterKey": "WECNetBIOSName",
+    "ParameterValue": "WECServer"
   },
   {
     "ParameterKey": "HRPrivateIP",

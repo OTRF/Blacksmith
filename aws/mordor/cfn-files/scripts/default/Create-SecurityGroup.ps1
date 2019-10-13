@@ -9,10 +9,12 @@ param (
     [string]$SecurityGroup,
 
     [Parameter(Mandatory=$true)]
-    [string]$DomainNetBIOSName
+    [string]$DomainDNSName
 )
 
-$ParentPath = "DC=$DomainNetBIOSName,DC=com"
+$DomainName1,$DomainName2 = $DomainDNSName.split('.')
+
+$ParentPath = "DC=$DomainName1,DC=$DomainName2"
 
 write-host "Creating Security Group $SecurityGroup on $ParentPath .." 
 New-ADGroup -Name $SecurityGroup -GroupCategory Security -GroupScope Global `

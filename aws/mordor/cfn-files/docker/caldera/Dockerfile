@@ -48,7 +48,7 @@ RUN git clone --recursive https://github.com/mitre/caldera.git $CALDERA_HOME \
   && pip3 install wheel \
   && pip3 install -r requirements.txt \
   && cd $CALDERA_HOME/plugins \
-  && git clone https://github.com/mitre/evals.git \
+  && git clone https://github.com/mitre-attack/evals_caldera.git \
   && mv $CALDERA_HOME/conf/local.yml $CALDERA_HOME/conf/local.yml.bk
 
 COPY config/local.yml $CALDERA_HOME/conf/local.yml

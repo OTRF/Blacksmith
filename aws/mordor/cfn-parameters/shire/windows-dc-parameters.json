@@ -38,6 +38,10 @@
   {
     "ParameterKey": "DomainNetBIOSName",
     "ParameterValue": "shire"
+  },
+  {
+    "ParameterKey": "WECNetBIOSName",
+    "ParameterValue": "WECServer"
   }, 
   {
     "ParameterKey": "LocalAdministratorSG",

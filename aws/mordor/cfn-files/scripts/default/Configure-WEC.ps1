@@ -12,9 +12,6 @@ param (
     [string]$SubscriptionsUrl
 )
 
-# Stand-alone service instead of shared
-& sc.exe config wecsvc type=own
-
 # ********* Setting WinRM Configs for WEC ***********
 winrm quickconfig -q
 winrm quickconfig -transport:http

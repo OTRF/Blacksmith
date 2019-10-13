@@ -9,8 +9,10 @@ param (
     [string]$GPOUrl,
 
     [Parameter(Mandatory=$true)]
-    [string]$DomainNetBIOSName
+    [string]$DomainDNSName
 )
+
+$DomainName1,$DomainName2 = $DomainDNSName.split('.')
 
 $OutputFile = Split-Path $GPOUrl -leaf
 $ZipFile = "c:\cfn\scripts\$outputFile"
@@ -35,10 +37,10 @@ if (!(Test-Path "c:\cfn\scripts\$file"))
 }
 
 $GPOFolder = "c:\cfn\scripts\$file"
-$GPOLocations = Get-ChildItem $GPOFolder | % {$_.BaseName}
-$DCOU = "OU=Domain Controllers,DC=$DomainNetBIOSName,DC=com"
-$WorkstationOU = "OU=Workstations,DC=$DomainNetBIOSName,DC=com"
-$ServerOU = "OU=Servers,DC=$DomainNetBIOSName,DC=com"
+$GPOLocations = Get-ChildItem $GPOFolder | ForEach-Object {$_.BaseName}
+$DCOU = "OU=Domain Controllers,DC=$DomainName1,DC=$DomainName2"
+$WorkstationOU = "OU=Workstations,DC=$DomainName1,DC=$DomainName2"
+$ServerOU = "OU=Servers,DC=$DomainName1,DC=$DomainName2"
 
 foreach($GPO in $GPOLocations)
 {

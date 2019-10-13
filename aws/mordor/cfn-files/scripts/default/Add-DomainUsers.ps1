@@ -20,11 +20,23 @@ param(
     [string]$CSVFile
 )
 
-write-host "Verifying if ADWS is still running.."
-$s = Get-Service -Name ADWS
-while ($s.Status -ne 'Running'){
-    Start-Service ADWS; Start-Sleep 5
+# Verifying ADWS service is running
+$ServiceName = 'ADWS'
+$arrService = Get-Service -Name $ServiceName
+
+while ($arrService.Status -ne 'Running')
+{
+    Start-Service $ServiceName
+    write-host $arrService.status
+    write-host 'Service starting'
+    Start-Sleep -seconds 5
+    $arrService.Refresh()
+    if ($arrService.Status -eq 'Running')
+    {
+        Write-Host 'Service is now Running'
+    }
 }
+
 Start-Sleep 10
 
 $ADServer = $Server+"."+$DomainDNSName
@@ -78,7 +90,7 @@ Import-Csv $OutputPath | ForEach-Object {
             $DomainAdminUser = $_.SamAccountName
             $Groups = @('domain admins','schema admins','enterprise admins')
             $Groups | ForEach-Object{
-                $members = Get-ADGroupMember -Identity $_ -Recursive | Select -ExpandProperty Name
+                $members = Get-ADGroupMember -Identity $_ -Recursive | Select-Object -ExpandProperty Name
                 if ($members -contains $DomainAdminUser) {
                     Write-Host "$DomainAdminUser exists in $_ "
                 }

@@ -57,6 +57,14 @@
             "MaxLength" : "15",
             "MinLength" : "3"
         },
+        "WECNetBIOSName" : {
+            "Description" : "NetBIOS name of the WEC server (up to 15 characters).",
+            "Type" : "String",
+            "Default" : "WECServer",
+            "AllowedPattern" : "[a-zA-Z0-9\\-]+",
+            "MaxLength" : "15",
+            "MinLength" : "3"
+        },
         "HRPrivateIP" : {
             "Description" : "Fixed private IP for the HR workstation.",
             "Type" : "String",
@@ -144,13 +152,6 @@
             "MaxLength" : "25",
             "MinLength" : "2"
         },
-        "DomainNetBIOSName" : {
-            "Description" : "NetBIOS name of the domain (up to 15 characters) for users of earlier versions of Windows e.g. EXAMPLE.",
-            "Type" : "String",
-            "AllowedPattern" : "[a-zA-Z0-9\\-]+",
-            "MaxLength" : "25",
-            "MinLength" : "2"
-        },
         "EndpointAgent" : {
             "Description": "Name of endpoint agent to install. So far, Sysmon and SilkETW are the only options",
             "Type": "String",
@@ -232,6 +233,9 @@
                             "c:\\cfn\\scripts\\Rename-Computer.ps1": {
                                 "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/scripts/default/Rename-Computer.ps1"
                             },
+                            "c:\\cfn\\scripts\\Set-Auditing.ps1": {
+                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/scripts/default/Set-Auditing.ps1"
+                            },
                             "c:\\cfn\\scripts\\Install-Endpoint-Agent.ps1": {
                                 "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/scripts/default/Install-Endpoint-Agent.ps1"
                             },
@@ -299,7 +303,6 @@
                                             " -OU \"Workstations\"",
                                             " -DomainAdminUser ", { "Ref" : "DomainAdminUser" },
                                             " -DomainAdminPassword ", { "Ref" : "DomainAdminPassword" },
-                                            " -DomainNetBiosName ", { "Ref" : "DomainNetBIOSName" },
                                             " -DefaultLogonUser ", { "Ref" : "HR001DefaultUser" },
                                             " -DefaultLogonPassword ", { "Ref" : "HR001DefaultPassword" },
                                             " -DomainDNSName ", { "Ref" : "DomainDNSName" }  
@@ -323,6 +326,19 @@
                                     ]
                                 },
                                 "waitAfterCompletion": "0"
+                            },
+                            "b-set-auditing": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Set-Auditing.ps1",
+                                            " -DomainDNSName ", { "Ref" : "DomainDNSName" },
+                                            " -WECNetBIOSName ", { "Ref" : "WECNetBIOSName" }
+                                        ]
+                                    ]
+                                },
+                                "waitAfterCompletion": "forever"
                             }
                         }
                     },
@@ -424,6 +440,9 @@
                             "c:\\cfn\\scripts\\Rename-Computer.ps1": {
                                 "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/scripts/default/Rename-Computer.ps1"
                             },
+                            "c:\\cfn\\scripts\\Set-Auditing.ps1": {
+                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/scripts/default/Set-Auditing.ps1"
+                            },
                             "c:\\cfn\\scripts\\Install-Endpoint-Agent.ps1": {
                                 "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/scripts/default/Install-Endpoint-Agent.ps1"
                             },
@@ -491,7 +510,6 @@
                                             " -OU \"Workstations\"",
                                             " -DomainAdminUser ", { "Ref" : "DomainAdminUser" },
                                             " -DomainAdminPassword ", { "Ref" : "DomainAdminPassword" },
-                                            " -DomainNetBiosName ", { "Ref" : "DomainNetBIOSName" },
                                             " -DefaultLogonUser ", { "Ref" : "IT001DefaultUser" },
                                             " -DefaultLogonPassword ", { "Ref" : "IT001DefaultPassword" },
                                             " -DomainDNSName ", { "Ref" : "DomainDNSName" }  
@@ -515,6 +533,19 @@
                                     ]
                                 },
                                 "waitAfterCompletion": "0"
+                            },
+                            "b-set-auditing": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Set-Auditing.ps1",
+                                            " -DomainDNSName ", { "Ref" : "DomainDNSName" },
+                                            " -WECNetBIOSName ", { "Ref" : "WECNetBIOSName" }
+                                        ]
+                                    ]
+                                },
+                                "waitAfterCompletion": "forever"
                             }
                         }
                     },
@@ -616,6 +647,9 @@
                             "c:\\cfn\\scripts\\Rename-Computer.ps1": {
                                 "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/scripts/default/Rename-Computer.ps1"
                             },
+                            "c:\\cfn\\scripts\\Set-Auditing.ps1": {
+                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/scripts/default/Set-Auditing.ps1"
+                            },
                             "c:\\cfn\\scripts\\Install-Endpoint-Agent.ps1": {
                                 "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/scripts/default/Install-Endpoint-Agent.ps1"
                             },
@@ -683,7 +717,6 @@
                                             " -OU \"Workstations\"",
                                             " -DomainAdminUser ", { "Ref" : "DomainAdminUser" },
                                             " -DomainAdminPassword ", { "Ref" : "DomainAdminPassword" },
-                                            " -DomainNetBiosName ", { "Ref" : "DomainNetBIOSName" },
                                             " -DefaultLogonUser ", { "Ref" : "ACCT001DefaultUser" },
                                             " -DefaultLogonPassword ", { "Ref" : "ACCT001DefaultPassword" },
                                             " -DomainDNSName ", { "Ref" : "DomainDNSName" }  
@@ -707,6 +740,19 @@
                                     ]
                                 },
                                 "waitAfterCompletion": "0"
+                            },
+                            "b-set-auditing": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Set-Auditing.ps1",
+                                            " -DomainDNSName ", { "Ref" : "DomainDNSName" },
+                                            " -WECNetBIOSName ", { "Ref" : "WECNetBIOSName" }
+                                        ]
+                                    ]
+                                },
+                                "waitAfterCompletion": "forever"
                             }
                         }
                     },

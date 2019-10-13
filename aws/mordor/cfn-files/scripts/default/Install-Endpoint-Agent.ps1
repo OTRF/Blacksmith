@@ -134,6 +134,5 @@ else
         {
             Write-Host 'Service is now Running'
         }
-
     }
 }

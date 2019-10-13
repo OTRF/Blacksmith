@@ -15,7 +15,7 @@ param (
     [string]$DomainNetBiosName,
 
     [Parameter(Mandatory=$true)]
-    [string]$SafeModeAdministratorPassword
+    [SecureString]$SafeModeAdministratorPassword
 )
 
 # Create New Forest, add Domain Controller
@@ -47,9 +47,6 @@ else
     # Creating New Forest
     Import-Module ADDSDeployment
 
-    #Convert the SafeModeAdministratorPassword to a secureString
-    $SecuredSafeModeAdministratorPassword = ConvertTo-SecureString -String $SafeModeAdministratorPassword -AsPlainText -Force
-
     Install-ADDSForest `
     -SafeModeAdministratorPassword $SecuredSafeModeAdministratorPassword `
     -CreateDnsDelegation:$false `
@@ -64,5 +61,6 @@ else
     -SysvolPath "C:\Windows\SYSVOL" `
     -Force:$true
 
-    Start-Sleep -Seconds 5 ; Restart-Computer -Force
+    Start-Sleep -Seconds 5
+    Restart-Computer -Force
 }

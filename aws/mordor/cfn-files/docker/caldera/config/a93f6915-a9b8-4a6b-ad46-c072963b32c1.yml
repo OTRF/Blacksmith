@@ -4,8 +4,6 @@ id: a93f6915-a9b8-4a6b-ad46-c072963b32c1
 name: evals
 facts:
   - property: remote.file.share
-    value: \\FILESERVER\Fellowship
+    value: \\FILESERVER\secrets
   - property: remote.file.name
-    value: Ring.txt
-  - property: wef.server
-    value: WECServer
+    value: ring.txt

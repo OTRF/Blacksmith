@@ -6,7 +6,7 @@
 [CmdletBinding()]
 param (
     [Parameter(Mandatory=$true)]
-    [string]$LocalAdminPassword
+    [String]$LocalAdminPassword
 )
 
 Write-Host "Updating Local Administrator Password.."
