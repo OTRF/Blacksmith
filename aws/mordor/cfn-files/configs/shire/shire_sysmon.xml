@@ -18,7 +18,8 @@
 				<Image condition="is">C:\Windows\System32\audiodg.exe</Image>
 				<Image condition="is">C:\Windows\SysWOW64\Macromed\Flash\FlashPlayerUpdateService.exe</Image>
 				<Image condition="is">C:\Program Files (x86)\Google\Update\GoogleUpdate.exe</Image>
-				<Image condition="end with">\Sysmon.exe</Image>
+				<Image condition="end with">Sysmon.exe</Image>
+				<Image condition="end with">ec2config.exe</Image>
 				<CommandLine condition="begin with">C:\WIndows\System32\poqexec.exe /noreboot /transaction</CommandLine>
 			</ProcessCreate>
 		</RuleGroup>
@@ -35,6 +36,10 @@
 				<Image condition="end with">AppData\Roaming\Dashlane\Dashlane.exe</Image>
 				<Image condition="end with">AppData\Roaming\Dashlane\DashlanePlugin.exe</Image>
 				<Image condition="end with">winlogbeat.exe</Image>
+				<Image condition="end with">ec2config.exe</Image>
+				<Image condition="end with">cfn-signal.exe</Image>
+				<Image condition="end with">amazon-ssm-agent.exe</Image>
+				<Image condition="end with">ec2wallpaperinfo.exe</Image>
 				<Image condition="is">C:\Windows\System32\spoolsv.exe</Image>
 				<Image condition="is">C:\Program Files\Common Files\microsoft shared\ClickToRun\OfficeClickToRun.exe</Image>
 				<Image condition="is">C:\Program Files (x86)\Common Files\Acronis\SyncAgent\syncagentsrv.exe</Image>
@@ -71,6 +76,8 @@
 				<Image condition="is">C:\Program Files\VMware\VMware Tools\TPAutoConnect.exe</Image>
 				<Image condition="is">C:\Program Files\Windows Defender\NisSrv.exe</Image>
 				<Image condition="is">C:\Program Files\Windows Defender\MsMpEng.exe</Image>
+				<Image condition="end with">onedrivesetup.exe</Image>
+				<Image condition="end with">onedrive.exe</Image>
 			</ImageLoad>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -96,6 +103,7 @@
 				<SourceImage condition="is">C:\Program Files (x86)\Google\Chrome\Application\chrome.exe</SourceImage>
 				<SourceImage condition="is">C:\Program Files\Windows Defender\MsMpEng.exe</SourceImage>
 				<SourceImage condition="is">C:\Program Files\Microsoft VS Code\Code.exe</SourceImage>
+				<SourceImage condition="end with">onedrivesetup.exe</SourceImage>
 				<TargetImage condition="is">C:\Program Files\VMware\VMware Tools\TPAutoConnSvc.exe</TargetImage>
 				<TargetImage condition="is">C:\Program Files\VMware\VMware Tools\TPAutoConnect.exe</TargetImage>
 				<TargetImage condition="is">C:\Windows\system32\mmc.exe</TargetImage>
@@ -115,7 +123,9 @@
 				<Image condition="image">winlogbeat.exe</Image>
 				<Image condition="is">C:\Windows\system32\mmc.exe</Image>
 				<Image condition="is">C:\Program Files (x86)\Google\Chrome\Application\chrome.exe</Image>
-				<Image condition="is">C:\Program Files\Microsoft VS Code\Code.exe</Image>  
+				<Image condition="is">C:\Program Files\Microsoft VS Code\Code.exe</Image>
+				<Image condition="end with">onedrivesetup.exe</Image>
+				<Image condition="end with">onedrive.exe</Image>
 			</FileCreate>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -130,6 +140,8 @@
 				<Image condition="image">GoogleUpdate.exe</Image>
 				<Image condition="is">C:\Program Files\VMware\VMware Tools\TPAutoConnect.exe</Image>
 				<Image condition="is">C:\Program Files\Windows Defender\NisSrv.exe</Image>
+				<Image condition="end with">onedrivesetup.exe</Image>
+				<Image condition="end with">onedrive.exe</Image>
 				<TargetObject condition="is">\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\Microsoft Print to PDF\PrinterDriverData</TargetObject>
 				<TargetObject condition="end with">LanguageList</TargetObject>
 			</RegistryEvent>

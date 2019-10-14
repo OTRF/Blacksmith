@@ -8,8 +8,10 @@
 [CmdletBinding()]
 param (
     [Parameter(Mandatory=$true)]
-    [string]$DomainNetBiosName
+    [string]$DomainDNSName
 )
+
+$DomainName1,$DomainName2 = $DomainDNSName.split('.')
 
 $folders = @("secrets", "gates")
 
@@ -20,14 +22,14 @@ foreach($folder in $folders)
     {
         New-SMBShare –Name "secrets" –Path "C:\secrets" `
             –ContinuouslyAvailable `
-            –FullAccess "$DomainNetBiosName\Domain Admins"
+            –FullAccess "$DomainName1\Domain Admins"
     }
     else
     {
         New-SMBShare –Name "gates" –Path "C:\gates" `
             –ContinuouslyAvailable `
-            –FullAccess "$DomainNetBiosName\Domain Admins" `
-            -ReadAccess "$DomainNetBiosName\Domain Users"
+            –FullAccess "$DomainName1\Domain Admins" `
+            -ReadAccess "$DomainName1\Domain Users"
     }
 }
 

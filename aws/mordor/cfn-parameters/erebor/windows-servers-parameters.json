@@ -28,7 +28,7 @@
     "ParameterValue": "MordorWindowsDCStack"
   },
   {
-    "ParameterKey": "WECInstanceType",
+    "ParameterKey": "ServerInstanceType",
     "ParameterValue": "t2.medium"
   },
   {
@@ -36,8 +36,16 @@
     "ParameterValue": "WECServer"
   },
   {
+    "ParameterKey": "FILENetBIOSName",
+    "ParameterValue": "FILE004"
+  },
+  {
     "ParameterKey": "WECPrivateIP",
     "ParameterValue": "10.0.1.102"
+  },
+  {
+    "ParameterKey": "FILEPrivateIP",
+    "ParameterValue": "10.0.1.103"
   },
   {
     "ParameterKey": "WEFSubscriptionsUrl",
@@ -46,5 +54,9 @@
   {
     "ParameterKey": "WinlogbeatConfigUrl",
     "ParameterValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/configs/erebor/erebor_winlogbeat.yml"
+  },
+  {
+    "ParameterKey": "EndpointAgent",
+    "ParameterValue": "SilkETW"
   }
 ]
