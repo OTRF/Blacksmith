@@ -17,18 +17,16 @@ $folders = @("secrets", "gates")
 
 foreach($folder in $folders)
 {
-    New-Item C:\$folder –type directory
+    New-Item C:\$folder -type directory
     if($folder -Like "secrets")
     {
-        New-SMBShare –Name "secrets" –Path "C:\secrets" `
-            –ContinuouslyAvailable $true `
-            –FullAccess "$DomainName1\Domain Admins"
+        New-SMBShare -Name "secrets" -Path "C:\secrets" `
+            -FullAccess "$DomainName1\Domain Admins"
     }
     else
     {
-        New-SMBShare –Name "gates" –Path "C:\gates" `
-            –ContinuouslyAvailable $true `
-            –FullAccess "$DomainName1\Domain Admins" `
+        New-SMBShare -Name "gates" -Path "C:\gates" `
+            -FullAccess "$DomainName1\Domain Admins" `
             -ReadAccess "$DomainName1\Domain Users"
     }
 }
