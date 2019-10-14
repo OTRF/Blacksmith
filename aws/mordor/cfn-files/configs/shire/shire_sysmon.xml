@@ -78,6 +78,7 @@
 				<Image condition="is">C:\Program Files\Windows Defender\MsMpEng.exe</Image>
 				<Image condition="end with">onedrivesetup.exe</Image>
 				<Image condition="end with">onedrive.exe</Image>
+				<Image condition="end with">skypeapp.exe</Image>
 			</ImageLoad>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -126,6 +127,7 @@
 				<Image condition="is">C:\Program Files\Microsoft VS Code\Code.exe</Image>
 				<Image condition="end with">onedrivesetup.exe</Image>
 				<Image condition="end with">onedrive.exe</Image>
+				<Image condition="end with">skypeapp.exe</Image>
 			</FileCreate>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -142,6 +144,7 @@
 				<Image condition="is">C:\Program Files\Windows Defender\NisSrv.exe</Image>
 				<Image condition="end with">onedrivesetup.exe</Image>
 				<Image condition="end with">onedrive.exe</Image>
+				<Image condition="end with">skypeapp.exe</Image>
 				<TargetObject condition="is">\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\Microsoft Print to PDF\PrinterDriverData</TargetObject>
 				<TargetObject condition="end with">LanguageList</TargetObject>
 			</RegistryEvent>
