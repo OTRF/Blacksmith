@@ -5,10 +5,9 @@ services:
     image: cyb3rward0g/caldera:0.0.2
     container_name: mordor-caldera
     volumes:
-      - ./config/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml:/opt/Caldera/data/facts/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml
+      - ./config/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml:/opt/Caldera/plugins/evals_caldera/data/facts/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml
     restart: always
     environment:
-      CALDERA_IP: ${CALDERA_IP}
       CALDERA_ADMIN_NAME: ${CALDERA_ADMIN_NAME}
       CALDERA_ADMIN_PASSWORD: ${CALDERA_ADMIN_PASSWORD}
     ports:
