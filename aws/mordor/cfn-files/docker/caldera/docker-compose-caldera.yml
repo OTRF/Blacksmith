@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   mordor-caldera:
-    image: cyb3rward0g/caldera:0.0.2-b
+    image: cyb3rward0g/caldera:0.0.2-c
     container_name: mordor-caldera
     volumes:
       - ./config/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml:/opt/Caldera/plugins/evals_caldera/data/facts/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml
