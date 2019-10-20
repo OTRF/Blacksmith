@@ -269,7 +269,6 @@
                                         "",
                                         [
                                             "chmod +x /etc/cfn/Install-C2s.sh", "\n",
-                                            "export CALDERA_IP=", {"Ref" : "RTOPrivateIP"}, "\n",
                                             "export CALDERA_ADMIN_NAME=", {"Ref" : "CalderaAdminName"}, "\n",
                                             "export CALDERA_ADMIN_PASSWORD=", {"Ref" : "CalderaAdminPassword"}, "\n",
                                             "cd /etc/cfn/ && ./Install-C2s.sh",
