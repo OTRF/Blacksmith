@@ -98,5 +98,9 @@ $regConfig | ConvertFrom-Csv | ForEach-Object {
 write-Host "Adding Network Service to Event Log Readers restricted group.."
 Add-LocalGroupMember -Group "Event Log Readers" -Member "Network Service"
 
+# Push Initial GPO updates
+Write-host "Getting initial GPO updates.."
+& gpupdate /force
+
 Write-host "Restarting Endpoint.."
 Restart-Computer -Force
