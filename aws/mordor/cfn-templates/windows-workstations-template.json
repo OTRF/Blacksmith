@@ -160,7 +160,22 @@
     },
     "Mappings" : {
         "WindowsWorkstationAWSRegionArch2AMI" : {
-            "us-east-1" : { "HVM64" : "ami-0954cc8e05b5ab1ba"}
+            "us-east-1" : { "HVM64" : "ami-0954cc8e05b5ab1ba"},
+            "eu-north-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
+            "ap-south-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
+            "eu-west-3"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
+            "eu-west-2"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
+            "eu-west-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
+            "ap-northeast-2"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
+            "ap-northeast-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
+            "sa-east-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
+            "ca-central-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
+            "ap-southeast-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
+            "ap-southeast-2"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
+            "eu-central-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
+            "us-east-2"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
+            "us-west-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
+            "us-west-2"        : {"HVM64": "ami-xxxxxxxxxxxxx" }
         }
     },
     "Resources" : {
@@ -346,7 +361,7 @@
                         "commands": {
                             "a-signal-success": {
                                 "command": {
-                                    "Fn::Join": ["", [ "cfn-signal.exe -e %ERRORLEVEL% --resource HRWKS --stack ", { "Ref": "AWS::StackName" } ]]
+                                    "Fn::Join": ["", [ "cfn-signal.exe -e %ERRORLEVEL% --resource HRWKS --stack ", { "Ref": "AWS::StackName" },  " --region ", { "Ref" : "AWS::Region" }]]
                                 },
                                 "waitAfterCompletion": "0"
                             }
@@ -553,7 +568,7 @@
                         "commands": {
                             "a-signal-success": {
                                 "command": {
-                                    "Fn::Join": ["", [ "cfn-signal.exe -e %ERRORLEVEL% --resource ITWKS --stack ", { "Ref": "AWS::StackName" } ]]
+                                    "Fn::Join": ["", [ "cfn-signal.exe -e %ERRORLEVEL% --resource ITWKS --stack ", { "Ref": "AWS::StackName" },  " --region ", { "Ref" : "AWS::Region" }]]
                                 },
                                 "waitAfterCompletion": "0"
                             }
@@ -760,7 +775,7 @@
                         "commands": {
                             "a-signal-success": {
                                 "command": {
-                                    "Fn::Join": ["", [ "cfn-signal.exe -e %ERRORLEVEL% --resource ACCTWKS --stack ", { "Ref": "AWS::StackName" } ]]
+                                    "Fn::Join": ["", [ "cfn-signal.exe -e %ERRORLEVEL% --resource ACCTWKS --stack ", { "Ref": "AWS::StackName" },  " --region ", { "Ref" : "AWS::Region" }]]
                                 },
                                 "waitAfterCompletion": "0"
                             }
