@@ -46,9 +46,22 @@
     },
     "Mappings" : {
         "UbuntuAWSRegionArch2AMI" : {
-            "us-east-1" : { "HVM64" : "ami-064a0193585662d74" },
-            "us-west-1" : { "HVM64" : "ami-056d04da775d124d7" },
-            "us-west-2" : { "HVM64" : "ami-09a3d8a7177216dcf" }
+            "eu-north-1"        : {"HVM64": "ami-c37bf0bd" },
+            "ap-south-1"        : {"HVM64": "ami-0cf8402efdb171312" },
+            "eu-west-3"        : {"HVM64": "ami-033e0056c336ecff0" },
+            "eu-west-2"        : {"HVM64": "ami-0a7c91b6616d113b1" },
+            "eu-west-1"        : {"HVM64": "ami-01cca82393e531118" },
+            "ap-northeast-2"        : {"HVM64": "ami-081626bfb3fbc9f49" },
+            "ap-northeast-1"        : {"HVM64": "ami-0cb1c8cab7f5249b6" },
+            "sa-east-1"        : {"HVM64": "ami-094c359b4d8c6a8ca" },
+            "ca-central-1"        : {"HVM64": "ami-0bc1dd4eb012a451e" },
+            "ap-southeast-1"        : {"HVM64": "ami-099d318f80eab7e94" },
+            "ap-southeast-2"        : {"HVM64": "ami-08a648fb5cc86fb74" },
+            "eu-central-1"        : {"HVM64": "ami-0cdab515472ca0bac" },
+            "us-east-1"        : {"HVM64": "ami-064a0193585662d74" },
+            "us-east-2"        : {"HVM64": "ami-021b7b04f1ac696c2" },
+            "us-west-1"        : {"HVM64": "ami-056d04da775d124d7" },
+            "us-west-2"        : {"HVM64": "ami-09a3d8a7177216dcf" }
         }
     },
     "Resources" : {
