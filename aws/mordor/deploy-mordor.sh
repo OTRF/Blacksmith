@@ -15,7 +15,7 @@ usage(){
     echo "Examples:"
     echo " $0 -e 'shire'    Deploy Mordor Shire environment"
     echo " $0 -e 'erebor'   Deploy Mordor Erebor environment"
-    echo " $0 -e 'shire' -r '$MORDOR_REGION'   Deploy Mordor Erebor environment on a specific region (us-east-1 if not specified)"
+    echo " $0 -e 'shire' -r 'your-region'   Deploy Mordor Erebor environment on a specific region (us-east-1 if not specified)"
     echo " "
     exit 1
 }
