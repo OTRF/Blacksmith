@@ -128,6 +128,37 @@
                     }
                 ]
             }
+        },
+        "WindowsBaseSecurityGroup" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "Enable access via ports 3389 from your public IP, internal communications, and outbound connections to anywhere",
+                "VpcId" : {
+                    "Ref" : "mainVpc"
+                },
+                "SecurityGroupIngress" : [
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : "3389",
+                        "ToPort" : "3389",
+                        "CidrIp" : { "Ref" : "RestrictLocation" }
+                    },
+                    {
+                        "IpProtocol" : "-1",
+                        "FromPort" : "0",
+                        "ToPort" : "0",
+                        "CidrIp" : { "Ref" : "PublicSubnetCidrBlock" }
+                    }
+                ],
+                "SecurityGroupEgress" : [
+                    {
+                        "IpProtocol" : "-1",
+                        "FromPort" : "0",
+                        "ToPort" : "0",
+                        "CidrIp" : "0.0.0.0/0"
+                    }
+                ]
+            }
         }
     },
     "Outputs" : {
@@ -145,6 +176,11 @@
             "Description" : "The security group ID to use for Ubuntu servers",
             "Value" :  { "Fn::GetAtt" : ["UbuntuBaseSecurityGroup", "GroupId"] },
             "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-Ubuntu-SecurityGroupID" }}
+        },
+        "WindowsBaseSecurityGroup" : {
+            "Description" : "The security group ID to use for the Windows environment",
+            "Value" :  { "Fn::GetAtt" : ["WindowsBaseSecurityGroup", "GroupId"] },
+            "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-Windows-SecurityGroupID" }}
         }
     }
 }
