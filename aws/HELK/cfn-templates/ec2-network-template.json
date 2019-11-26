@@ -1,0 +1,150 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters" : {
+        "Owner": {
+            "Description": "Enter Team or Individual Name Responsible for the Stack.",
+            "Type": "String",
+            "Default": "Roberto Rodriguez"
+        },
+        "RestrictLocation" : {
+            "Description" : "The IP address range that can access the EC2 instances.",
+            "Type" : "String",
+            "MinLength" : "9",
+            "MaxLength" : "18",
+            "Default" : "0.0.0.0/0",
+            "AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+            "ConstraintDescription" : "Must be a valid IP CIDR range of the form x.x.x.x/x."
+        },
+        "VPCSubnetCidrBlock": {
+            "Description": "Enter VPC CIDR Block. (i.e. 10.0.0.0/16 = 10.0.0.0-10.0.255.255 = 256 Subnets - 65534 hosts)",
+            "Type": "String",
+            "MinLength": "10",
+            "MaxLength": "18",
+            "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+        },
+        "PublicSubnetCidrBlock": {
+            "Description": "Enter Public subnet CIDR Block. (i.e. 10.0.0.0/16 = 10.0.0.0-10.0.255.255 = 256 Subnets - 65534 hosts)",
+            "Type": "String",
+            "MinLength": "10",
+            "MaxLength": "18",
+            "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+        }
+    },
+    "Mappings" : {
+        "AWSRegion2AZ" : {
+            "us-east-1" : { "1" : "us-east-1b", "2" : "us-east-1c", "3" : "us-east-1d", "4" : "us-east-1e", "5" : "us-east-1f" },
+            "us-west-1" : { "1" : "us-west-1b", "2" : "us-west-1c" },
+            "us-west-2" : { "1" : "us-west-2a", "2" : "us-west-2b", "3" : "us-west-2c"  }
+        }
+    },
+    "Resources" : {
+        "mainVpc" : {
+            "Type" : "AWS::EC2::VPC",
+            "Properties" : {
+                "EnableDnsSupport": "true",
+                "EnableDnsHostnames": "true",
+                "CidrBlock": {"Ref": "VPCSubnetCidrBlock"}
+            }
+        },
+        "mainGateway" : {
+            "Type" : "AWS::EC2::InternetGateway"
+        },
+        "mainRouteTable" : {
+            "Type" : "AWS::EC2::RouteTable",
+            "Properties" : {
+                "VpcId" : { "Ref" : "mainVpc" }
+            }
+        },
+        "AttachGateway" : {
+            "Type" : "AWS::EC2::VPCGatewayAttachment",
+            "Properties" : {
+                "VpcId" : { "Ref" : "mainVpc" },
+                "InternetGatewayId" : { "Ref" : "mainGateway" }
+            }
+        },
+        "mainRoute" : {
+            "Type" : "AWS::EC2::Route",
+            "DependsOn" : [ "mainGateway", "mainRouteTable" ],
+            "Properties" : {
+                "RouteTableId" : { "Ref" : "mainRouteTable" },
+                "DestinationCidrBlock" : "0.0.0.0/0",
+                "GatewayId" : { "Ref" : "mainGateway" }
+            }
+        },
+        "PublicSubnet" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : {
+                "VpcId" : { "Ref" : "mainVpc" },
+                "CidrBlock" : { "Ref" : "PublicSubnetCidrBlock" },
+                "AvailabilityZone" : { "Fn::FindInMap" : [ "AWSRegion2AZ", { "Ref" : "AWS::Region" }, "1" ] },
+                "MapPublicIpOnLaunch" : "true"
+            }
+        },
+        "PublicSubnetRouteTableAssociation" : {
+            "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+            "DependsOn": [ "PublicSubnet", "mainRouteTable" ],
+            "Properties" : {
+                "SubnetId" : { "Ref" : "PublicSubnet" },
+                "RouteTableId" : { "Ref" : "mainRouteTable" }
+            }
+        },
+        "UbuntuBaseSecurityGroup" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "Enable access via ports 22,443 from your public IP, internal communications, and outbound connections to anywhere",
+                "VpcId" : { "Ref" : "mainVpc" },
+                "SecurityGroupIngress" : [
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : "22",
+                        "ToPort" : "22",
+                        "CidrIp" : { "Ref" : "RestrictLocation" }
+                    },
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : "443",
+                        "ToPort" : "443",
+                        "CidrIp" : { "Ref" : "RestrictLocation" }
+                    },
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort" : "80",
+                        "ToPort" : "80",
+                        "CidrIp" : { "Ref" : "RestrictLocation" }
+                    },
+                    {
+                        "IpProtocol" : "-1",
+                        "FromPort" : "0",
+                        "ToPort" : "0",
+                        "CidrIp" : { "Ref" : "PublicSubnetCidrBlock" }
+                    }
+                ],
+                "SecurityGroupEgress" : [
+                    {
+                        "IpProtocol" : "-1",
+                        "FromPort" : "0",
+                        "ToPort" : "0",
+                        "CidrIp" : "0.0.0.0/0"
+                    }
+                ]
+            }
+        }
+    },
+    "Outputs" : {
+        "VPCId" : {
+            "Description" : "VPC ID",
+            "Value" :  { "Ref" : "mainVpc" },
+            "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-VPCID" }}
+        },
+        "PublicSubnet" : {
+            "Description" : "The subnet ID to use for public web servers",
+            "Value" :  { "Ref" : "PublicSubnet" },
+            "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-SubnetID" }}
+        },
+        "UbuntuBaseSecurityGroup" : {
+            "Description" : "The security group ID to use for Ubuntu servers",
+            "Value" :  { "Fn::GetAtt" : ["UbuntuBaseSecurityGroup", "GroupId"] },
+            "Export" : { "Name" : {"Fn::Sub": "${AWS::StackName}-Ubuntu-SecurityGroupID" }}
+        }
+    }
+}
