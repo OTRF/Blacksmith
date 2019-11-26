@@ -151,15 +151,7 @@
                                 "waitAfterCompletion": "0"
                             },
                             "b-set-static-ip": {
-                                "command": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Set-StaticIP.ps1",
-                                            " -ServerAddresses ", { "Fn::ImportValue" : {"Fn::Sub": "${DCStackName}-DCPrivateIp" } }
-                                        ]
-                                    ]
-                                },
+                                "command": "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Set-StaticIP.ps1",
                                 "waitAfterCompletion": "10"
                             },
                             "c-rename-computer-reboot": {
