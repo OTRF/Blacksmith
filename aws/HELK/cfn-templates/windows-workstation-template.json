@@ -184,14 +184,7 @@
                                 "waitAfterCompletion": "0"
                             },
                             "b-set-auditing": {
-                                "command": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Set-Auditing.ps1"
-                                        ]
-                                    ]
-                                },
+                                "command": "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Set-Auditing.ps1",
                                 "waitAfterCompletion": "forever"
                             },
                             "c-install-winlogbeat": {
