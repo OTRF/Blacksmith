@@ -160,22 +160,22 @@
     },
     "Mappings" : {
         "WindowsWorkstationAWSRegionArch2AMI" : {
-            "us-east-1" : { "HVM64" : "ami-0954cc8e05b5ab1ba"},
-            "eu-north-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
-            "ap-south-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
-            "eu-west-3"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
-            "eu-west-2"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
-            "eu-west-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
-            "ap-northeast-2"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
-            "ap-northeast-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
-            "sa-east-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
-            "ca-central-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
-            "ap-southeast-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
-            "ap-southeast-2"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
-            "eu-central-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
-            "us-east-2"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
-            "us-west-1"        : {"HVM64": "ami-xxxxxxxxxxxxx" },
-            "us-west-2"        : {"HVM64": "ami-xxxxxxxxxxxxx" }
+            "eu-north-1"        : {"HVM64": "ami-0a1ec014926fa9fdd" },
+            "ap-south-1"        : {"HVM64": "ami-00b2d3ea9077fcebf" },
+            "eu-west-3"        : {"HVM64": "ami-0109f669f0155fac6" },
+            "eu-west-2"        : {"HVM64": "ami-0101530e3e27a39e9" },
+            "eu-west-1"        : {"HVM64": "ami-00b49e2d0e1fc7fad" },
+            "ap-northeast-2"        : {"HVM64": "ami-066eac07824e13596" },
+            "ap-northeast-1"        : {"HVM64": "ami-0342e79d2629aa47f" },
+            "sa-east-1"        : {"HVM64": "ami-0f203ed70c367edf5" },
+            "ca-central-1"        : {"HVM64": "ami-08b0035504b87a83f" },
+            "ap-southeast-1"        : {"HVM64": "ami-0331481cc4fdd340b" },
+            "ap-southeast-2"        : {"HVM64": "ami-0d692d1b5e7f63b6a" },
+            "eu-central-1"        : {"HVM64": "ami-089ca11903ef1567b" },
+            "us-east-1"        : {"HVM64": "ami-06a4e829b8bbad61e" },
+            "us-east-2"        : {"HVM64": "ami-017894519635aafd2" },
+            "us-west-1"        : {"HVM64": "ami-0069635df219ce9e5" },
+            "us-west-2"        : {"HVM64": "ami-04ad37d2932b886c0" }
         }
     },
     "Resources" : {
