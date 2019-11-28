@@ -124,6 +124,6 @@ SSH (Monitor Logs)
 Browser
 *******
 
-.. image:: _static/docker-attack-website-main.png
+.. image:: _static/CFN-attack-website-main.png
     :alt: ATT&CK Website
     :scale: 30%
