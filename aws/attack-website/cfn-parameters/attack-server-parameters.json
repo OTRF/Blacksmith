@@ -1,0 +1,18 @@
+[
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "aws-ubuntu-key"
+  },
+  {
+    "ParameterKey": "NetworkStackName",
+    "ParameterValue": "ATTACKNetworkStack"
+  },
+  {
+    "ParameterKey": "ATTACKInstanceType",
+    "ParameterValue": "t2.medium"
+  }, 
+  {
+    "ParameterKey": "ATTACKPrivateIP",
+    "ParameterValue": "192.168.1.6"
+  }
+]

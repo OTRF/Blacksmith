@@ -1,0 +1,192 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters" : {
+        "Owner": {
+            "Description": "Enter Team or Individual Name Responsible for the Stack.",
+            "Type": "String",
+            "Default": "Roberto Rodriguez"
+        },
+        "NetworkStackName": {
+            "Description": "Name of the active CloudFormation stack that contains the networking resources, such as the subnet and security group, that will be used in this stack.",
+            "Type": "String",
+            "MinLength" : 1,
+            "MaxLength" : 255,
+            "AllowedPattern" : "^[a-zA-Z][-a-zA-Z0-9]*$",
+            "Default" : "ATTACKNetworkStack"
+        },
+        "KeyName": {
+            "Description" : "Name of an existing EC2 key pair for SSH access to the EC2 instance.",
+            "Type" : "AWS::EC2::KeyPair::KeyName",
+            "ConstraintDescription" : "must be the name of an existing EC2 KeyPair."
+        },
+        "ATTACKInstanceType" : {
+            "Description" : "ATTACK EC2 instance type.",
+            "Type" : "String",
+            "Default" : "t2.xlarge",
+            "AllowedValues" : [ "t2.micro", "t2.small", "t2.medium", "t2.large", "t2.xlarge", "t2.2xlarge" ]
+        },
+        "ATTACKPrivateIP" : {
+            "Description" : "Fixed private IP for the ATTACK server.",
+            "Type" : "String",
+            "AllowedPattern" : "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
+        }
+    },
+    "Mappings" : {
+        "UbuntuAWSRegionArch2AMI" : {
+            "us-east-1" : { "HVM64" : "ami-064a0193585662d74" },
+            "us-west-1" : { "HVM64" : "ami-056d04da775d124d7" },
+            "us-west-2" : { "HVM64" : "ami-09a3d8a7177216dcf" }
+        }
+    },
+    "Resources" : {
+        "UbuntuENI" : {
+            "Type" : "AWS::EC2::NetworkInterface",
+            "Properties" : {
+                "GroupSet": [{ "Fn::ImportValue" :  {"Fn::Sub": "${NetworkStackName}-Ubuntu-SecurityGroupID" } }],
+                "SubnetId": { "Fn::ImportValue" : {"Fn::Sub": "${NetworkStackName}-SubnetID" } },
+                "PrivateIpAddress": { "Ref" : "ATTACKPrivateIP" }
+            }
+        },
+        "ATTACK" : {
+            "Type" : "AWS::EC2::Instance",
+            "Metadata" : {
+                "AWS::CloudFormation::Init" : {
+                    "configSets" : {
+                        "config" : [ "00-setup", "01-install" ]
+                    },
+                    "00-setup" : {
+                        "files" : {
+                            "/etc/cfn/cfn-hup.conf" : {
+                                "content" : {
+                                    "Fn::Join" : [
+                                        "",
+                                        [
+                                            "[main]\n",
+                                            "stack=", { "Ref" : "AWS::StackId" }, "\n",
+                                            "region=", { "Ref" : "AWS::Region" }, "\n"
+                                        ]
+                                    ]
+                                },
+                                "mode"    : "000400",
+                                "owner"   : "root",
+                                "group"   : "root"
+                            },
+                            "/etc/cfn/hooks.d/cfn-auto-reloader.conf" : {
+                                "content": {
+                                    "Fn::Join" : [
+                                        "",
+                                        [
+                                            "[cfn-auto-reloader-hook]\n",
+                                            "triggers=post.update\n",
+                                            "path=Resources.EC2Instance.Metadata.AWS::CloudFormation::Init\n",
+                                            "action=/opt/aws/bin/cfn-init -v ",
+                                            "   --stack ", { "Ref" : "AWS::StackName" },
+                                            "   --resource ATTACK ",
+                                            "   --configsets config ",
+                                            "   --region ", { "Ref" : "AWS::Region" }, "\n",
+                                            "runas=root\n"
+                                        ]
+                                    ]
+                                }
+                            },
+                            "/lib/systemd/system/cfn-hup.service": {
+                                "content": {
+                                    "Fn::Join" : [
+                                        "",
+                                        [
+                                            "[Unit]\n",
+                                            "Description=cfn-hup daemon\n\n",
+                                            "[Service]\n",
+                                            "Type=simple\n",
+                                            "ExecStart=/opt/aws/bin/cfn-hup\n", 
+                                            "Restart=always\n\n",
+                                            "[Install]\n",
+                                            "WantedBy=multi-user.target"
+                                        ]
+                                    ]
+                                }
+                            }
+                        }, 
+                        "commands" : {
+                            "a-enable_cfn_hup" : {
+                                "command" : "systemctl enable cfn-hup.service"
+                            },
+                            "b-start_cfn_hup" : {
+                                "command" : "systemctl start cfn-hup.service"
+                            }
+                        },
+                        "packages" : {
+                            "apt" : {
+                                "docker.io" : []
+                            }
+                        }
+                    },
+                    "01-install" : {
+                        "commands": {
+                            "a-install-ATTACK": {
+                                "command": "docker run -d -p 8000:8000 --name attack-website cyb3rward0g/attack-website:0.0.1"
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties" : {
+                "InstanceType" : { "Ref" : "ATTACKInstanceType" },
+                "ImageId" : { "Fn::FindInMap" : [ "UbuntuAWSRegionArch2AMI", { "Ref" : "AWS::Region" }, "HVM64" ] },
+                "KeyName" : { "Ref" : "KeyName" },
+                "NetworkInterfaces" : [
+                    {
+                        "NetworkInterfaceId" : { "Ref" : "UbuntuENI" },
+                        "DeviceIndex": "0"
+                    }
+                ],
+                "BlockDeviceMappings" : [
+                    {
+                        "DeviceName" : "/dev/sda1",
+                        "Ebs" : {
+                            "DeleteOnTermination" : "true",
+                            "VolumeSize" : "50"
+                        }
+                    }
+                ],
+                "UserData" : {
+                    "Fn::Base64" : {
+                        "Fn::Join" : [
+                            "", 
+                            [
+                                "#!/bin/bash -xe\n",
+                                "apt-get update -y\n",
+                                "apt-get install -y python-pip\n",
+                                "apt-get install -y python-setuptools\n",
+                                "mkdir -p /opt/aws/bin\n",
+                                "python /usr/lib/python2.7/dist-packages/easy_install.py --script-dir /opt/aws/bin https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz\n",
+                                "/opt/aws/bin/cfn-init -v ",
+                                "   --stack ", { "Ref" : "AWS::StackName" },
+                                "   --resource ATTACK ",
+                                "   --configsets config ",
+                                "   --region ", { "Ref" : "AWS::Region" }, "\n",
+                
+                                "/opt/aws/bin/cfn-signal -e $? ",
+                                "   --stack ", { "Ref" : "AWS::StackName" },
+                                "   --resource ATTACK ",
+                                "   --region ", { "Ref" : "AWS::Region" }, "\n"
+                            ]
+                        ]
+                    }
+                }
+            },
+            "CreationPolicy" : {
+                "ResourceSignal" : {
+                    "Timeout" : "PT15M",
+                    "Count"   : "1"
+                }
+            }
+        }
+    },
+    "Outputs" : {
+        "ATTACKPublicIPAddress" : {
+            "Description" : "Public IP address of the new EC2 instance",
+            "Value" : { "Fn::GetAtt" : [ "ATTACK", "PublicIp" ] }
+        }
+    }
+}

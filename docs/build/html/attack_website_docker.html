@@ -1,0 +1,282 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ATT&amp;CK Website Docker &mdash; Blacksmith 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ATT&amp;CK Website CloudFormation" href="attack_website_cfn.html" />
+    <link rel="prev" title="ATT&amp;CK Website" href="attack_website.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Blacksmith
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="aws_setup.html">AWS Setup</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Available Templates:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="mordor.html">Mordor Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="silketw.html">SilkETW</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="attack_website.html">ATT&amp;CK Website</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="attack_website.html#deployments">Deployments</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Docker</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pre-requirements">Pre-Requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#run-docker-image">Run Docker Image</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="attack_website_cfn.html">CloudFormation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Licenses:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">GNU General Public License V3</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Blacksmith</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="attack_website.html">ATT&amp;CK Website</a> &raquo;</li>
+        
+      <li>ATT&amp;CK Website Docker</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/attack_website_docker.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="att-ck-website-docker">
+<h1>ATT&amp;CK Website Docker<a class="headerlink" href="#att-ck-website-docker" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="pre-requirements">
+<h2>Pre-Requirements<a class="headerlink" href="#pre-requirements" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.docker.com/install/">Docker CE</a> : Docker Community Edition (CE) is ideal for developers and small teams looking to get started with Docker and experimenting with container-based apps</p></li>
+</ul>
+</div>
+<div class="section" id="run-docker-image">
+<h2>Run Docker Image<a class="headerlink" href="#run-docker-image" title="Permalink to this headline">¶</a></h2>
+<p>I already build the <a class="reference external" href="https://hub.docker.com/repository/docker/cyb3rward0g/attack-website">image</a> for you so you just have to run the following:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo docker run -it --rm -p <span class="m">8000</span>:8000 --name attack-website cyb3rward0g/attack-website:0.0.1
+
+<span class="go">Clean Build            : ---------------------------------------- 0.00s</span>
+<span class="go">Downloading STIX Data  : ---------------------------------------- 1.48s</span>
+<span class="go">Initializing Data      : ---------------------------------------- 39.85s</span>
+<span class="go">Index Page             : ---------------------------------------- 0.42s</span>
+<span class="go">Group Pages            : ---------------------------------------- 2.99s</span>
+<span class="go">Software Pages         : ---------------------------------------- 8.49s</span>
+<span class="go">Technique Pages        : ---------------------------------------- 7.02s</span>
+<span class="go">Matrix Pages           : ---------------------------------------- 8.64s</span>
+<span class="go">Tactic Pages           : ---------------------------------------- 0.87s</span>
+<span class="go">Mitigation Pages       : ---------------------------------------- 0.45s</span>
+<span class="go">Contribute Page        : ---------------------------------------- 0.12s</span>
+<span class="go">Resources Page         : ---------------------------------------- 0.00s</span>
+<span class="go">Redirection Pages      : ---------------------------------------- 0.61s</span>
+<span class="go">Search Index           : ---------------------------------------- 181.24s</span>
+<span class="go">Previous Versions      : ---------------------------------------- 10.84s</span>
+<span class="go">Pelican Content        : ---------------------------------------- Running.../home/attackuser/.local/lib/python3.7/site-packages/scss/selector.py:54: FutureWarning: Possible nested set at position 329</span>
+<span class="go">&#39;&#39;&#39;, re.VERBOSE | re.MULTILINE)</span>
+<span class="go">Pelican Content        : ---------------------------------------- 16.87s</span>
+
+<span class="go">Running tests:</span>
+<span class="go">---------------------------------------  -------------------------------------------------------  -------------------------------------------------------</span>
+<span class="go">STATUS                                   TEST                                                     MESSAGE</span>
+<span class="go">---------------------------------------  -------------------------------------------------------  -------------------------------------------------------</span>
+<span class="go">PASSED                                   Output Folder Size                                       Size: 671.90 MB</span>
+<span class="go">PASSED                                   Internal Links                                           5438 OK - 0 broken link(s)</span>
+<span class="go">PASSED                                   Unlinked Pages                                           0 unlinked page(s)</span>
+<span class="go">PASSED                                   Relative Links                                           0 page(s) with relative link(s) found</span>
+<span class="go">PASSED                                   Broken Citations                                         3308 pages OK, 0 pages broken</span>
+<span class="go">---------------------------------------  -------------------------------------------------------  -------------------------------------------------------</span>
+
+<span class="go">5 tests passed, 0 tests failed</span>
+
+<span class="go">TOTAL Build Time       : ---------------------------------------- 280.38s</span>
+<span class="go">TOTAL Test Time        : ---------------------------------------- 11.92s</span>
+<span class="go">TOTAL Update Time      : ---------------------------------------- 292.30s</span>
+</pre></div>
+</div>
+<p>You can optionally run it in <cite>detached</cite> mode with the following command:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> docker run -d -p <span class="m">8000</span>:8000 --name attack-website cyb3rward0g/attack-website:0.0.1
+<span class="gp">$</span> docker logs --follow attack-website
+</pre></div>
+</div>
+<p>Once it is done, open your browser and go to <cite>localhost:8000</cite></p>
+<a class="reference internal image-reference" href="_images/docker-attack-website-main.png"><img alt="ATT&amp;CK Website" src="_images/docker-attack-website-main.png" style="width: 862.1999999999999px; height: 535.1999999999999px;" /></a>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="attack_website_cfn.html" class="btn btn-neutral float-right" title="ATT&amp;CK Website CloudFormation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="attack_website.html" class="btn btn-neutral float-left" title="ATT&amp;CK Website" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Roberto Rodriguez
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

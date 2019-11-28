@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ATT&amp;CK Website CloudFormation &mdash; Blacksmith 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Licenses" href="license.html" />
+    <link rel="prev" title="ATT&amp;CK Website Docker" href="attack_website_docker.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Blacksmith
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="aws_setup.html">AWS Setup</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Available Templates:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="mordor.html">Mordor Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="silketw.html">SilkETW</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="attack_website.html">ATT&amp;CK Website</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="attack_website.html#deployments">Deployments</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="attack_website_docker.html">Docker</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">CloudFormation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#templates">Templates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pre-requirements">Pre-Requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pre-deployment">Pre-Deployment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#automatic-deployment">Automatic Deployment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monitor-stack-build-logs">Monitor Stack Build Logs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#connect-to-instances">Connect to Instances</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Licenses:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">GNU General Public License V3</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Blacksmith</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="attack_website.html">ATT&amp;CK Website</a> &raquo;</li>
+        
+      <li>ATT&amp;CK Website CloudFormation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/attack_website_cfn.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="att-ck-website-cloudformation">
+<h1>ATT&amp;CK Website CloudFormation<a class="headerlink" href="#att-ck-website-cloudformation" title="Permalink to this headline">¶</a></h1>
+<p>You can take the docker <a class="reference external" href="https://hub.docker.com/repository/docker/cyb3rward0g/attack-website">image</a> I built and add it on the top of an AWS CloudFormation template.</p>
+<div class="section" id="templates">
+<h2>Templates<a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 78%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Template</p></th>
+<th class="head"><p>Format</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>ec2-network-template</p></td>
+<td><p><a class="reference external" href="https://github.com/hunters-forge/Blacksmith/blob/master/aws/attack-website/cfn-templates/ec2-network-template.json">JSON</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>attack-server-template</p></td>
+<td><p><a class="reference external" href="https://github.com/hunters-forge/Blacksmith/blob/master/aws/attack-website/cfn-templates/attack-server-template.json">JSON</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="pre-requirements">
+<h2>Pre-Requirements<a class="headerlink" href="#pre-requirements" title="Permalink to this headline">¶</a></h2>
+<p>Make sure you follow the <a class="reference external" href="https://blacksmith.readthedocs.io/en/latest/aws_setup.html">AWS setup steps</a> provided to use the Blacksmith project.</p>
+<ul class="simple">
+<li><p>An existing AWS Account</p></li>
+<li><p>AWS CLI installed</p></li>
+<li><p>EC2 Key Pair Available</p></li>
+<li><p>10 mins of your day</p></li>
+</ul>
+</div>
+<div class="section" id="pre-deployment">
+<h2>Pre-Deployment<a class="headerlink" href="#pre-deployment" title="Permalink to this headline">¶</a></h2>
+<p>First, make sure you <strong>git clone</strong> the main repo:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git clone https://github.com/hunters-forge/Blacksmith
+<span class="gp">$</span> <span class="nb">cd</span> Blacksmith/aws/attack-website/
+</pre></div>
+</div>
+<div class="section" id="update-parameters-file">
+<h3>Update Parameters File<a class="headerlink" href="#update-parameters-file" title="Permalink to this headline">¶</a></h3>
+<p>You can update the parameters applied to the whole environment in the following folder:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">cd</span> cfn-parameters/
+</pre></div>
+</div>
+<p>Most of them are already filled out for you to build the basic attack-website environment.
+However, you must upate the following parametes:</p>
+<ul class="simple">
+<li><p>Edit <strong>cfn-parameters/ec2-network-parameters.json</strong> and set the parameter value for <strong>RestrictLocation</strong>. Set your house public IP.</p></li>
+<li><p>Edit <strong>cfn-parameters/attack-server-parameters.json</strong> and set the parameter value for <strong>KeyName</strong>. Set the key pair name you created in the pre-requirements step.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="automatic-deployment">
+<h2>Automatic Deployment<a class="headerlink" href="#automatic-deployment" title="Permalink to this headline">¶</a></h2>
+<p>if you are still in the root directory of attack-website (Blacksmith/aws/attack-website), run the bash script ./deploy-attack.sh</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ./deploy-attack.sh
+</pre></div>
+</div>
+</div>
+<div class="section" id="monitor-stack-build-logs">
+<h2>Monitor Stack Build Logs<a class="headerlink" href="#monitor-stack-build-logs" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="aws-cloudformation-console">
+<h3>AWS CloudFormation Console<a class="headerlink" href="#aws-cloudformation-console" title="Permalink to this headline">¶</a></h3>
+<p>All the templates that you sent over to AWS will start being processed immediately</p>
+<a class="reference internal image-reference" href="_images/CFN-Stacks-attack-Process.png"><img alt="ATT&amp;CK process" src="_images/CFN-Stacks-attack-Process.png" style="width: 825.6px; height: 425.4px;" /></a>
+</div>
+</div>
+<div class="section" id="connect-to-instances">
+<h2>Connect to Instances<a class="headerlink" href="#connect-to-instances" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ssh-monitor-logs">
+<h3>SSH (Monitor Logs)<a class="headerlink" href="#ssh-monitor-logs" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ssh -v -i &lt;Private Key File&gt;.pem ubuntu@&lt;public-DNS-attack-website-name&gt;
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo docker logs --follow attack-website
+
+<span class="go">Clean Build            : ---------------------------------------- 0.00s</span>
+<span class="go">Downloading STIX Data  : ---------------------------------------- 1.61s</span>
+<span class="go">Initializing Data      : ---------------------------------------- 38.70s</span>
+<span class="go">Index Page             : ---------------------------------------- 0.40s</span>
+<span class="go">Group Pages            : ---------------------------------------- 2.94s</span>
+<span class="go">Software Pages         : ---------------------------------------- 8.23s</span>
+<span class="go">Technique Pages        : ---------------------------------------- 7.01s</span>
+<span class="go">Matrix Pages           : ---------------------------------------- 8.29s</span>
+<span class="go">Tactic Pages           : ---------------------------------------- 0.83s</span>
+<span class="go">Mitigation Pages       : ---------------------------------------- 0.44s</span>
+<span class="go">Contribute Page        : ---------------------------------------- 0.12s</span>
+<span class="go">Resources Page         : ---------------------------------------- 0.00s</span>
+<span class="go">Redirection Pages      : ---------------------------------------- 0.58s</span>
+<span class="go">Search Index           : ---------------------------------------- 168.89s</span>
+<span class="go">Previous Versions      : ---------------------------------------- 9.10s</span>
+<span class="go">/home/attackuser/.local/lib/python3.7/site-packages/scss/selector.py:54: FutureWarning: Possible nested set at position 329</span>
+<span class="go">&#39;&#39;&#39;, re.VERBOSE | re.MULTILINE)</span>
+<span class="go">Pelican Content        : ---------------------------------------- 15.44s</span>
+
+<span class="go">Running tests:</span>
+<span class="go">-------------------  --------------------------  --------------------------</span>
+<span class="go">STATUS               TEST                        MESSAGE</span>
+<span class="go">-------------------  --------------------------  --------------------------</span>
+<span class="go">PASSED               Output Folder Size          Size: 671.90 MB</span>
+<span class="go">PASSED               Internal Links              5438 OK - 0 broken link(s)</span>
+<span class="go">PASSED               Unlinked Pages              0 unlinked page(s)</span>
+<span class="go">PASSED               Relative Links              0 page(s) with relative link(s) found</span>
+<span class="go">PASSED               Broken Citations            3308 pages OK, 0 pages broken</span>
+<span class="go">-------------------  --------------------------  --------------------------</span>
+
+<span class="go">5 tests passed, 0 tests failed</span>
+
+<span class="go">TOTAL Build Time       : ---------------------------------------- 262.94s</span>
+<span class="go">TOTAL Test Time        : ---------------------------------------- 11.72s</span>
+<span class="go">TOTAL Update Time      : ---------------------------------------- 274.66s</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="browser">
+<h3>Browser<a class="headerlink" href="#browser" title="Permalink to this headline">¶</a></h3>
+<a class="reference internal image-reference" href="_images/docker-attack-website-main.png"><img alt="ATT&amp;CK Website" src="_images/docker-attack-website-main.png" style="width: 862.1999999999999px; height: 535.1999999999999px;" /></a>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="license.html" class="btn btn-neutral float-right" title="Licenses" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="attack_website_docker.html" class="btn btn-neutral float-left" title="ATT&amp;CK Website Docker" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Roberto Rodriguez
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -45,7 +45,7 @@ First, make sure you **git clone** the main repo:
 Update Parameters File
 **********************
 
-You can update the parameters applied to the whole enfironment in the following folder:
+You can update the parameters applied to the whole environment in the following folder:
 
 .. code-block:: console
 

@@ -8,6 +8,8 @@ The Blacksmith Project
 
 The Blacksmit project focuses on providing dynamic easy-to-use templates for security researches to model and provision resources needed to automatically deploy applications in the cloud.
 It currently leverages "`AWS CloudFormation <https://aws.amazon.com/cloudformation/>`_" to model infrastructure and architecture of applications in AWS.
+Even though the goal is to deploy resources in the cloud, the project also hosts Docker files to deploy container-based applications.
+Those docker containers can then be also used with resources in the cloud to expedite deployment.
 
 Goals
 *****
@@ -29,6 +31,7 @@ Goals
 
    Mordor Environments <mordor>
    SilkETW <silketw>
+   ATT&CK Website <attack_website>
 
 .. toctree::
    :maxdepth: 2
