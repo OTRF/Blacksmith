@@ -28,7 +28,11 @@
     "ParameterValue": "Sysmon"
   },
   {
-    "ParameterKey": "WinlogbeatConfigUrl",
-    "ParameterValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/HELK/cfn-files/configs/winlogbeat.yml"
+    "ParameterKey": "ShipperAgent",
+    "ParameterValue": "Nxlog"
+  },
+  {
+    "ParameterKey": "ConfigUrl",
+    "ParameterValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/HELK/cfn-files/configs/nxlog.conf"
   }
 ]
