@@ -52,11 +52,15 @@
     "ParameterValue": "https://github.com/hunters-forge/Blacksmith/raw/master/aws/mordor/cfn-files/wef-subscriptions/shire.zip"
   },
   {
-    "ParameterKey": "WinlogbeatConfigUrl",
-    "ParameterValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/configs/shire/shire_winlogbeat.yml"
+    "ParameterKey": "ConfigUrl",
+    "ParameterValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/configs/shire/shire_nxlog.conf"
   },
   {
     "ParameterKey": "EndpointAgent",
     "ParameterValue": "Sysmon"
+  },
+  {
+    "ParameterKey": "ShipperAgent",
+    "ParameterValue": "Nxlog"
   }
 ]

@@ -1,0 +1,18 @@
+[
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "aws-ubuntu-key"
+  },
+  {
+    "ParameterKey": "NetworkStackName",
+    "ParameterValue": "EmpireNetworkStack"
+  },
+  {
+    "ParameterKey": "EmpireInstanceType",
+    "ParameterValue": "t2.medium"
+  }, 
+  {
+    "ParameterKey": "EmpirePrivateIP",
+    "ParameterValue": "192.168.1.8"
+  }
+]

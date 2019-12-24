@@ -68,8 +68,10 @@ fi
 
 # *********** Installing Empire ***************
 echo "$INFO_TAG Setting up Empire.."
-mkdir /opt/Empire
-curl -L https://raw.githubusercontent.com/Cyb3rWard0g/mordor/master/environments/windows/docker/empire/docker-compose-empire.yml -o /opt/Empire/docker-compose-empire.yml >> $LOGFILE 2>&1
+git clone https://github.com/BC-SECURITY/Empire /opt/Empire
+cd /opt/Empire && docker build -t empire
+docker create -v /opt/Empire --name data
+cd /opt/Empire && docker run -d -it -p 80:80 -p 443:443 -p 999:999 --name empire --volumes-from data empire /bin/bash
 
 # *********** Installing Covenant ***************
 echo "$INFO_TAG Setting up Covenant.."

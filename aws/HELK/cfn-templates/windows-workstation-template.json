@@ -51,8 +51,13 @@
             "Type": "String",
             "AllowedValues" : [ "Sysmon", "SilkETW" ]
         },
-        "WinlogbeatConfigUrl" : {
-            "Description" : "Winlogbeat config used on WEC to send logs to HELK Kafka broker",
+        "ShipperAgent" : {
+            "Description": "Name of shipper agent to install. So far, Winlogbeat and Nxlog are the only options",
+            "Type": "String",
+            "AllowedValues" : [ "Winlogbeat", "Nxlog" ]
+        },
+        "ConfigUrl" : {
+            "Description" : "either an nxlog or winlogbeat config used on endpoint to send logs to HELK Kafka broker",
             "Type" : "String"
         }
     },
@@ -121,8 +126,8 @@
                             "c:\\cfn\\scripts\\Install-Endpoint-Agent.ps1": {
                                 "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/HELK/cfn-files/scripts/default/Install-Endpoint-Agent.ps1"
                             },
-                            "c:\\cfn\\scripts\\Install-Winlogbeat.ps1": {
-                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/HELK/cfn-files/scripts/default/Install-Winlogbeat.ps1"
+                            "c:\\cfn\\scripts\\Install-Shipper.ps1": {
+                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/HELK/cfn-files/scripts/default/Install-Shipper.ps1"
                             }
                         },
                         "services": {
@@ -187,13 +192,14 @@
                                 "command": "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Set-Auditing.ps1",
                                 "waitAfterCompletion": "forever"
                             },
-                            "c-install-winlogbeat": {
+                            "c-install-shipper": {
                                 "command": {
                                     "Fn::Join": [
                                         "",
                                         [
-                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Install-Winlogbeat.ps1",
-                                            " -WinlogbeatConfigUrl ", { "Ref" : "WinlogbeatConfigUrl" } 
+                                            "powershell.exe -ExecutionPolicy RemoteSigned -Command c:\\cfn\\scripts\\Install-Shipper.ps1",
+                                            " -ShipperAgent ", { "Ref" : "ShipperAgent" },
+                                            " -ConfigUrl ", { "Ref" : "ConfigUrl" }
                                         ]
                                     ]
                                 },
