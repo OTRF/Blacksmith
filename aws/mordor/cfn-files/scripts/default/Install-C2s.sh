@@ -69,9 +69,8 @@ fi
 # *********** Installing Empire ***************
 echo "$INFO_TAG Setting up Empire.."
 git clone https://github.com/BC-SECURITY/Empire /opt/Empire
-cd /opt/Empire && docker build -t empire
-docker create -v /opt/Empire --name data
-cd /opt/Empire && docker run -d -it -p 80:80 -p 443:443 -p 999:999 --name empire --volumes-from data empire /bin/bash
+cd /opt/Empire && docker build -t empire . >> $LOGFILE 2>&1
+docker create -v /opt/Empire --name data >> $LOGFILE 2>&1
 
 # *********** Installing Covenant ***************
 echo "$INFO_TAG Setting up Covenant.."
@@ -96,7 +95,7 @@ if [[ $RUN_C2 == "covenant" ]]; then
     docker run -d -it -p 7443:7443 -p 80:80 -p 443:443 --name covenant -v /opt/Covenant/Covenant/Data:/app/Data covenant >> $LOGFILE 2>&1  
 elif [[ $RUN_C2 == "empire" ]]; then
     echo "$INFO_TAG Running Empire by default.."
-    docker-compose -f /opt/Empire/docker-compose-empire.yml up --build -d
+    cd /opt/Empire && docker run -d -it -p 80:80 -p 443:443 -p 999:999 --name empire --volumes-from data empire /bin/bash >> $LOGFILE 2>&1
 else
     echo "$INFO_TAG Running Caldera by default.."
     docker-compose -f /opt/Caldera/docker-compose-caldera.yml up --build -d
