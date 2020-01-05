@@ -115,6 +115,7 @@
 				<TargetImage condition="is">C:\Windows\system32\ApplicationFrameHost.exe</TargetImage>
 				<TargetImage condition="is">C:\Windows\System32\taskhostw.exe</TargetImage>
 				<TargetImage condition="is">C:\Windows\System32\RuntimeBroker.exe</TargetImage>
+				<TargetImage condition="is">C:\Program Files\Amazon\Ec2ConfigService\Ec2Config.exe</TargetImage>
 			</ProcessAccess>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
