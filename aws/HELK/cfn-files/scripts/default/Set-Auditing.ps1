@@ -16,7 +16,7 @@ $AuditRuleModule = "https://raw.githubusercontent.com/hunters-forge/Set-AuditRul
 $AuditRuleFile = Split-Path $AuditRuleModule -leaf
 $NewFile = "c:\cfn\scripts\$AuditRuleFile"
 
-write-Host "Downloading $OutputFile .."
+write-Host "Downloading $AuditRuleFile .."
 $wc = new-object System.Net.WebClient
 $wc.DownloadFile($AuditRuleModule, $NewFile)
 if (!(Test-Path $NewFile)){ write-Host "File $NewFile does not exists.. "; break }
@@ -37,14 +37,15 @@ regKey,identityReference,rights,inheritanceFlags,propagationFlags,auditFlags
 "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon","Everyone","QueryValues","None","None","Success"
 "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment","Everyone","QueryValues","None","None","Success"
 "HKLM:\Software\Policies\Microsoft Services\AdmPwd","Everyone","QueryValues","None","None","Success"
-"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa","QueryValues","None","None","Success"
-"HKLM:\SOFTWARE\Microsoft\PowerShell\1","QueryValues","ContainerInherit","InheritOnly","Success"
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa","Everyone","QueryValues","None","None","Success"
+"HKLM:\SOFTWARE\Microsoft\PowerShell\1","Everyone","QueryValues","ContainerInherit","InheritOnly","Success"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging","Everyone","QueryValues","None","None","Success"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging","Everyone","QueryValues","None","None","Success"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription","Everyone","QueryValues","None","None","Success"
 "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU","Everyone","QueryValues","None","None","Success"
 "HKLM:\SYSTEM\CurrentControlSet\Services\SysmonDrv\Parameters","Everyone","QueryValues","None","None","Success"
 "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System\Audit","Everyone","QueryValues","None","None","Success"
+"HKLM:\Software\Policies\Microsoft\Windows\EventLog\EventForwarding\SubscriptionManager","Everyone","QueryValues","None","None","Success"
 "@
 
 write-host "Enabling audit rules.."
