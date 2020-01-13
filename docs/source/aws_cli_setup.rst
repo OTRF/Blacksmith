@@ -11,13 +11,41 @@ PIP Install
 
     $ pip3 install --upgrade --user awscli
 
-Add the install location to the beginning of your PATH variable:
+After installing with pip, you might need to add the aws program to your operating system's PATH environment variable.
+The location of the program depends on where Python is installed.
 
 .. code-block:: console
 
-    $ export PATH=$HOME/Library/Python/3.7/bin:$PATH
+    $ which python3
+    
+    /usr/local/bin/python3
 
-Add this command to the end of your profile's startup script (for example, ~/.bashrc) to persist the change between command line sessions.
+The output might be the path to a symlink, not the actual program. Run ls -al to see where it points.
+
+.. code-block:: console
+
+    $ ls -al /usr/local/bin/python3
+
+    ~/Library/Python/3.7/bin/python3.6
+
+To modify your PATH variable (Linux or macOS), find your shell's profile script in your user folder.
+If you're not sure which shell you have, run echo $SHELL.
+
+* Bash – .bash_profile, .profile, or .bash_login
+* Zsh – .zshrc
+* Tcsh – .tcshrc, .cshrc, or .login
+
+Add an export command to the end of your profile's startup script (for example, ~/.zshrc) to persist the change between command line sessions.
+
+.. code-block:: console
+
+    export PATH=$HOME/Library/Python/3.7/bin:$PATH
+
+Load the updated profile into your current session
+
+.. code-block:: console
+
+    $ source ~/.zshrc
 
 Configure AWS Creds
 ###################
