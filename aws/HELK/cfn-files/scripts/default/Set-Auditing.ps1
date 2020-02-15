@@ -5,6 +5,10 @@
 # https://github.com/zulu8/Blue/blob/master/Deploy-Blue.ps1
 # https://support.microsoft.com/en-us/help/921468/security-auditing-settings-are-not-applied-to-windows-vista-based-and
 
+# Network Changes
+Write-host 'Setting network connection type to Public..'
+Get-NetConnectionProfile | Set-NetConnectionProfile -NetworkCategory Private
+
 Write-host 'Enabling WinRM..'
 winrm quickconfig -q
 
