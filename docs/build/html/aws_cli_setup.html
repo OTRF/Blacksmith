@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -101,6 +101,8 @@
 <p class="caption"><span class="caption-text">Available Templates:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="mordor.html">Mordor Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="silketw.html">SilkETW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="attack_website.html">ATT&amp;CK Website</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Licenses:</span></p>
 <ul>
@@ -180,11 +182,34 @@ With just one tool to download and configure, you can control multiple AWS servi
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> pip3 install --upgrade --user awscli
 </pre></div>
 </div>
-<p>Add the install location to the beginning of your PATH variable:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$HOME</span>/Library/Python/3.7/bin:<span class="nv">$PATH</span>
+<p>After installing with pip, you might need to add the aws program to your operating system’s PATH environment variable.
+The location of the program depends on where Python is installed.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> which python3
+
+<span class="go">/usr/local/bin/python3</span>
 </pre></div>
 </div>
-<p>Add this command to the end of your profile’s startup script (for example, ~/.bashrc) to persist the change between command line sessions.</p>
+<p>The output might be the path to a symlink, not the actual program. Run ls -al to see where it points.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ls -al /usr/local/bin/python3
+
+<span class="go">~/Library/Python/3.7/bin/python3.6</span>
+</pre></div>
+</div>
+<p>To modify your PATH variable (Linux or macOS), find your shell’s profile script in your user folder.
+If you’re not sure which shell you have, run echo $SHELL.</p>
+<ul class="simple">
+<li><p>Bash – .bash_profile, .profile, or .bash_login</p></li>
+<li><p>Zsh – .zshrc</p></li>
+<li><p>Tcsh – .tcshrc, .cshrc, or .login</p></li>
+</ul>
+<p>Add an export command to the end of your profile’s startup script (for example, ~/.zshrc) to persist the change between command line sessions.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">export PATH=$HOME/Library/Python/3.7/bin:$PATH</span>
+</pre></div>
+</div>
+<p>Load the updated profile into your current session</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">source</span> ~/.zshrc
+</pre></div>
+</div>
 </div>
 <div class="section" id="configure-aws-creds">
 <h2>Configure AWS Creds<a class="headerlink" href="#configure-aws-creds" title="Permalink to this headline">¶</a></h2>

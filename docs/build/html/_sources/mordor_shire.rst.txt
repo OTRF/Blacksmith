@@ -42,6 +42,16 @@ Monitor Stack Build Logs
 AWS CLI View
 ************
 
+The aws cloudformation list-stacks command returns summary information about any of your running or deleted stacks, including the name, stack identifier, template, and status.
+
+.. code-block:: console
+
+    $ aws --region us-east-1 cloudformation list-stacks --stack-status-filter CREATE_COMPLETE
+
+The aws cloudformation describe-stacks command provides information on your running stacks.
+You can use an option to filter results on a stack name.
+This command returns information about the stack, including the name, stack identifier, and status. 
+
 .. code-block:: console
 
     $ aws --region us-east-1 cloudformation describe-stack-events --stack-name MordorWindowsWorkstationsStack

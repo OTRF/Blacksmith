@@ -24,6 +24,7 @@ Goals
    :caption: Getting Started:
 
    AWS Setup <aws_setup>
+   Azure Setup <azure_cli_setup>
 
 .. toctree::
    :maxdepth: 2

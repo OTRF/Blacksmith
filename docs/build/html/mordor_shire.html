@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -210,6 +210,13 @@ However, you must upate the following parametes:</p>
 <h2>Monitor Stack Build Logs<a class="headerlink" href="#monitor-stack-build-logs" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="aws-cli-view">
 <h3>AWS CLI View<a class="headerlink" href="#aws-cli-view" title="Permalink to this headline">¶</a></h3>
+<p>The aws cloudformation list-stacks command returns summary information about any of your running or deleted stacks, including the name, stack identifier, template, and status.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> aws --region us-east-1 cloudformation list-stacks --stack-status-filter CREATE_COMPLETE
+</pre></div>
+</div>
+<p>The aws cloudformation describe-stacks command provides information on your running stacks.
+You can use an option to filter results on a stack name.
+This command returns information about the stack, including the name, stack identifier, and status.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> aws --region us-east-1 cloudformation describe-stack-events --stack-name MordorWindowsWorkstationsStack
 </pre></div>
 </div>
