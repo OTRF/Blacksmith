@@ -74,8 +74,26 @@ You will be redirected to your default browser to log in with your Azure account
     ...
     .....
 
+Set Default Active Subscription
+###############################
+
+If you have more than one subscription mapped to your azure account, you can set a specific subscription to be the default current active subscription.
+
+First, I recommend to always retrieve up-to-date subscriptions from server
+
+.. code-block:: console
+
+    $ az account list --refresh
+
+Then, set active subscription
+
+.. code-block:: console
+
+    $ az account set --subscription xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+
 References
 **********
 
 * https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-macos?view=azure-cli-latest
 * https://docs.microsoft.com/en-us/cli/azure/reference-index?view=azure-cli-latest#az-login
+* https://docs.microsoft.com/en-us/cli/azure/account?view=azure-cli-latest

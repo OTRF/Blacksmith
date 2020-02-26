@@ -58,11 +58,6 @@
             "apiVersion": "2015-06-15",
             "name": "[concat(trim(variables('vmListArray')[copyIndex()]),'/joindomain')]",
             "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/', parameters('dcVMName'))]",
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', CreateADForest)]",
-                "[resourceId('Microsoft.Compute/virtualMachines/', trim(variables('vmListArray')[copyIndex()]))]"
-            ],
             "copy": {
                 "name": "vmDomainJoinCopy",
                 "count": "[length(variables('vmListArray'))]"
