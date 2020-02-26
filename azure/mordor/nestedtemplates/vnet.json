@@ -79,7 +79,7 @@
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
-                        "[variables('virtualNetworkAddressRange')]"
+                        "[parameters('virtualNetworkAddressRange')]"
                     ]
                 },
                 "subnets": [
