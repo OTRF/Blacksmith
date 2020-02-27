@@ -9,13 +9,6 @@
                 "description": "List of virtual machines to be domain joined, if using multiple VMs, make their names comma separate. E.g. VM01, VM02, VM03."
             }
         },
-        "location": {
-            "type": "string",
-            "metadata": {
-                "description": "Location name of the virtual machine"
-            },
-            "defaultValue": "[resourceGroup().location]"
-        },
         "domainJoinUserName": {
             "type": "string",
             "metadata": {
@@ -45,6 +38,12 @@
             "defaultValue": "",
             "metadata": {
                 "description": "Specifies an organizational unit (OU) for the domain account. Enter the full distinguished name of the OU in quotation marks. Example: \"OU=testOU; DC=domain; DC=Domain; DC=com\""
+            }
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location for all resources."
             }
         }
     },

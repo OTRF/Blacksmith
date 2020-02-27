@@ -12,9 +12,8 @@
         "location": {
             "type": "string",
             "metadata": {
-                "description": "Location name of the virtual machine"
-            },
-            "defaultValue": "[resourceGroup().location]"
+                "description": "Location for all resources."
+            }
         }
     },
     "variables": {
@@ -39,7 +38,7 @@
                     "fileUris": [
                         "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/scripts/powershell/auditing/Enable-Security-Auditing.ps1"
                     ],
-                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File \"./scripts/Enable-Security-Auditing.ps1\""
+                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ./Enable-Security-Auditing.ps1"
                 }
             }
         }

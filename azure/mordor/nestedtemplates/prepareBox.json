@@ -12,9 +12,8 @@
         "location": {
             "type": "string",
             "metadata": {
-                "description": "Location name of the virtual machine"
-            },
-            "defaultValue": "[resourceGroup().location]"
+                "description": "Location for all resources."
+            }
         }
     },
     "variables": {
@@ -39,7 +38,7 @@
                     "fileUris": [
                         "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/scripts/powershell/misc/Prepare-Box.ps1"
                     ],
-                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File \"./scripts/Prepare-Box.ps1\""
+                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ./Prepare-Box.ps1"
                 }
             }
         }
