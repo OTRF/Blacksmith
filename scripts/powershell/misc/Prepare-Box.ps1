@@ -66,3 +66,24 @@ Set-ItemProperty -Force -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\P
 # Setting WDigest to use LogonCredentials
 Write-Host "Setting WDigest to use logoncredential.."
 Set-ItemProperty -Force -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest" -Name "UseLogonCredential" -Value "1"
+
+# Additional registry configurations
+# References:
+# https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/network-security-lan-manager-authentication-level
+# https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/network-security-restrict-ntlm-outgoing-ntlm-traffic-to-remote-servers
+$regConfig = @"
+regKey,name,value,type
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa","LmCompatibilityLevel",3,"DWord"
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0","NTLMMinClientSec",537395200,"DWord"
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0","RestrictSendingNTLMTraffic",2,"DWord"
+"@
+
+Write-host "Setting up Registry keys for additional settings.."
+$regConfig | ConvertFrom-Csv | ForEach-Object {
+    if(!(Test-Path $_.regKey)){
+        Write-Host $_.regKey " does not exist.."
+        New-Item $_.regKey -Force
+    }
+    Write-Host "Setting " $_.regKey
+    New-ItemProperty -Path $_.regKey -Name $_.name -Value $_.value -PropertyType $_.type -force
+}

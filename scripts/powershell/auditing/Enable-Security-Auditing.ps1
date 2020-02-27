@@ -52,3 +52,19 @@ if ($SetDC)
     # Not auditing:  
     & auditpol.exe /set /subcategory:"Kerberos Service Ticket Operations","Other Account Logon Events","Kerberos Authentication Service","Credential Validation" /success:enable /failure:enable
 }
+
+$regConfig = @"
+regKey,name,value,type
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa","scenoapplylegacyauditpolicy",1,"DWord"
+"HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System\Audit","ProcessCreationIncludeCmdLine_Enabled",1,"DWord"
+"@
+
+Write-host "Setting up Registry keys for additional auditing settings.."
+$regConfig | ConvertFrom-Csv | ForEach-Object {
+    if(!(Test-Path $_.regKey)){
+        Write-Host $_.regKey " does not exist.."
+        New-Item $_.regKey -Force
+    }
+    Write-Host "Setting " $_.regKey
+    New-ItemProperty -Path $_.regKey -Name $_.name -Value $_.value -PropertyType $_.type -force
+}

@@ -27,29 +27,13 @@ wevtutil set-log security /ca:'O:BAG:SYD:(A;;0xf0005;;;SY)(A;;0x5;;;BA)(A;;0x1;;
 # WEC Server
 $WECFQDN = $WECNetBIOSName+"."+$domainFQDN
 
-# Define Desired State for Registry Entries
-# References:
-# https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/network-security-lan-manager-authentication-level
-# https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/network-security-restrict-ntlm-outgoing-ntlm-traffic-to-remote-servers
-$regConfig = @"
-regKey,name,value,type
-"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa","scenoapplylegacyauditpolicy",1,"DWord"
-"HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System\Audit","ProcessCreationIncludeCmdLine_Enabled",1,"DWord"
-"HKLM:\SOFTWARE\Policies\Microsoft\Windows\EventLog\EventForwarding\SubscriptionManager",1,"Server=http://$WECFQDN`:5985/wsman/SubscriptionManager/WEC,Refresh=60","String"
-"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa","LmCompatibilityLevel",3,"DWord"
-"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0","NTLMMinClientSec",537395200,"DWord"
-"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0","RestrictSendingNTLMTraffic",2,"DWord"
-"@
-
-Write-host "Setting up Registry keys for auditing settings.."
-$regConfig | ConvertFrom-Csv | ForEach-Object {
-    if(!(Test-Path $_.regKey)){
-        Write-Host $_.regKey " does not exist.."
-        New-Item $_.regKey -Force
-    }
-    Write-Host "Setting " $_.regKey
-    New-ItemProperty -Path $_.regKey -Name $_.name -Value $_.value -PropertyType $_.type -force
+# WEF/WEC Registry Entry
+$regKey = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\EventLog\EventForwarding\SubscriptionManager"
+if(!(Test-Path $regKey)){Write-Host $regKey " does not exist.."
+    New-Item $regKey -Force
 }
+Write-Host "Setting " $regKey
+New-ItemProperty -Path $regKey -Name 1 -Value "Server=http://$WECFQDN`:5985/wsman/SubscriptionManager/WEC,Refresh=60" -PropertyType "String" -force
 
 # Adding the Network Service to the Event Log Readers group
 write-Host "Adding Network Service to Event Log Readers restricted group.."
