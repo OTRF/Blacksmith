@@ -14,10 +14,6 @@ param (
     [string]$WECNetBIOSName,
 )
 
-# Network Changes
-Write-host 'Setting network connection type to Public..'
-Get-NetConnectionProfile | Set-NetConnectionProfile -NetworkCategory Private
-
 Write-host 'Enabling WinRM..'
 winrm quickconfig -q
 
