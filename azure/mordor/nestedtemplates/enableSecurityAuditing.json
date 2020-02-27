@@ -34,6 +34,7 @@
                 "type": "CustomScriptExtension",
                 "typeHandlerVersion": "1.8",
                 "autoUpgradeMinorVersion": true,
+                "forceUpdateTag": "enableSecurityAuditing",
                 "settings": {
                     "fileUris": [
                         "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/scripts/powershell/auditing/Enable-Security-Auditing.ps1"
