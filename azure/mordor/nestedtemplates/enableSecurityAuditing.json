@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmList": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "List of virtual machines to run powershell scripts, if using multiple VMs, make their names comma separate. E.g. VM01, VM02, VM03."
+            }
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location name of the virtual machine"
+            },
+            "defaultValue": "[resourceGroup().location]"
+        }
+    },
+    "variables": {
+        "vmListArray": "[split(parameters('vmList'),',')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2016-08-30",
+            "name": "[concat(trim(variables('vmListArray')[copyIndex()]),'/securityauditing')]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "vmEnableSecurityAuditingCopy",
+                "count": "[length(variables('vmListArray'))]"
+            },
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.8",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/scripts/powershell/auditing/Enable-Security-Auditing.ps1"
+                    ],
+                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File \"./scripts/Enable-Security-Auditing.ps1\""
+                }
+            }
+        }
+    ]
+}
