@@ -47,9 +47,7 @@
                 "typeHandlerVersion": "1.8",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    "fileUris": [
-                        "[parameters('fileUris')]"
-                    ],
+                    "fileUris": "[parameters('fileUris')]",
                     "commandToExecute": "[parameters('commandToExecute')]"
                 }
             }
