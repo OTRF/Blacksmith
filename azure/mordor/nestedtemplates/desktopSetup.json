@@ -16,7 +16,7 @@
             }
         },
         "fileUris": {
-            "type": "array"
+            "type": "string"
         },
         "commandToExecute": {
             "type": "string"
