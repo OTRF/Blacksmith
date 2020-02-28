@@ -26,12 +26,6 @@
                 "description": "The address range of the subnet created in the new VNET"
             }
         },
-        "allowedIPAddresses": {
-            "type": "string",
-            "metadata": {
-                "description": "The address range for public IP addresses that are allowed to access the environment"
-            }
-        },
         "DNSServerAddress": {
             "type": "array",
             "metadata": {
@@ -45,42 +39,12 @@
             }
         }
     },
-    "variables": {
-        "windowsSecurityGroupName": "windows-NSG"
-    },
     "resources": [
-        {
-            "comments": "Default Network Security Group for template",
-            "type": "Microsoft.Network/networkSecurityGroups",
-            "apiVersion": "2019-08-01",
-            "name": "[variables('windowsSecurityGroupName')]",
-            "location": "[parameters('location')]",
-            "properties": {
-                "securityRules": [
-                    {
-                        "name": "default-allow-3389",
-                        "properties": {
-                            "priority": 100,
-                            "access": "Allow",
-                            "direction": "Inbound",
-                            "destinationPortRange": "3389",
-                            "protocol": "Tcp",
-                            "sourcePortRange": "*",
-                            "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
-                            "destinationAddressPrefix": "*"
-                        }
-                    }
-                ]
-            }
-        },
         {
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2019-02-01",
             "name": "[parameters('virtualNetworkName')]",
             "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('windowsSecurityGroupName'))]"
-            ],
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
@@ -94,10 +58,7 @@
                     {
                         "name": "[parameters('subnetName')]",
                         "properties": {
-                            "addressPrefix": "[parameters('subnetRange')]",
-                            "networkSecurityGroup": {
-                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('windowsSecurityGroupName'))]"
-                            }
+                            "addressPrefix": "[parameters('subnetRange')]"
                         }
                     }
                 ]
