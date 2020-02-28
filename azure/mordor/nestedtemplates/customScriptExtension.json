@@ -38,7 +38,7 @@
             "name": "[concat(trim(variables('vmListArray')[copyIndex()]), '/', parameters('extensionName'))]",
             "location": "[parameters('location')]",
             "copy": {
-                "name": "vmPrepareBoxCopy",
+                "name": "vmBoxCopy",
                 "count": "[length(variables('vmListArray'))]"
             },
             "properties": {
