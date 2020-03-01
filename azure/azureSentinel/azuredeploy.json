@@ -62,21 +62,7 @@
                 "sku": {
                     "name": "[parameters('pricingTier')]"
                 }
-            },
-            "resources": [
-                {
-                    "apiVersion": "2015-11-01-preview",
-                    "type": "datasources",
-                    "name": "windowsSecurityAuditing",
-                    "dependsOn": [
-                        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
-                    ],
-                    "kind": "WindowsEvent",
-                    "properties": {
-                        "eventLogName": "Security"
-                    }
-                }
-            ]
+            }
         },
         {
             "name": "[concat('SecurityInsights','(', parameters('workspaceName'),')')]",
