@@ -88,13 +88,13 @@
             "type": "string",
             "value": "[parameters('workspaceName')]"
         },
-        "customerId": {
+        "workspaceIdOutput": {
             "type": "string",
-            "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2015-11-01-preview').customerId]"
+            "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-11-01-preview').customerId]"
         },
-        "protectedSettings": {
+        "workspaceKeyOutput": {
             "type": "string",
-            "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2015-11-01-preview').primarySharedKey]"
+            "value": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-11-01-preview').primarySharedKey]"
         }
     }
 }
