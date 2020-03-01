@@ -1,2 +1,2 @@
-.\Prepare-Box.ps1
-.\Enable-Security-Auditing.ps1 -SetDC
+& .\Prepare-Box.ps1
+& .\Enable-Security-Auditing.ps1 -SetDC

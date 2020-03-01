@@ -7,5 +7,5 @@ param(
     [string]$dcVMName
 )
 
-.\Set-OUs.ps1 -domainFQDN $domainFQDN
-.\Add-DomainUsers.ps1 -domainFQDN $domainFQDN -dcVMName $dcVMName
+& .\Set-OUs.ps1 -domainFQDN $domainFQDN
+& .\Add-DomainUsers.ps1 -domainFQDN $domainFQDN -dcVMName $dcVMName
