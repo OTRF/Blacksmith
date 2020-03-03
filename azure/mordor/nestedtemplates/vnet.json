@@ -40,7 +40,7 @@
         }
     },
     "variables": {
-        "windowsSecurityGroupName": "windows-NSG"
+        "windowsSecurityGroupName": "nsg-windows"
     },
     "resources": [
         {

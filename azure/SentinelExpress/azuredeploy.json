@@ -4,10 +4,23 @@
     "parameters": {
         "workspaceName": {
             "type": "string",
-            "defaultValue": "MordorAnalytics",
             "metadata": {
-                "description": "Workspace name"
+                "description": "Name for the Log Analytics workspace used to aggregate data"
             }
+        },
+        "utcValue": {
+            "type": "string",
+            "metadata": {
+                "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
+            },
+            "defaultValue": "[utcNow()]"
+        },
+        "newWorkspace": {
+            "type": "bool",
+            "metadata": {
+                "description": "Do you want to create a new workspace? If false, the parameters for the workspace are ignored and the template points to an existing log analytics workspace with the name provided under the workspaceName parameter. "
+            },
+            "defaultValue": "[bool('true')]"
         },
         "pricingTier": {
             "type": "string",
@@ -48,11 +61,15 @@
             }
         }
     },
+    "variables": {
+        "uniqueWorkspace": "[concat(parameters('workspaceName'), uniquestring(resourceGroup().id, parameters('utcValue')))]"
+    },
     "resources": [
         {
+            "condition": "[parameters('newWorkspace')]",
             "apiVersion": "2017-03-15-preview",
             "type": "Microsoft.OperationalInsights/workspaces",
-            "name": "[parameters('workspaceName')]",
+            "name": "[variables('uniqueWorkspace')]",
             "location": "[parameters('location')]",
             "properties": {
                 "retentionInDays": "[parameters('dataRetention')]",
@@ -65,18 +82,19 @@
             }
         },
         {
-            "name": "[concat('SecurityInsights','(', parameters('workspaceName'),')')]",
+            "condition": "[parameters('newWorkspace')]",
+            "name": "[concat('SecurityInsights','(', variables('uniqueWorkspace'),')')]",
             "type": "Microsoft.OperationsManagement/solutions",
             "apiVersion": "2015-11-01-preview",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+                "[resourceId('Microsoft.OperationalInsights/workspaces', variables('uniqueWorkspace'))]"
             ],
             "properties": {
-                "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+                "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('uniqueWorkspace'))]"
             },
             "plan": {
-                "name": "[concat('SecurityInsights','(', parameters('workspaceName'),')')]",
+                "name": "[concat('SecurityInsights','(', variables('uniqueWorkspace'),')')]",
                 "product": "OMSGallery/SecurityInsights",
                 "publisher": "Microsoft",
                 "promotionCode": ""
@@ -86,15 +104,15 @@
     "outputs": {
         "workspaceName": {
             "type": "string",
-            "value": "[parameters('workspaceName')]"
+            "value": "[if(parameters('newWorkspace'), variables('uniqueWorkspace'), parameters('workspaceName'))]"
         },
         "workspaceIdOutput": {
             "type": "string",
-            "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-11-01-preview').customerId]"
+            "value": "[reference(if(parameters('newWorkspace'), resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), resourceId('Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))), '2015-11-01-preview').customerId]"
         },
         "workspaceKeyOutput": {
             "type": "string",
-            "value": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-11-01-preview').primarySharedKey]"
+            "value": "[listKeys(if(parameters('newWorkspace'), resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), resourceId('Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))), '2015-11-01-preview').primarySharedKey]"
         }
     }
 }
