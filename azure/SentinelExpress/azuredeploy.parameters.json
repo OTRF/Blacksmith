@@ -6,7 +6,7 @@
             "value": "SentinelExpress"
         },
         "newWorkspace": {
-            "value": "[bool('true')]"
+            "value": true
         },
         "pricingTier": {
             "value": "PerGB2018"
