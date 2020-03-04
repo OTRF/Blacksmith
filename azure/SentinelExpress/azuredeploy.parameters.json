@@ -13,12 +13,6 @@
         },
         "dataRetention": {
             "value": 30
-        },
-        "immediatePurgeDataOn30Days": {
-            "value": "[bool('false')]"
-        },
-        "domainJoinOptions": {
-            "value": 3
         }
     }
 }
