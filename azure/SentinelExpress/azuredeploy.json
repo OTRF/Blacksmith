@@ -19,8 +19,7 @@
             "type": "bool",
             "metadata": {
                 "description": "Do you want to create a new workspace? If false, the parameters for the workspace are ignored and the template points to an existing log analytics workspace with the name provided under the workspaceName parameter. "
-            },
-            "defaultValue": "[bool('true')]"
+            }
         },
         "pricingTier": {
             "type": "string",
