@@ -45,9 +45,6 @@
             "apiVersion": "2019-02-01",
             "name": "[parameters('virtualNetworkName')]",
             "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('windowsSecurityGroupName'))]"
-            ],
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
