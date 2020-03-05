@@ -1,0 +1,97 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmList": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "List of virtual machines to create public IP Addreses and NICs resources, if using multiple VMs, make their names comma separate. E.g. VM01, VM02, VM03."
+            }
+        },
+        "ipList": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "List of IP addresses to create public IP Addreses resources, if using multiple IPs, make their names comma separate. E.g. 192.168.1.1, 192.168.1.2, 192.168.1.3."
+            }
+        },
+        "networkSecurityGroup": {
+            "type": "string",
+            "metadata": {
+                "description": "Network Security group attached to the network interfaces created"
+            }
+        },
+        "dnsLabelPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
+            }
+        },
+        "subnetRef": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    },
+    "variables": {
+        "vmListArray": "[split(parameters('vmList'),',')]",
+        "privateIPArray": "[split(parameters('ipList'),',')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(trim(variables('vmListArray')[copyIndex()]),'PublicIP')]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "vmPublicIPCopy",
+                "count": "[length(variables('vmListArray'))]"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[toLower(concat(parameters('dnsLabelPrefix'), '-', trim(variables('vmListArray')[copyIndex()]), '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-11-01",
+            "name": "[concat(trim(variables('vmListArray')[copyIndex()]),'VMNic')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses/', concat(trim(variables('vmListArray')[copyIndex()]),'PublicIP'))]"
+            ],
+            "copy": {
+                "name": "vmNetworkInterfaceCopy",
+                "count": "[length(variables('vmListArray'))]"
+            },
+            "properties": {
+                "networkSecurityGroup": {
+                    "id": "[parameters('networkSecurityGroup')]"
+                },
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[trim(variables('privateIPArray')[copyIndex()])]",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat(trim(variables('vmListArray')[copyIndex()]),'PublicIP'))]"
+                            },
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

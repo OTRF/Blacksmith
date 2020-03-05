@@ -32,12 +32,6 @@
                 "description": "The DNS address(es) of the DNS Server(s) used by the VNET"
             }
         },
-        "nsgID": {
-            "type": "string",
-            "metadata": {
-                "description": "Network Security group ID "
-            }
-        },
         "location": {
             "type": "string",
             "metadata": {
@@ -64,10 +58,7 @@
                     {
                         "name": "[parameters('subnetName')]",
                         "properties": {
-                            "addressPrefix": "[parameters('subnetRange')]",
-                            "networkSecurityGroup": {
-                                "id": "[parameters('nsgID')]"
-                            }
+                            "addressPrefix": "[parameters('subnetRange')]"
                         }
                     }
                 ]
