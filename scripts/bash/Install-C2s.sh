@@ -93,8 +93,13 @@ else
     echo "$INFO_TAG Setting up Caldera.."
     mkdir /opt/Caldera
     mkdir /opt/Caldera/config
-    curl -L https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/docker/caldera/docker-compose-caldera.yml -o /opt/Caldera/docker-compose-caldera.yml >> $LOGFILE 2>&1
-    curl -L https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/docker/caldera/config/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml -o /opt/Caldera/config/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml >> $LOGFILE 2>&1
+    curl -L https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/scripts/docker/caldera/docker-compose-caldera.yml -o /opt/Caldera/docker-compose-caldera.yml >> $LOGFILE 2>&1
+    curl -L https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/scripts/docker/caldera/config/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml -o /opt/Caldera/config/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml >> $LOGFILE 2>&1
     echo "$INFO_TAG Running Caldera by default.."
+
+    if [ -z "$CALDERA_ADMIN_NAME" ] && [ -z "$CALDERA_ADMIN_PASSWORD" ]; then
+        export CALDERA_ADMIN_NAME=admin
+        export CALDERA_ADMIN_PASSWORD=C@ld3r@!123
+    fi
     docker-compose -f /opt/Caldera/docker-compose-caldera.yml up --build -d
 fi
