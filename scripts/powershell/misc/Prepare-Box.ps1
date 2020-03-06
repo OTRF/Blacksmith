@@ -52,12 +52,56 @@ if (Test-Path "$env:systemroot\SysWOW64\OneDriveSetup.exe") {
     }
 }
 
-# Disabling Cortana
-Write-Host "Disabling Cortana.."
-If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search")) {
-    New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Force | Out-Null
+# Disabling A few Windows 10 Settings:
+# Reference:
+# https://docs.microsoft.com/en-us/windows/privacy/manage-connections-from-windows-operating-system-components-to-microsoft-services
+
+$regConfig = @"
+regKey,name,value,type
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search","AllowCortana",0,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search","AllowSearchToUseLocation",0,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search","DisableWebSearch",1,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search","ConnectedSearchUseWeb",0,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata","PreventDeviceMetadataFromNetwork",1,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\FindMyDevice","AllowFindMyDevice",0,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows\PreviewBuilds","AllowBuildPreview",0,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications","NoCloudApplicationNotification",1,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive","DisableFileSyncNGSC",1,"DWord"
+"HKLM:\SOFTWARE\Microsoft\OneDrive","PreventNetworkTrafficPreUserSignIn",1,"DWord"
+"HKCU:\SOFTWARE\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy","HasAccepted",0,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Speech","AllowSpeechModelUpdate",0,"DWord"
+"HKCU:\SOFTWARE\Microsoft\InputPersonalization","RestrictImplicitTextCollection",1,"DWord"
+"HKCU:\SOFTWARE\Microsoft\InputPersonalization","RestrictImplicitInkCollection",1,"DWord"
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo","Enabled",0,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo","DisabledByGroupPolicy",1,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppPrivacy","LetAppsAccessLocation",2,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows\LocationAndSensors","DisableLocation",1,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection","DoNotShowFeedbackNotifications",1,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection","AllowTelemetry",0,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent","DisableWindowsConsumerFeatures",1,"DWord"
+"HKCU:\SOFTWARE\Policies\Microsoft\Windows\CloudContent","DisableTailoredExperiencesWithDiagnosticData",1,"DWord"
+"HKLM:\SOFTWARE\Policies\Policies\Microsoft\Windows\System","EnableSmartScreen",0,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\SmartScreen","ConfigureAppInstallControlEnabled",1,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\SmartScreen","ConfigureAppInstallControl","Anywhere","String"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableBehaviorMonitoring",1,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableOnAccessProtection",1,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableRealtimeMonitoring",1,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableScanOnRealtimeEnable",1,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet","SpyNetReporting",0,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet","SubmitSamplesConsent",2,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender","DisableAntiSpyware",1,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\MpEngine","MpCloudBlockLevel",0,"DWord"
+"@
+
+Write-host "Setting up Registry keys for additional settings.."
+$regConfig | ConvertFrom-Csv | ForEach-Object {
+    if(!(Test-Path $_.regKey)){
+        Write-Host $_.regKey " does not exist.."
+        New-Item $_.regKey -Force
+    }
+    Write-Host "Setting " $_.regKey
+    New-ItemProperty -Path $_.regKey -Name $_.name -Value $_.value -PropertyType $_.type -force
 }
-Set-ItemProperty -Force -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Name "AllowCortana" -Type DWord -Value 0
 
 # Setting UAC level to Never Notify
 Write-Host "Setting UAC level to Never Notify.."
