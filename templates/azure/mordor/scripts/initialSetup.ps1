@@ -62,3 +62,6 @@ $AuditRules | ConvertFrom-Csv | ForEach-Object {
         Set-AuditRule -RegistryPath $_.regKey -IdentityReference $_.identityReference -Rights $_.rights -InheritanceFlags $_.inheritanceFlags -PropagationFlags $_.propagationFlags -AuditFlags $_.auditFlags -ErrorAction SilentlyContinue
     }
 }
+
+# Installing Endpoint Agent
+& .\Install-Endpoint-Agent.ps1 -EndpointAgent Sysmon
