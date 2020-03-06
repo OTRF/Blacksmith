@@ -83,12 +83,15 @@ elif [[ $RUN_C2 == "empire" ]]; then
     cd /opt/Empire && docker run -d -it -p 80:80 -p 443:443 -p 999:999 --name empire --volumes-from data empire /bin/bash >> $LOGFILE 2>&1
 else
     # *********** Installing Caldera ***************
-    if ! [ -x "$(command -v docker-compose)" ]; then
-        echo "$INFO_TAG Installing docker-compose.."
-        COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d\" -f4)
-        curl -L https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose >> $LOGFILE 2>&1
-        chmod +x /usr/local/bin/docker-compose >> $LOGFILE 2>&1
+    if [ -x "$(command -v docker-compose)" ]; then
+        echo "$INFO_TAG removing docker-compose.."
+        rm $(which docker-compose)
     fi
+    
+    echo "$INFO_TAG Installing docker-compose.."
+    COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d\" -f4)
+    curl -L https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose >> $LOGFILE 2>&1
+    chmod +x /usr/local/bin/docker-compose >> $LOGFILE 2>&1
     
     echo "$INFO_TAG Setting up Caldera.."
     mkdir /opt/Caldera

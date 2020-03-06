@@ -55,7 +55,7 @@
                     {
                         "name": "default-allow-22",
                         "properties": {
-                            "priority": 101,
+                            "priority": 99,
                             "access": "Allow",
                             "direction": "Inbound",
                             "destinationPortRange": "22",
