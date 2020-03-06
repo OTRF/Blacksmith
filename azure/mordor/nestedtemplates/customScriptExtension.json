@@ -11,8 +11,12 @@
         },
         "extensionName": {
             "type": "string",
+            "allowedValues": [
+                "CustomScript",
+                "CustomScriptExtension"
+            ],
             "metadata": {
-                "description": "name of the extension"
+                "description": "name of the custom script extension being used. CustomScript is known as the Linux version 2 and CustomScriptExtension is used usually to run PowerShell commands scripts"
             }
         },
         "fileUris": {
@@ -33,12 +37,13 @@
     },
     "resources": [
         {
+            "condition": "[equals(parameters('extensionName'),'CustomScriptExtension')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2016-08-30",
             "name": "[concat(trim(variables('vmListArray')[copyIndex()]), '/', parameters('extensionName'))]",
             "location": "[parameters('location')]",
             "copy": {
-                "name": "vmBoxCopy",
+                "name": "vmCSECopy",
                 "count": "[length(variables('vmListArray'))]"
             },
             "properties": {
@@ -49,6 +54,28 @@
                 "settings": {
                     "fileUris": "[parameters('fileUris')]",
                     "commandToExecute": "[parameters('commandToExecute')]"
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('extensionName'),'CustomScript')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-03-01",
+            "name": "[concat(trim(variables('vmListArray')[copyIndex()]), '/', parameters('extensionName'))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "vmCSCopy",
+                "count": "[length(variables('vmListArray'))]"
+            },
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.1",
+                "autoUpgradeMinorVersion": true,
+                "settings": {},
+                "protectedSettings": {
+                    "commandToExecute": "[parameters('commandToExecute')]",
+                    "fileUris": "[parameters('fileUris')]"
                 }
             }
         }
