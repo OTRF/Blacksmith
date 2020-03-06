@@ -31,21 +31,22 @@
     "resources": [
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2016-08-30",
+            "apiVersion": "2019-03-01",
             "name": "[concat(trim(variables('vmListArray')[copyIndex()]), '/', parameters('extensionName'))]",
             "location": "[parameters('location')]",
             "copy": {
-                "name": "vmCSECopy",
+                "name": "vmCSCopy",
                 "count": "[length(variables('vmListArray'))]"
             },
             "properties": {
-                "publisher": "Microsoft.Compute",
-                "type": "CustomScriptExtension",
-                "typeHandlerVersion": "1.8",
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.1",
                 "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "fileUris": "[parameters('fileUris')]",
-                    "commandToExecute": "[parameters('commandToExecute')]"
+                "settings": {},
+                "protectedSettings": {
+                    "commandToExecute": "[parameters('commandToExecute')]",
+                    "fileUris": "[parameters('fileUris')]"
                 }
             }
         }
