@@ -51,8 +51,6 @@ if (Test-Path "$env:systemroot\SysWOW64\OneDriveSetup.exe") {
         Remove-Item -Force -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}"
     }
 }
-# Disable WIndows Defender
-set-MpPreference -DisableRealtimeMonitoring $true
 
 # Disabling A few Windows 10 Settings:
 # Reference:
@@ -86,15 +84,6 @@ regKey,name,value,type
 "HKLM:\SOFTWARE\Policies\Policies\Microsoft\Windows\System","EnableSmartScreen",0,"DWord"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\SmartScreen","ConfigureAppInstallControlEnabled",1,"DWord"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\SmartScreen","ConfigureAppInstallControl","Anywhere","String"
-"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableBehaviorMonitoring",1,"DWord"
-"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableOnAccessProtection",1,"DWord"
-"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableRealtimeMonitoring",1,"DWord"
-"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableScanOnRealtimeEnable",1,"DWord"
-"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableScriptScanning",1,"DWord"
-"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet","SpyNetReporting",0,"DWord"
-"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet","SubmitSamplesConsent",2,"DWord"
-"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender","DisableAntiSpyware",1,"DWord"
-"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\MpEngine","MpCloudBlockLevel",0,"DWord"
 "@
 
 Write-host "Setting up Registry keys for additional settings.."

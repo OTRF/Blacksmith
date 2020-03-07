@@ -13,10 +13,10 @@ param (
 & .\Prepare-Box.ps1
 
 if ($SetDC){
-    & .\Enable-Security-Auditing.ps1 -SetDC
+    & .\Set-SecurityAuditing.ps1 -SetDC
 }
 else{
-    & .\Enable-Security-Auditing.ps1
+    & .\Set-SecurityAuditing.ps1
 }
 
 # Installing Endpoint Agent
