@@ -18,40 +18,38 @@ write-host "Installing $EndpointAgent .."
 
 if($EndpointAgent -eq "Sysmon")
 {
-    $URL = "https://download.sysinternals.com/files/Sysmon.zip"
+    $URL = "https://live.sysinternals.com/Sysmon.exe"
+    Resolve-DnsName live.sysinternals.com
 }
 else
 {
     $Url = "https://github.com/fireeye/SilkETW/releases/download/v0.8/SilkETW_SilkService_v8.zip"
 }
 
-$OutputFile = Split-Path $Url -leaf
-$ZipFile = "$($env:TEMP)\$OutputFile"
+Resolve-DnsName github.com
+Resolve-DnsName raw.githubusercontent.com
 
-# Download Zipped File
+$OutputFile = Split-Path $Url -leaf
+$File = "C:\ProgramData\$OutputFile"
+
+# Download File
 write-Host "Downloading $OutputFile .."
 $wc = new-object System.Net.WebClient
-$wc.DownloadFile($Url, $ZipFile)
-if (!(Test-Path $ZipFile)){ write-Host "File $ZipFile does not exists.. "; break }
-
-# Unzip file
-write-Host "Decompressing $OutputFile .."
-$file = (Get-Item $ZipFile).Basename
-expand-archive -path $Zipfile -DestinationPath "$($env:TEMP)\$file"
-if (!(Test-Path "$($env:TEMP)\$file")){ write-Host "$ZipFile could not be decompressed successfully.. "; break }
+$wc.DownloadFile($Url, $File)
+if (!(Test-Path $File)){ write-Host "File $File does not exists.. "; break }
 
 if($EndpointAgent -eq "Sysmon")
 {
     # Downloading Sysmon Configuration
     write-Host "Downloading Sysmon config.."
-    $SysmonFile = "$($env:TEMP)\shire_sysmon.xml"
+    $SysmonFile = "C:\ProgramData\sysmon.xml"
     $SysmonConfigUrl = "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/configs/sysmon/sysmon.xml"
     $wc.DownloadFile($SysmonConfigUrl, $SysmonFile)
     if (!(Test-Path $SysmonFile)){ write-Host "File $SysmonFile does not exists.. "; break }
 
     # Installing Sysmon
     write-Host "Installing Sysmon.."
-    & $env:TEMP\Sysmon\Sysmon.exe -i $env:TEMP\shire_sysmon.xml -accepteula -h md5,sha256,imphash -l -n
+    & $File -i C:\ProgramData\sysmon.xml -accepteula -h md5,sha256,imphash -l -n
     
     write-Host "Setting Sysmon to start automatically.."
     & sc.exe config Sysmon start= auto
@@ -78,6 +76,12 @@ if($EndpointAgent -eq "Sysmon")
 }
 else
 {
+    # Unzip file
+    write-Host "Decompressing $OutputFile .."
+    $FileName = (Get-Item $File).Basename
+    expand-archive -path $File -DestinationPath "C:\ProgramData\$FileName"
+    if (!(Test-Path "C:\ProgramData\$FileName")){ write-Host "$File could not be decompressed successfully.. "; break }
+
     #Installing Dependencies
     #.NET Framework 4.5	All Windows operating systems: 378389
     $DotNetDWORD = 378388
@@ -85,14 +89,14 @@ else
     if(!$DotNet_Check)
     {
         write-Host "NET Framework 4.5 or higher not installed.."
-        & $env:TEMP\$file\v8\Dependencies\dotNetFx45_Full_setup.exe /q /passive /norestart
+        & C:\ProgramData\$FileName\v8\Dependencies\dotNetFx45_Full_setup.exe /q /passive /norestart
         start-sleep -s 5
     }
     $MVC_Check = Get-ItemProperty HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | where {$_.displayname -like "Microsoft Visual C++*"} | Select-Object DisplayName, DisplayVersion
     if (!$MVC_Check)
     {
         write-Host "Microsoft Visual C++ not installed.."
-        & $env:TEMP\$file\v8\Dependencies\vc2015_redist.x86.exe /q /passive /norestart
+        & C:\ProgramData\$FileName\v8\Dependencies\vc2015_redist.x86.exe /q /passive /norestart
         start-sleep -s 5
     }
 
@@ -100,7 +104,7 @@ else
     $SilkServiceConfigUrl = "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/configs/SilkETW/SilkServiceConfig.xml"
 
     $OutputFile = Split-Path $SilkServiceConfigUrl -leaf
-    $SilkServiceConfigPath = "$($env:TEMP)\$file\v8\SilkService\SilkServiceConfig.xml"
+    $SilkServiceConfigPath = "C:\ProgramData\$FileName\v8\SilkService\SilkServiceConfig.xml"
 
     # Download Config File
     write-Host "Downloading $OutputFile .."
@@ -112,7 +116,7 @@ else
     write-host "Creating the new SilkETW service.."
     New-Service -name SilkETW `
     -displayName SilkETW `
-    -binaryPathName "$($env:TEMP)\$file\v8\SilkService\SilkService.exe" `
+    -binaryPathName "C:\ProgramData\$FileName\v8\SilkService\SilkService.exe" `
     -StartupType Automatic `
     -Description "This is the SilkETW service to consume ETW events."
 

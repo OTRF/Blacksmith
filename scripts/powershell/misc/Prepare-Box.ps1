@@ -51,6 +51,8 @@ if (Test-Path "$env:systemroot\SysWOW64\OneDriveSetup.exe") {
         Remove-Item -Force -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}"
     }
 }
+# Disable WIndows Defender
+set-MpPreference -DisableRealtimeMonitoring $true
 
 # Disabling A few Windows 10 Settings:
 # Reference:
@@ -58,6 +60,7 @@ if (Test-Path "$env:systemroot\SysWOW64\OneDriveSetup.exe") {
 
 $regConfig = @"
 regKey,name,value,type
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows\OOBE","DisablePrivacyExperience",1,"DWord"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search","AllowCortana",0,"DWord"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search","AllowSearchToUseLocation",0,"DWord"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search","DisableWebSearch",1,"DWord"
@@ -87,6 +90,7 @@ regKey,name,value,type
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableOnAccessProtection",1,"DWord"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableRealtimeMonitoring",1,"DWord"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableScanOnRealtimeEnable",1,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection", "DisableScriptScanning",1,"DWord"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet","SpyNetReporting",0,"DWord"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet","SubmitSamplesConsent",2,"DWord"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender","DisableAntiSpyware",1,"DWord"

@@ -19,11 +19,8 @@ else{
     & .\Enable-Security-Auditing.ps1
 }
 
-# Setting static IP and DNS server IP
-if ($ServerAddresses)
-{
-    & .\Set-StaticIP.ps1 -ServerAddresses $ServerAddresses
-}
+# Installing Endpoint Agent
+& .\Install-Endpoint-Agent.ps1 -EndpointAgent Sysmon
 
 # Set Audit Rules (SACL)
 Import-Module .\Set-AuditRule.ps1
@@ -63,5 +60,8 @@ $AuditRules | ConvertFrom-Csv | ForEach-Object {
     }
 }
 
-# Installing Endpoint Agent
-& .\Install-Endpoint-Agent.ps1 -EndpointAgent Sysmon
+# Setting static IP and DNS server IP
+if ($ServerAddresses)
+{
+    & .\Set-StaticIP.ps1 -ServerAddresses $ServerAddresses
+}
