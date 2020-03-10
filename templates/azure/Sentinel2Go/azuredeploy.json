@@ -66,6 +66,13 @@
             },
             "defaultValue": true
         },
+        "enableSysmonFunction": {
+            "type": "bool",
+            "metadata": {
+                "description": "Do you want to create the Sysmon function to be able to parse Sysmon event logs being sent to your Log Analytics workspace?"
+            },
+            "defaultValue": false
+        },
         "deployWinVM": {
             "type": "bool",
             "metadata": {
@@ -179,7 +186,6 @@
             "type": "Microsoft.Resources/deployments",
             "name": "deployWinVM",
             "apiVersion": "2019-10-01",
-            "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]",
                 "[resourceId('Microsoft.OperationsManagement/solutions/', concat('Security','(', variables('uniqueWorkspace'),')'))]"
@@ -208,6 +214,28 @@
                     },
                     "location": {
                         "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableSysmonFunction')]",
+            "type": "Microsoft.Resources/deployments",
+            "name": "enableSysmonFunction",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]",
+                "[resourceId('Microsoft.OperationsManagement/solutions/', concat('Security','(', variables('uniqueWorkspace'),')'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/sysmonFunction.json', parameters('_artifactsLocationSasToken')))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": {
+                        "value": "[variables('uniqueWorkspace')]"
                     }
                 }
             }
