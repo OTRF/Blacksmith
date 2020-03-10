@@ -3,16 +3,25 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workspaceName": {
-            "value": "SentinelExpress"
-        },
-        "newWorkspace": {
-            "value": true
+            "value": "Sentinel2Go"
         },
         "pricingTier": {
             "value": "PerGB2018"
         },
         "dataRetention": {
             "value": 30
+        },
+        "securityCollectionTier": {
+            "value": "Minimal"
+        },
+        "enableSecurityAudit": {
+            "value": true
+        },
+        "deployWinVM": {
+            "value": false
+        },
+        "ingestMordor": {
+            "value": false
         }
     }
 }
