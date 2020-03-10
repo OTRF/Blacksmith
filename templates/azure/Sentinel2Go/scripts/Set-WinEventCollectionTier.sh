@@ -13,7 +13,7 @@ usage(){
   echo "Invalid option: -$OPTARG"
   echo "Usage: ${script_name} -r [Resource group name]"
   echo "                      -w [Log Analytics Workspace Name]"
-  echo "                      -t [Security Events collection tier (None, Minimal, Common, All)]"
+  echo "                      -t [Security Events collection tier (None, Minimal, All)]"
   exit 1
 }
 
@@ -33,8 +33,19 @@ shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
 if [ -z "$RESOURCE_GROUP_NAME" ] || [ -z "$WORKSPACE_NAME" ] || [ -z "$COLLECTION_TIER" ]; then
-  usage
+    usage
 else
+    # *********** Validating Collection Tier ***************
+    case $COLLECTION_TIER in
+    None) ;;
+    Minimal) ;;
+    All) ;;
+    *)
+      echo -e "\n[!!] Not a valid Windows security event collection tier. Allowed tiers: None, Minimal & All\n"
+      usage
+      ;;
+    esac
+
     az rest -m put -u "https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups/${RESOURCE_GROUP_NAME}/providers/Microsoft.OperationalInsights/Workspaces/${WORKSPACE_NAME}/datasources/SecurityEventCollectionConfiguration?api-version=2015-11-01-preview" --body "
     {
         \"kind\": \"SecurityEventCollectionConfiguration\",

@@ -69,7 +69,6 @@
         },
         "location": {
             "type": "string",
-            "defaultValue": "[resourceGroup().location]",
             "metadata": {
                 "description": "Location for all resources."
             }
@@ -242,7 +241,6 @@
                     "type": "extensions",
                     "apiVersion": "2019-03-01",
                     "name": "OMSExtension",
-                    "location": "[resourceGroup().location]",
                     "dependsOn": [
                         "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
                     ],
