@@ -263,7 +263,7 @@
                         "value": "[parameters('workspaceName')]"
                     },
                     "securityCollectionTier": {
-                        "value": "Recommended"
+                        "value": "[parameters('securityCollectionTier')]"
                     }
                 }
             }
