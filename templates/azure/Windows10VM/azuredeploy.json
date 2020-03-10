@@ -87,10 +87,10 @@
         "virtualNetworkName": "vnet-winvm",
         "subnetName": "vmLAN",
         "virtualNetworkAddressRange": "192.168.0.0/16",
-        "subnetRange": "182.168.1.0/24",
+        "subnetRange": "192.168.1.0/24",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
         "VMName": "VM001",
-        "VMPrivateIPAddress": "172.18.39.106"
+        "VMPrivateIPAddress": "192.168.1.10"
     },
     "resources": [
         {
