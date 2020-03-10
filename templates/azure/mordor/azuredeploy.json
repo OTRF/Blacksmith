@@ -251,7 +251,7 @@
         {
             "name": "deploySentinel",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
+            "apiVersion": "2019-05-01",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -274,7 +274,7 @@
             "dependsOn": [
                 "deploySentinel"
             ],
-            "apiVersion": "2019-10-01",
+            "apiVersion": "2019-05-01",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -321,7 +321,7 @@
         {
             "name": "VNet",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
+            "apiVersion": "2019-05-01",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -350,7 +350,7 @@
         {
             "name": "nsgRules",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
+            "apiVersion": "2019-05-01",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -420,7 +420,7 @@
         {
             "name": "initialWorkstationSetup",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
+            "apiVersion": "2019-05-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines/', variables('hrVMName'))]",
                 "[resourceId('Microsoft.Compute/virtualMachines/', variables('acctVMName'))]",
@@ -462,7 +462,7 @@
         {
             "name": "networkShareSetup",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
+            "apiVersion": "2019-05-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('fileVMName'), 'joindomain')]"
             ],
@@ -496,7 +496,7 @@
         {
             "name": "initialDCSetup",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
+            "apiVersion": "2019-05-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines/', variables('dcVMName'))]"
             ],
@@ -534,7 +534,7 @@
         {
             "name": "c2Setup",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
+            "apiVersion": "2019-05-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('c2VMName'), 'DockerExtension')]"
             ],
@@ -567,7 +567,7 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-03-01",
+            "apiVersion": "2019-07-01",
             "name": "[concat(variables('dcVMName'), '/CreateADForest')]",
             "location": "[parameters('location')]",
             "dependsOn": [
@@ -601,7 +601,7 @@
         {
             "name": "adSetup",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
+            "apiVersion": "2019-05-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('dcVMName'), 'CreateADForest')]"
             ],
@@ -638,7 +638,7 @@
         },
         {
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2018-11-01",
+            "apiVersion": "2019-05-01",
             "name": "UpdateVNetDNS",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('dcVMName'), 'CreateADForest')]"
@@ -761,7 +761,7 @@
             "resources": [
                 {
                     "type": "extensions",
-                    "apiVersion": "2019-03-01",
+                    "apiVersion": "2019-07-01",
                     "name": "OMSExtension",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
