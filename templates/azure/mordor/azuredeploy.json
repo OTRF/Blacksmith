@@ -272,40 +272,6 @@
             }
         },
         {
-            "name": "winEventCollection",
-            "type": "Microsoft.Resources/deployments",
-            "dependsOn": [
-                "deploySentinel"
-            ],
-            "apiVersion": "2019-05-01",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/mordor/nestedtemplates/winEventCollection.json', parameters('_artifactsLocationSasToken')))]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName": {
-                        "value": "[reference('deploySentinel').outputs.workspaceName.value]"
-                    },
-                    "eventLogs": [
-                        "System",
-                        "Microsoft-Windows-Sysmon/Operational",
-                        "Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational",
-                        "Microsoft-Windows-Bits-Client/Operational",
-                        "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
-                        "Directory Service",
-                        "Microsoft-Windows-DNS-Client/Operational",
-                        "Microsoft-Windows-Windows Firewall With Advanced Security/Firewall",
-                        "Windows PowerShell",
-                        "Microsoft-Windows-PowerShell/Operational",
-                        "Microsoft-Windows-PowerShell-DesiredStateConfiguration-FileDownloadManager/Operational",
-                        "Microsoft-Windows-WMI-Activity/Operational"
-                    ]
-                }
-            }
-        },
-        {
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(variables('c2VMName'),'/', 'DockerExtension')]",
             "apiVersion": "2017-03-30",
