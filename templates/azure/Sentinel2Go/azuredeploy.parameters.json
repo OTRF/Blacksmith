@@ -17,6 +17,9 @@
         "enableSecurityAudit": {
             "value": true
         },
+        "enableSysmonFunction": {
+            "value": false
+        },
         "deployWinVM": {
             "value": false
         },
