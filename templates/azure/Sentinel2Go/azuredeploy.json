@@ -10,10 +10,10 @@
         },
         "utcValue": {
             "type": "string",
+            "defaultValue": "[utcNow()]",
             "metadata": {
                 "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
-            },
-            "defaultValue": "[utcNow()]"
+            }
         },
         "pricingTier": {
             "type": "string",
@@ -54,38 +54,45 @@
                 "Minimal",
                 "None"
             ],
+            "defaultValue": "Minimal",
             "metadata": {
                 "description": "Tier for gathering Windows Security Events."
-            },
-            "defaultValue": "Minimal"
+            }
         },
-        "enableSecurityAudit": {
+        "enableWindowsConnectors": {
             "type": "bool",
+            "defaultValue": true,
             "metadata": {
-                "description": "Do you want to enable the Security & Audit solution? If false, the template ignores the OMSGallery/Security solution and only enables the OMSGallery/SecurityInsights (Sentinel) solution. "
-            },
-            "defaultValue": true
-        },
-        "enableSysmonFunction": {
-            "type": "bool",
-            "metadata": {
-                "description": "Do you want to create the Sysmon function to be able to parse Sysmon event logs being sent to your Log Analytics workspace?"
-            },
-            "defaultValue": false
+                "description": "Do you want to enable Windows connectors such as Windows Event Logs? "
+            }
         },
         "deployWinVM": {
             "type": "bool",
+            "defaultValue": false,
             "metadata": {
-                "description": "Do you want to deploy a Win10 VM connected to your Log Analytics workspace?"
-            },
-            "defaultValue": false
+                "description": "Do you want to deploy a Win10 VM connected to your Log Analytics workspace along with Windows Connectors?"
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Username for the Virtual Machine."
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Password for the Virtual Machine."
+            }
         },
         "ingestMordor": {
             "type": "bool",
+            "defaultValue": false,
             "metadata": {
                 "description": "Do you want to ingest Mordor datasets to your Log Analytics workspace? Ref: https://mordordatasets.com"
-            },
-            "defaultValue": false
+            }
         },
         "_artifactsLocation": {
             "type": "string",
@@ -147,48 +154,42 @@
             }
         },
         {
-            "condition": "[parameters('enableSecurityAudit')]",
-            "name": "[concat('Security','(', variables('uniqueWorkspace'),')')]",
-            "type": "Microsoft.OperationsManagement/solutions",
-            "apiVersion": "2015-11-01-preview",
-            "location": "[resourceGroup().location]",
+            "condition": "[parameters('enableWindowsConnectors')]",
+            "type": "Microsoft.Resources/deployments",
+            "name": "enableWindowsConnectors",
+            "apiVersion": "2019-05-01",
             "dependsOn": [
                 "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]"
             ],
             "properties": {
-                "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('uniqueWorkspace'))]"
-            },
-            "plan": {
-                "name": "[concat('SecurityInsights','(', variables('uniqueWorkspace'),')')]",
-                "product": "OMSGallery/Security",
-                "publisher": "Microsoft",
-                "promotionCode": ""
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/windowsConnectors.json', parameters('_artifactsLocationSasToken')))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": {
+                        "value": "[variables('uniqueWorkspace')]"
+                    },
+                    "workspaceId": {
+                         "value": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]"
+                     },
+                    "securityCollectionTier": {
+                        "value": "[parameters('securityCollectionTier')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
             }
         },
         {
-            "condition": "[parameters('enableSecurityAudit')]",
-            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
-            "apiVersion": "2015-11-01-preview",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]",
-                "[resourceId('Microsoft.OperationsManagement/solutions/', concat('Security','(', variables('uniqueWorkspace'),')'))]"
-            ],
-            "name": "[concat(variables('uniqueWorkspace'), '/', 'SecurityEventCollectionConfiguration')]",
-            "kind": "SecurityEventCollectionConfiguration",
-            "properties": {
-                "tier": "[parameters('securityCollectionTier')]",
-                "tierSetMethod": "Custom"
-            }
-        },
-        {
-            "condition": "[parameters('deployWinVM')]",
+            "condition": "[and(parameters('enableWindowsConnectors'), parameters('deployWinVM'))]",
             "type": "Microsoft.Resources/deployments",
             "name": "deployWinVM",
             "apiVersion": "2019-05-01",
             "dependsOn": [
-                "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]",
-                "[resourceId('Microsoft.OperationsManagement/solutions/', concat('Security','(', variables('uniqueWorkspace'),')'))]"
+                "enableWindowsConnectors"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -204,38 +205,16 @@
                         "value": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey]"
                     },
                     "adminUsername": {
-                        "value": "wardog"
+                        "value": "[parameters('adminUsername')]"
                     },
                     "adminPassword": {
-                        "value": "N0sFu1m0s"
+                        "value": "[parameters('adminPassword')]"
                     },
                     "dnsLabelPrefix": {
                         "value": "sentinel"
                     },
                     "location": {
                         "value": "[parameters('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[parameters('enableSysmonFunction')]",
-            "type": "Microsoft.Resources/deployments",
-            "name": "enableSysmonFunction",
-            "apiVersion": "2019-05-01",
-            "dependsOn": [
-                "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]",
-                "[resourceId('Microsoft.OperationsManagement/solutions/', concat('Security','(', variables('uniqueWorkspace'),')'))]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/sysmonFunction.json', parameters('_artifactsLocationSasToken')))]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName": {
-                        "value": "[variables('uniqueWorkspace')]"
                     }
                 }
             }

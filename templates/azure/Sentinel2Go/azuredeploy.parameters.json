@@ -14,11 +14,8 @@
         "securityCollectionTier": {
             "value": "Minimal"
         },
-        "enableSecurityAudit": {
+        "enableWindowsConnectors": {
             "value": true
-        },
-        "enableSysmonFunction": {
-            "value": false
         },
         "deployWinVM": {
             "value": false
