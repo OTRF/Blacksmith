@@ -2,6 +2,13 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "utcValue": {
+            "type": "string",
+            "metadata": {
+                "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
+            },
+            "defaultValue": "[utcNow()]"
+        },
         "adminUsername": {
             "type": "string",
             "metadata": {
@@ -77,8 +84,8 @@
     },
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
-        "virtualNetworkName": "vnet-sentinel",
-        "subnetName": "SentinelLAN",
+        "virtualNetworkName": "vne-winvm",
+        "subnetName": "vmLAN",
         "virtualNetworkAddressRange": "192.168.0.0/16",
         "subnetRange": "182.168.1.0/24",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
