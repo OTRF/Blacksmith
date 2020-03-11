@@ -4,10 +4,10 @@
     "parameters": {
         "utcValue": {
             "type": "string",
+            "defaultValue": "[utcNow()]",
             "metadata": {
                 "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
-            },
-            "defaultValue": "[utcNow()]"
+            }
         },
         "adminUsername": {
             "type": "string",
@@ -62,14 +62,23 @@
             },
             "defaultValue": "*"
         },
+        "enableMonitoringAgent": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to enable the Microsoft Monitoring agent? "
+            }
+        },
         "workspaceId": {
             "type": "string",
+            "defaultValue": "",
             "metadata": {
                 "description": "Log analytics workspace ID"
             }
         },
         "workspaceKey": {
             "type": "string",
+            "defaultValue": "",
             "metadata": {
                 "description": "Log analytics workspace keys"
             }
@@ -102,7 +111,8 @@
                 "name": "Standard_LRS"
             },
             "kind": "Storage",
-            "properties": {}
+            "properties": {
+            }
         },
         {
             "comments": "Default Network Security Group for Windows endpoints",
@@ -243,31 +253,31 @@
                         "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
                     }
                 }
-            },
-            "resources": [
-                {
-                    "type": "extensions",
-                    "apiVersion": "2019-03-01",
-                    "name": "OMSExtension",
-                    "location": "[parameters('location')]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
-                    ],
-                    "properties": {
-                        "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                        "type": "MicrosoftMonitoringAgent",
-                        "typeHandlerVersion": "1.0",
-                        "autoUpgradeMinorVersion": true,
-                        "settings": {
-                            "workspaceId": "[parameters('workspaceId')]"
-                        },
-                        "protectedSettings": {
-                            "workspaceKey": "[parameters('workspaceKey')]"
-                        }
-                    }
+            }
+        },
+        {
+            "condition": "[parameters('enableMonitoringAgent')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-03-01",
+            "name": "[concat(variables('VMName'), '/OMSExtension')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                "type": "MicrosoftMonitoringAgent",
+                "typeHandlerVersion": "1.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "workspaceId": "[parameters('workspaceId')]"
+                },
+                "protectedSettings": {
+                    "workspaceKey": "[parameters('workspaceKey')]"
                 }
-            ]
+            }
         }
     ],
-    "outputs": {}
+    "outputs": {
+    }
 }

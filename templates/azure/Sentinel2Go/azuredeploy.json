@@ -205,6 +205,9 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
+                    "enableMonitoringAgent": {
+                        "value": true
+                    },
                     "workspaceId": {
                         "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').customerId]"
                     },
