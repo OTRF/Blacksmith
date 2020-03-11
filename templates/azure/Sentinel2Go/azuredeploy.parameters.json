@@ -14,8 +14,11 @@
         "securityCollectionTier": {
             "value": "Minimal"
         },
+        "enableAzureConnectors": {
+            "value": false
+        },
         "enableWindowsConnectors": {
-            "value": true
+            "value": false
         },
         "deployWinVM": {
             "value": false

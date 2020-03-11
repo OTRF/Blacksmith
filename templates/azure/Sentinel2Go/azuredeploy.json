@@ -61,9 +61,16 @@
         },
         "enableWindowsConnectors": {
             "type": "bool",
-            "defaultValue": true,
+            "defaultValue": false,
             "metadata": {
                 "description": "Do you want to enable Windows connectors such as Windows Event Logs? "
+            }
+        },
+        "enableAzureConnectors": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to enable Azure connectors such as Azure Activity Logs? "
             }
         },
         "deployWinVM": {
@@ -212,6 +219,33 @@
                     },
                     "dnsLabelPrefix": {
                         "value": "sentinel"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableAzureConnectors')]",
+            "type": "Microsoft.Resources/deployments",
+            "name": "enableAzureConnectors",
+            "apiVersion": "2019-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/azureConnectors.json', parameters('_artifactsLocationSasToken')))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": {
+                        "value": "[variables('uniqueWorkspace')]"
+                    },
+                    "workspaceId": {
+                         "value": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
