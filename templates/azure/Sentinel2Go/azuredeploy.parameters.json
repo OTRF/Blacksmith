@@ -14,6 +14,9 @@
         "enableAzureConnectors": {
             "value": false
         },
+        "enableMDATPIntegration": {
+            "value": false
+        },
         "enableWindowsConnectors": {
             "value": false
         },
@@ -28,6 +31,9 @@
         },
         "adminPassword": {
             "value": "GEN-PASSWORD"
+        },
+        "allowedIPAddresses": {
+            "value": "*"
         },
         "ingestMordor": {
             "value": false

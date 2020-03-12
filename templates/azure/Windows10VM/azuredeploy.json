@@ -83,6 +83,20 @@
                 "description": "Log analytics workspace keys"
             }
         },
+        "eventHubNamespace": {
+            "type": "string",
+            "defaultValue": "MordorDatans",
+            "metadata": {
+                "description": "Event Hub Namespace"
+            }
+        },
+        "eventHubName": {
+            "type": "string",
+            "defaultValue": "MordorData",
+            "metadata": {
+                "description": "Event Hub Name"
+            }
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -99,7 +113,14 @@
         "subnetRange": "192.168.1.0/24",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
         "VMName": "VM001",
-        "VMPrivateIPAddress": "192.168.1.10"
+        "VMPrivateIPAddress": "192.168.1.10",
+        "accountid": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+        "eventHubNamespaceName": "[parameters('eventHubNamespace')]",
+        "eventHubName": "[parameters('eventHubName')]",
+        "eventHubURL": "[concat('https://',variables('eventHubNamespaceName'),'.servicebus.windows.net/',variables('eventHubName'))]",
+        "sharedAccessKeyName": "RootManageSharedAccessKey",
+        "eventHubrg": "MordorEnvironment",
+        "wwsubscriptionid": "[subscription().id]"
     },
     "resources": [
         {
@@ -274,6 +295,103 @@
                 },
                 "protectedSettings": {
                     "workspaceKey": "[parameters('workspaceKey')]"
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableMonitoringAgent')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(variables('vmName'), '/', 'WADExtensionSetup')]",
+            "apiVersion": "2017-12-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.ManagedIdentity",
+                "type": "ManagedIdentityExtensionForWindows",
+                "typeHandlerVersion": "1.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "port": 50342
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableMonitoringAgent')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(variables('VMName'), '/', 'Microsoft.Insights.VMDiagnosticsSettings')]",
+            "apiVersion": "2017-12-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Azure.Diagnostics",
+                "type": "IaaSDiagnostics",
+                "typeHandlerVersion": "1.12",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "storageAccount": "[variables('storageAccountName')]",
+                    "WadCfg": {
+                        "DiagnosticMonitorConfiguration": {
+                            "overallQuotaInMB": 5120,
+                            "sinks": "applicationInsights.errors",
+                            "DiagnosticInfrastructureLogs": {
+                                "scheduledTransferLogLevelFilter": "Verbose"
+                            },
+                            "WindowsEventLog": {
+                                "scheduledTransferPeriod": "PT1M",
+                                "sinks": "HotPath",
+                                "scheduledTransferLogLevelFilter": "Information",
+                                "DataSource": [
+                                    {
+                                        "name": "Application!*[System[(Level = 1 or Level = 2 or Level = 3)]]"
+                                    },
+                                    {
+                                        "name": "Security!*[System[band(Keywords,13510798882111488) and (EventID=4624) and Provider[@Name='Microsoft-Windows-Security-Auditing']]]"
+                                    },
+                                    {
+                                        "name": "System!*[System[(Level = 1 or Level = 2 or Level = 3 or Level = 4)]]"
+                                    }
+                                ]
+                            }
+                        },
+                        "SinksConfig": {
+                            "Sink": [
+                                {
+                                    "name": "HotPath",
+                                    "EventHub": {
+                                        "Url": "[variables('eventHubURL')]",
+                                        "SharedAccessKeyName": "[variables('sharedAccessKeyName')]",
+                                        "SharedAccessKey": "[listKeys(concat('/subscriptions/',variables('wwsubscriptionid'),'/resourceGroups/MordorEnvironment/providers/Microsoft.EventHub/namespaces/',variables('eventHubNamespaceName'),'/AuthorizationRules/',variables('sharedAccessKeyName')), '2017-04-01').primaryKey]"
+                                    }
+                                },
+                                {
+                                    "name": "applicationInsights",
+                                    "ApplicationInsights": "",
+                                    "Channels": {
+                                        "Channel": [
+                                            {
+                                                "logLevel": "Error",
+                                                "name": "errors"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                "protectedSettings": {
+                    "EventHub": {
+                        "Url": "[variables('eventHubURL')]",
+                        "SharedAccessKeyName": "RootManageSharedAccessKey",
+                        "SharedAccessKey": "[listKeys(concat('/subscriptions/',variables('wwsubscriptionid'),'/resourceGroups/',variables('eventHubrg'),'/providers/Microsoft.EventHub/namespaces/',variables('eventHubNamespaceName'),'/AuthorizationRules/',variables('sharedAccessKeyName')), '2017-04-01').primaryKey]"
+                    },
+                    "storageAccountName": "[variables('storageAccountName')]",
+                    "storageAccountKey": "[listKeys(variables('accountid'),'2015-06-15').key1]",
+                    "storageAccountEndPoint": "https://core.windows.net/"
                 }
             }
         }

@@ -66,6 +66,13 @@
                 "description": "Do you want to enable Windows connectors such as Windows Event Logs? "
             }
         },
+        "enableMDATPIntegration": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to enable Azure MDATP integration? "
+            }
+        },
         "enableAzureConnectors": {
             "type": "bool",
             "defaultValue": false,
@@ -93,6 +100,13 @@
             "metadata": {
                 "description": "Password for the Virtual Machine."
             }
+        },
+        "allowedIPAddresses": {
+            "type": "string",
+            "metadata": {
+                "description": "The sourceAddressPrefixes allowed to connect to the Windows 10 VM"
+            },
+            "defaultValue": "*"
         },
         "ingestMordor": {
             "type": "bool",
@@ -220,6 +234,9 @@
                     "adminPassword": {
                         "value": "[parameters('adminPassword')]"
                     },
+                    "allowedIPAddresses": {
+                        "value": "[parameters('allowedIPAddresses')]"
+                    },
                     "dnsLabelPrefix": {
                         "value": "sentinel"
                     },
@@ -254,6 +271,16 @@
                         "value": "[parameters('location')]"
                     }
                 }
+            }
+        },
+        {
+            "condition": "[parameters('enableMDATPIntegration')]",
+            "type": "Microsoft.Security/settings",
+            "apiVersion": "2019-01-01",
+            "name": "MDATP",
+            "kind": "DataExportSettings",
+            "properties": {
+                "enabled": true
             }
         }
     ],
