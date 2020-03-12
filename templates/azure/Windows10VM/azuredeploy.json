@@ -334,23 +334,13 @@
                     "WadCfg": {
                         "DiagnosticMonitorConfiguration": {
                             "overallQuotaInMB": 5120,
-                            "sinks": "applicationInsights.errors",
-                            "DiagnosticInfrastructureLogs": {
-                                "scheduledTransferLogLevelFilter": "Verbose"
-                            },
                             "WindowsEventLog": {
                                 "scheduledTransferPeriod": "PT1M",
                                 "sinks": "HotPath",
                                 "scheduledTransferLogLevelFilter": "Information",
                                 "DataSource": [
                                     {
-                                        "name": "Application!*[System[(Level = 1 or Level = 2 or Level = 3)]]"
-                                    },
-                                    {
-                                        "name": "Security!*[System[band(Keywords,13510798882111488) and (EventID=4624) and Provider[@Name='Microsoft-Windows-Security-Auditing']]]"
-                                    },
-                                    {
-                                        "name": "System!*[System[(Level = 1 or Level = 2 or Level = 3 or Level = 4)]]"
+                                        "name": "Security!*"
                                     }
                                 ]
                             }
@@ -363,18 +353,6 @@
                                         "Url": "[variables('eventHubURL')]",
                                         "SharedAccessKeyName": "[variables('sharedAccessKeyName')]",
                                         "SharedAccessKey": "[listkeys(resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventHubNamespaceName'), 'RootManageSharedAccessKey'), '2017-04-01').primaryKey]"
-                                    }
-                                },
-                                {
-                                    "name": "applicationInsights",
-                                    "ApplicationInsights": "",
-                                    "Channels": {
-                                        "Channel": [
-                                            {
-                                                "logLevel": "Error",
-                                                "name": "errors"
-                                            }
-                                        ]
                                     }
                                 }
                             ]
