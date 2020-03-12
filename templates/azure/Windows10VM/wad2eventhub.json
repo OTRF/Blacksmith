@@ -69,18 +69,18 @@
                 "description": "Do you want to enable the Microsoft Monitoring agent? "
             }
         },
-        "workspaceId": {
+        "eventHubNamespace": {
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": "MordorDatans",
             "metadata": {
-                "description": "Log analytics workspace ID"
+                "description": "Event Hub Namespace"
             }
         },
-        "workspaceKey": {
+        "eventHubName": {
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": "MordorData",
             "metadata": {
-                "description": "Log analytics workspace keys"
+                "description": "Event Hub Name"
             }
         },
         "location": {
@@ -99,7 +99,12 @@
         "subnetRange": "192.168.1.0/24",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
         "VMName": "VM001",
-        "VMPrivateIPAddress": "192.168.1.10"
+        "VMPrivateIPAddress": "192.168.1.10",
+        "accountid": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+        "eventHubNamespaceName": "[parameters('eventHubNamespace')]",
+        "eventHubName": "[parameters('eventHubName')]",
+        "eventHubURL": "[concat('https://',variables('eventHubNamespaceName'),'.servicebus.windows.net/',variables('eventHubName'))]",
+        "sharedAccessKeyName": "RootManageSharedAccessKey"
     },
     "resources": [
         {
@@ -258,22 +263,75 @@
         {
             "condition": "[parameters('enableMonitoringAgent')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-03-01",
-            "name": "[concat(variables('VMName'), '/OMSExtension')]",
+            "name": "[concat(variables('vmName'), '/', 'WADExtensionSetup')]",
+            "apiVersion": "2017-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
             ],
             "properties": {
-                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                "type": "MicrosoftMonitoringAgent",
+                "publisher": "Microsoft.ManagedIdentity",
+                "type": "ManagedIdentityExtensionForWindows",
                 "typeHandlerVersion": "1.0",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    "workspaceId": "[parameters('workspaceId')]"
+                    "port": 50342
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableMonitoringAgent')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(variables('VMName'), '/', 'Microsoft.Insights.VMDiagnosticsSettings')]",
+            "apiVersion": "2017-12-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Azure.Diagnostics",
+                "type": "IaaSDiagnostics",
+                "typeHandlerVersion": "1.12",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "storageAccount": "[variables('storageAccountName')]",
+                    "WadCfg": {
+                        "DiagnosticMonitorConfiguration": {
+                            "overallQuotaInMB": 5120,
+                            "WindowsEventLog": {
+                                "scheduledTransferPeriod": "PT1M",
+                                "sinks": "HotPath",
+                                "scheduledTransferLogLevelFilter": "Information",
+                                "DataSource": [
+                                    {
+                                        "name": "Security!*"
+                                    }
+                                ]
+                            }
+                        },
+                        "SinksConfig": {
+                            "Sink": [
+                                {
+                                    "name": "HotPath",
+                                    "EventHub": {
+                                        "Url": "[variables('eventHubURL')]",
+                                        "SharedAccessKeyName": "[variables('sharedAccessKeyName')]",
+                                        "SharedAccessKey": "[listkeys(resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventHubNamespaceName'), 'RootManageSharedAccessKey'), '2017-04-01').primaryKey]"
+                                    }
+                                }
+                            ]
+                        }
+                    }
                 },
                 "protectedSettings": {
-                    "workspaceKey": "[parameters('workspaceKey')]"
+                    "EventHub": {
+                        "Url": "[variables('eventHubURL')]",
+                        "SharedAccessKeyName": "RootManageSharedAccessKey",
+                        "SharedAccessKey": "[listkeys(resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventHubNamespaceName'), 'RootManageSharedAccessKey'), '2017-04-01').primaryKey]"
+                    },
+                    "storageAccountName": "[variables('storageAccountName')]",
+                    "storageAccountKey": "[listKeys(variables('accountid'),'2015-06-15').key1]",
+                    "storageAccountEndPoint": "https://core.windows.net/"
                 }
             }
         }
