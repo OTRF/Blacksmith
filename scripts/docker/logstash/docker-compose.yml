@@ -1,0 +1,27 @@
+mordor-logstash:
+    image: docker.elastic.co/logstash/logstash:7.5.2
+    container_name: mordor-logstash
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "9"
+        max-size: "6m"
+    volumes:
+      - /opt/logstash/pipeline:/usr/share/logstash/pipeline
+      - /opt/logstash/scripts:/usr/share/logstash/scripts
+      - /opt/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+    entrypoint: /usr/share/logstash/scripts/logstash-entrypoint.sh
+    environment:
+      - xpack.monitoring.enabled=false
+      - BOOTSTRAP_SERVERS=${BOOTSTRAP_SERVERS}
+      - SASL_JAAS_CONFIG=${SASL_JAAS_CONFIG}
+      - EVENTHUB_NAME=${EVENTHUB_NAME}
+    ports:
+      - "3515:3515"
+    restart: always
+    networks:
+      mordor:
+
+networks:
+    mordor:
+        driver: bridge
