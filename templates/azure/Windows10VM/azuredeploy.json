@@ -118,9 +118,7 @@
         "eventHubNamespaceName": "[parameters('eventHubNamespace')]",
         "eventHubName": "[parameters('eventHubName')]",
         "eventHubURL": "[concat('https://',variables('eventHubNamespaceName'),'.servicebus.windows.net/',variables('eventHubName'))]",
-        "sharedAccessKeyName": "RootManageSharedAccessKey",
-        "eventHubrg": "MordorEnvironment",
-        "wwsubscriptionid": "[subscription().id]"
+        "sharedAccessKeyName": "RootManageSharedAccessKey"
     },
     "resources": [
         {
@@ -303,7 +301,7 @@
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(variables('vmName'), '/', 'WADExtensionSetup')]",
             "apiVersion": "2017-12-01",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
             ],
@@ -322,7 +320,7 @@
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(variables('VMName'), '/', 'Microsoft.Insights.VMDiagnosticsSettings')]",
             "apiVersion": "2017-12-01",
-            "location": "[resourceGroup().location]",
+            "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
             ],
@@ -364,7 +362,7 @@
                                     "EventHub": {
                                         "Url": "[variables('eventHubURL')]",
                                         "SharedAccessKeyName": "[variables('sharedAccessKeyName')]",
-                                        "SharedAccessKey": "[listKeys(concat('/subscriptions/',variables('wwsubscriptionid'),'/resourceGroups/MordorEnvironment/providers/Microsoft.EventHub/namespaces/',variables('eventHubNamespaceName'),'/AuthorizationRules/',variables('sharedAccessKeyName')), '2017-04-01').primaryKey]"
+                                        "SharedAccessKey": "[listkeys(resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventHubNamespaceName'), 'RootManageSharedAccessKey'), '2017-04-01').primaryKey]"
                                     }
                                 },
                                 {
@@ -387,7 +385,7 @@
                     "EventHub": {
                         "Url": "[variables('eventHubURL')]",
                         "SharedAccessKeyName": "RootManageSharedAccessKey",
-                        "SharedAccessKey": "[listKeys(concat('/subscriptions/',variables('wwsubscriptionid'),'/resourceGroups/',variables('eventHubrg'),'/providers/Microsoft.EventHub/namespaces/',variables('eventHubNamespaceName'),'/AuthorizationRules/',variables('sharedAccessKeyName')), '2017-04-01').primaryKey]"
+                        "SharedAccessKey": "[listkeys(resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventHubNamespaceName'), 'RootManageSharedAccessKey'), '2017-04-01').primaryKey]"
                     },
                     "storageAccountName": "[variables('storageAccountName')]",
                     "storageAccountKey": "[listKeys(variables('accountid'),'2015-06-15').key1]",
