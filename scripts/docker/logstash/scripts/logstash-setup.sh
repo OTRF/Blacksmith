@@ -50,9 +50,9 @@ curl -L https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/doc
 chmod +x /usr/local/bin/docker-compose
 
 echo "creating local logstash folders"
-mkdir /opt/logstash/scripts
-mkdir /opt/logstash/pipeline
-mkdir /opt/logstash/config
+mkdir -p /opt/logstash/scripts
+mkdir -p /opt/logstash/pipeline
+mkdir -p /opt/logstash/config
 
 echo "Downloading logstash files locally to be mounted to docker container"
 wget -O /opt/logstash/scripts/logstash-entrypoint.sh https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/scripts/docker/logstash/scripts/logstash-entrypoint.sh
