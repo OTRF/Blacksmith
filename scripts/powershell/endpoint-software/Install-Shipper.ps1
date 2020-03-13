@@ -23,7 +23,7 @@ else
 }
 
 $OutputFile = Split-Path $URL -leaf
-$NewFile = "$($env:TEMP)\$outputFile"
+$NewFile = "C:\ProgramData\$outputFile"
 
 # Download Installer
 write-Host "Downloading $OutputFile .."

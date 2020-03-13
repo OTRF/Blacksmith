@@ -212,14 +212,16 @@
         "dcPrivateIPAddress": "172.18.39.5",
         "c2VMName": "LINUX-C2",
         "c2PrivateIPAddress": "172.18.39.8",
+        "logstashVMName": "LINUX-LOGSTASH",
+        "logstashPrivateIPAddress": "172.18.39.6",
         "desktopsVMList": "[concat(variables('hrVMName'), ',', variables('acctVMName'), ',', variables('itVMName'), ',', variables('fileVMName'))]",
         "desktopsVMListArray": "[split(variables('desktopsVMList'),',')]",
         "windowsVMList": "[concat(variables('desktopsVMList'), ',', variables('dcVMName'))]",
-        "linuxVMList": "[variables('c2VMName')]",
+        "linuxVMList": "[concat(variables('c2VMName'), ',', variables('logstashVMName'))]",
         "allVMList": "[concat(variables('windowsVMList'), ',', variables('linuxVMList'))]",
         "allVMListArray": "[split(variables('allVMList'),',')]",
         "windowsPrivateIPList": "[concat(variables('hrPrivateIPAddress'), ',', variables('acctPrivateIPAddress'), ',', variables('itPrivateIPAddress'), ',', variables('filePrivateIPAddress'), ',', variables('dcPrivateIPAddress'))]",
-        "linuxPrivateIPList": "[variables('c2PrivateIPAddress')]",
+        "linuxPrivateIPList": "[concat(variables('c2PrivateIPAddress'), ',', variables('logstashPrivateIPAddress'))]",
         "allPrivateIPList": "[concat(variables('windowsPrivateIPList'), ',', variables('linuxPrivateIPList'))]",
         "allPrivateIPArray": "[split(variables('allPrivateIPList'),',')]",
         "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
@@ -921,6 +923,44 @@
                 },
                 "osProfile": {
                     "computerName": "[variables('c2VMName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPublicKey')]",
+                    "linuxConfiguration": "[variables('linuxConfiguration')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-03-01",
+            "name": "[variables('logstashVMName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces/', 'LINUX-LOGSTASH-ni')]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('linuxVmSize')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage"
+                    },
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "[parameters('ubuntuSKU')]",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', 'LINUX-LOGSTASH-ni')]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[variables('logstashVMName')]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPublicKey')]",
                     "linuxConfiguration": "[variables('linuxConfiguration')]"
