@@ -10,7 +10,11 @@ param (
     [string]$ShipperAgent,
 
     [Parameter(Mandatory=$true)]
-    [string]$ConfigUrl
+    [string]$ConfigUrl,
+
+    [Parameter(Mandatory=$false)]
+    [string]$DestinationIP
+
 )
 
 if($ShipperAgent -eq "Winlogbeat")
@@ -77,6 +81,9 @@ else
 write-Host "Downloading shipper config.."
 $wc.DownloadFile($ConfigUrl, $shipperConfig)
 if (!(Test-Path $shipperConfig)){ write-Host "File $shipperConfig does not exists.. "; break }
+
+# Updating Config IP
+((Get-Content -path $shipperConfig -Raw) -replace 'IPADDRESS',$DestinationIP) | Set-Content -Path $shipperConfig
 
 # Installing Service
 $arrService = Get-Service -Name $ServiceName

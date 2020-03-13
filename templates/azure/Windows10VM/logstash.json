@@ -1,0 +1,259 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "utcValue": {
+            "type": "string",
+            "defaultValue": "[utcNow()]",
+            "metadata": {
+                "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Username for the Virtual Machine."
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Password for the Virtual Machine."
+            }
+        },
+        "dnsLabelPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
+            }
+        },
+        "windowsDesktopSKU": {
+            "type": "string",
+            "defaultValue": "19h2-pro",
+            "allowedValues": [
+                "19h1-pro",
+                "19h2-pro",
+                "rs4-pro",
+                "rs5-pro"
+            ],
+            "metadata": {
+                "description": "The Windows version for the Desktop VM. This will pick a fully patched image of this given Windows version."
+            }
+        },
+        "windowsDesktopVmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B2ms",
+            "allowedValues": [
+                "Standard_B2s",
+                "Standard_B2ms",
+                "Standard_B4ms",
+                "Standard_A2_v2",
+                "Standard_A4_v2",
+                "Standard_A8_v2"
+            ],
+            "metadata": {
+                "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
+            }
+        },
+        "allowedIPAddresses": {
+            "type": "string",
+            "metadata": {
+                "description": "The sourceAddressPrefixes allowed to connect to this deployment"
+            },
+            "defaultValue": "*"
+        },
+        "_artifactsLocation": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/",
+            "metadata": {
+                "description": "The location of resources, such as templates and DSC modules, that the template depends on"
+            }
+        },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
+            }
+        },
+        "enableMonitoringAgent": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to enable the Microsoft Monitoring agent? "
+            }
+        },
+        "enableAuditing": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to enable Windows Auditing (Enable Windows Security audit categories and Sysmon? "
+            }
+        },
+        "enableLogShipper": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to install a log shipper? It install nxlog"
+            }
+        },
+        "workspaceId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Log analytics workspace ID"
+            }
+        },
+        "workspaceKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Log analytics workspace keys"
+            }
+        },
+        "adminPublicKey": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Specifies the SSH rsa public key file as a string. Use \"ssh-keygen -t rsa -b 2048\" to generate your SSH key pairs."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    },
+    "variables": {
+        "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
+        "virtualNetworkName": "vnet-winvm",
+        "subnetName": "vmLAN",
+        "virtualNetworkAddressRange": "192.168.0.0/16",
+        "subnetRange": "192.168.1.0/24",
+        "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
+        "VMName": "VM001",
+        "logstashVMName": "LINUX-LOGSTASH",
+        "VMPrivateIPAddress": "192.168.1.10",
+        "logstashPrivateIPAddress": "192.168.1.6",
+        "prepareBoxScript": "[uri(parameters('_artifactsLocation'), concat('scripts/powershell/misc/Prepare-Box.ps1', parameters('_artifactsLocationSasToken')))]",
+        "setSecurityAuditingScript": "[uri(parameters('_artifactsLocation'), concat('scripts/powershell/auditing/Set-SecurityAuditing.ps1', parameters('_artifactsLocationSasToken')))]",
+        "setSACLScript": "https://raw.githubusercontent.com/hunters-forge/Set-AuditRule/master/Set-AuditRule.ps1",
+        "installAgentScript": "[uri(parameters('_artifactsLocation'), concat('scripts/powershell/endpoint-software/Install-Endpoint-Agent.ps1', parameters('_artifactsLocationSasToken')))]",
+        "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+                "publicKeys": [
+                    {
+                        "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                        "keyData": "[parameters('adminPublicKey')]"
+                    }
+                ]
+            }
+        }
+    },
+    "resources": [
+        {
+            "condition": "[parameters('enableLogShipper')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-03-01",
+            "name": "[concat(variables('VMName'), '/Shipper')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.8",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/scripts/powershell/endpoint-software/Install-Shipper.ps1"
+                    ],
+                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ./Install-Shipper.ps1 -ShipperAgent Nxlog -ConfigUrl https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Windows10VM/config/nxlog.conf"
+                },
+                "protectedSettings": {}
+            }
+        },
+        {
+            "condition": "[parameters('enableLogShipper')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "name": "[concat(variables('logstashVMName'),'/', 'DockerExtension')]",
+            "apiVersion": "2017-03-30",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('logstashVMName'))]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "DockerExtension",
+                "typeHandlerVersion": "1.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {}
+            }
+        },
+        {
+            "condition": "[parameters('enableLogShipper')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-03-01",
+            "name": "[concat(variables('logstashVMName'), '/Logstash')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('logstashVMName'))]",
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('logstashVMName'), 'DockerExtension')]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.1",
+                "autoUpgradeMinorVersion": true,
+                "settings": {},
+                "protectedSettings": {
+                    "commandToExecute": "bash logstash-setup.sh -b mordordatans.servicebus.windows.net:9093 -c \"org.apache.kafka.common.security.plain.PlainLoginModule required username=$ConnectionString password='Endpoint=sb://mordordatans.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=JCwWg9aUrmOivs4LHTo2MbFNrmY2vYetpSCeRKlqo1I=';\" -n mordordata",
+                    "fileUris": ["https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/scripts/docker/logstash/scripts/logstash-setup.sh"]
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableLogShipper')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-03-01",
+            "name": "[variables('logstashVMName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces/', 'LINUX-LOGSTASH-ni')]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_B2ms"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage"
+                    },
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "18.04-LTS",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', 'LINUX-LOGSTASH-ni')]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[variables('logstashVMName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPublicKey')]",
+                    "linuxConfiguration": "[variables('linuxConfiguration')]"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
