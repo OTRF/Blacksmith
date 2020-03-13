@@ -1,4 +1,7 @@
-mordor-logstash:
+version: '3.5'
+
+services:
+  mordor-logstash:
     image: docker.elastic.co/logstash/logstash:7.5.2
     container_name: mordor-logstash
     logging:
@@ -10,6 +13,7 @@ mordor-logstash:
       - /opt/logstash/pipeline:/usr/share/logstash/pipeline
       - /opt/logstash/scripts:/usr/share/logstash/scripts
       - /opt/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - /opt/logstash/outputs/kafka.rb:/usr/share/logstash/vendor/bundle/jruby/2.5.0/gems/logstash-integration-kafka-10.0.0-java/lib/logstash/outputs/kafka.rb
     entrypoint: /usr/share/logstash/scripts/logstash-entrypoint.sh
     environment:
       - xpack.monitoring.enabled=false
