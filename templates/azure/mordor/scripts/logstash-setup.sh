@@ -69,6 +69,6 @@ chmod +x /opt/logstash/scripts/logstash-entrypoint.sh
 
 export BOOTSTRAP_SERVERS=$EVENTHUB_NAMESPACE.servicebus.windows.net:9093
 export SASL_JAAS_CONFIG="org.apache.kafka.common.security.plain.PlainLoginModule required username=\$ConnectionString password='$EVENTHUB_CONNECTIONSTRING';"
-export EVENTHUB_NAME$EVENTHUB_NAME
+export EVENTHUB_NAME=$EVENTHUB_NAME
 
 docker-compose -f /opt/logstash/docker-compose.yml up --build -d
