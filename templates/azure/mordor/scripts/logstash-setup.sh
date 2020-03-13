@@ -62,7 +62,7 @@ wget -O /opt/logstash/scripts/logstash-entrypoint.sh https://raw.githubuserconte
 wget -O /opt/logstash/pipeline/eventhub.conf https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/mordor/logstash/pipeline/eventhub.conf
 wget -O /opt/logstash/config/logstash.yml https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/mordor/logstash/config/logstash.yml
 wget -O /opt/logstash/docker-compose.yml https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/mordor/logstash/docker-compose.yml
-wget -O /opt/logstash/output/kafka.rb https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/mordor/logstash/kafka.rb
+wget -O /opt/logstash/outputs/kafka.rb https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/mordor/logstash/kafka.rb
 
 chown -R $LOCAL_USER:$LOCAL_USER /opt/logstash/*
 chmod +x /opt/logstash/scripts/logstash-entrypoint.sh
