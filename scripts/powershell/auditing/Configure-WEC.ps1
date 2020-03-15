@@ -13,8 +13,12 @@ param (
 )
 
 # ********* Setting WinRM Configs for WEC ***********
+Write-host 'Enabling WinRM..'
 winrm quickconfig -q
 winrm quickconfig -transport:http
+
+write-Host "Setting WinRM to start automatically.."
+& sc.exe config WinRM start= auto
 
 winrm set winrm/config '@{MaxEnvelopeSizekb="500"}'
 winrm set winrm/config '@{MaxTimeoutms="60000"}'
@@ -39,21 +43,54 @@ winrm set winrm/config/listener?Address=*+Transport=HTTP '@{Port="5985"}'
 
 Restart-Service WinRM
 
+$ServiceName = 'WinRM'
+$arrService = Get-Service -Name $ServiceName
+
+while ($arrService.Status -ne 'Running')
+{
+    Start-Service $ServiceName
+    write-host $arrService.status
+    write-host "$ServiceName Service starting"
+    Start-Sleep -seconds 5
+    $arrService.Refresh()
+    if ($arrService.Status -eq 'Running')
+    {
+        Write-Host "$ServiceName Service is now Running"
+    }
+}
+
 # ********** Updating ForwardedEvents log size *******
 wevtutil sl ForwardedEvents /ms:8589934592
 
 # ********** Starting WEC Service *************
 Stop-Service wecsvc
 Set-Service wecsvc -StartupType "Automatic"
+
 # Stand-alone service instead of shared
 # Powershell version of : sc config wecsvc type=own
 $s = (Get-WmiObject win32_service -filter "Name='wecsvc'")
 $s.Change($null, $null, 16)
 Start-Service wecsvc
 
+$ServiceName = 'wecsvc'
+$arrService = Get-Service -Name $ServiceName
+
+while ($arrService.Status -ne 'Running')
+{
+    Start-Service $ServiceName
+    write-host $arrService.status
+    write-host "$ServiceName Service starting"
+    Start-Sleep -seconds 5
+    $arrService.Refresh()
+    if ($arrService.Status -eq 'Running')
+    {
+        Write-Host "$ServiceName Service is now Running"
+    }
+}
+
 # ******** Importing WEF subscriptions *******
 $OutputFile = Split-Path $SubscriptionsUrl -leaf
-$ZipFile = "$($env:TEMP)\$outputFile"
+$ZipFile = "C:\ProgramData\$outputFile"
 
 # Download Zipped File
 write-Host "Downloading $OutputFile .."
@@ -69,22 +106,22 @@ if (!(Test-Path $ZipFile))
 # Unzip file
 write-Host "Decompressing $ZipFile .."
 $file = (Get-Item $ZipFile).Basename
-expand-archive -path $Zipfile -DestinationPath "$($env:TEMP)\"
+expand-archive -path $Zipfile -DestinationPath "C:\ProgramData\"
 
-if (!(Test-Path "$($env:TEMP)\$file"))
+if (!(Test-Path "C:\ProgramData\$file"))
 {
     write-Host "$ZipFile could not be decompressed successfully.. "
     break
 }
 
 # Importing Subscriptions
-if (Test-Path "$($env:TEMP)\$file")
+if (Test-Path "C:\ProgramData\$file")
 {
     write-Host "Importing WEF Subscriptions.. "
-    Get-ChildItem "$($env:TEMP)\$file" | ForEach-Object { wecutil cs $_.FullName}
+    Get-ChildItem "C:\ProgramData\$file" | ForEach-Object { wecutil cs $_.FullName}
 }
 else {
-    write-Host "$($env:TEMP)\$file does not exist.."
+    write-Host "C:\ProgramData\$file does not exist.."
     break
 }
 
@@ -100,4 +137,20 @@ New-ItemProperty –Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Paramete
 # Configure Event Collector
 & wecutil qc -quiet
 
-Restart-Computer -Force
+Restart-Service wecsvc
+
+$ServiceName = 'wecsvc'
+$arrService = Get-Service -Name $ServiceName
+
+while ($arrService.Status -ne 'Running')
+{
+    Start-Service $ServiceName
+    write-host $arrService.status
+    write-host "$ServiceName Service starting"
+    Start-Sleep -seconds 5
+    $arrService.Refresh()
+    if ($arrService.Status -eq 'Running')
+    {
+        Write-Host "$ServiceName Service is now Running"
+    }
+}

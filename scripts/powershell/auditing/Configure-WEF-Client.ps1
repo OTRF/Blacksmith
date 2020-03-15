@@ -39,9 +39,20 @@ New-ItemProperty -Path $regKey -Name 1 -Value "Server=http://$WECFQDN`:5985/wsma
 write-Host "Adding Network Service to Event Log Readers restricted group.."
 Add-LocalGroupMember -Group "Event Log Readers" -Member "Network Service"
 
-# Push Initial GPO updates
-Write-host "Getting initial GPO updates.."
-& gpupdate /force
+Restart-Service WinRM
 
-Write-host "Restarting Endpoint.."
-Restart-Computer -Force
+$ServiceName = 'WinRM'
+$arrService = Get-Service -Name $ServiceName
+
+while ($arrService.Status -ne 'Running')
+{
+    Start-Service $ServiceName
+    write-host $arrService.status
+    write-host "$ServiceName Service starting"
+    Start-Sleep -seconds 5
+    $arrService.Refresh()
+    if ($arrService.Status -eq 'Running')
+    {
+        Write-Host "$ServiceName Service is now Running"
+    }
+}

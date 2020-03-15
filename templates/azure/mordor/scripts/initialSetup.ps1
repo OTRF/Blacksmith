@@ -7,16 +7,7 @@ param (
     [string]$ServerAddresses,
 
     [Parameter(Mandatory=$false)]
-    [switch]$SetDC,
-
-    [Parameter(Mandatory=$true)]
-    [string]$DestinationIP,
-
-    [Parameter(Mandatory=$true)]
-    [string]$ShipperAgent,
-
-    [Parameter(Mandatory=$true)]
-    [string]$ConfigUrl
+    [switch]$SetDC
 )
 
 & .\Prepare-Box.ps1
@@ -30,9 +21,6 @@ else{
 
 # Installing Endpoint Agent
 & .\Install-Endpoint-Agent.ps1 -EndpointAgent Sysmon
-
-# Installing Log Shipper
-& .\Install-Shipper.ps1 -DestinationIP $DestinationIP -ShipperAgent $ShipperAgent -ConfigUrl $ConfigUrl
 
 # Set Audit Rules (SACL)
 Import-Module .\Set-AuditRule.ps1
