@@ -11,7 +11,7 @@ param (
     [string]$domainFQDN,
     
     [Parameter(Mandatory=$true)]
-    [string]$WECNetBIOSName,
+    [string]$WECNetBIOSName
 )
 
 Write-host 'Enabling WinRM..'
