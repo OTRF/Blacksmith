@@ -133,7 +133,8 @@
             "type": "securestring",
             "metadata": {
                 "description": "Specifies the SSH rsa public key file as a string. Use \"ssh-keygen -t rsa -b 2048\" to generate your SSH key pairs."
-            }
+            },
+            "defaultValue": ""
         },
         "location": {
             "type": "string",
@@ -343,46 +344,11 @@
         },
         {
             "condition": "[parameters('ingestMordor')]",
-            "name": "logstashSetup",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-05-01",
-            "dependsOn": [
-                "deployLinuxVM",
-                "deployEventHub"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('customScriptTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "extensionName": {
-                        "value": "SetupLogstash"
-                    },
-                    "commandToExecute": {
-                        "value": "[concat('bash logstash-setup.sh -i', ' ', reference(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').customerId, ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-k', ' ', listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey, ' ', '-u', ' ', parameters('adminUsername'))]"
-                    },
-                    "fileUris": {
-                        "value": [
-                            "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/scripts/logstash-setup.sh', parameters('_artifactsLocationSasToken')))]"
-                        ]
-                    },
-                    "vmName": {
-                        "value": "[reference('deployLinuxVM').outputs.linuxVMName.value]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[parameters('ingestMordor')]",
             "name": "mordorIngestion",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
             "dependsOn": [
+                "deployLinuxVM",
                 "deployEventHub"
             ],
             "properties": {
@@ -401,6 +367,41 @@
                     "fileUris": {
                         "value": [
                             "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/scripts/ingest-mordor.sh', parameters('_artifactsLocationSasToken')))]"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[reference('deployLinuxVM').outputs.linuxVMName.value]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[parameters('ingestMordor')]",
+            "name": "logstashSetup",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "dependsOn": [
+                "mordorIngestion"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "extensionName": {
+                        "value": "SetupLogstash"
+                    },
+                    "commandToExecute": {
+                        "value": "[concat('bash logstash-setup.sh -i', ' ', reference(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').customerId, ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-k', ' ', listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey, ' ', '-u', ' ', parameters('adminUsername'))]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/scripts/logstash-setup.sh', parameters('_artifactsLocationSasToken')))]"
                         ]
                     },
                     "vmName": {

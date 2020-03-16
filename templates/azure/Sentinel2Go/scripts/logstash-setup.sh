@@ -9,6 +9,7 @@ usage(){
     echo
     echo "   -i         Log Analytics workspace id"
     echo "   -c         EventHub Connection String Primary"
+    echo "   -e         EventHub name"
     echo "   -k         Log Analytics workspace shared key"
     echo "   -u         Local user to update files ownership"
     echo
@@ -19,12 +20,13 @@ usage(){
 }
 
 # ************ Command Options **********************
-while getopts :i:c:k:u:h option
+while getopts :i:c:e:k:u:h option
 do
     case "${option}"
     in
         i) WORKSPACE_ID=$OPTARG;;
         c) EVENTHUB_CONNECTIONSTRING=$OPTARG;;
+        e) EVENTHUB_NAME=$OPTARG;;
         k) WORKSPACE_KEY=$OPTARG;;
         u) LOCAL_USER=$OPTARG;;
         h) usage;;
@@ -67,8 +69,8 @@ wget -O /opt/logstash/Dockerfile https://raw.githubusercontent.com/hunters-forge
 chown -R $LOCAL_USER:$LOCAL_USER /opt/logstash/*
 chmod +x /opt/logstash/scripts/logstash-entrypoint.sh
 
-export WORKSPACE_ID=$WORKSPACE_ID
-export EVENTHUB_CONNECTIONSTRING=$EVENTHUB_CONNECTIONSTRING
-export WORKSPACE_KEY=$WORKSPACE_KEY
+export WORKSPACE_ID="$WORKSPACE_ID"
+export EVENTHUB_CONNECTIONSTRING="${EVENTHUB_CONNECTIONSTRING};EntityPath=${EVENTHUB_NAME}"
+export WORKSPACE_KEY="$WORKSPACE_KEY"
 
 docker-compose -f /opt/logstash/docker-compose.yml up --build -d

@@ -12,7 +12,7 @@ usage(){
     echo "   -e         EventHub name"
     echo
     echo "Examples:"
-    echo " $0 -n <eventhubNamespace> -c <Endpoint=sb://xxxxx>"
+    echo " $0 -n <eventhubNamespace> -c <Endpoint=sb://xxxxx> -e <Event Hub name"
     echo " "
     exit 1
 }
@@ -41,14 +41,18 @@ fi
 # ****** Installing latest kafkacat
 if [ -x "$(command -v kafkacat)" ]; then
     echo "removing kafkacat.."
-    apt-get remove --auto-remove kafkacat
+    apt-get remove --auto-remove -y kafkacat
 fi
 
 echo "Installing Kafkacat.."
-apt-get install kafkacat
+wget https://github.com/edenhill/kafkacat/archive/debian/1.4.0-1.tar.gz
+tar -xzvf 1.4.0-1.tar.gz
+apt install -y librdkafka-dev libyajl-dev build-essential libsasl2-dev libsasl2-modules libssl-dev 
+cd kafkacat-debian-1.4.0-1/ && ./bootstrap.sh
+cp kafkacat /usr/local/bin/
 
 echo "Installing Git.."
-apt install git
+apt install -y git
 
 echo "Cloning Mordor repo.."
 git clone https://github.com/hunters-forge/mordor.git
@@ -58,10 +62,11 @@ cd mordor/datasets/small/
 find . -type f -name "*.tar.gz" -print0 | xargs -0 -I{} tar xf {} -C .
 
 echo "Sending every dataset to Azure Event Hub"
+filescount=$(find . -maxdepth 1 -type f -name "*.json" -printf x | wc -c)
+count=0
 for mordorfile in *.json; do
-    echo "Sending $mordorfile to Event Hub"
-    until kafkacat -b ${EVENTHUB_NAMESPACE}.servicebus.windows.net:9093 -t ${EVENTHUB_NAME} -X metadata.broker.list=${EVENTHUB_NAMESPACE}.servicebus.windows.net:9093 -X security.protocol=SASL_SSL -X sasl.mechanisms=PLAIN -X sasl.username=\$ConnectionString -X sasl.password="${EVENTHUB_CONNECTIONSTRING}" -P -l $mordorfile
-    do
-        echo "Trying again"
-    done
+    count=$(($count + 1))
+    echo "($count of $filescount) Sending $mordorfile .."
+    kafkacat -b ${EVENTHUB_NAMESPACE}.servicebus.windows.net:9093 -t ${EVENTHUB_NAME} -X metadata.broker.list=${EVENTHUB_NAMESPACE}.servicebus.windows.net:9093 -X security.protocol=sasl_ssl -X sasl.mechanisms=PLAIN -X sasl.username=\$ConnectionString -X sasl.password="${EVENTHUB_CONNECTIONSTRING}" -X enable.ssl.certificate.verification=false -X message.max.bytes=1000000 -P -v -l $mordorfile
+    sleep 5
 done
