@@ -7,25 +7,25 @@ usage(){
     echo " "
     echo "Usage: $0 [option...]" >&2
     echo
-    echo "   -n         EventHub Namespace"
+    echo "   -i         Log Analytics workspace id"
     echo "   -c         EventHub Connection String Primary"
-    echo "   -e         EventHub name"
+    echo "   -k         Log Analytics workspace shared key"
     echo "   -u         Local user to update files ownership"
     echo
     echo "Examples:"
-    echo " $0 -n <eventhubNamespace> -c <Endpoint=sb://xxxxx> -e <event hub name> -u wardog"
+    echo " $0 -i <Log Analytics workspace id> -c <Endpoint=sb://xxxxx> -e <Log Analytics workspace shared key> -u wardog"
     echo " "
     exit 1
 }
 
 # ************ Command Options **********************
-while getopts :n:c:e:u:h option
+while getopts :i:c:k:u:h option
 do
     case "${option}"
     in
-        n) EVENTHUB_NAMESPACE=$OPTARG;;
+        i) WORKSPACE_ID=$OPTARG;;
         c) EVENTHUB_CONNECTIONSTRING=$OPTARG;;
-        e) EVENTHUB_NAME=$OPTARG;;
+        k) WORKSPACE_KEY=$OPTARG;;
         u) LOCAL_USER=$OPTARG;;
         h) usage;;
         \?) usage;;
@@ -55,20 +55,20 @@ echo "creating local logstash folders"
 mkdir -p /opt/logstash/scripts
 mkdir -p /opt/logstash/pipeline
 mkdir -p /opt/logstash/config
-mkdir -p /opt/logstash/outputs
 
 echo "Downloading logstash files locally to be mounted to docker container"
-wget -O /opt/logstash/scripts/logstash-entrypoint.sh https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Mordor/logstash/scripts/logstash-entrypoint.sh
-wget -O /opt/logstash/pipeline/eventhub.conf https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Mordor/logstash/pipeline/eventhub.conf
-wget -O /opt/logstash/config/logstash.yml https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Mordor/logstash/config/logstash.yml
-wget -O /opt/logstash/docker-compose.yml https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Mordor/logstash/docker-compose.yml
-wget -O /opt/logstash/outputs/kafka.rb https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Mordor/logstash/kafka.rb
+wget -O /opt/logstash/scripts/logstash-entrypoint.sh https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/scripts/logstash-entrypoint.sh
+wget -O /opt/logstash/pipeline/eventhub-input.conf https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/pipeline/eventhub-input.conf
+wget -O /opt/logstash/pipeline/loganalytics-output.conf https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/pipeline/loganalytics-output.conf
+wget -O /opt/logstash/config/logstash.yml https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/config/logstash.yml
+wget -O /opt/logstash/docker-compose.yml https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/docker-compose.yml
+wget -O /opt/logstash/Dockerfile https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/Dockerfile
 
 chown -R $LOCAL_USER:$LOCAL_USER /opt/logstash/*
 chmod +x /opt/logstash/scripts/logstash-entrypoint.sh
 
-export BOOTSTRAP_SERVERS=$EVENTHUB_NAMESPACE.servicebus.windows.net:9093
-export SASL_JAAS_CONFIG="org.apache.kafka.common.security.plain.PlainLoginModule required username=\$ConnectionString password='$EVENTHUB_CONNECTIONSTRING';"
-export EVENTHUB_NAME=$EVENTHUB_NAME
+export WORKSPACE_ID=$WORKSPACE_ID
+export EVENTHUB_CONNECTIONSTRING=$EVENTHUB_CONNECTIONSTRING
+export WORKSPACE_KEY=$WORKSPACE_KEY
 
 docker-compose -f /opt/logstash/docker-compose.yml up --build -d

@@ -15,32 +15,27 @@
                 "description": "Username for the Virtual Machine."
             }
         },
-        "adminPassword": {
-            "type": "securestring",
-            "metadata": {
-                "description": "Password for the Virtual Machine."
-            }
-        },
         "dnsLabelPrefix": {
             "type": "string",
             "metadata": {
                 "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
             }
         },
-        "windowsDesktopSKU": {
+        "ubuntuSKU": {
             "type": "string",
-            "defaultValue": "19h2-pro",
+            "defaultValue": "18.04-LTS",
             "allowedValues": [
-                "19h1-pro",
-                "19h2-pro",
-                "rs4-pro",
-                "rs5-pro"
+                "12.04.5-LTS",
+                "14.04.5-LTS",
+                "16.04.0-LTS",
+                "18.04-LTS",
+                "19.04"
             ],
             "metadata": {
-                "description": "The Windows version for the Desktop VM. This will pick a fully patched image of this given Windows version."
+                "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version."
             }
         },
-        "windowsDesktopVmSize": {
+        "linuxVmSize": {
             "type": "string",
             "defaultValue": "Standard_B2ms",
             "allowedValues": [
@@ -55,54 +50,18 @@
                 "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
             }
         },
+        "adminPublicKey": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Specifies the SSH rsa public key file as a string. Use \"ssh-keygen -t rsa -b 2048\" to generate your SSH key pairs."
+            }
+        },
         "allowedIPAddresses": {
             "type": "string",
             "metadata": {
                 "description": "The sourceAddressPrefixes allowed to connect to this deployment"
             },
             "defaultValue": "*"
-        },
-        "_artifactsLocation": {
-            "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/",
-            "metadata": {
-                "description": "The location of resources, such as templates and DSC modules, that the template depends on"
-            }
-        },
-        "_artifactsLocationSasToken": {
-            "type": "securestring",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
-            }
-        },
-        "enableMonitoringAgent": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to enable the Microsoft Monitoring agent? "
-            }
-        },
-        "enableAuditing": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to enable Windows Auditing (Enable Windows Security audit categories and Sysmon? "
-            }
-        },
-        "workspaceId": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Log analytics workspace ID"
-            }
-        },
-        "workspaceKey": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Log analytics workspace keys"
-            }
         },
         "location": {
             "type": "string",
@@ -114,17 +73,24 @@
     },
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
-        "virtualNetworkName": "vnet-winvm",
+        "virtualNetworkName": "vnet-linuxvm",
         "subnetName": "vmLAN",
         "virtualNetworkAddressRange": "192.168.0.0/16",
         "subnetRange": "192.168.1.0/24",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
-        "VMName": "VM001",
+        "VMName": "LINUX001",
         "VMPrivateIPAddress": "192.168.1.10",
-        "prepareBoxScript": "[uri(parameters('_artifactsLocation'), concat('scripts/powershell/misc/Prepare-Box.ps1', parameters('_artifactsLocationSasToken')))]",
-        "setSecurityAuditingScript": "[uri(parameters('_artifactsLocation'), concat('scripts/powershell/auditing/Set-SecurityAuditing.ps1', parameters('_artifactsLocationSasToken')))]",
-        "setSACLScript": "https://raw.githubusercontent.com/hunters-forge/Set-AuditRule/master/Set-AuditRule.ps1",
-        "installAgentScript": "[uri(parameters('_artifactsLocation'), concat('scripts/powershell/endpoint-software/Install-Endpoint-Agent.ps1', parameters('_artifactsLocationSasToken')))]"
+        "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+                "publicKeys": [
+                    {
+                        "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                        "keyData": "[parameters('adminPublicKey')]"
+                    }
+                ]
+            }
+        }
     },
     "resources": [
         {
@@ -140,20 +106,20 @@
             }
         },
         {
-            "comments": "Default Network Security Group for Windows endpoints",
+            "comments": "Default Network Security Group for Linux endpoints",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-08-01",
-            "name": "VM-RDP-Allow",
+            "name": "VM-SSH-Allow",
             "location": "[parameters('location')]",
             "properties": {
                 "securityRules": [
                     {
-                        "name": "default-allow-3389",
+                        "name": "default-allow-22",
                         "properties": {
                             "priority": 100,
                             "access": "Allow",
                             "direction": "Inbound",
-                            "destinationPortRange": "3389",
+                            "destinationPortRange": "22",
                             "protocol": "Tcp",
                             "sourcePortRange": "*",
                             "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
@@ -169,7 +135,7 @@
             "name": "[variables('virtualNetworkName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', 'VM-RDP-Allow')]"
+                "[resourceId('Microsoft.Network/networkSecurityGroups', 'VM-SSH-Allow')]"
             ],
             "properties": {
                 "addressSpace": {
@@ -183,7 +149,7 @@
                         "properties": {
                             "addressPrefix": "[variables('subnetRange')]",
                             "networkSecurityGroup": {
-                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'VM-RDP-Allow')]"
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'VM-SSH-Allow')]"
                             }
                         }
                     }
@@ -231,104 +197,67 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2018-10-01",
+            "apiVersion": "2019-03-01",
             "name": "[variables('VMName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
                 "[resourceId('Microsoft.Network/networkInterfaces/', concat(variables('VMName'),'-ni'))]"
             ],
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "[parameters('windowsDesktopVmSize')]"
-                },
-                "osProfile": {
-                    "computerName": "[variables('VMName')]",
-                    "adminUsername": "[parameters('adminUsername')]",
-                    "adminPassword": "[parameters('adminPassword')]"
+                    "vmSize": "[parameters('linuxVmSize')]"
                 },
                 "storageProfile": {
-                    "imageReference": {
-                        "publisher": "MicrosoftWindowsDesktop",
-                        "offer": "Windows-10",
-                        "sku": "[parameters('windowsDesktopSKU')]",
-                        "version": "latest"
-                    },
                     "osDisk": {
-                        "createOption": "FromImage"
+                        "createOption": "fromImage"
                     },
-                    "dataDisks": [
-                        {
-                            "diskSizeGB": 1023,
-                            "lun": 0,
-                            "createOption": "Empty"
-                        }
-                    ]
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "[parameters('ubuntuSKU')]",
+                        "version": "latest"
+                    }
                 },
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('VMName'),'-ni'))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces/', concat(variables('VMName'),'-ni'))]"
                         }
                     ]
                 },
-                "diagnosticsProfile": {
-                    "bootDiagnostics": {
-                        "enabled": true,
-                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
-                    }
+                "osProfile": {
+                    "computerName": "[variables('VMName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPublicKey')]",
+                    "linuxConfiguration": "[variables('linuxConfiguration')]"
                 }
             }
         },
         {
-            "condition": "[parameters('enableMonitoringAgent')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-03-01",
-            "name": "[concat(variables('VMName'), '/OMSExtension')]",
+            "name": "[concat(variables('VMName'),'/DockerExtension')]",
+            "apiVersion": "2017-03-30",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
             ],
             "properties": {
-                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                "type": "MicrosoftMonitoringAgent",
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "DockerExtension",
                 "typeHandlerVersion": "1.0",
                 "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "workspaceId": "[parameters('workspaceId')]"
-                },
-                "protectedSettings": {
-                    "workspaceKey": "[parameters('workspaceKey')]"
-                }
-            }
-        },
-        {
-            "condition": "[parameters('enableAuditing')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-03-01",
-            "name": "[concat(variables('VMName'), '/Auditing')]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
-            ],
-            "properties": {
-                "publisher": "Microsoft.Compute",
-                "type": "CustomScriptExtension",
-                "typeHandlerVersion": "1.8",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "fileUris": [
-                        "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/mordor/scripts/initialSetup.ps1",
-                        "[variables('prepareBoxScript')]",
-                        "[variables('setSecurityAuditingScript')]",
-                        "[variables('installAgentScript')]",
-                        "[variables('setSACLScript')]"
-                    ],
-                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ./initialSetup.ps1"
-                },
-                "protectedSettings": {}
+                "settings": {}
             }
         }
     ],
-    "outputs": {}
+    "outputs": {
+        "linuxVMName": {
+            "type": "string",
+            "value": "[variables('VMName')]"
+        },
+        "linuxResourceID": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
+        }
+    }
 }
