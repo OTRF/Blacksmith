@@ -46,6 +46,20 @@
                 "description": "If set to true when changing retention to 30 days, older data will be immediately deleted. Use this with extreme caution. This only applies when retention is being set to 30 days."
             }
         },
+        "deployWinVM": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to deploy a Win10 VM connected to your Log Analytics workspace along with Windows Connectors?"
+            }
+        },
+        "enableWindowsConnectors": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to enable Windows connectors such as Windows Event Logs? "
+            }
+        },
         "securityCollectionTier": {
             "type": "string",
             "allowedValues": [
@@ -57,13 +71,6 @@
             "defaultValue": "Minimal",
             "metadata": {
                 "description": "Tier for gathering Windows Security Events."
-            }
-        },
-        "enableWindowsConnectors": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to enable Windows connectors such as Windows Event Logs? "
             }
         },
         "enableMDATPIntegration": {
@@ -78,13 +85,6 @@
             "defaultValue": false,
             "metadata": {
                 "description": "Do you want to enable Azure connectors such as Azure Activity Logs? "
-            }
-        },
-        "deployWinVM": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to deploy a Win10 VM connected to your Log Analytics workspace along with Windows Connectors?"
             }
         },
         "adminUsername": {
