@@ -3,9 +3,6 @@
 
 & .\Prepare-Box.ps1
 
-# Installing Endpoint Agent
-& .\Install-Endpoint-Agent.ps1 -EndpointAgent Sysmon
-
 # Set Audit Rules (SACL)
 Import-Module .\Set-AuditRule.ps1
 

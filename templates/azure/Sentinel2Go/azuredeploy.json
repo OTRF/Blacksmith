@@ -53,11 +53,18 @@
                 "description": "Do you want to deploy a Win10 VM connected to your Log Analytics workspace along with Windows Connectors?"
             }
         },
-        "enableWindowsConnectors": {
+        "enableWinDataSources": {
             "type": "bool",
             "defaultValue": false,
             "metadata": {
-                "description": "Do you want to enable Windows connectors such as Windows Event Logs? "
+                "description": "Do you want to configure your Log Analytics Workspace to collect Windows Event Logs from several event providers? "
+            }
+        },
+        "enableSecurityAudit": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to enable the collection of Windows Security Auditing from the Azure Security Center? This switches your LA workspace cost tier to standard"
             }
         },
         "securityCollectionTier": {
@@ -183,9 +190,8 @@
             }
         },
         {
-            "condition": "[parameters('enableWindowsConnectors')]",
             "type": "Microsoft.Resources/deployments",
-            "name": "enableWindowsConnectors",
+            "name": "deployLAFunctions",
             "apiVersion": "2019-05-01",
             "dependsOn": [
                 "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]"
@@ -193,7 +199,28 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/windowsConnectors.json', parameters('_artifactsLocationSasToken')))]",
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/logAnalyticsFunctions.json', parameters('_artifactsLocationSasToken')))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": {
+                        "value": "[variables('uniqueWorkspace')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableWinDataSources')]",
+            "type": "Microsoft.Resources/deployments",
+            "name": "workspaceWinDataSources",
+            "apiVersion": "2019-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/workspaceWinDataSources.json', parameters('_artifactsLocationSasToken')))]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -213,12 +240,42 @@
             }
         },
         {
-            "condition": "[and(parameters('enableWindowsConnectors'), parameters('deployWinVM'))]",
+            "condition": "[parameters('enableSecurityAudit')]",
+            "type": "Microsoft.Resources/deployments",
+            "name": "securityCenterAudit",
+            "apiVersion": "2019-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/securityCenterAuditLogs.json', parameters('_artifactsLocationSasToken')))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": {
+                        "value": "[variables('uniqueWorkspace')]"
+                    },
+                    "workspaceId": {
+                         "value": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]"
+                     },
+                    "securityCollectionTier": {
+                        "value": "[parameters('securityCollectionTier')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[and(parameters('enableWinDataSources'), parameters('deployWinVM'))]",
             "type": "Microsoft.Resources/deployments",
             "name": "deployWinVM",
             "apiVersion": "2019-05-01",
             "dependsOn": [
-                "enableWindowsConnectors"
+                "workspaceWinDataSources"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -362,7 +419,7 @@
                         "value": "SetupLogstash"
                     },
                     "commandToExecute": {
-                        "value": "[concat('bash ingest-mordor.sh -n', ' ', reference('deployEventHub').outputs.EventHubNamespace.value , ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value)]"
+                        "value": "[if(parameters('ingestMordor'), concat('bash ingest-mordor.sh -n', ' ', reference('deployEventHub').outputs.EventHubNamespace.value , ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value), 'Resource not deployed')]"
                     },
                     "fileUris": {
                         "value": [
@@ -370,7 +427,7 @@
                         ]
                     },
                     "vmName": {
-                        "value": "[reference('deployLinuxVM').outputs.linuxVMName.value]"
+                        "value": "[if(parameters('ingestMordor'), reference('deployLinuxVM').outputs.linuxVMName.value, 'Resource not deployed')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -397,7 +454,7 @@
                         "value": "SetupLogstash"
                     },
                     "commandToExecute": {
-                        "value": "[concat('bash logstash-setup.sh -i', ' ', reference(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').customerId, ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-k', ' ', listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey, ' ', '-u', ' ', parameters('adminUsername'))]"
+                        "value": "[if(parameters('ingestMordor'), concat('bash logstash-setup.sh -i', ' ', reference(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').customerId, ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-k', ' ', listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey, ' ', '-u', ' ', parameters('adminUsername')), 'Resource not deployed')]"
                     },
                     "fileUris": {
                         "value": [
@@ -405,7 +462,7 @@
                         ]
                     },
                     "vmName": {
-                        "value": "[reference('deployLinuxVM').outputs.linuxVMName.value]"
+                        "value": "[if(parameters('ingestMordor'), reference('deployLinuxVM').outputs.linuxVMName.value, 'Resource not deployed')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"

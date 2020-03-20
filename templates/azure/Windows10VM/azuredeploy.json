@@ -87,7 +87,14 @@
             "type": "bool",
             "defaultValue": false,
             "metadata": {
-                "description": "Do you want to enable Windows Auditing (Enable Windows Security audit categories and Sysmon? "
+                "description": "Do you want to enable Windows Auditing (Enable Windows Security audit categories)? "
+            }
+        },
+        "enableSysmon": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to install Sysmon on the endpoint?"
             }
         },
         "workspaceId": {
@@ -121,6 +128,7 @@
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
         "VMName": "VM001",
         "VMPrivateIPAddress": "192.168.1.10",
+        "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Windows1-VM/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
         "prepareBoxScript": "[uri(parameters('_artifactsLocation'), concat('scripts/powershell/misc/Prepare-Box.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSecurityAuditingScript": "[uri(parameters('_artifactsLocation'), concat('scripts/powershell/auditing/Set-SecurityAuditing.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSACLScript": "https://raw.githubusercontent.com/hunters-forge/Set-AuditRule/master/Set-AuditRule.ps1",
@@ -304,29 +312,75 @@
         },
         {
             "condition": "[parameters('enableAuditing')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-03-01",
-            "name": "[concat(variables('VMName'), '/Auditing')]",
-            "location": "[parameters('location')]",
+            "name": "WindowsSecurityAuditing",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
             ],
             "properties": {
-                "publisher": "Microsoft.Compute",
-                "type": "CustomScriptExtension",
-                "typeHandlerVersion": "1.8",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "fileUris": [
-                        "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/mordor/scripts/initialSetup.ps1",
-                        "[variables('prepareBoxScript')]",
-                        "[variables('setSecurityAuditingScript')]",
-                        "[variables('installAgentScript')]",
-                        "[variables('setSACLScript')]"
-                    ],
-                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ./initialSetup.ps1"
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptExTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
                 },
-                "protectedSettings": {}
+                "parameters": {
+                    "extensionName": {
+                        "value": "SetupWinVM"
+                    },
+                    "commandToExecute": {
+                        "value": "powershell -ExecutionPolicy Unrestricted -File ./initialSetup.ps1"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/mordor/scripts/initialSetup.ps1",
+                            "[variables('prepareBoxScript')]",
+                            "[variables('setSecurityAuditingScript')]",
+                            "[variables('setSACLScript')]"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[variables('VMName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableSysmon')]",
+            "name": "WindowsSysmon",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptExTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "extensionName": {
+                        "value": "SetupWinVM"
+                    },
+                    "commandToExecute": {
+                        "value": "powershell -ExecutionPolicy Unrestricted -File ./installAgentScript.ps1 -EndpointAgent Sysmon"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "[variables('installAgentScript')]"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[variables('VMName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
             }
         }
     ],

@@ -17,7 +17,10 @@
         "enableMDATPIntegration": {
             "value": false
         },
-        "enableWindowsConnectors": {
+        "enableWinDataSources": {
+            "value": false
+        },
+        "enableSecurityAudit": {
             "value": false
         },
         "securityCollectionTier": {

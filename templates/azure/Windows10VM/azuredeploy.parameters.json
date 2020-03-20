@@ -17,6 +17,9 @@
         "enableMonitoringAgent": {
             "value": false
         },
+        "enableSysmon": {
+            "value": false
+        },
         "workspaceId": {
             "value": ""
         },
