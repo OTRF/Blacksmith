@@ -57,16 +57,28 @@ echo "creating local logstash folders"
 mkdir -p /opt/logstash/scripts
 mkdir -p /opt/logstash/pipeline
 mkdir -p /opt/logstash/config
+mkdir -p /opt/datasets
 
 echo "Downloading logstash files locally to be mounted to docker container"
 wget -O /opt/logstash/scripts/logstash-entrypoint.sh https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/scripts/logstash-entrypoint.sh
 wget -O /opt/logstash/pipeline/eventhub-input.conf https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/pipeline/eventhub-input.conf
+wget -O /opt/logstash/pipeline/json-file-input.conf https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/pipeline/json-file-input.conf
 wget -O /opt/logstash/pipeline/loganalytics-output.conf https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/pipeline/loganalytics-output.conf
 wget -O /opt/logstash/config/logstash.yml https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/config/logstash.yml
 wget -O /opt/logstash/docker-compose.yml https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/docker-compose.yml
 wget -O /opt/logstash/Dockerfile https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/Dockerfile
 
-chown -R $LOCAL_USER:$LOCAL_USER /opt/logstash/*
+echo "Installing Git.."
+apt install -y git
+
+echo "Cloning Mordor repo.."
+git clone https://github.com/hunters-forge/mordor.git /opt/mordor
+
+echo "Decompressing every small mordor dataset.."
+cd /opt/mordor/datasets/small/
+find . -type f -name "*.tar.gz" -print0 | xargs -0 -I{} tar xf {} -C /opt/datasets/
+
+chown -R $LOCAL_USER:$LOCAL_USER /opt/logstash/* /opt/datasets/*
 chmod +x /opt/logstash/scripts/logstash-entrypoint.sh
 
 export WORKSPACE_ID="$WORKSPACE_ID"

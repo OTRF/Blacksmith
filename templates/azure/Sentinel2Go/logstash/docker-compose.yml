@@ -13,6 +13,7 @@ services:
       - /opt/logstash/pipeline:/usr/share/logstash/pipeline
       - /opt/logstash/scripts:/usr/share/logstash/scripts
       - /opt/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - /opt/datasets:/usr/share/logstash/datasets
     entrypoint: /usr/share/logstash/scripts/logstash-entrypoint.sh
     environment:
       - xpack.monitoring.enabled=false

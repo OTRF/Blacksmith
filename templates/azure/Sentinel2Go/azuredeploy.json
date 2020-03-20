@@ -401,42 +401,6 @@
         },
         {
             "condition": "[parameters('ingestMordor')]",
-            "name": "mordorIngestion",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-05-01",
-            "dependsOn": [
-                "deployLinuxVM",
-                "deployEventHub"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('customScriptTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "extensionName": {
-                        "value": "SetupLogstash"
-                    },
-                    "commandToExecute": {
-                        "value": "[if(parameters('ingestMordor'), concat('bash ingest-mordor.sh -n', ' ', reference('deployEventHub').outputs.EventHubNamespace.value , ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value), 'Resource not deployed')]"
-                    },
-                    "fileUris": {
-                        "value": [
-                            "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/scripts/ingest-mordor.sh', parameters('_artifactsLocationSasToken')))]"
-                        ]
-                    },
-                    "vmName": {
-                        "value": "[if(parameters('ingestMordor'), reference('deployLinuxVM').outputs.linuxVMName.value, 'Resource not deployed')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[parameters('ingestMordor')]",
             "name": "logstashSetup",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
