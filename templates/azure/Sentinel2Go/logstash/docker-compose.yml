@@ -20,6 +20,7 @@ services:
       - WORKSPACE_ID=${WORKSPACE_ID}
       - EVENTHUB_CONNECTIONSTRING=${EVENTHUB_CONNECTIONSTRING}
       - WORKSPACE_KEY=${WORKSPACE_KEY}
+      - EVENTHUB_NAME=${EVENTHUB_NAME}
     restart: always
     networks:
       mordor:

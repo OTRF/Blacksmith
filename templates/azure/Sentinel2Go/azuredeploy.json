@@ -419,7 +419,7 @@
                         "value": "SetupLogstash"
                     },
                     "commandToExecute": {
-                        "value": "[if(parameters('ingestMordor'), concat('bash logstash-setup.sh -i', ' ', reference(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').customerId, ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-k', ' ', listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey, ' ', '-u', ' ', parameters('adminUsername')), 'Resource not deployed')]"
+                        "value": "[if(parameters('ingestMordor'), concat('bash logstash-setup.sh -i', ' ', reference(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').customerId, ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value, ' ', '-k', ' ', listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey, ' ', '-u', ' ', parameters('adminUsername')), 'Resource not deployed')]"
                     },
                     "fileUris": {
                         "value": [

@@ -14,7 +14,7 @@ usage(){
     echo "   -u         Local user to update files ownership"
     echo
     echo "Examples:"
-    echo " $0 -i <Log Analytics workspace id> -c <Endpoint=sb://xxxxx> -e <Log Analytics workspace shared key> -u wardog"
+    echo " $0 -i <Log Analytics workspace id> -c <Endpoint=sb://xxxxx> -e <Event hub name> -k <Log Analytics workspace shared key> -u wardog"
     echo " "
     exit 1
 }
