@@ -405,7 +405,8 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
             "dependsOn": [
-                "mordorIngestion"
+                "deployEventHub",
+                "deployLinuxVM"
             ],
             "properties": {
                 "mode": "Incremental",
