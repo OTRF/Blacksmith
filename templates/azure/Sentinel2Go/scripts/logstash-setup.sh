@@ -12,15 +12,16 @@ usage(){
     echo "   -e         EventHub name"
     echo "   -k         Log Analytics workspace shared key"
     echo "   -u         Local user to update files ownership"
+    echo "   -m         Ingest Mordor datasets"
     echo
     echo "Examples:"
-    echo " $0 -i <Log Analytics workspace id> -c <Endpoint=sb://xxxxx> -e <Event hub name> -k <Log Analytics workspace shared key> -u wardog"
+    echo " $0 -i <Log Analytics workspace id> -c <Endpoint=sb://xxxxx> -e <Event hub name> -k <Log Analytics workspace shared key> -u wardog -m"
     echo " "
     exit 1
 }
 
 # ************ Command Options **********************
-while getopts :i:c:e:k:u:h option
+while getopts :i:c:e:k:u:mh option
 do
     case "${option}"
     in
@@ -29,6 +30,7 @@ do
         e) EVENTHUB_NAME=$OPTARG;;
         k) WORKSPACE_KEY=$OPTARG;;
         u) LOCAL_USER=$OPTARG;;
+        m) MORDOR_MODE="TRUE";;
         h) usage;;
         \?) usage;;
         :  ) echo "Missing option argument for -$OPTARG" >&2; exit 1;;
@@ -62,21 +64,24 @@ mkdir -p /opt/datasets
 echo "Downloading logstash files locally to be mounted to docker container"
 wget -O /opt/logstash/scripts/logstash-entrypoint.sh https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/scripts/logstash-entrypoint.sh
 wget -O /opt/logstash/pipeline/eventhub-input.conf https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/pipeline/eventhub-input.conf
-wget -O /opt/logstash/pipeline/json-file-input.conf https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/pipeline/json-file-input.conf
 wget -O /opt/logstash/pipeline/loganalytics-output.conf https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/pipeline/loganalytics-output.conf
 wget -O /opt/logstash/config/logstash.yml https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/config/logstash.yml
 wget -O /opt/logstash/docker-compose.yml https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/docker-compose.yml
 wget -O /opt/logstash/Dockerfile https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/Dockerfile
 
-echo "Installing Git.."
-apt install -y git
+if [[ $MORDOR_MODE ]]; then
+    wget -O /opt/logstash/pipeline/json-file-input.conf https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/logstash/pipeline/json-file-input.conf
 
-echo "Cloning Mordor repo.."
-git clone https://github.com/hunters-forge/mordor.git /opt/mordor
+    echo "Installing Git.."
+    apt install -y git
 
-echo "Decompressing every small mordor dataset.."
-cd /opt/mordor/datasets/small/
-find . -type f -name "*.tar.gz" -print0 | xargs -0 -I{} tar xf {} -C /opt/datasets/
+    echo "Cloning Mordor repo.."
+    git clone https://github.com/hunters-forge/mordor.git /opt/mordor
+
+    echo "Decompressing every small mordor dataset.."
+    cd /opt/mordor/datasets/small/
+    find . -type f -name "*.tar.gz" -print0 | xargs -0 -I{} tar xf {} -C /opt/datasets/
+fi
 
 chown -R $LOCAL_USER:$LOCAL_USER /opt/logstash/* /opt/datasets/*
 chmod +x /opt/logstash/scripts/logstash-entrypoint.sh

@@ -41,7 +41,7 @@
         },
         "immediatePurgeDataOn30Days": {
             "type": "bool",
-            "defaultValue": "[bool('false')]",
+            "defaultValue": true,
             "metadata": {
                 "description": "If set to true when changing retention to 30 days, older data will be immediately deleted. Use this with extreme caution. This only applies when retention is being set to 30 days."
             }
@@ -115,11 +115,18 @@
             },
             "defaultValue": "*"
         },
+        "enableDataPipeline": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to deploy a data ingestion pipeline along with an Azure Sentinel solution? Events get sent to a custom logs table named ."
+            }
+        },
         "ingestMordor": {
             "type": "bool",
             "defaultValue": false,
             "metadata": {
-                "description": "Do you want to ingest Mordor datasets to your Log Analytics workspace? Ref: https://mordordatasets.com"
+                "description": "Do you want to ingest Mordor datasets to your Log Analytics workspace at deployment time? Ref: https://mordordatasets.com"
             }
         },
         "_artifactsLocation": {
@@ -205,6 +212,129 @@
                 "parameters": {
                     "workspaceName": {
                         "value": "[variables('uniqueWorkspace')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableDataPipeline')]",
+            "type": "Microsoft.Resources/deployments",
+            "name": "deployLinuxVM",
+            "apiVersion": "2019-05-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/LinuxVM/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPublicKey": {
+                        "value": "[parameters('adminPublicKey')]"
+                    },
+                    "allowedIPAddresses": {
+                        "value": "[parameters('allowedIPAddresses')]"
+                    },
+                    "dnsLabelPrefix": {
+                        "value": "sentinel"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableDataPipeline')]",
+            "name": "deployEventHub",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/EventHub/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "projectName": {
+                        "value": "MordorEventHub"
+                    },
+                    "eventHubSku": {
+                        "value": "Standard"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[and(parameters('enableDataPipeline'), parameters('ingestMordor'))]",
+            "name": "pipelineMordor",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "dependsOn": [
+                "deployEventHub",
+                "deployLinuxVM"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "extensionName": {
+                        "value": "SetupLogstash"
+                    },
+                    "commandToExecute": {
+                        "value": "[if(parameters('enableDataPipeline'), concat('bash logstash-setup.sh -i', ' ', reference(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').customerId, ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value, ' ', '-k', ' ', listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey, ' ', '-u', ' ', parameters('adminUsername'), ' ', '-m'), 'Resource not deployed')]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/scripts/logstash-setup.sh', parameters('_artifactsLocationSasToken')))]"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[if(parameters('enableDataPipeline'), reference('deployLinuxVM').outputs.linuxVMName.value, 'Resource not deployed')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[and(parameters('enableDataPipeline'), not(parameters('ingestMordor')))]",
+            "name": "pipelineOnly",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "dependsOn": [
+                "deployEventHub",
+                "deployLinuxVM"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "extensionName": {
+                        "value": "SetupLogstash"
+                    },
+                    "commandToExecute": {
+                        "value": "[if(parameters('enableDataPipeline'), concat('bash logstash-setup.sh -i', ' ', reference(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').customerId, ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value, ' ', '-k', ' ', listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey, ' ', '-u', ' ', parameters('adminUsername')), 'Resource not deployed')]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/scripts/logstash-setup.sh', parameters('_artifactsLocationSasToken')))]"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[if(parameters('enableDataPipeline'), reference('deployLinuxVM').outputs.linuxVMName.value, 'Resource not deployed')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
                     }
                 }
             }
@@ -346,93 +476,6 @@
             "kind": "DataExportSettings",
             "properties": {
                 "enabled": true
-            }
-        },
-        {
-            "condition": "[parameters('ingestMordor')]",
-            "type": "Microsoft.Resources/deployments",
-            "name": "deployLinuxVM",
-            "apiVersion": "2019-05-01",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/LinuxVM/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "adminUsername": {
-                        "value": "[parameters('adminUsername')]"
-                    },
-                    "adminPublicKey": {
-                        "value": "[parameters('adminPublicKey')]"
-                    },
-                    "allowedIPAddresses": {
-                        "value": "[parameters('allowedIPAddresses')]"
-                    },
-                    "dnsLabelPrefix": {
-                        "value": "sentinel"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[parameters('ingestMordor')]",
-            "name": "deployEventHub",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-05-01",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/EventHub/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "projectName": {
-                        "value": "MordorEventHub"
-                    },
-                    "eventHubSku": {
-                        "value": "Standard"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[parameters('ingestMordor')]",
-            "name": "logstashSetup",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-05-01",
-            "dependsOn": [
-                "deployEventHub",
-                "deployLinuxVM"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('customScriptTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "extensionName": {
-                        "value": "SetupLogstash"
-                    },
-                    "commandToExecute": {
-                        "value": "[if(parameters('ingestMordor'), concat('bash logstash-setup.sh -i', ' ', reference(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').customerId, ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value, ' ', '-k', ' ', listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey, ' ', '-u', ' ', parameters('adminUsername')), 'Resource not deployed')]"
-                    },
-                    "fileUris": {
-                        "value": [
-                            "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/scripts/logstash-setup.sh', parameters('_artifactsLocationSasToken')))]"
-                        ]
-                    },
-                    "vmName": {
-                        "value": "[if(parameters('ingestMordor'), reference('deployLinuxVM').outputs.linuxVMName.value, 'Resource not deployed')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
             }
         }
     ],
