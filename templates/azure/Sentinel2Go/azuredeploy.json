@@ -46,6 +46,20 @@
                 "description": "If set to true when changing retention to 30 days, older data will be immediately deleted. Use this with extreme caution. This only applies when retention is being set to 30 days."
             }
         },
+        "enableDataPipeline": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to deploy a data ingestion pipeline along with an Azure Sentinel solution? Events get sent to a custom logs table named ."
+            }
+        },
+        "ingestMordor": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to ingest Mordor datasets to your Log Analytics workspace at deployment time? Ref: https://mordordatasets.com"
+            }
+        },
         "deployWinVM": {
             "type": "bool",
             "defaultValue": false,
@@ -114,20 +128,6 @@
                 "description": "The sourceAddressPrefixes allowed to connect to the Windows 10 VM"
             },
             "defaultValue": "*"
-        },
-        "enableDataPipeline": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to deploy a data ingestion pipeline along with an Azure Sentinel solution? Events get sent to a custom logs table named ."
-            }
-        },
-        "ingestMordor": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to ingest Mordor datasets to your Log Analytics workspace at deployment time? Ref: https://mordordatasets.com"
-            }
         },
         "_artifactsLocation": {
             "type": "string",
@@ -259,7 +259,7 @@
                 },
                 "parameters": {
                     "projectName": {
-                        "value": "MordorEventHub"
+                        "value": "SentinelEventHub"
                     },
                     "eventHubSku": {
                         "value": "Standard"

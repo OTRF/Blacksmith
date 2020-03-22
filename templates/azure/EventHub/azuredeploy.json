@@ -2,6 +2,13 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "utcValue": {
+      "type": "string",
+      "defaultValue": "[utcNow()]",
+      "metadata": {
+          "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
+      }
+    },
     "projectName": {
       "type": "string",
       "metadata": {
@@ -28,8 +35,8 @@
     }
   },
   "variables": {
-    "eventHubNamespaceName": "[concat(parameters('projectName'), 'ns')]",
-    "eventHubName": "[parameters('projectName')]",
+    "eventHubName": "[concat(parameters('projectName'), uniquestring(resourceGroup().id, parameters('utcValue')))]",
+    "eventHubNamespaceName": "[concat(variables('eventHubName'), '-ns')]",
     "defaultSASKeyName": "RootManageSharedAccessKey",
     "authRuleResourceId": "[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventHubNamespaceName'), variables('defaultSASKeyName'))]"
   },

@@ -11,6 +11,12 @@
         "dataRetention": {
             "value": 30
         },
+        "enableDataPipeline": {
+            "value": false
+        },
+        "ingestMordor": {
+            "value": false
+        },
         "enableAzureConnectors": {
             "value": false
         },
@@ -37,9 +43,6 @@
         },
         "allowedIPAddresses": {
             "value": "*"
-        },
-        "ingestMordor": {
-            "value": false
         }
     }
 }
