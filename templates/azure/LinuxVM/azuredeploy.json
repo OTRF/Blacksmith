@@ -37,7 +37,7 @@
         },
         "linuxVmSize": {
             "type": "string",
-            "defaultValue": "Standard_B2ms",
+            "defaultValue": "Standard_B2s",
             "allowedValues": [
                 "Standard_B2s",
                 "Standard_B2ms",
