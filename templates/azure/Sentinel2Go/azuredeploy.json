@@ -220,7 +220,7 @@
             }
         },
         {
-            "name": "[concat('AZSentinel','(', variables('uniqueWorkspace'),')')]",
+            "name": "[concat('SecurityInsights','(', variables('uniqueWorkspace'),')')]",
             "type": "Microsoft.OperationsManagement/solutions",
             "apiVersion": "2015-11-01-preview",
             "location": "[resourceGroup().location]",
