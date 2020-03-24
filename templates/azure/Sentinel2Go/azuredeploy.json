@@ -2,6 +2,13 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "utcValue": {
+            "type": "string",
+            "defaultValue": "[utcNow()]",
+            "metadata": {
+                "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
+            }
+        },
         "workspaceName": {
             "type": "string",
             "metadata": {
@@ -70,7 +77,7 @@
         },
         "linuxAuthenticationType": {
             "type": "string",
-            "defaultValue": "sshPublicKey",
+            "defaultValue": "password",
             "allowedValues": [
                 "sshPublicKey",
                 "password"
@@ -193,7 +200,7 @@
         }
     },
     "variables": {
-        "uniqueWorkspace": "[concat(parameters('workspaceName'), uniquestring(resourceGroup().id, utcNow()))]",
+        "uniqueWorkspace": "[concat(parameters('workspaceName'), uniquestring(resourceGroup().id, parameters('utcValue')))]",
         "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]"
     },
     "resources": [

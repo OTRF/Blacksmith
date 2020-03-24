@@ -14,6 +14,15 @@
         "enableDataPipeline": {
             "value": false
         },
+        "adminUsername": {
+            "value": "GEN-UNIQUE"
+        },
+        "linuxAuthenticationType": {
+            "value": "password"
+        },
+        "linuxAdminPasswordOrKey": {
+            "value": "GEN-PASSWORD"
+        },
         "ingestMordor": {
             "value": false
         },
@@ -34,12 +43,6 @@
         },
         "deployWinVM": {
             "value": false
-        },
-        "adminUsername": {
-            "value": "GEN-UNIQUE"
-        },
-        "adminPassword": {
-            "value": "GEN-PASSWORD"
         },
         "allowedIPAddresses": {
             "value": "*"
