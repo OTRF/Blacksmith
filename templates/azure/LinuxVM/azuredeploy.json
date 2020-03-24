@@ -37,23 +37,34 @@
         },
         "linuxVmSize": {
             "type": "string",
-            "defaultValue": "Standard_B2s",
+            "defaultValue": "Standard_A3",
             "allowedValues": [
+                "Standard_A2",
+                "Standard_A3",
                 "Standard_B2s",
                 "Standard_B2ms",
-                "Standard_B4ms",
                 "Standard_A2_v2",
-                "Standard_A4_v2",
-                "Standard_A8_v2"
+                "Standard_A4_v2"
             ],
             "metadata": {
                 "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
             }
         },
-        "adminPublicKey": {
+        "authenticationType": {
+            "type": "string",
+            "defaultValue": "sshPublicKey",
+            "allowedValues": [
+                "sshPublicKey",
+                "password"
+            ],
+            "metadata": {
+                "description": "Type of authentication to use on the Virtual Machine. SSH key is recommended."
+            }
+        },
+        "adminPasswordOrKey": {
             "type": "securestring",
             "metadata": {
-                "description": "Specifies the SSH rsa public key file as a string. Use \"ssh-keygen -t rsa -b 2048\" to generate your SSH key pairs."
+                "description": "SSH Key or password for the Virtual Machine. SSH key is recommended."
             }
         },
         "allowedIPAddresses": {
@@ -86,7 +97,7 @@
                 "publicKeys": [
                     {
                         "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
-                        "keyData": "[parameters('adminPublicKey')]"
+                        "keyData": "[parameters('adminPasswordOrKey')]"
                     }
                 ]
             }
@@ -228,8 +239,8 @@
                 "osProfile": {
                     "computerName": "[variables('VMName')]",
                     "adminUsername": "[parameters('adminUsername')]",
-                    "adminPassword": "[parameters('adminPublicKey')]",
-                    "linuxConfiguration": "[variables('linuxConfiguration')]"
+                    "adminPassword": "[parameters('adminPasswordOrKey')]",
+                    "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), json('null'), variables('linuxConfiguration'))]"
                 }
             }
         },
