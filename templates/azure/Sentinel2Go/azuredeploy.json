@@ -109,7 +109,7 @@
         },
         "windowsVmSize": {
             "type": "string",
-            "defaultValue": "Standard_A3",
+            "defaultValue": "Standard_B2s",
             "allowedValues": [
                 "Standard_A2",
                 "Standard_A3",
@@ -306,7 +306,7 @@
                 },
                 "parameters": {
                     "projectName": {
-                        "value": "SentinelEventHub"
+                        "value": "SentinelPipe"
                     },
                     "eventHubSku": {
                         "value": "Standard"
