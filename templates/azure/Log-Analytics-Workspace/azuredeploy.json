@@ -55,7 +55,7 @@
         }
     },
     "variables": {
-        "uniqueWorkspace": "[concat(parameters('workspaceName'), uniquestring(resourceGroup().id, parameters('utcValue')))]"
+        "uniqueWorkspace": "[concat('log-', parameters('workspaceName'), uniquestring(resourceGroup().id, parameters('utcValue')))]"
     },
     "resources": [
         {
