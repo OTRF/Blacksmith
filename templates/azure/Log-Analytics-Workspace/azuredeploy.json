@@ -2,6 +2,13 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "utcValue": {
+            "type": "string",
+            "defaultValue": "[utcNow()]",
+            "metadata": {
+                "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
+            }
+        },
         "workspaceName": {
             "type": "string",
             "metadata": {
@@ -47,11 +54,14 @@
             }
         }
     },
+    "variables": {
+        "uniqueWorkspace": "[concat(parameters('workspaceName'), uniquestring(resourceGroup().id, parameters('utcValue')))]"
+    },
     "resources": [
         {
             "apiVersion": "2015-11-01-preview",
             "type": "Microsoft.OperationalInsights/workspaces",
-            "name": "[parameters('workspaceName')]",
+            "name": "[variables('uniqueWorkspace')]",
             "location": "[parameters('location')]",
             "properties": {
                 "retentionInDays": "[parameters('dataRetention')]",
@@ -67,15 +77,15 @@
     "outputs": {
         "workspaceName": {
             "type": "string",
-            "value": "[parameters('workspaceName')]"
+            "value": "[variables('uniqueWorkspace')]"
         },
         "workspaceIdOutput": {
             "type": "string",
-            "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-11-01-preview').customerId]"
+            "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').customerId]"
         },
         "workspaceKeyOutput": {
             "type": "string",
-            "value": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2015-11-01-preview').primarySharedKey]"
+            "value": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey]"
         }
     }
 }
