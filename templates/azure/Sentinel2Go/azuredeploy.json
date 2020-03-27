@@ -284,9 +284,6 @@
                     "allowedIPAddresses": {
                         "value": "[parameters('allowedIPAddresses')]"
                     },
-                    "dnsLabelPrefix": {
-                        "value": "sentinel"
-                    },
                     "location": {
                         "value": "[parameters('location')]"
                     }
@@ -481,9 +478,6 @@
                     },
                     "allowedIPAddresses": {
                         "value": "[parameters('allowedIPAddresses')]"
-                    },
-                    "dnsLabelPrefix": {
-                        "value": "sentinel"
                     },
                     "location": {
                         "value": "[parameters('location')]"

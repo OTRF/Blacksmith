@@ -36,8 +36,8 @@
   },
   "variables": {
     "uniqueNamespace": "[concat(parameters('projectName'), uniquestring(resourceGroup().id, parameters('utcValue')))]",
-    "eventHubName": "[concat(parameters('projectName'), '-hub')]",
-    "eventHubNamespaceName": "[concat(variables('uniqueNamespace'), '-ns')]",
+    "eventHubName": "[concat('evh-', parameters('projectName'))]",
+    "eventHubNamespaceName": "[concat('evhns-', variables('uniqueNamespace'))]",
     "defaultSASKeyName": "RootManageSharedAccessKey",
     "authRuleResourceId": "[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventHubNamespaceName'), variables('defaultSASKeyName'))]"
   },

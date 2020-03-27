@@ -21,12 +21,6 @@
                 "description": "Password for the Virtual Machine."
             }
         },
-        "dnsLabelPrefix": {
-            "type": "string",
-            "metadata": {
-                "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
-            }
-        },
         "windowsDesktopSKU": {
             "type": "string",
             "defaultValue": "19h2-pro",
@@ -122,7 +116,7 @@
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
         "virtualNetworkName": "vnet-winvm",
-        "subnetName": "vmLAN",
+        "subnetName": "snet-LAN",
         "virtualNetworkAddressRange": "192.168.0.0/16",
         "subnetRange": "192.168.1.0/24",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
@@ -151,7 +145,7 @@
             "comments": "Default Network Security Group for Windows endpoints",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-08-01",
-            "name": "VM-RDP-Allow",
+            "name": "nsg-rdpallow",
             "location": "[parameters('location')]",
             "properties": {
                 "securityRules": [
@@ -177,7 +171,7 @@
             "name": "[variables('virtualNetworkName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', 'VM-RDP-Allow')]"
+                "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-rdpallow')]"
             ],
             "properties": {
                 "addressSpace": {
@@ -191,7 +185,7 @@
                         "properties": {
                             "addressPrefix": "[variables('subnetRange')]",
                             "networkSecurityGroup": {
-                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'VM-RDP-Allow')]"
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-rdpallow')]"
                             }
                         }
                     }
@@ -201,22 +195,22 @@
         {
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2018-11-01",
-            "name": "[concat(variables('VMName'),'-pip')]",
+            "name": "[concat('pip-', variables('VMName'))]",
             "location": "[parameters('location')]",
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "[toLower(concat(parameters('dnsLabelPrefix'), '-', variables('VMName'), '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
+                    "domainNameLabel": "[toLower(concat('pip-', variables('VMName'), '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
                 }
             }
         },
         {
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-11-01",
-            "name": "[concat(variables('VMName'),'-ni')]",
+            "name": "[concat('nic-', variables('VMName'))]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses/', concat(variables('VMName'),'-pip'))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('VMName')))]",
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
             ],
             "properties": {
@@ -227,7 +221,7 @@
                             "privateIPAllocationMethod": "Static",
                             "privateIPAddress": "[variables('VMPrivateIPAddress')]",
                             "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat(variables('VMName'),'-pip'))]"
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('VMName')))]"
                             },
                             "subnet": {
                                 "id": "[variables('subnetRef')]"
@@ -244,7 +238,7 @@
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.Network/networkInterfaces/', concat(variables('VMName'),'-ni'))]"
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('VMName')))]"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -276,7 +270,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('VMName'),'-ni'))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('VMName')))]"
                         }
                     ]
                 },
