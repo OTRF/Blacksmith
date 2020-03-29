@@ -74,14 +74,14 @@
             "type": "bool",
             "defaultValue": false,
             "metadata": {
-                "description": "Do you want to enable the Microsoft Monitoring agent? "
+                "description": "Do you want to enable the Microsoft Log Analytics Monitoring agent? "
             }
         },
         "enableAuditing": {
             "type": "bool",
             "defaultValue": false,
             "metadata": {
-                "description": "Do you want to enable Windows Auditing (Enable Windows Security audit categories)? "
+                "description": "Do you want to enable Windows Security Auditing (Windows Security audit categories)? "
             }
         },
         "enableSysmon": {

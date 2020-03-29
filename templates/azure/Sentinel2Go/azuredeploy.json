@@ -401,12 +401,6 @@
                     "workspaceName": {
                         "value": "[variables('uniqueWorkspace')]"
                     },
-                    "workspaceId": {
-                         "value": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]"
-                     },
-                    "securityCollectionTier": {
-                        "value": "[parameters('securityCollectionTier')]"
-                    },
                     "location": {
                         "value": "[parameters('location')]"
                     }
