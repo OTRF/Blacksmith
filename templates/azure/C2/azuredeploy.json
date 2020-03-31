@@ -89,6 +89,38 @@
             },
             "defaultValue": "snet-c2"
         },
+        "c2Framework": {
+            "type": "string",
+            "allowedValues": [
+                "empire",
+                "covenant",
+                "caldera"
+            ],
+            "metadata": {
+                "description": "C2 framework to deploy"
+            }
+        },
+        "c2AdminPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "admin user password for C2 interface"
+            }
+        },
+        "_artifactsLocation": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/",
+            "metadata": {
+                "description": "The location of resources, such as templates and DSC modules, that the template depends on"
+            }
+        },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
+            }
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -99,6 +131,7 @@
     },
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
+        "c2SetupScript": "[uri(parameters('_artifactsLocation'), concat('scripts/bash/Install-C2s.sh', parameters('_artifactsLocationSasToken')))]",
         "virtualNetworkName": "[parameters('virtualNetworkName')]",
         "subnetName": "[parameters('subnetName')]",
         "virtualNetworkAddressRange": "10.0.0.0/16",
@@ -273,6 +306,28 @@
                 "typeHandlerVersion": "1.0",
                 "autoUpgradeMinorVersion": true,
                 "settings": {}
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-03-01",
+            "name": "[concat(variables('vmName'), '/C2Setup')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('vmName'), 'DockerExtension')]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.1",
+                "autoUpgradeMinorVersion": true,
+                "settings": {},
+                "protectedSettings": {
+                    "commandToExecute": "[concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework'), ' ', '-p', ' ', parameters('c2AdminPassword'))]",
+                    "fileUris": [
+                        "[variables('c2SetupScript')]"
+                    ]
+                }
             }
         }
     ],

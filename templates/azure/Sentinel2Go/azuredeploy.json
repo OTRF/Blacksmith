@@ -112,6 +112,13 @@
                 "description": "Do you want to deploy additional resources and connect them to your current Azure Sentinel's workspace?"
             }
         },
+        "c2AdminPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "admin user password for C2 interface"
+            }
+        },
         "windowsVmSize": {
             "type": "string",
             "defaultValue": "Standard_B2s",
@@ -468,6 +475,12 @@
                     },
                     "allowedIPAddresses": {
                         "value": "[parameters('allowedIPAddresses')]"
+                    },
+                    "c2Framework": {
+                        "value": "caldera"
+                    },
+                    "c2AdminPassword": {
+                        "value": "[parameters('c2AdminPassword')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"

@@ -20,6 +20,7 @@ usage(){
     echo "Usage: $0 [option...]" >&2
     echo
     echo "   -r         run a specific C2 server (empire or covenant or caldera)"
+    echo "   -p         C2 admin password"
     echo "   -h         help menu"
     echo
     echo "Examples:"
@@ -29,11 +30,12 @@ usage(){
 }
 
 # ************ Command Options **********************
-while getopts r:h option
+while getopts r:ph option
 do
     case "${option}"
     in
         r) RUN_C2=$OPTARG;;
+        p) ADMIN_PASSWORD=$OPTARG;;
         h) usage;;
         \?) usage;;
         :  ) echo "Missing option argument for -$OPTARG" >&2; exit 1;;
@@ -58,6 +60,10 @@ case $RUN_C2 in
     ;;
 esac
 
+# C2 admin user password
+if [ -z "$ADMIN_PASSWORD" ]; then
+    export ADMIN_PASSWORD=C2P@ssw0rd!123
+fi
 # Downloading Impacker Binaries from https://github.com/ropnop/impacket_static_binaries
 echo "$INFO_TAG Downloading Impacket binaries.."
 mkdir /opt/Impacket
@@ -100,9 +106,5 @@ else
     curl -L https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/scripts/docker/caldera/config/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml -o /opt/Caldera/config/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml >> $LOGFILE 2>&1
     echo "$INFO_TAG Running Caldera by default.."
 
-    if [ -z "$CALDERA_ADMIN_NAME" ] && [ -z "$CALDERA_ADMIN_PASSWORD" ]; then
-        export CALDERA_ADMIN_NAME=admin
-        export CALDERA_ADMIN_PASSWORD=C@ld3r@!123
-    fi
     docker-compose -f /opt/Caldera/docker-compose-caldera.yml up --build -d
 fi
