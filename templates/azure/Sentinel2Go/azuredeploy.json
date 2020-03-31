@@ -523,6 +523,7 @@
             "name": "vnet-c2/peering-to-remote-vnet-win",
             "apiVersion": "2019-11-01",
             "dependsOn": [
+                "deployC2VM",
                 "deployWin10VM"
             ],
             "location": "[parameters('location')]",
@@ -542,7 +543,8 @@
             "name": "vnet-win/peering-to-remote-vnet-c2",
             "apiVersion": "2019-11-01",
             "dependsOn": [
-                "deployC2VM"
+                "deployC2VM",
+                "deployWin10VM"
             ],
             "location": "[parameters('location')]",
             "properties": {
@@ -600,6 +602,7 @@
             "name": "vnet-c2/peering-to-remote-vnet-ubuntu",
             "apiVersion": "2019-11-01",
             "dependsOn": [
+                "deployC2VM",
                 "deployUbuntuVM"
             ],
             "location": "[parameters('location')]",
@@ -619,7 +622,8 @@
             "name": "vnet-ubuntu/peering-to-remote-vnet-c2",
             "apiVersion": "2019-11-01",
             "dependsOn": [
-                "deployC2VM"
+                "deployC2VM",
+                "deployUbuntuVM"
             ],
             "location": "[parameters('location')]",
             "properties": {
