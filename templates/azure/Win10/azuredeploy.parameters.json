@@ -20,6 +20,9 @@
         "enableSysmon": {
             "value": false
         },
+        "enableAntimalware": {
+            "value": false
+        },
         "workspaceId": {
             "value": ""
         },

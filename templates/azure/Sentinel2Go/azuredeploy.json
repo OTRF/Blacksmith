@@ -213,6 +213,7 @@
     },
     "variables": {
         "uniqueWorkspace": "[concat(parameters('workspaceName'), uniquestring(resourceGroup().id, parameters('utcValue')))]",
+        "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
         "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]"
     },
     "resources": [
@@ -515,6 +516,9 @@
                     "enableMonitoringAgent": {
                         "value": true
                     },
+                    "enableAntimalware": {
+                        "value": true
+                    },
                     "enableSysmon": {
                         "value": true
                     },
@@ -567,6 +571,42 @@
                 "useRemoteGateways": false,
                 "remoteVirtualNetwork": {
                     "id": "[if(equals(parameters('addToCart'), 'win10-c2'), reference('deployC2VM').outputs.virtualNetworkId.value, 'resource not deployed')]"
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('addToCart'), 'win10-c2')]",
+            "name": "WinExecC2Payload",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "dependsOn": [
+                "vnet-c2/peering-to-remote-vnet-win",
+                "vnet-win/peering-to-remote-vnet-c2"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptExTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "extensionName": {
+                        "value": "SetupWinVM"
+                    },
+                    "commandToExecute": {
+                        "value": "powershell -ExecutionPolicy Unrestricted -File ./invoke-sandcat.ps1 -C2IpAddress 10.0.0.8"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/scripts/invoke-sandcat.ps1', parameters('_artifactsLocationSasToken')))]"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "WIN001"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
                 }
             }
         },
