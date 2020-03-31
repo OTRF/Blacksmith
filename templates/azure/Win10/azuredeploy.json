@@ -411,7 +411,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+                "WindowsSetup"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -424,7 +424,7 @@
                         "value": "SetupWinVM"
                     },
                     "commandToExecute": {
-                        "value": "powershell -ExecutionPolicy Unrestricted -File ./installAgentScript.ps1 -EndpointAgent Sysmon"
+                        "value": "powershell -ExecutionPolicy Unrestricted -File ./Install-Endpoint-Agent.ps1 -EndpointAgent Sysmon"
                     },
                     "fileUris": {
                         "value": [
