@@ -532,7 +532,7 @@
         {
             "condition": "[equals(parameters('addToCart'), 'win10-c2')]",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
-            "name": "vnet-c2/peering-to-remote-vnet",
+            "name": "vnet-c2/peering-to-remote-win10-vnet",
             "apiVersion": "2019-11-01",
             "dependsOn": [
                 "deployWin10VM"
@@ -593,7 +593,7 @@
         {
             "condition": "[equals(parameters('addToCart'), 'ubuntu-c2')]",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
-            "name": "vnet-c2/peering-to-remote-vnet",
+            "name": "vnet-c2/peering-to-remote-ubuntu-vnet",
             "apiVersion": "2019-11-01",
             "dependsOn": [
                 "deployUbuntuVM"
