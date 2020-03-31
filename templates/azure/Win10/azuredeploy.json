@@ -157,7 +157,7 @@
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
         "vmName": "[parameters('vmName')]",
         "vmPrivateIPAddress": "192.168.2.10",
-        "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Windows1-VM/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
+        "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Wind10/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
         "prepareBoxScript": "[uri(parameters('_artifactsLocation'), concat('scripts/powershell/misc/Prepare-Box.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSecurityAuditingScript": "[uri(parameters('_artifactsLocation'), concat('scripts/powershell/auditing/Set-SecurityAuditing.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSACLScript": "https://raw.githubusercontent.com/hunters-forge/Set-AuditRule/master/Set-AuditRule.ps1",
