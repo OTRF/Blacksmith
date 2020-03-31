@@ -443,7 +443,7 @@
         {
             "condition": "[parameters('enableAntimalware')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "AntiMalware",
+            "name": "[concat(variables('vmName'), '/AntiMalware')]",
             "apiVersion": "2019-07-01",
             "location": "[resourceGroup().location]",
             "dependsOn": [
