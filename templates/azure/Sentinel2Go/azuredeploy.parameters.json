@@ -32,10 +32,10 @@
         "enableMDATPIntegration": {
             "value": false
         },
-        "enableWinDataSources": {
+        "enableALAWinEventLogs": {
             "value": false
         },
-        "enableSecurityAudit": {
+        "enableSCWinSecurityLogs": {
             "value": false
         },
         "securityCollectionTier": {

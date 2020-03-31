@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "utcValue": {
@@ -100,11 +100,16 @@
                 "description": "Do you want to ingest Mordor datasets to your Log Analytics workspace at deployment time? Ref: https://mordordatasets.com"
             }
         },
-        "deployWinVM": {
-            "type": "bool",
-            "defaultValue": false,
+        "addToCart": {
+            "type": "string",
+            "defaultValue": "None",
+            "allowedValues": [
+                "None",
+                "win10-c2",
+                "ubuntu-c2"
+            ],
             "metadata": {
-                "description": "Do you want to deploy a Win10 VM connected to your Log Analytics workspace along with Windows Connectors?"
+                "description": "Do you want to deploy additional resources and connect them to your current Azure Sentinel's workspace?"
             }
         },
         "windowsVmSize": {
@@ -129,14 +134,14 @@
                 "description": "Password for a Windows Virtual Machine."
             }
         },
-        "enableWinDataSources": {
+        "enableALAWinEventLogs": {
             "type": "bool",
             "defaultValue": false,
             "metadata": {
-                "description": "Do you want to configure your Log Analytics Workspace to collect Windows Event Logs from several event providers? "
+                "description": "Do you want to configure your Log Analytics Workspace to collect Windows Event Logs from several pre-defined event providers? "
             }
         },
-        "enableSecurityAudit": {
+        "enableSCWinSecurityLogs": {
             "type": "bool",
             "defaultValue": false,
             "metadata": {
@@ -247,7 +252,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/logAnalyticsFunctions.json', parameters('_artifactsLocationSasToken')))]",
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/alaFunctions.json', parameters('_artifactsLocationSasToken')))]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -260,7 +265,7 @@
         {
             "condition": "[parameters('enableDataPipeline')]",
             "type": "Microsoft.Resources/deployments",
-            "name": "deployLinuxVM",
+            "name": "deployLogstashVM",
             "apiVersion": "2019-05-01",
             "properties": {
                 "mode": "Incremental",
@@ -269,7 +274,7 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "linuxVmSize": {
+                    "vmSize": {
                         "value": "[parameters('linuxVmSize')]"
                     },
                     "adminUsername": {
@@ -312,49 +317,13 @@
             }
         },
         {
-            "condition": "[and(parameters('enableDataPipeline'), parameters('ingestMordor'))]",
-            "name": "pipelineMordor",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-05-01",
-            "dependsOn": [
-                "deployEventHub",
-                "deployLinuxVM"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('customScriptTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "extensionName": {
-                        "value": "SetupLogstash"
-                    },
-                    "commandToExecute": {
-                        "value": "[if(parameters('enableDataPipeline'), concat('bash logstash-setup.sh -i', ' ', reference(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').customerId, ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value, ' ', '-k', ' ', listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey, ' ', '-u', ' ', parameters('adminUsername'), ' ', '-m'), 'Resource not deployed')]"
-                    },
-                    "fileUris": {
-                        "value": [
-                            "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/scripts/logstash-setup.sh', parameters('_artifactsLocationSasToken')))]"
-                        ]
-                    },
-                    "vmName": {
-                        "value": "[if(parameters('enableDataPipeline'), reference('deployLinuxVM').outputs.linuxVMName.value, 'Resource not deployed')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            }
-        },
-        {
             "condition": "[and(parameters('enableDataPipeline'), not(parameters('ingestMordor')))]",
             "name": "pipelineOnly",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
             "dependsOn": [
                 "deployEventHub",
-                "deployLinuxVM"
+                "deployLogstashVM"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -375,7 +344,7 @@
                         ]
                     },
                     "vmName": {
-                        "value": "[if(parameters('enableDataPipeline'), reference('deployLinuxVM').outputs.linuxVMName.value, 'Resource not deployed')]"
+                        "value": "[if(parameters('enableDataPipeline'), reference('deployLogstashVM').outputs.vmName.value, 'Resource not deployed')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -384,7 +353,43 @@
             }
         },
         {
-            "condition": "[parameters('enableWinDataSources')]",
+            "condition": "[and(parameters('enableDataPipeline'), parameters('ingestMordor'))]",
+            "name": "pipelineMordor",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "dependsOn": [
+                "deployEventHub",
+                "deployLogstashVM"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "extensionName": {
+                        "value": "SetupLogstash"
+                    },
+                    "commandToExecute": {
+                        "value": "[if(parameters('enableDataPipeline'), concat('bash logstash-setup.sh -i', ' ', reference(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').customerId, ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value, ' ', '-k', ' ', listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey, ' ', '-u', ' ', parameters('adminUsername'), ' ', '-m'), 'Resource not deployed')]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/scripts/logstash-setup.sh', parameters('_artifactsLocationSasToken')))]"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[if(parameters('enableDataPipeline'), reference('deployLogstashVM').outputs.vmName.value, 'Resource not deployed')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableALAWinEventLogs')]",
             "type": "Microsoft.Resources/deployments",
             "name": "workspaceWinDataSources",
             "apiVersion": "2019-05-01",
@@ -394,7 +399,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/workspaceWinDataSources.json', parameters('_artifactsLocationSasToken')))]",
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/alaWinEventLogs.json', parameters('_artifactsLocationSasToken')))]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -408,7 +413,7 @@
             }
         },
         {
-            "condition": "[parameters('enableSecurityAudit')]",
+            "condition": "[parameters('enableSCWinSecurityLogs')]",
             "type": "Microsoft.Resources/deployments",
             "name": "securityCenterAudit",
             "apiVersion": "2019-05-01",
@@ -418,7 +423,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/securityCenterAuditLogs.json', parameters('_artifactsLocationSasToken')))]",
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/scWinSecurityLogs.json', parameters('_artifactsLocationSasToken')))]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -438,21 +443,69 @@
             }
         },
         {
-            "condition": "[and(parameters('enableWinDataSources'), parameters('deployWinVM'))]",
+            "condition": "[contains(parameters('addToCart'), 'c2')]",
             "type": "Microsoft.Resources/deployments",
-            "name": "deployWinVM",
+            "name": "deployC2VM",
+            "apiVersion": "2019-05-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/C2/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmSize": {
+                        "value": "[parameters('linuxVmSize')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "authenticationType": {
+                        "value": "[parameters('linuxAuthenticationType')]"
+                    },
+                    "adminPasswordOrKey": {
+                        "value": "[parameters('linuxAdminPasswordOrKey')]"
+                    },
+                    "allowedIPAddresses": {
+                        "value": "[parameters('allowedIPAddresses')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('addToCart'), 'win10-c2')]",
+            "type": "Microsoft.Resources/deployments",
+            "name": "deployWin10VM",
             "apiVersion": "2019-05-01",
             "dependsOn": [
-                "workspaceWinDataSources"
+                "deployC2VM"
             ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Windows10VM/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('winAdminPassword')]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('windowsVmSize')]"
+                    },
+                    "allowedIPAddresses": {
+                        "value": "[parameters('allowedIPAddresses')]"
+                    },
                     "enableMonitoringAgent": {
+                        "value": true
+                    },
+                    "enableSysmon": {
                         "value": true
                     },
                     "workspaceId": {
@@ -461,14 +514,72 @@
                     "workspaceKey": {
                         "value": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey]"
                     },
+                    "peeringVNET": {
+                        "value": true
+                    },
+                    "peeringVNETId": {
+                        "value": "[if(equals(parameters('addToCart'), 'win10-c2'), reference('deployC2VM').outputs.virtualNetworkId.value, 'resource not deployed')]"
+                    },
+                    "peeringVNETName": {
+                        "value": "[if(equals(parameters('addToCart'), 'win10-c2'), reference('deployC2VM').outputs.virtualNetworkName.value, 'resource not deployed')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('addToCart'), 'win10-c2')]",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "name": "vnet-c2/peering-to-remote-vnet",
+            "apiVersion": "2019-11-01",
+            "dependsOn": [
+                "deployWin10VM"
+            ],
+            "location": "[parameters('location')]",
+            "properties": {
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": false,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteVirtualNetwork": {
+                    "id": "[if(equals(parameters('addToCart'), 'win10-c2'), reference('deployWin10VM').outputs.virtualNetworkId.value, 'resource not deployed')]"
+                }
+            }
+        },
+        {
+           "condition": "[equals(parameters('addToCart'), 'ubuntu-c2')]",
+            "type": "Microsoft.Resources/deployments",
+            "name": "deployUbuntuVM",
+            "apiVersion": "2019-05-01",
+            "dependsOn": [
+                "deployC2VM"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/LinuxVM/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "UBUNTU001"
+                    },
+                    "virtualNetworkName": {
+                        "value": "vnet-ubuntu"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('linuxVmSize')]"
+                    },
                     "adminUsername": {
                         "value": "[parameters('adminUsername')]"
                     },
-                    "adminPassword": {
-                        "value": "[parameters('winAdminPassword')]"
+                    "authenticationType": {
+                        "value": "[parameters('linuxAuthenticationType')]"
                     },
-                    "windowsDesktopVmSize": {
-                        "value": "[parameters('windowsVmSize')]"
+                    "adminPasswordOrKey": {
+                        "value": "[parameters('linuxAdminPasswordOrKey')]"
                     },
                     "allowedIPAddresses": {
                         "value": "[parameters('allowedIPAddresses')]"
@@ -476,6 +587,25 @@
                     "location": {
                         "value": "[parameters('location')]"
                     }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('addToCart'), 'ubuntu-c2')]",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "name": "vnet-c2/peering-to-remote-vnet",
+            "apiVersion": "2019-11-01",
+            "dependsOn": [
+                "deployUbuntuVM"
+            ],
+            "location": "[parameters('location')]",
+            "properties": {
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": false,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteVirtualNetwork": {
+                    "id": "[if(equals(parameters('addToCart'), 'ubuntu-c2'), reference('deployUbuntuVM').outputs.virtualNetworkId.value, 'resource not deployed')]"
                 }
             }
         },

@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workspaceName": {
@@ -27,7 +27,6 @@
             "Microsoft-Windows-Windows Firewall With Advanced Security/Firewall",
             "Windows PowerShell",
             "Microsoft-Windows-PowerShell/Operational",
-            "Microsoft-Windows-PowerShell-DesiredStateConfiguration-FileDownloadManager/Operational",
             "Microsoft-Windows-WMI-Activity/Operational"
         ]
    },

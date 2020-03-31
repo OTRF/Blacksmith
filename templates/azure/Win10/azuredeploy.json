@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "utcValue": {
@@ -34,7 +34,14 @@
                 "description": "The Windows version for the Desktop VM. This will pick a fully patched image of this given Windows version."
             }
         },
-        "windowsDesktopVmSize": {
+        "vmName": {
+            "type": "string",
+            "defaultValue": "WIN001",
+            "metadata": {
+                "description": "Name of the virtual machine"
+            }
+        },
+        "vmSize": {
             "type": "string",
             "defaultValue": "Standard_B2s",
             "allowedValues": [
@@ -77,13 +84,6 @@
                 "description": "Do you want to enable the Microsoft Log Analytics Monitoring agent? "
             }
         },
-        "enableAuditing": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to enable Windows Security Auditing (Windows Security audit categories)? "
-            }
-        },
         "enableSysmon": {
             "type": "bool",
             "defaultValue": false,
@@ -105,6 +105,41 @@
                 "description": "Log analytics workspace keys"
             }
         },
+        "virtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Virtual Network"
+            },
+            "defaultValue": "vnet-win"
+        },
+        "subnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the subnet"
+            },
+            "defaultValue": "snet-win"
+        },
+        "peeringVNET": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to peer your vnet to a remote vnet?"
+            }
+        },
+        "peeringVNETName": {
+            "type": "string",
+            "metadata": {
+                "description": "Vnet name of the remote vnet you are peering with"
+            },
+            "defaultValue": ""
+        },
+        "peeringVNETId": {
+            "type": "string",
+            "metadata": {
+                "description": "Vnet ID of the remote vnet you are peering with"
+            },
+            "defaultValue": ""
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -115,13 +150,13 @@
     },
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
-        "virtualNetworkName": "vnet-winvm",
-        "subnetName": "snet-LAN",
+        "virtualNetworkName": "[parameters('virtualNetworkName')]",
+        "subnetName": "[parameters('subnetName')]",
         "virtualNetworkAddressRange": "192.168.0.0/16",
-        "subnetRange": "192.168.1.0/24",
+        "subnetRange": "192.168.2.0/24",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
-        "VMName": "VM001",
-        "VMPrivateIPAddress": "192.168.1.10",
+        "vmName": "[parameters('vmName')]",
+        "vmPrivateIPAddress": "192.168.2.10",
         "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Windows1-VM/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
         "prepareBoxScript": "[uri(parameters('_artifactsLocation'), concat('scripts/powershell/misc/Prepare-Box.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSecurityAuditingScript": "[uri(parameters('_artifactsLocation'), concat('scripts/powershell/auditing/Set-SecurityAuditing.ps1', parameters('_artifactsLocationSasToken')))]",
@@ -190,27 +225,49 @@
                         }
                     }
                 ]
-            }
+            },
+            "resources": [
+                {
+                   "condition": "[parameters('peeringVNET')]", 
+                   "apiVersion": "2016-06-01",
+                   "type": "virtualNetworkPeerings",
+                   "name": "[concat(variables('virtualNetworkName'), '-', parameters('peeringVNETName'))]",
+                   "location": "[resourceGroup().location]",
+                   "dependsOn": [
+                       "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+                   ],
+                   "comments": "This is the peering from local vnet to remote vnet",
+                   "properties": {
+                       "allowVirtualNetworkAccess": "true",
+                       "allowForwardedTraffic": "false",
+                       "allowGatewayTransit": "false",
+                       "useRemoteGateways": "false",
+                       "remoteVirtualNetwork": {
+                           "id": "[parameters('peeringVNETId')]"
+                       }
+                   }
+               }
+            ]
         },
         {
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2018-11-01",
-            "name": "[concat('pip-', variables('VMName'))]",
+            "name": "[concat('pip-', variables('vmName'))]",
             "location": "[parameters('location')]",
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "[toLower(concat('pip-', variables('VMName'), '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
+                    "domainNameLabel": "[toLower(concat('pip-', variables('vmName'), '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
                 }
             }
         },
         {
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-11-01",
-            "name": "[concat('nic-', variables('VMName'))]",
+            "name": "[concat('nic-', variables('vmName'))]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('VMName')))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('vmName')))]",
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
             ],
             "properties": {
@@ -219,9 +276,9 @@
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAllocationMethod": "Static",
-                            "privateIPAddress": "[variables('VMPrivateIPAddress')]",
+                            "privateIPAddress": "[variables('vmPrivateIPAddress')]",
                             "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('VMName')))]"
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('vmName')))]"
                             },
                             "subnet": {
                                 "id": "[variables('subnetRef')]"
@@ -234,18 +291,18 @@
         {
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2018-10-01",
-            "name": "[variables('VMName')]",
+            "name": "[variables('vmName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('VMName')))]"
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('vmName')))]"
             ],
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "[parameters('windowsDesktopVmSize')]"
+                    "vmSize": "[parameters('vmSize')]"
                 },
                 "osProfile": {
-                    "computerName": "[variables('VMName')]",
+                    "computerName": "[variables('vmName')]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
@@ -270,7 +327,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('VMName')))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('vmName')))]"
                         }
                     ]
                 },
@@ -286,10 +343,10 @@
             "condition": "[parameters('enableMonitoringAgent')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-03-01",
-            "name": "[concat(variables('VMName'), '/OMSExtension')]",
+            "name": "[concat(variables('vmName'), '/OMSExtension')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
             ],
             "properties": {
                 "publisher": "Microsoft.EnterpriseCloud.Monitoring",
@@ -305,12 +362,11 @@
             }
         },
         {
-            "condition": "[parameters('enableAuditing')]",
-            "name": "WindowsSecurityAuditing",
+            "name": "WindowsSetup",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -334,7 +390,7 @@
                         ]
                     },
                     "vmName": {
-                        "value": "[variables('VMName')]"
+                        "value": "[variables('vmName')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -348,7 +404,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -369,7 +425,7 @@
                         ]
                     },
                     "vmName": {
-                        "value": "[variables('VMName')]"
+                        "value": "[variables('vmName')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
