@@ -104,7 +104,7 @@
         "virtualNetworkAddressRange": "10.0.0.0/16",
         "subnetRange": "10.0.0.0/24",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
-        "VMName": "[parameters('vmName')]",
+        "vmName": "[parameters('vmName')]",
         "VMPrivateIPAddress": "10.0.0.8",
         "linuxConfiguration": {
             "disablePasswordAuthentication": true,
@@ -185,22 +185,22 @@
         {
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2018-11-01",
-            "name": "[concat('pip-', variables('VMName'))]",
+            "name": "[concat('pip-', variables('vmName'))]",
             "location": "[parameters('location')]",
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "[toLower(concat('pip-', variables('VMName'), '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
+                    "domainNameLabel": "[toLower(concat('pip-', variables('vmName'), '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
                 }
             }
         },
         {
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-11-01",
-            "name": "[concat('nic-', variables('VMName'))]",
+            "name": "[concat('nic-', variables('vmName'))]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('VMName')))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('vmName')))]",
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
             ],
             "properties": {
@@ -211,7 +211,7 @@
                             "privateIPAllocationMethod": "Static",
                             "privateIPAddress": "[variables('VMPrivateIPAddress')]",
                             "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('VMName')))]"
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('vmName')))]"
                             },
                             "subnet": {
                                 "id": "[variables('subnetRef')]"
@@ -224,10 +224,10 @@
         {
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-03-01",
-            "name": "[variables('VMName')]",
+            "name": "[variables('vmName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('VMName')))]"
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('vmName')))]"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -247,12 +247,12 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('VMName')))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('vmName')))]"
                         }
                     ]
                 },
                 "osProfile": {
-                    "computerName": "[variables('VMName')]",
+                    "computerName": "[variables('vmName')]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPasswordOrKey')]",
                     "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), json('null'), variables('linuxConfiguration'))]"
@@ -261,11 +261,11 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(variables('VMName'),'/DockerExtension')]",
+            "name": "[concat(variables('vmName'),'/DockerExtension')]",
             "apiVersion": "2017-03-30",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
             ],
             "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
@@ -279,11 +279,11 @@
     "outputs": {
         "vmName": {
             "type": "string",
-            "value": "[variables('VMName')]"
+            "value": "[variables('vmName')]"
         },
         "vmResourceID": {
             "type": "string",
-            "value": "[resourceId('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
+            "value": "[resourceId('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
         },
         "virtualNetworkName": {
             "type": "string",

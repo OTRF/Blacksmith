@@ -480,9 +480,6 @@
             "type": "Microsoft.Resources/deployments",
             "name": "deployWin10VM",
             "apiVersion": "2019-05-01",
-            "dependsOn": [
-                "deployC2VM"
-            ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -514,15 +511,6 @@
                     "workspaceKey": {
                         "value": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey]"
                     },
-                    "peeringVNET": {
-                        "value": true
-                    },
-                    "peeringVNETId": {
-                        "value": "[if(equals(parameters('addToCart'), 'win10-c2'), reference('deployC2VM').outputs.virtualNetworkId.value, 'resource not deployed')]"
-                    },
-                    "peeringVNETName": {
-                        "value": "[if(equals(parameters('addToCart'), 'win10-c2'), reference('deployC2VM').outputs.virtualNetworkName.value, 'resource not deployed')]"
-                    },
                     "location": {
                         "value": "[parameters('location')]"
                     }
@@ -532,7 +520,7 @@
         {
             "condition": "[equals(parameters('addToCart'), 'win10-c2')]",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
-            "name": "vnet-c2/peering-to-remote-win10-vnet",
+            "name": "vnet-c2/peering-to-remote-vnet-win",
             "apiVersion": "2019-11-01",
             "dependsOn": [
                 "deployWin10VM"
@@ -549,13 +537,29 @@
             }
         },
         {
+            "condition": "[equals(parameters('addToCart'), 'win10-c2')]",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "name": "vnet-win/peering-to-remote-vnet-c2",
+            "apiVersion": "2019-11-01",
+            "dependsOn": [
+                "deployC2VM"
+            ],
+            "location": "[parameters('location')]",
+            "properties": {
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": false,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteVirtualNetwork": {
+                    "id": "[if(equals(parameters('addToCart'), 'win10-c2'), reference('deployC2VM').outputs.virtualNetworkId.value, 'resource not deployed')]"
+                }
+            }
+        },
+        {
            "condition": "[equals(parameters('addToCart'), 'ubuntu-c2')]",
             "type": "Microsoft.Resources/deployments",
             "name": "deployUbuntuVM",
             "apiVersion": "2019-05-01",
-            "dependsOn": [
-                "deployC2VM"
-            ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -593,7 +597,7 @@
         {
             "condition": "[equals(parameters('addToCart'), 'ubuntu-c2')]",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
-            "name": "vnet-c2/peering-to-remote-ubuntu-vnet",
+            "name": "vnet-c2/peering-to-remote-vnet-ubuntu",
             "apiVersion": "2019-11-01",
             "dependsOn": [
                 "deployUbuntuVM"
@@ -606,6 +610,25 @@
                 "useRemoteGateways": false,
                 "remoteVirtualNetwork": {
                     "id": "[if(equals(parameters('addToCart'), 'ubuntu-c2'), reference('deployUbuntuVM').outputs.virtualNetworkId.value, 'resource not deployed')]"
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('addToCart'), 'ubuntu-c2')]",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "name": "vnet-ubuntu/peering-to-remote-vnet-c2",
+            "apiVersion": "2019-11-01",
+            "dependsOn": [
+                "deployC2VM"
+            ],
+            "location": "[parameters('location')]",
+            "properties": {
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": false,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteVirtualNetwork": {
+                    "id": "[if(equals(parameters('addToCart'), 'ubuntu-c2'), reference('deployC2VM').outputs.virtualNetworkId.value, 'resource not deployed')]"
                 }
             }
         },
