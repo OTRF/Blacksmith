@@ -580,8 +580,8 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
             "dependsOn": [
-                "vnet-c2/peering-to-remote-vnet-win",
-                "vnet-win/peering-to-remote-vnet-c2"
+                "[resourceId('Microsoft.Network/virtualNetworks/virtualNetworkPeerings', 'vnet-c2', 'peering-to-remote-vnet-win')]",
+                "[resourceId('Microsoft.Network/virtualNetworks/virtualNetworkPeerings', 'vnet-win', 'peering-to-remote-vnet-c2')]"
             ],
             "properties": {
                 "mode": "Incremental",
