@@ -4,7 +4,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)]
-    [string]$C2IPAddress,
+    [string]$C2IPAddress
 )
 
 $url="http://$C2IPAddress`:8888/file/download"

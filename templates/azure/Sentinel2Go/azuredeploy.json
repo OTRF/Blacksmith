@@ -594,7 +594,7 @@
                         "value": "SetupWinVM"
                     },
                     "commandToExecute": {
-                        "value": "powershell -ExecutionPolicy Unrestricted -File ./invoke-sandcat.ps1 -C2IpAddress 10.0.0.8"
+                        "value": "powershell -ExecutionPolicy Unrestricted -File ./invoke-sandcat.ps1 -C2IPAddress 10.0.0.8"
                     },
                     "fileUris": {
                         "value": [
