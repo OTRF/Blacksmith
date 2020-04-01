@@ -105,6 +105,7 @@
             "defaultValue": "None",
             "allowedValues": [
                 "None",
+                "win10",
                 "win10-c2",
                 "ubuntu-c2"
             ],
@@ -490,7 +491,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('addToCart'), 'win10-c2')]",
+            "condition": "[contains(parameters('addToCart'), 'win10')]",
             "type": "Microsoft.Resources/deployments",
             "name": "deployWin10VM",
             "apiVersion": "2019-05-01",
