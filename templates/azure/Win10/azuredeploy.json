@@ -264,7 +264,7 @@
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "[toLower(concat('pip-', variables('vmName'), '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
+                    "domainNameLabel": "[toLower(concat(variables('vmName'), '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
                 }
             }
         },

