@@ -80,6 +80,7 @@
 				<Image condition="end with">onedrivesetup.exe</Image>
 				<Image condition="end with">onedrive.exe</Image>
 				<Image condition="end with">skypeapp.exe</Image>
+				<Image condition="is">C:\WindowsAzure\Packages\CollectGuestLogs.exe</Image>
 			</ImageLoad>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -107,6 +108,8 @@
 				<SourceImage condition="is">C:\ProgramData\Microsoft\Windows Defender\platform\4.18.1907.4-0\MsMpEng.exe</SourceImage>
 				<SourceImage condition="is">C:\Program Files\Microsoft VS Code\Code.exe</SourceImage>
 				<SourceImage condition="end with">onedrivesetup.exe</SourceImage>
+				<SourceImage condition="is">C:\WindowsAzure\Packages\CollectGuestLogs.exe</SourceImage>
+				<SourceImage condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</SourceImage>
 				<TargetImage condition="is">C:\Program Files\VMware\VMware Tools\TPAutoConnSvc.exe</TargetImage>
 				<TargetImage condition="is">C:\Program Files\VMware\VMware Tools\TPAutoConnect.exe</TargetImage>
 				<TargetImage condition="is">C:\Windows\system32\mmc.exe</TargetImage>
@@ -119,6 +122,7 @@
 				<TargetImage condition="is">C:\Windows\System32\RuntimeBroker.exe</TargetImage>
 				<TargetImage condition="is">C:\Program Files\Amazon\Ec2ConfigService\Ec2Config.exe</TargetImage>
 				<TargetImage condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</TargetImage>
+				<TargetImage condition="is">C:\windows\system32\CompatTelRunner.exe</TargetImage>
 			</ProcessAccess>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -132,6 +136,8 @@
 				<Image condition="end with">onedrivesetup.exe</Image>
 				<Image condition="end with">onedrive.exe</Image>
 				<Image condition="end with">skypeapp.exe</Image>
+				<Image condition="is">C:\WindowsAzure\Packages\CollectGuestLogs.exe</Image>
+				<Image condition="is">C:\WindowsAzure\Packages\GuestAgent\WindowsAzureGuestAgent.exe</Image>
 			</FileCreate>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -150,6 +156,7 @@
 				<Image condition="end with">onedrive.exe</Image>
 				<Image condition="end with">skypeapp.exe</Image>
 				<Image condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</Image>
+				<Image condition="is">C:\windows\system32\AUDIODG.EXE</Image>
 				<TargetObject condition="is">\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\Microsoft Print to PDF\PrinterDriverData</TargetObject>
 				<TargetObject condition="end with">LanguageList</TargetObject>
 			</RegistryEvent>
@@ -160,7 +167,9 @@
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
 			<!-- Event ID 17,18 == PipeEvent. Log Named pipe created & Named pipe connected -->
-			<PipeEvent onmatch="exclude" />
+			<PipeEvent onmatch="exclude">
+				<Image condition="is">C:\WindowsAzure\Packages\CollectGuestLogs.exe</Image>
+			</PipeEvent>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
 			<!-- Event ID 19,20,21, == WmiEvent. Log all WmiEventFilter, WmiEventConsumer, WmiEventConsumerToFilter activity-->

@@ -30,7 +30,7 @@ usage(){
 }
 
 # ************ Command Options **********************
-while getopts r:ph option
+while getopts r:p:h option
 do
     case "${option}"
     in
@@ -61,9 +61,8 @@ case $RUN_C2 in
 esac
 
 # C2 admin user password
-if [ -z "$ADMIN_PASSWORD" ]; then
-    export ADMIN_PASSWORD=C2P@ssw0rd!123
-fi
+export ADMIN_PASSWORD=$ADMIN_PASSWORD
+
 # Downloading Impacker Binaries from https://github.com/ropnop/impacket_static_binaries
 echo "$INFO_TAG Downloading Impacket binaries.."
 mkdir /opt/Impacket
@@ -106,6 +105,9 @@ else
     curl -L https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/scripts/docker/caldera/config/local.yml -o /opt/Caldera/config/local.yml >> $LOGFILE 2>&1
     curl -L https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/scripts/docker/caldera/config/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml -o /opt/Caldera/config/a93f6915-a9b8-4a6b-ad46-c072963b32c1.yml >> $LOGFILE 2>&1
     echo "$INFO_TAG Running Caldera by default.."
+
+    #U Updating Caldera local.yml file and setting admin password
+    sed -i.bak -e "s/ADMIN_PASSWORD/$ADMIN_PASSWORD/" /opt/Caldera/config/local.yml
 
     docker-compose -f /opt/Caldera/docker-compose-caldera.yml up --build -d
 fi

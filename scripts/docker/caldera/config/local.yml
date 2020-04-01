@@ -14,4 +14,4 @@ plugins:
 debug: False
 api_key: ADMIN123
 users:
-  admin: ${ADMIN_PASSWORD}
+  admin: ADMIN_PASSWORD
