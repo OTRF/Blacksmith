@@ -57,6 +57,7 @@
             "type": "string",
             "defaultValue": "",
             "allowedValues": [
+                "",
                 "Logstash-EventHub",
                 "Logstash-EventHub-Mordor"
             ],
