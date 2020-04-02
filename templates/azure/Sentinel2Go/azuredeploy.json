@@ -142,9 +142,9 @@
                 "description": "Password for a Windows Virtual Machine."
             }
         },
-        "logAnalyticsWinDataSources": {
-            "type": "bool",
-            "defaultValue": false,
+        "logAnalyticsWinEventProviders": {
+            "type": "array",
+            "defaultValue": [],
             "metadata": {
                 "description": "Do you want to configure your Log Analytics Workspace to collect Windows Event Logs from several pre-defined event providers?. Windows Security Auditing is not enabled through this option. It is enabled through the Data Connectors parameter."
             }
@@ -384,7 +384,7 @@
             }
         },
         {
-            "condition": "[parameters('logAnalyticsWinDataSources')]",
+            "condition": "[not(empty(parameters('logAnalyticsWinEventProviders')))]",
             "type": "Microsoft.Resources/deployments",
             "name": "workspaceWinDataSources",
             "apiVersion": "2019-05-01",
@@ -400,6 +400,9 @@
                 "parameters": {
                     "workspaceName": {
                         "value": "[variables('uniqueWorkspace')]"
+                    },
+                    "winEventProviders": {
+                        "value": "[parameters('logAnalyticsWinEventProviders')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
