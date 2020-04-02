@@ -53,11 +53,15 @@
                 "description": "Username for the Virtual Machines."
             }
         },
-        "enableDataPipeline": {
-            "type": "bool",
-            "defaultValue": false,
+        "deployPipeline": {
+            "type": "string",
+            "defaultValue": "",
+            "allowedValues": [
+                "Logstash-EventHub",
+                "Logstash-EventHub-Mordor"
+            ],
             "metadata": {
-                "description": "Do you want to deploy a data ingestion pipeline along with an Azure Sentinel solution? Events get sent to a custom logs table named ."
+                "description": "Do you want to deploy a data ingestion pipeline along with an Azure Sentinel solution? Events get sent to a custom logs table named prerecorded. You also have the option to deploy the pipeline with pre-recorded datasets from the Mordor project (https://mordordatasets.com)"
             }
         },
         "linuxVmSize": {
@@ -92,13 +96,6 @@
                 "description": "SSH Key or password for the Virtual Machine. SSH key is recommended. Use \"ssh-keygen -t rsa -b 2048\" to generate your SSH key pairs."
             },
             "defaultValue": ""
-        },
-        "ingestMordor": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to ingest Mordor datasets to your Log Analytics workspace at deployment time? Ref: https://mordordatasets.com"
-            }
         },
         "addToCart": {
             "type": "string",
@@ -258,7 +255,7 @@
             }
         },
         {
-            "condition": "[parameters('enableDataPipeline')]",
+            "condition": "[contains(parameters('deployPipeline'), 'Logstash-EventHub')]",
             "type": "Microsoft.Resources/deployments",
             "name": "deployLogstashVM",
             "apiVersion": "2019-05-01",
@@ -291,7 +288,7 @@
             }
         },
         {
-            "condition": "[parameters('enableDataPipeline')]",
+            "condition": "[contains(parameters('deployPipeline'), 'Logstash-EventHub')]",
             "name": "deployEventHub",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
@@ -312,7 +309,7 @@
             }
         },
         {
-            "condition": "[and(parameters('enableDataPipeline'), not(parameters('ingestMordor')))]",
+            "condition": "[equals(parameters('deployPipeline'), 'Logstash-EventHub')]",
             "name": "pipelineOnly",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
@@ -331,7 +328,7 @@
                         "value": "SetupLogstash"
                     },
                     "commandToExecute": {
-                        "value": "[if(parameters('enableDataPipeline'), concat('bash logstash-setup.sh -i', ' ', reference(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').customerId, ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value, ' ', '-k', ' ', listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey, ' ', '-u', ' ', parameters('adminUsername')), 'Resource not deployed')]"
+                        "value": "[if(equals(parameters('deployPipeline'), 'Logstash-EventHub'), concat('bash logstash-setup.sh -i', ' ', reference(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').customerId, ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value, ' ', '-k', ' ', listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey, ' ', '-u', ' ', parameters('adminUsername')), 'Resource not deployed')]"
                     },
                     "fileUris": {
                         "value": [
@@ -339,7 +336,7 @@
                         ]
                     },
                     "vmName": {
-                        "value": "[if(parameters('enableDataPipeline'), reference('deployLogstashVM').outputs.vmName.value, 'Resource not deployed')]"
+                        "value": "[if(equals(parameters('deployPipeline'), 'Logstash-EventHub'), reference('deployLogstashVM').outputs.vmName.value, 'Resource not deployed')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -348,7 +345,7 @@
             }
         },
         {
-            "condition": "[and(parameters('enableDataPipeline'), parameters('ingestMordor'))]",
+            "condition": "[equals(parameters('deployPipeline'), 'Logstash-EventHub-Mordor')]",
             "name": "pipelineMordor",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
@@ -367,7 +364,7 @@
                         "value": "SetupLogstash"
                     },
                     "commandToExecute": {
-                        "value": "[if(parameters('enableDataPipeline'), concat('bash logstash-setup.sh -i', ' ', reference(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').customerId, ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value, ' ', '-k', ' ', listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey, ' ', '-u', ' ', parameters('adminUsername'), ' ', '-m'), 'Resource not deployed')]"
+                        "value": "[if(equals(parameters('deployPipeline'), 'Logstash-EventHub-Mordor'), concat('bash logstash-setup.sh -i', ' ', reference(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').customerId, ' ', '-c', ' ', '\"', reference('deployEventHub').outputs.NamespaceConnectionString.value, '\"', ' ', '-e', ' ', reference('deployEventHub').outputs.EventHubName.value, ' ', '-k', ' ', listKeys(resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey, ' ', '-u', ' ', parameters('adminUsername'), ' ', '-m'), 'Resource not deployed')]"
                     },
                     "fileUris": {
                         "value": [
@@ -375,7 +372,7 @@
                         ]
                     },
                     "vmName": {
-                        "value": "[if(parameters('enableDataPipeline'), reference('deployLogstashVM').outputs.vmName.value, 'Resource not deployed')]"
+                        "value": "[if(equals(parameters('deployPipeline'), 'Logstash-EventHub-Mordor'), reference('deployLogstashVM').outputs.vmName.value, 'Resource not deployed')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
