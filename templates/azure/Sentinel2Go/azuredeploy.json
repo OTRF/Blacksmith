@@ -408,7 +408,7 @@
             }
         },
         {
-            "condition": "[parameters('dataConnectors')]",
+            "condition": "[not(empty(parameters('dataConnectors')))]",
             "type": "Microsoft.Resources/deployments",
             "name": "setupDataConnectors",
             "apiVersion": "2019-05-01",
