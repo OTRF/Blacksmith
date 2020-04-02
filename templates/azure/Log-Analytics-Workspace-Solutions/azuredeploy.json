@@ -1,0 +1,48 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "resourcegroupName": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "subscriptionId": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "workspaceName": {
+            "defaultValue": "",
+            "type": "String"
+        },
+        "solutionTypes": {
+            "defaultValue": [],
+            "type": "Array"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.OperationsManagement/solutions",
+            "apiVersion": "2015-11-01-preview",
+            "name": "[Concat(parameters('solutionTypes')[copyIndex()], '(', parameters('workspaceName'), ')')]",
+            "location": "[parameters('location')]",
+            "plan": {
+                "name": "[Concat(parameters('solutionTypes')[copyIndex()], '(', parameters('workspaceName'), ')')]",
+                "product": "[Concat('OMSGallery/', parameters('solutionTypes')[copyIndex()])]",
+                "promotionCode": "",
+                "publisher": "Microsoft"
+            },
+            "properties": {
+                "workspaceResourceId": "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroupName'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+            },
+            "id": "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroupName'), '/providers/Microsoft.OperationsManagement/solutions/', parameters('solutionTypes')[copyIndex()], '(', parameters('workspaceName'), ')')]",
+            "copy": {
+                "name": "solutionsCopy",
+                "count": "[length(parameters('solutionTypes'))]"
+            }
+        }
+    ]
+}
