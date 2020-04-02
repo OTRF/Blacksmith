@@ -59,6 +59,7 @@
             "type": "Microsoft.OperationalInsights/workspaces/dataSources",
             "apiVersion": "2015-11-01-preview",
             "location": "[parameters('location')]",
+            "name": "[concat(parameters('workspaceName'), '/AzureActivityLog','-',concat('/',replace(parameters('subscriptionId'),'-', '')))]",
             "kind": "AzureActivityLog",
             "properties": {
                 "linkedResourceId": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/microsoft.insights/eventtypes/management')]"
@@ -69,6 +70,7 @@
             "type": "Microsoft.OperationalInsights/workspaces/dataSources",
             "apiVersion": "2015-11-01-preview",
             "location": "[parameters('location')]",
+            "name": "[concat(parameters('workspaceName'), '/SecurityInsightsSecurityEventCollectionConfiguration')]",
             "kind": "SecurityInsightsSecurityEventCollectionConfiguration",
             "properties": {
                 "tier": "[parameters('securityCollectionTier')]",
