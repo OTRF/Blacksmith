@@ -2,7 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "connectors": {
+        "dataConnectors": {
             "type": "array",
             "defaultValue": [
                 "AzureActivityLog",
@@ -55,7 +55,7 @@
     },
     "resources": [
         {
-            "condition": "[contains(parameters('connectors'), 'AzureActivityLog')]",
+            "condition": "[contains(parameters('dataConnectors'), 'AzureActivityLog')]",
             "type": "Microsoft.OperationalInsights/workspaces/dataSources",
             "apiVersion": "2015-11-01-preview",
             "location": "[parameters('location')]",
@@ -66,7 +66,7 @@
             }
         },
         {
-            "condition": "[contains(parameters('connectors'), 'SecurityEvents')]",
+            "condition": "[contains(parameters('dataConnectors'), 'SecurityEvents')]",
             "type": "Microsoft.OperationalInsights/workspaces/dataSources",
             "apiVersion": "2015-11-01-preview",
             "location": "[parameters('location')]",
@@ -78,7 +78,7 @@
             }
         },
         {
-            "condition": "[contains(parameters('connectors'), 'WindowsFirewall')]",
+            "condition": "[contains(parameters('dataConnectors'), 'WindowsFirewall')]",
             "type": "Microsoft.OperationsManagement/solutions",
             "apiVersion": "2015-11-01-preview",
             "name": "[concat('WindowsFirewall','(', parameters('workspaceName'),')')]",
