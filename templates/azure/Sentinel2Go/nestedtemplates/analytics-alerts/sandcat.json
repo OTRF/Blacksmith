@@ -20,7 +20,7 @@
             "type": "Microsoft.SecurityInsights/alertRules",
             "apiVersion": "2019-01-01-preview",
             "location": "[parameters('location')]",
-            "name": "[concat(parameters('workspaceName'),'-sandcat')]",
+            "name": "[concat(parameters('workspaceName'),'/sandcat')]",
             "kind": "Scheduled",
             "properties": {
                 "alertRuleTemplateName": null,
