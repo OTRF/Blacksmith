@@ -153,7 +153,7 @@
             "type": "array",
             "defaultValue": [],
             "metadata": {
-                "description": "The current list of data connectors that can be deployed via ARM templates. If it is more than one, you have to provide them as a list (e.g. [\"AzureActivityLog\", \"SecurityEvents\", \"WindowsFirewall\"] )"
+                "description": "The current list of data connectors that can be deployed via ARM templates. If it is more than one, you have to provide them as a list (e.g. [\"AzureActivityLog\", \"AzureSecurityCenter\", \"SecurityEvents\", \"WindowsFirewall\"] )"
             }
         },
         "securityCollectionTier": {
