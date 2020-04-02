@@ -151,7 +151,8 @@
         },
         "dataConnectors": {
             "type": "array",
-            "defaultValue": [
+            "defaultValue": [],
+            "allowedValues": [
                 "AzureActivityLog",
                 "SecurityEvents",
                 "WindowsFirewall"
@@ -171,13 +172,6 @@
             "defaultValue": "Minimal",
             "metadata": {
                 "description": "Tier for gathering Windows Security Events."
-            }
-        },
-        "enableMDATPIntegration": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to enable Azure MDATP integration? "
             }
         },
         "allowedIPAddresses": {
