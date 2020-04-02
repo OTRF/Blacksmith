@@ -23,28 +23,19 @@
     },
     "resources": [
         {
-            "name": "[concat('AzureActivity','(', parameters('workspaceName'),')')]",
             "type": "Microsoft.OperationsManagement/solutions",
             "apiVersion": "2015-11-01-preview",
-            "location":"[parameters('location')]",
-            "properties": {
-                "workspaceResourceId": "[parameters('workspaceId')]"
-            },
-            "plan": {
-                "name": "[concat('Security','(', parameters('workspaceName'),')')]",
-                "product": "OMSGallery/AzureActivity",
-                "publisher": "Microsoft",
-                "promotionCode": ""
-            }
-        },
-        {
-            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
-            "apiVersion": "2015-11-01-preview",
+            "name": "[concat('WindowsFirewall','(', parameters('workspaceName'),')')]",
             "location": "[parameters('location')]",
-            "name": "[concat(parameters('workspaceName'), '/', subscription().subscriptionId)]",
-            "kind": "AzureActivityLog",
+            "plan": {
+                "name": "[concat('WindowsFirewall','(', parameters('workspaceName'),')')]",
+                "promotionCode": "",
+                "product": "OMSGallery/WindowsFirewall",
+                "publisher": "Microsoft"
+            },
             "properties": {
-                "linkedResourceId": "[concat(subscription().id, '/providers/Microsoft.Insights/eventTypes/management')]"
+                "workspaceResourceId": "[parameters('workspaceId')]",
+                "containedResources": []
             }
         }
     ]

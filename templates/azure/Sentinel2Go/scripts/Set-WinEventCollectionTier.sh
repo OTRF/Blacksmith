@@ -46,9 +46,10 @@ else
       ;;
     esac
 
-    az rest -m put -u "https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups/${RESOURCE_GROUP_NAME}/providers/Microsoft.OperationalInsights/Workspaces/${WORKSPACE_NAME}/datasources/SecurityEventCollectionConfiguration?api-version=2015-11-01-preview" --body "
+    #az rest -m put -u "https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups/${RESOURCE_GROUP_NAME}/providers/Microsoft.OperationalInsights/Workspaces/${WORKSPACE_NAME}/datasources/SecurityEventCollectionConfiguration?api-version=2015-11-01-preview" --body "
+    az rest -m put -u "https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/${RESOURCE_GROUP_NAME}/providers/Microsoft.OperationalInsights/workspaces/${WORKSPACE_NAME}/datasources/SecurityInsightsSecurityEventCollectionConfiguration?api-version=2015-11-01-preview" --body "
     {
-        \"kind\": \"SecurityEventCollectionConfiguration\",
+        \"kind\": \"SecurityInsightsSecurityEventCollectionConfiguration\",
         \"properties\": {
             \"Tier\": \"${COLLECTION_TIER}\",
             \"TierSetMethod\": \"Custom\"
@@ -56,3 +57,5 @@ else
     }
     " --verbose
 fi
+# SecurityInsightsSecurityEventCollectionConfiguration
+# SecurityEventCollectionConfiguration

@@ -1,0 +1,98 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "connectors": {
+            "type": "array",
+            "defaultValue": [
+                "AzureActivityLog",
+                "SecurityEvents",
+                "WindowsFirewall"
+            ],
+            "metadata": {
+                "description": "The current list of data connectors that can be deployed via ARM templates."
+            }
+        },
+        "workspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name for the Log Analytics workspace used to aggregate data"
+            }
+        },
+        "workspaceId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Log Analytics workspace ID"
+            }
+        },
+        "subscriptionId": {
+            "type": "string",
+            "defaultValue": "[subscription().subscriptionId]",
+            "metadata": {
+                "description": "Sbscription Id to monitor"
+            }
+        },
+        "securityCollectionTier": {
+            "type": "string",
+            "defaultValue": "None",
+            "allowedValues": [
+                "All",
+                "Recommended",
+                "Minimal",
+                "None"
+            ],
+            "metadata": {
+                "description": "Tier for gathering Windows Security Events."
+            }
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    },
+    "resources": [
+        {
+            "condition": "[contains(parameters('connectors'), 'AzureActivityLog')]",
+            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
+            "apiVersion": "2015-11-01-preview",
+            "location": "[parameters('location')]",
+            "name": "[concat(parameters('workspaceName'), concat('/',replace(parameters('subscriptionId'),'-', '')))]",
+            "kind": "AzureActivityLog",
+            "properties": {
+                "linkedResourceId": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/microsoft.insights/eventtypes/management')]"
+            }
+        },
+        {
+            "condition": "[contains(parameters('connectors'), 'SecurityEvents')]",
+            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
+            "apiVersion": "2015-11-01-preview",
+            "location": "[parameters('location')]",
+            "name": "[concat(parameters('workspaceName'), '/SecurityInsightsSecurityEventCollectionConfiguration')]",
+            "kind": "SecurityInsightsSecurityEventCollectionConfiguration",
+            "properties": {
+                "tier": "[parameters('securityCollectionTier')]",
+                "tierSetMethod": "Custom"
+            }
+        },
+        {
+            "condition": "[contains(parameters('connectors'), 'WindowsFirewall')]",
+            "type": "Microsoft.OperationsManagement/solutions",
+            "apiVersion": "2015-11-01-preview",
+            "name": "[concat('WindowsFirewall','(', parameters('workspaceName'),')')]",
+            "location": "[parameters('location')]",
+            "plan": {
+                "name": "[concat('WindowsFirewall','(', parameters('workspaceName'),')')]",
+                "promotionCode": "",
+                "product": "OMSGallery/WindowsFirewall",
+                "publisher": "Microsoft"
+            },
+            "properties": {
+                "workspaceResourceId": "[parameters('workspaceId')]",
+                "containedResources": []
+            }
+        }
+    ]
+}
