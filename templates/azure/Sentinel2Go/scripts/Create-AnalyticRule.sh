@@ -13,7 +13,6 @@ usage(){
   echo "Invalid option: -$OPTARG"
   echo "Usage: ${script_name} -r [Resource group name]"
   echo "                      -w [Log Analytics Workspace Name]"
-  echo "                      -t [Security Events collection tier (None, Minimal, All)]"
   exit 1
 }
 
