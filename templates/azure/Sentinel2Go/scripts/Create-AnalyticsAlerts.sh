@@ -36,14 +36,11 @@ done
 shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
-# Install some additional libraries
-apt install -y uuid-runtime
-
 if [ -z "$RESOURCE_GROUP_NAME" ] || [ -z "$WORKSPACE_NAME" ]; then
     usage
 else
     for row in $(curl -sS https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/nestedtemplates/analytics-alerts/analyticsAlerts.json | jq -r '.[] | @base64'); do
-        name=$(uuidgen)
+        name=$(cat /proc/sys/kernel/random/uuid)
         echo ${row} | base64 --decode | jq -r ${1} | az rest -m put -u "https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/${RESOURCE_GROUP_NAME}/providers/Microsoft.OperationalInsights/workspaces/${WORKSPACE_NAME}/providers/Microsoft.SecurityInsights/alertRules/${name}?api-version=2019-01-01-preview" --body @-  --verbose
         sleep 1
     done
