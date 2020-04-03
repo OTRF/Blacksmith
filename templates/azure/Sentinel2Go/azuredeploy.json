@@ -195,9 +195,9 @@
     },
     "resources": [
         {
-            "apiVersion": "2015-11-01-preview",
-            "type": "Microsoft.OperationalInsights/workspaces",
             "name": "[variables('uniqueWorkspace')]",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "apiVersion": "2015-11-01-preview",
             "location": "[parameters('location')]",
             "properties": {
                 "retentionInDays": "[parameters('dataRetention')]",
@@ -229,8 +229,8 @@
         },
         {
             "condition": "[not(empty(parameters('deployPipeline')))]",
-            "type": "Microsoft.Resources/deployments",
             "name": "deployLAFunctions",
+            "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
             "dependsOn": [
                 "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]"
@@ -249,9 +249,10 @@
             }
         },
         {
+            "condition": "[and(not(empty(parameters('addToCart'))),not(empty(parameters('userAssignedIdentityName'))))]",
+            "name": "azcliCreateAlerts",
             "type": "Microsoft.Resources/deploymentScripts",
             "apiVersion": "2019-10-01-preview",
-            "name": "azcliCreateAlerts",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.OperationsManagement/solutions/', concat('SecurityInsights','(', variables('uniqueWorkspace'),')'))]"
@@ -276,8 +277,8 @@
         },
         {
             "condition": "[contains(parameters('deployPipeline'), 'Logstash-EventHub')]",
-            "type": "Microsoft.Resources/deployments",
             "name": "deployLogstashVM",
+            "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
             "properties": {
                 "mode": "Incremental",
@@ -402,8 +403,8 @@
         },
         {
             "condition": "[not(empty(parameters('logAnalyticsWinEventProviders')))]",
-            "type": "Microsoft.Resources/deployments",
             "name": "workspaceWinDataSources",
+            "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
             "dependsOn": [
                 "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]"
@@ -429,8 +430,8 @@
         },
         {
             "condition": "[not(empty(parameters('dataConnectors')))]",
-            "type": "Microsoft.Resources/deployments",
             "name": "setupDataConnectors",
+            "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
             "dependsOn": [
                 "[resourceId('Microsoft.OperationsManagement/solutions/', concat('SecurityInsights','(', variables('uniqueWorkspace'),')'))]"
@@ -465,8 +466,8 @@
         },
         {
             "condition": "[contains(parameters('addToCart'), 'c2')]",
-            "type": "Microsoft.Resources/deployments",
             "name": "deployC2VM",
+            "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
             "properties": {
                 "mode": "Incremental",
@@ -504,8 +505,8 @@
         },
         {
             "condition": "[contains(parameters('addToCart'), 'win10')]",
-            "type": "Microsoft.Resources/deployments",
             "name": "deployWin10VM",
+            "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
             "properties": {
                 "mode": "Incremental",
@@ -549,8 +550,8 @@
         },
         {
             "condition": "[equals(parameters('addToCart'), 'win10-c2')]",
-            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "name": "vnet-c2/peering-to-remote-vnet-win",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
             "dependsOn": [
                 "deployC2VM",
@@ -569,8 +570,8 @@
         },
         {
             "condition": "[equals(parameters('addToCart'), 'win10-c2')]",
-            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "name": "vnet-win/peering-to-remote-vnet-c2",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
             "dependsOn": [
                 "deployC2VM",
@@ -626,8 +627,8 @@
         },
         {
            "condition": "[equals(parameters('addToCart'), 'ubuntu-c2')]",
-            "type": "Microsoft.Resources/deployments",
             "name": "deployUbuntuVM",
+            "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
             "properties": {
                 "mode": "Incremental",
@@ -665,8 +666,8 @@
         },
         {
             "condition": "[equals(parameters('addToCart'), 'ubuntu-c2')]",
-            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "name": "vnet-c2/peering-to-remote-vnet-ubuntu",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
             "dependsOn": [
                 "deployC2VM",
@@ -685,8 +686,8 @@
         },
         {
             "condition": "[equals(parameters('addToCart'), 'ubuntu-c2')]",
-            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "name": "vnet-ubuntu/peering-to-remote-vnet-c2",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
             "dependsOn": [
                 "deployC2VM",
