@@ -595,7 +595,8 @@
             "apiVersion": "2019-05-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks/virtualNetworkPeerings', 'vnet-c2', 'peering-to-remote-vnet-win')]",
-                "[resourceId('Microsoft.Network/virtualNetworks/virtualNetworkPeerings', 'vnet-win', 'peering-to-remote-vnet-c2')]"
+                "[resourceId('Microsoft.Network/virtualNetworks/virtualNetworkPeerings', 'vnet-win', 'peering-to-remote-vnet-c2')]",
+                "azcliCreateAlerts"
             ],
             "properties": {
                 "mode": "Incremental",
