@@ -42,21 +42,20 @@ else
             "displayName": "Sandcat Payload",
             "enabled": true,
             "incidentConfiguration": {
-            "createIncident": true,
-            "groupingConfiguration": {
-                "enabled": false,
-                "entitiesMatchingMethod": "All",
-                "groupByEntities": [],
-                "lookbackDuration": "PT5H",
-                "reopenClosedIncident": false
-            }
+                "createIncident": true,
+                "groupingConfiguration": {
+                    "enabled": false,
+                    "entitiesMatchingMethod": "All",
+                    "groupByEntities": [],
+                    "lookbackDuration": "PT5H",
+                    "reopenClosedIncident": false
+                }
             },
-            "lastModifiedUtc": "2020-04-02T20:16:02.4404488Z",
             "query": "SecurityEvent\n| where EventID == \"4688\" and CommandLine contains \"sandcat.exe\"",
             "queryFrequency": "PT5M",
             "queryPeriod": "PT5M",
             "queryResultsAggregationSettings": {
-            "aggregationKind": "SingleAlert"
+                "aggregationKind": "SingleAlert"
             },
             "severity": "High",
             "suppressionDuration": "PT5H",

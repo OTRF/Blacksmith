@@ -2,12 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "workspaceName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name for the Log Analytics workspace used to aggregate data"
-            }
-        },
         "location": {
             "type": "string",
             "metadata": {
@@ -37,7 +31,6 @@
                     "reopenClosedIncident": false
                 }
                 },
-                "lastModifiedUtc": "2020-04-02T20:16:02.4404488Z",
                 "query": "SecurityEvent\n| where EventID == \"4688\" and CommandLine contains \"sandcat.exe\"",
                 "queryFrequency": "PT5M",
                 "queryPeriod": "PT5M",
