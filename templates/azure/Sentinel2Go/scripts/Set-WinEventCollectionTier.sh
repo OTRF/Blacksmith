@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Author: Roberto Rodriguez (@Cyb3rWard0g)
+# License: GPL-3.0
+
 # Reference:
 # https://docs.microsoft.com/en-us/cli/azure/reference-index?view=azure-cli-latest#az-rest
 # https://github.com/Azure/Azure-Security-Center/tree/master/Powershell%20scripts/Security%20Event%20collection%20tier
