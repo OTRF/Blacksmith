@@ -36,6 +36,9 @@ done
 shift $((OPTIND-1))
 [ "$1" = "--" ] && shift
 
+# Install some additional libraries
+apt install -y uuid-runtime
+
 if [ -z "$RESOURCE_GROUP_NAME" ] || [ -z "$WORKSPACE_NAME" ]; then
     usage
 else
