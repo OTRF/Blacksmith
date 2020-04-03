@@ -46,13 +46,6 @@
                 "description": "If set to true when changing retention to 30 days, older data will be immediately deleted. Use this with extreme caution. This only applies when retention is being set to 30 days."
             }
         },
-        "adminUsername": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Username for the Virtual Machines."
-            }
-        },
         "deployPipeline": {
             "type": "string",
             "defaultValue": "",
@@ -65,19 +58,31 @@
                 "description": "Do you want to deploy a data ingestion pipeline along with an Azure Sentinel solution? Events get sent to a custom logs table named prerecorded. You also have the option to deploy the pipeline with pre-recorded datasets from the Mordor project (https://mordordatasets.com)"
             }
         },
-        "linuxVmSize": {
+        "addToCart": {
             "type": "string",
-            "defaultValue": "Standard_B2s",
+            "defaultValue": "",
             "allowedValues": [
-                "Standard_A2",
-                "Standard_A3",
-                "Standard_B2s",
-                "Standard_B2ms",
-                "Standard_A2_v2",
-                "Standard_A4_v2"
+                "",
+                "win10",
+                "win10-c2",
+                "ubuntu-c2"
             ],
             "metadata": {
-                "description": "Size of the Linux virtual machines. References: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-previous-gen, https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
+                "description": "Do you want to deploy additional resources and connect them to your current Azure Sentinel's workspace?"
+            }
+        },
+        "userAssignedIdentityName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "A User assigned managed identity with a Contributor role at a subscription scope. Reference: https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli#user-at-a-subscription-scope"
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Username for the Virtual Machines."
             }
         },
         "linuxAuthenticationType": {
@@ -98,27 +103,21 @@
             },
             "defaultValue": ""
         },
-        "addToCart": {
-            "type": "string",
+        "winAdminPassword": {
+            "type": "securestring",
             "defaultValue": "",
-            "allowedValues": [
-                "",
-                "win10",
-                "win10-c2",
-                "ubuntu-c2"
-            ],
             "metadata": {
-                "description": "Do you want to deploy additional resources and connect them to your current Azure Sentinel's workspace?"
+                "description": "Password for a Windows Virtual Machine."
             }
         },
         "c2AdminPassword": {
             "type": "securestring",
             "defaultValue": "",
             "metadata": {
-                "description": "admin user password for C2 interface"
+                "description": "admin user password for a C2 interface"
             }
         },
-        "windowsVmSize": {
+        "vmSize": {
             "type": "string",
             "defaultValue": "Standard_B2s",
             "allowedValues": [
@@ -130,14 +129,7 @@
                 "Standard_A4_v2"
             ],
             "metadata": {
-                "description": "Size of the Linux virtual machines. References: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-previous-gen, https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
-            }
-        },
-        "winAdminPassword": {
-            "type": "securestring",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Password for a Windows Virtual Machine."
+                "description": "Size of Linux and Windows virtual machines. References: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-previous-gen, https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
             }
         },
         "logAnalyticsWinEventProviders": {
@@ -173,13 +165,6 @@
                 "description": "The sourceAddressPrefixes allowed to connect to the Windows 10 VM"
             },
             "defaultValue": "*"
-        },
-        "userAssignedIdentityName": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "A User assigned managed identity with a Contributor role at a subscription scope. Reference: https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli#user-at-a-subscription-scope"
-            }
         },
         "_artifactsLocation": {
             "type": "string",
@@ -303,7 +288,7 @@
                 },
                 "parameters": {
                     "vmSize": {
-                        "value": "[parameters('linuxVmSize')]"
+                        "value": "[parameters('vmSize')]"
                     },
                     "adminUsername": {
                         "value": "[parameters('adminUsername')]"
@@ -492,7 +477,7 @@
                 },
                 "parameters": {
                     "vmSize": {
-                        "value": "[parameters('linuxVmSize')]"
+                        "value": "[parameters('vmSize')]"
                     },
                     "adminUsername": {
                         "value": "[parameters('adminUsername')]"
@@ -537,7 +522,7 @@
                         "value": "[parameters('winAdminPassword')]"
                     },
                     "vmSize": {
-                        "value": "[parameters('windowsVmSize')]"
+                        "value": "[parameters('vmSize')]"
                     },
                     "allowedIPAddresses": {
                         "value": "[parameters('allowedIPAddresses')]"
@@ -658,7 +643,7 @@
                         "value": "vnet-ubuntu"
                     },
                     "vmSize": {
-                        "value": "[parameters('linuxVmSize')]"
+                        "value": "[parameters('vmSize')]"
                     },
                     "adminUsername": {
                         "value": "[parameters('adminUsername')]"
