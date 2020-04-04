@@ -228,7 +228,7 @@
             }
         },
         {
-            "condition": "[not(empty(parameters('deployPipeline')))]",
+            "condition": "[or(not(empty(parameters('deployPipeline'))),not(empty(parameters('addToCart'))))]",
             "name": "deployLAFunctions",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
