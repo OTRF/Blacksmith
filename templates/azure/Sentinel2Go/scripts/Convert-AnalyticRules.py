@@ -107,7 +107,7 @@ for analytic in all_files:
     analytic_dict['properties'] = analytic_load
 
     # write to file
-    with open(f'{output_path}/{analytic_folder_name}/{analytic_filename}.json', 'w') as f:
+    with open(f'{output_path}/{analytic_folder_name}/{analytic_filename}.json', 'w', encoding='utf8') as f:
         f.write(json.dumps(analytic_dict, indent=4))
     
     # Add to All AnalyticRules list
@@ -115,5 +115,5 @@ for analytic in all_files:
     outer.update(1)
 
 # write allAnalyticRule to allAnalyticRules.json
-with open(f'{output_path}/allAnalyticRules.json', 'w') as f:
+with open(f'{output_path}/allAnalyticRules.json', 'w', encoding='utf8') as f:
     f.write(json.dumps(allAnalyticRules, indent=4))

@@ -41,6 +41,7 @@ if [ -z "$RESOURCE_GROUP_NAME" ] || [ -z "$WORKSPACE_NAME" ]; then
 else
     for row in $(curl -sS https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/analytic-rules/allAnalyticRules.json | jq -r '.[] | @base64'); do
         name=$(cat /proc/sys/kernel/random/uuid)
+        echo "[+] Uploading"
         echo ${row} | base64 -d | jq -r ${1}
         echo ${row} | base64 -d | jq -r ${1} | az rest -m put -u "https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/${RESOURCE_GROUP_NAME}/providers/Microsoft.OperationalInsights/workspaces/${WORKSPACE_NAME}/providers/Microsoft.SecurityInsights/alertRules/${name}?api-version=2019-01-01-preview" --body @-  --verbose
         sleep 1

@@ -136,7 +136,7 @@
             "type": "array",
             "defaultValue": [],
             "metadata": {
-                "description": "Additional Log Solutions that you can install on the top of your Log Analytics Workspace. (e.g [\"ServiceMap\",\"InfrastructureInsights\"])"
+                "description": "Additional Log Solutions that you can install on the top of your Log Analytics Workspace. (e.g [\"ServiceMap\",\"WireData2\",\"InfrastructureInsights\"])"
             }
         },
         "enableDataConnectors": {
@@ -356,7 +356,7 @@
             }
         },
         {
-            "condition": "[and(parameters('postAnalyticRules'),not(empty(parameters('userAssignedIdentityName'))),contains(parameters('enableAdditionalLASolutions'),'ServiceMap'))]",
+            "condition": "[and(parameters('postAnalyticRules'),not(empty(parameters('userAssignedIdentityName'))),contains(parameters('enableAdditionalLASolutions'),'ServiceMap'),contains(parameters('enableAdditionalLASolutions'),'WireData2'))]",
             "name": "azCLIPostAnalyticRules",
             "type": "Microsoft.Resources/deploymentScripts",
             "apiVersion": "2019-10-01-preview",
