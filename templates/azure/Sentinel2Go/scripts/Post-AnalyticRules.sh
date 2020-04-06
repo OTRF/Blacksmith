@@ -17,8 +17,8 @@ script_name=$0
 
 usage(){
   echo "Invalid option: -$OPTARG"
-  echo "Usage: ${script_name} -r [Resource group name]"
-  echo "                      -w [Log Analytics Workspace Name]"
+  echo "Usage: ${script_name} -r <Resource group name>"
+  echo "                      -w <Log Analytics Workspace Name>"
   exit 1
 }
 
@@ -39,8 +39,9 @@ shift $((OPTIND-1))
 if [ -z "$RESOURCE_GROUP_NAME" ] || [ -z "$WORKSPACE_NAME" ]; then
     usage
 else
-    for row in $(curl -sS https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/analytic-rules/samples/sandcats.json | jq -r '.[] | @base64'); do
+    for row in $(curl -sS https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/analytic-rules/allAnalyticRules.json | jq -r '.[] | @base64'); do
         name=$(cat /proc/sys/kernel/random/uuid)
+        echo ${row} | base64 -d | jq -r ${1}
         echo ${row} | base64 -d | jq -r ${1} | az rest -m put -u "https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/${RESOURCE_GROUP_NAME}/providers/Microsoft.OperationalInsights/workspaces/${WORKSPACE_NAME}/providers/Microsoft.SecurityInsights/alertRules/${name}?api-version=2019-01-01-preview" --body @-  --verbose
         sleep 1
     done

@@ -2,23 +2,11 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "utcValue": {
-            "type": "string",
-            "defaultValue": "[utcNow()]",
-            "metadata": {
-                "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
-            }
-        },
         "dataConnectors": {
             "type": "array",
-            "defaultValue": [
-                "AzureActivityLog",
-                "AzureSecurityCenter",
-                "SecurityEvents",
-                "WindowsFirewall"
-            ],
+            "defaultValue": [],
             "metadata": {
-                "description": "The current list of data connectors that can be deployed via ARM templates."
+                "description": "The current list of data connectors that can be deployed via ARM templates: [\"AzureActivityLog\",\"SecurityEvents\",\"WindowsFirewall\",\"DnsAnalytics\"]"
             }
         },
         "workspaceName": {
@@ -61,9 +49,6 @@
             }
         }
     },
-    "variables": {
-        "uniqueAzureSecurityCenter": "[guid('AzureSecurityCenter', parameters('subscriptionId'), resourceGroup().id, parameters('utcValue'))]"
-    },
     "resources": [
         {
             "condition": "[contains(parameters('dataConnectors'), 'AzureActivityLog')]",
@@ -74,22 +59,6 @@
             "kind": "AzureActivityLog",
             "properties": {
                 "linkedResourceId": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/microsoft.insights/eventtypes/management')]"
-            }
-        },
-        {
-            "condition": "[contains(parameters('dataConnectors'), 'AzureSecurityCenter')]",
-            "type": "Microsoft.OperationalInsights/workspaces/dataSources",
-            "apiVersion": "2015-11-01-preview",
-            "location": "[parameters('location')]",
-            "name": "[concat(parameters('workspaceName'), '/', variables('uniqueAzureSecurityCenter'))]",
-            "kind": "AzureSecurityCenter",
-            "properties": {
-                "subscriptionId": "[parameters('subscriptionId')]",
-                "dataTypes": {
-                "alerts": {
-                  "state": "Enabled"
-                }
-              }
             }
         },
         {
@@ -114,6 +83,23 @@
                 "name": "[concat('WindowsFirewall','(', parameters('workspaceName'),')')]",
                 "promotionCode": "",
                 "product": "OMSGallery/WindowsFirewall",
+                "publisher": "Microsoft"
+            },
+            "properties": {
+                "workspaceResourceId": "[parameters('workspaceId')]",
+                "containedResources": []
+            }
+        },
+        {
+            "condition": "[contains(parameters('dataConnectors'), 'DnsAnalytics')]",
+            "type": "Microsoft.OperationsManagement/solutions",
+            "apiVersion": "2015-11-01-preview",
+            "name": "[concat('DnsAnalytics','(', parameters('workspaceName'),')')]",
+            "location": "[parameters('location')]",
+            "plan": {
+                "name": "[concat('DnsAnalytics','(', parameters('workspaceName'),')')]",
+                "promotionCode": "",
+                "product": "OMSGallery/DnsAnalytics",
                 "publisher": "Microsoft"
             },
             "properties": {

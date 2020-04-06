@@ -132,21 +132,21 @@
                 "description": "Size of Linux and Windows virtual machines. References: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-previous-gen, https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
             }
         },
-        "logAnalyticsWinEventProviders": {
+        "enableAdditionalLASolutions": {
             "type": "array",
             "defaultValue": [],
             "metadata": {
-                "description": "Do you want to configure your Log Analytics Workspace to collect Windows Event Logs from several pre-defined event providers?. Windows Security Auditing is not enabled through this option. It is enabled through the Data Connectors parameter."
+                "description": "Additional Log Solutions that you can install on the top of your Log Analytics Workspace. (e.g [\"ServiceMap\",\"InfrastructureInsights\"])"
             }
         },
-        "dataConnectors": {
+        "enableDataConnectors": {
             "type": "array",
             "defaultValue": [],
             "metadata": {
-                "description": "The current list of data connectors that can be deployed via ARM templates. If it is more than one, you have to provide them as a list (e.g. [\"AzureActivityLog\", \"AzureSecurityCenter\", \"SecurityEvents\", \"WindowsFirewall\"] )"
+                "description": "The current list of data connectors that can be deployed via ARM templates: [\"AzureActivityLog\",\"SecurityEvents\",\"WindowsFirewall\",\"DnsAnalytics\"]"
             }
         },
-        "securityCollectionTier": {
+        "setSecurityCollectionTier": {
             "type": "string",
             "allowedValues": [
                 "All",
@@ -157,6 +157,20 @@
             "defaultValue": "Minimal",
             "metadata": {
                 "description": "Tier for gathering Windows Security Events."
+            }
+        },
+        "enableWinEventProviders": {
+            "type": "array",
+            "defaultValue": [],
+            "metadata": {
+                "description": "Do you want to configure your Log Analytics Workspace to collect Windows Event Logs from several pre-defined event providers?. Windows Security Auditing is not enabled through this option. It is enabled through the Data Connectors parameter."
+            }
+        },
+        "postAnalyticRules": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "If set to true, Analytic rules from the official Azure Sentinel GitHub Repository https://github.com/Azure/Azure-Sentinel/tree/master/Detections translated to JSON files in https://github.com/hunters-forge/Blacksmith/tree/azure/templates/azure/Sentinel2Go/analytic-rules are created in your Log Analytics workspace."
             }
         },
         "allowedIPAddresses": {
@@ -228,6 +242,99 @@
             }
         },
         {
+            "condition": "[not(empty(parameters('enableAdditionalLASolutions')))]",
+            "name": "enableAdditionalLASolutions",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationsManagement/solutions/', concat('SecurityInsights','(', variables('uniqueWorkspace'),')'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/log-analytics/additionalSolutions.json', parameters('_artifactsLocationSasToken')))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "solutionTypes": {
+                        "value": "[parameters('enableAdditionalLASolutions')]"
+                    },
+                    "workspaceName": {
+                        "value": "[variables('uniqueWorkspace')]"
+                    },
+                    "workspaceId": {
+                         "value": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]"
+                     },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[not(empty(parameters('enableDataConnectors')))]",
+            "name": "enableDataConnectors",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationsManagement/solutions/', concat('SecurityInsights','(', variables('uniqueWorkspace'),')'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/data-connectors/allConnectors.json', parameters('_artifactsLocationSasToken')))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "dataConnectors": {
+                        "value": "[parameters('enableDataConnectors')]"
+                    },
+                    "workspaceName": {
+                        "value": "[variables('uniqueWorkspace')]"
+                    },
+                    "workspaceId": {
+                         "value": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]"
+                     },
+                     "subscriptionId": {
+                         "value": "[subscription().subscriptionId]"
+                     },
+                    "securityCollectionTier": {
+                        "value": "[parameters('setSecurityCollectionTier')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[not(empty(parameters('enableWinEventProviders')))]",
+            "name": "enableLAWinDataSources",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/log-analytics/winDataSources.json', parameters('_artifactsLocationSasToken')))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": {
+                        "value": "[variables('uniqueWorkspace')]"
+                    },
+                    "winEventProviders": {
+                        "value": "[parameters('enableWinEventProviders')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
             "condition": "[or(not(empty(parameters('deployPipeline'))),not(empty(parameters('addToCart'))))]",
             "name": "deployLAFunctions",
             "type": "Microsoft.Resources/deployments",
@@ -238,7 +345,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/log-analytics-settings/functions.json', parameters('_artifactsLocationSasToken')))]",
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/log-analytics/functions.json', parameters('_artifactsLocationSasToken')))]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -249,8 +356,8 @@
             }
         },
         {
-            "condition": "[and(not(empty(parameters('addToCart'))),not(empty(parameters('userAssignedIdentityName'))))]",
-            "name": "azcliCreateAlerts",
+            "condition": "[and(parameters('postAnalyticRules'),not(empty(parameters('userAssignedIdentityName'))),contains(parameters('enableAdditionalLASolutions'),'ServiceMap'))]",
+            "name": "azCLIPostAnalyticRules",
             "type": "Microsoft.Resources/deploymentScripts",
             "apiVersion": "2019-10-01-preview",
             "location": "[resourceGroup().location]",
@@ -268,7 +375,7 @@
                 "forceUpdateTag": 1,
                 "azCliVersion": "2.0.80",
                 "arguments": "[concat('-r', ' ', resourceGroup().name, ' ', '-w', ' ', variables('uniqueWorkspace'))]",
-                "primaryScriptUri": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/scripts/Create-AnalyticsAlerts.sh",
+                "primaryScriptUri": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/scripts/Post-AnalyticRules.sh",
                 "supportingScriptUris":[],
                 "timeout": "PT30M",
                 "cleanupPreference": "OnSuccess",
@@ -394,69 +501,6 @@
                     },
                     "vmName": {
                         "value": "[if(equals(parameters('deployPipeline'), 'Logstash-EventHub-Mordor'), reference('deployLogstashVM').outputs.vmName.value, 'Resource not deployed')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[not(empty(parameters('logAnalyticsWinEventProviders')))]",
-            "name": "workspaceWinDataSources",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-05-01",
-            "dependsOn": [
-                "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/log-analytics-settings/winDataSources.json', parameters('_artifactsLocationSasToken')))]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName": {
-                        "value": "[variables('uniqueWorkspace')]"
-                    },
-                    "winEventProviders": {
-                        "value": "[parameters('logAnalyticsWinEventProviders')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[not(empty(parameters('dataConnectors')))]",
-            "name": "setupDataConnectors",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-05-01",
-            "dependsOn": [
-                "[resourceId('Microsoft.OperationsManagement/solutions/', concat('SecurityInsights','(', variables('uniqueWorkspace'),')'))]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Sentinel2Go/nestedtemplates/data-connectors/allConnectors.json', parameters('_artifactsLocationSasToken')))]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "dataConnectors": {
-                        "value": "[parameters('dataConnectors')]"
-                    },
-                    "workspaceName": {
-                        "value": "[variables('uniqueWorkspace')]"
-                    },
-                    "workspaceId": {
-                         "value": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]"
-                     },
-                     "subscriptionId": {
-                         "value": "[subscription().subscriptionId]"
-                     },
-                    "securityCollectionTier": {
-                        "value": "[parameters('securityCollectionTier')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -596,7 +640,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks/virtualNetworkPeerings', 'vnet-c2', 'peering-to-remote-vnet-win')]",
                 "[resourceId('Microsoft.Network/virtualNetworks/virtualNetworkPeerings', 'vnet-win', 'peering-to-remote-vnet-c2')]",
-                "azcliCreateAlerts"
+                "azCLIPostAnalyticRules"
             ],
             "properties": {
                 "mode": "Incremental",
