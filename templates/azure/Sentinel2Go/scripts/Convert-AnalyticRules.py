@@ -91,10 +91,14 @@ for analytic in all_files:
         analytic_load['queryFrequency'] = f'P{queryFrequency}'
     if "H" in queryFrequency:
         analytic_load['queryFrequency'] = f'PT{queryFrequency}'
+    if "M" in queryFrequency:
+        analytic_load['queryFrequency'] = f'PTH{queryFrequency}'
     if "D" in queryPeriod:
         analytic_load['queryPeriod'] = f'P{queryPeriod}'
     if "H" in queryPeriod:
         analytic_load['queryPeriod'] = f'PT{queryPeriod}'
+    if "M" in queryPeriod:
+        analytic_load['queryPeriod'] = f'PTH{queryPeriod}'
     
     # Converting TriggerOperator key value 'gt' to type 'Microsoft.Azure.Sentinel.Analytics.Management.AnalyticsManagement.Contracts.Model.AlertTriggerOperator'
     if "gt" in analytic_load['triggerOperator']:

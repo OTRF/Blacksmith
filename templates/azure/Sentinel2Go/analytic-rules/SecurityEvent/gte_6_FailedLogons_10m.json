@@ -11,8 +11,8 @@
                 ]
             }
         ],
-        "queryFrequency": "10m",
-        "queryPeriod": "10m",
+        "queryFrequency": "PTH10M",
+        "queryPeriod": "PTH10M",
         "triggerOperator": "GreaterThan",
         "triggerThreshold": 0,
         "tactics": [
