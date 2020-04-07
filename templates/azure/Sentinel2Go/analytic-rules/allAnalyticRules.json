@@ -1599,6 +1599,36 @@
     {
         "kind": "Scheduled",
         "properties": {
+            "description": "'This will look for connections to files on the server that are requested by only a single client. This analytic will be effective where an actor is utilising relatively static operational IP addresses. The threshold can be modified. The larger the execution window for this query the more reliable the results returned.'\n",
+            "severity": "Low",
+            "requiredDataConnectors": [
+                {
+                    "connectorId": "AzureMonitor(IIS)",
+                    "dataTypes": [
+                        "W3CIISLog"
+                    ]
+                }
+            ],
+            "queryFrequency": "P1D",
+            "queryPeriod": "P1D",
+            "triggerOperator": "GreaterThan",
+            "triggerThreshold": 0,
+            "tactics": [
+                "InitialAccess"
+            ],
+            "relevantTechniques": [
+                "T1190"
+            ],
+            "query": "\nlet timeRange = 7d;\nlet clientThreshold = 1;\nlet data = W3CIISLog\n//Get script files asmx, aspx\n| where csUriStem contains \".as\"\n//Exclude local addresses, needs editing to matc your network configuration\n| where cIP !startswith \"10.\" and cIP !startswith \"fe80\" and cIP !startswith \"::\" and cIP !startswith \"127.\"\n| summarize makelist(cIP), count(TimeGenerated) by csUriStem, sSiteName, csUserAgent;\ndata\n| mvexpand list_cIP\n| distinct tostring(list_cIP), csUriStem, sSiteName, csUserAgent\n| summarize dcount(list_cIP), makelist(list_cIP), makelist(sSiteName) by csUriStem, csUserAgent\n| where dcount_list_cIP == clientThreshold \n//Uncomment to check to see if useragent is likely a browser\n| where csUserAgent startswith \"Mozilla\"\n",
+            "displayName": "URI requests from single client",
+            "enabled": true,
+            "suppressionDuration": "PT5H",
+            "suppressionEnabled": false
+        }
+    },
+    {
+        "kind": "Scheduled",
+        "properties": {
             "description": "Endpoints with a history of sign-ins only from private IP addresses are accessed from a public IP address.",
             "severity": "Medium",
             "requiredDataConnectors": [
@@ -2084,7 +2114,7 @@
             "relevantTechniques": [
                 "T1204"
             ],
-            "query": "\nlet timeframe = 1d;\nlet endpointData = \n(SecurityEvent\n  | where TimeGenerated >= ago(timeframe) \n  | where EventID == 4688\n  | extend shortFileName = tostring(split(NewProcessName, '\\\\')[-1])\n  );\n// Correlate suspect executables seen in TrendMicro rule updates with similar activity on endpoints\nCommonSecurityLog ​\n| where TimeGenerated >= ago(timeframe)​\n| where DeviceVendor =~ \"Trend Micro\" ​\n| where Activity =~ \"Deny List updated\" \n| where RequestURL endswith \".exe\" ​\n| project TimeGenerated, Activity , RequestURL , SourceIP, DestinationIP ​\n| extend suspectExeName = tolower(tostring(split(RequestURL, '/')[-1]))​​\n| join (endpointData)​ on $left.suspectExeName == $right.shortFileName \n| extend timestamp = TimeGenerated, IPCustomEntity = DestinationIP, AccountCustomEntity = TargetUserName, HostCustomEntity = Computer, URLCustomEntity = RequestURL\n",
+            "query": "\nlet timeframe = 1d;\nlet endpointData = \n(SecurityEvent\n  | where TimeGenerated >= ago(timeframe) \n  | where EventID == 4688\n  | extend shortFileName = tostring(split(NewProcessName, '\\\\')[-1])\n  );\n// Correlate suspect executables seen in TrendMicro rule updates with similar activity on endpoints\nCommonSecurityLog\n| where TimeGenerated >= ago(timeframe)\n| where DeviceVendor =~ \"Trend Micro\"\n| where Activity =~ \"Deny List updated\" \n| where RequestURL endswith \".exe\"\n| project TimeGenerated, Activity , RequestURL , SourceIP, DestinationIP\n| extend suspectExeName = tolower(tostring(split(RequestURL, '/')[-1]))\n| join (endpointData) on $left.suspectExeName == $right.shortFileName \n| extend timestamp = TimeGenerated, IPCustomEntity = DestinationIP, AccountCustomEntity = TargetUserName, HostCustomEntity = Computer, URLCustomEntity = RequestURL\n",
             "displayName": "Network endpoint to host executable correlation",
             "enabled": true,
             "suppressionDuration": "PT5H",
@@ -3117,6 +3147,38 @@
     {
         "kind": "Scheduled",
         "properties": {
+            "description": "'Identifies when a user account is enabled and then disabled within 10 minutes. This can be an indication of compromise and\nan adversary attempting to hide in the noise.'\n",
+            "severity": "Medium",
+            "requiredDataConnectors": [
+                {
+                    "connectorId": "SecurityEvents",
+                    "dataTypes": [
+                        "SecurityEvent"
+                    ]
+                }
+            ],
+            "queryFrequency": "P1D",
+            "queryPeriod": "P1D",
+            "triggerOperator": "GreaterThan",
+            "triggerThreshold": 0,
+            "tactics": [
+                "Persistence",
+                "PrivilegeEscalation"
+            ],
+            "relevantTechniques": [
+                "T1098",
+                "T1078"
+            ],
+            "query": "\nlet timeframe = 1d;\nlet spanoftime = 10m;\nlet threshold = 0;\nSecurityEvent \n| where TimeGenerated > ago(2*timeframe) \n// A user account was enabled\n| where EventID == 4722\n| where AccountType =~ \"User\"\n| project creationTime = TimeGenerated, CreateEventID = EventID, Activity, Computer, TargetUserName, UserPrincipalName, \nAccountUsedToCreate = SubjectUserName, TargetSid, SubjectUserSid \n| join kind= inner (\n  SecurityEvent\n  | where TimeGenerated > ago(timeframe) \n  // A user account was disabled \n  | where EventID == 4725\n| where AccountType == \"User\"\n| project deletionTime = TimeGenerated, DeleteEventID = EventID, Activity, Computer, TargetUserName, UserPrincipalName, \nAccountUsedToDelete = SubjectUserName, TargetSid, SubjectUserSid \n) on Computer, TargetUserName\n| where deletionTime - creationTime < spanoftime\n| extend TimeDelta = deletionTime - creationTime\n| where tolong(TimeDelta) >= threshold\n| project TimeDelta, creationTime, CreateEventID, Computer, TargetUserName, UserPrincipalName, AccountUsedToCreate, \ndeletionTime, DeleteEventID, AccountUsedToDelete\n| extend timestamp = creationTime, AccountCustomEntity = AccountUsedToCreate, HostCustomEntity = Computer\n",
+            "displayName": "User account enabled and disabled within 10 mins",
+            "enabled": true,
+            "suppressionDuration": "PT5H",
+            "suppressionEnabled": false
+        }
+    },
+    {
+        "kind": "Scheduled",
+        "properties": {
             "description": "'User has over 50 Windows logon failures today and at least 33% of the count of logon failures over the previous 7 days.'\n",
             "severity": "Low",
             "requiredDataConnectors": [
@@ -3767,6 +3829,37 @@
             ],
             "query": "\nlet timeframe = 1h;\nCommonSecurityLog \n| where TimeGenerated >= ago(timeframe)\n| where isempty(CommunicationDirection) \n| where DeviceEventClassID in (\"733101\",\"733102\",\"733103\",\"733104\",\"733105\")\n| extend timestamp = TimeGenerated, IPCustomEntity = SourceIP, HostCustomEntity = DeviceName\n",
             "displayName": "Cisco ASA - threat detection message fired",
+            "enabled": true,
+            "suppressionDuration": "PT5H",
+            "suppressionEnabled": false
+        }
+    },
+    {
+        "kind": "Scheduled",
+        "properties": {
+            "description": "'This will look for connections to a domain where only a single file is requested, this is unusual as most modern web applications require additional recources. This type of activity is often assocaited with malware beaconing or tracking URL's delivered in emails. Developed for Zscaler but applicable to any outbound web logging.'\n",
+            "severity": "Low",
+            "requiredDataConnectors": [
+                {
+                    "connectorId": "Zscaler",
+                    "dataTypes": [
+                        "CommonSecurityLog"
+                    ]
+                }
+            ],
+            "queryFrequency": "P1D",
+            "queryPeriod": "P1D",
+            "triggerOperator": "GreaterThan",
+            "triggerThreshold": 0,
+            "tactics": [
+                "CommandAndControl"
+            ],
+            "relevantTechniques": [
+                "T1102",
+                "T1071"
+            ],
+            "query": "\nlet timeRange = 1d;\n//The number of URI's seen to be suspicious, higher = less likely to be suspicious\nlet uriThreshold = 1;\nlet suspiciousURLs =\nCommonSecurityLog\n| where TimeGenerated >= ago(timeRange)\n// Only look at connections that were allowed through the web proxy. Comment line out for all events including those which were blocked\n| where DeviceVendor =~ \"Zscaler\" and DeviceAction =~ \"Allowed\"\n// Only look where some data was exchanged. Comment out to see 0 byte connections\n| where SentBytes > 0 and ReceivedBytes > 0\n// Extract the Domain\n| extend Domain = iff(countof(DestinationHostName,'.') >= 2, strcat(split(DestinationHostName,'.')[-2], '.',split(DestinationHostName,'.')[-1]), DestinationHostName)\n| summarize StartTimeUtc = min(TimeGenerated), EndTimeUtc = max(TimeGenerated), makelist(RequestURL), makelist(DestinationIP), makelist(SourceIP), numOfConnections = count() by Domain\n// Determine the number of URIs that have been visited for the domain\n| extend destinationURI = arraylength(list_RequestURL)\n| where destinationURI <= uriThreshold\n| where tostring(list_RequestURL) has_any (\".php\",\".aspx\")\n;\nsuspiciousURLs\n| mvexpand list_RequestURL, list_DestinationIP\n| extend RequestURL = tostring(list_RequestURL), DestinationIP = tostring(list_DestinationIP), ClientIP = tostring(list_SourceIP)\n| extend timestamp = StartTimeUtc, IPCustomEntity = DestinationIP\n| project-away list_RequestURL, list_DestinationIP, list_SourceIP, destinationURI, Domain, StartTimeUtc, EndTimeUtc, numOfConnections \n",
+            "displayName": "Request for single resource on domain",
             "enabled": true,
             "suppressionDuration": "PT5H",
             "suppressionEnabled": false
