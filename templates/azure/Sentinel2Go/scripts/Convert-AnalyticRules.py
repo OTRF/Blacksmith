@@ -30,6 +30,7 @@ parser = argparse.ArgumentParser(description=text,epilog=example_text,formatter_
 # Add arguments (store_true means no argument needed)
 parser.add_argument('-f', "--file-path", nargs='+', help="Path of YAML file(s) or folder(s) of YAML files", required=True)
 parser.add_argument('-o', "--output-path", type=str , help="Folder path to output JSON files", required=True)
+parser.add_argument('-c', "--combine", help="Write combined JSON analytics file for AZSentinel", action="store_true")
 parser.add_argument("-d", "--debug", help="Print lots of debugging statements", action="store_const", dest="loglevel", const=logging.DEBUG, default=logging.WARNING)
 parser.add_argument("-v", "--verbose", help="Be verbose", action="store_const", dest="loglevel", const=logging.INFO)
 
@@ -62,7 +63,7 @@ allAnalyticRules = list()
 # Proces all JSON File(s)
 for analytic in all_files:
     log.info(f'Started to process {analytic}')
-    
+
     analytic_filename = os.path.splitext(os.path.basename(analytic))[0]
     analytic_folder=os.path.dirname(analytic)
     analytic_folder_name=os.path.basename(analytic_folder)
@@ -99,15 +100,15 @@ for analytic in all_files:
         analytic_load['queryPeriod'] = f'PT{queryPeriod}'
     if "M" in queryPeriod:
         analytic_load['queryPeriod'] = f'PT{queryPeriod}'
-    
+
     # Converting TriggerOperator key value 'gt' to type 'Microsoft.Azure.Sentinel.Analytics.Management.AnalyticsManagement.Contracts.Model.AlertTriggerOperator'
     if "gt" in analytic_load['triggerOperator']:
         analytic_load['triggerOperator'] = "GreaterThan"
-    
+
     # Adding suppressionDuration to alert
     analytic_load['suppressionDuration'] = "PT5H"
     analytic_load['suppressionEnabled'] = False
-    
+
     # Adding Rule template to API Scheduled format
     analytic_dict = dict()
     analytic_dict['kind'] = 'Scheduled'
@@ -116,7 +117,7 @@ for analytic in all_files:
     # write to file
     with open(f'{output_path}/{analytic_folder_name}/{analytic_filename}.json', 'w') as f:
         f.write(json.dumps(analytic_dict, indent=4))
-    
+
     # Add to All AnalyticRules list
     allAnalyticRules.append(analytic_dict)
     outer.update(1)
@@ -124,3 +125,8 @@ for analytic in all_files:
 # write allAnalyticRule to allAnalyticRules.json
 with open(f'{output_path}/allAnalyticRules.json', 'w') as f:
     f.write(json.dumps(allAnalyticRules, indent=4))
+
+if args.combine:
+    with open(f'{output_path}/azsentinel-rules.json', 'w') as f:
+        az_format = { "analytics": [x["properties"] for x in allAnalyticRules] }
+        f.write(json.dumps(az_format, indent=4))
