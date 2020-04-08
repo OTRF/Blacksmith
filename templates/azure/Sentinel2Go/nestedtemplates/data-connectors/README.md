@@ -9,12 +9,16 @@
 The current kind of Data Connectors deployed via ARM templates in this project are of type [Microsoft.OperationsManagement/solutions](https://docs.microsoft.com/en-us/azure/templates/microsoft.operationsmanagement/2015-11-01-preview/solutions) and [Microsoft.OperationalInsights/workspaces/dataSources](https://docs.microsoft.com/en-us/azure/templates/microsoft.operationalinsights/2015-11-01-preview/workspaces/datasources)
 
 
-| Display Name | Description | Data Table | Type | Kind |
-|----|----|----|----|----|
-| Amazon Web Services | Use the AWS connector to stream all your AWS CloudTrail events into Azure Sentinel. This connection process delegates access for Azure Sentinel to your AWS resource logs, creating a trust relationship between AWS CloudTrail and Azure Sentinel. | AmazonWebServicesCloudTrail | Data Connector | AWSCloudTrail |
-| Azure Activity | This connector allows you to get insight into subscription-level events that occur in Azure, including events from Azure Resource Manager operational data, service health events, write operations taken on the resources in your subscription, and the status of activities performed in Azure. | AzureActivity | Data Source | AzureActivityLog |
-| Azure Security Center | This connector allows you stream your security alerts from Azure Security Center into Sentinel | SecurityAlert | Data Connector | AzureSecurityCenter |
-| DNS | The DNS log connector allows you to easily connect your DNS analytic and audit logs with Azure Sentinel, and other related data, to improve investigation. | DnsEvents, DnsInventory | Solution | DnsAnalytics |
-| Office 365 | The Office 365 activity log connector provides insight into ongoing user activities. You will get details of operations such as file downloads, access requests sent, changes to group events, set-mailbox and details of the user who performed the actions. |  OfficeActivity | Data Connector | Office365 |
-| Security Events | This connector allows you to collect Windows event logs from the Windows Security Auditing event provider. | SecurityEvent | Data Source | SecurityInsightsSecurityEventCollectionConfiguration |
-| Windows Firewall | Windows Firewall is a Microsoft Windows application that filters information coming to your system from the Internet and blocking potentially harmful programs. The software blocks most programs from communicating through the firewall. | WindowsFirewall | Solution | WindowsFirewall |
+| Display Name | Data Table | Type | Kind |
+|----|----|----|----|
+| [Amazon Web Services](https://docs.microsoft.com/en-us/azure/sentinel/connect-aws) | Data Connector | AWSCloudTrail |
+| [Azure Activity](https://docs.microsoft.com/en-us/azure/sentinel/connect-azure-activity) | AzureActivity | Data Source | AzureActivityLog |
+| [Azure Security Center](https://docs.microsoft.com/en-us/azure/sentinel/connect-azure-security-center) | SecurityAlert | Data Connector | AzureSecurityCenter |
+| [DNS (Preview)](https://docs.microsoft.com/en-us/azure/sentinel/connect-dns) | DnsEvents, DnsInventory | Solution | DnsAnalytics |
+| [Office 365](https://docs.microsoft.com/en-us/azure/sentinel/connect-office-365) |  OfficeActivity | Data Connector | Office365 |
+| [Security Events](https://docs.microsoft.com/en-us/azure/sentinel/connect-windows-security-events) | SecurityEvent | Data Source | SecurityInsightsSecurityEventCollectionConfiguration |
+| [Windows Firewall](https://docs.microsoft.com/en-us/azure/sentinel/connect-windows-firewall) | WindowsFirewall | Solution | WindowsFirewall |
+
+# References
+
+* https://docs.microsoft.com/en-us/azure/sentinel/connect-data-sources
