@@ -139,11 +139,11 @@
                 "description": "Additional Log Solutions that you can install on the top of your Log Analytics Workspace. (e.g [\"ServiceMap\",\"WireData2\",\"InfrastructureInsights\"])"
             }
         },
-        "enableDataConnectors": {
+        "enableDataConnectorsKind": {
             "type": "array",
             "defaultValue": [],
             "metadata": {
-                "description": "The current list of data connectors that can be deployed via ARM templates: [\"AzureActivityLog\",\"SecurityEvents\",\"WindowsFirewall\",\"DnsAnalytics\"]"
+                "description": "The kind of data connectors that can be deployed via ARM templates: [\"AzureActivityLog\",\"SecurityInsightsSecurityEventCollectionConfiguration\",\"WindowsFirewall\",\"DnsAnalytics\"]"
             }
         },
         "setSecurityCollectionTier": {
@@ -272,8 +272,8 @@
             }
         },
         {
-            "condition": "[not(empty(parameters('enableDataConnectors')))]",
-            "name": "enableDataConnectors",
+            "condition": "[not(empty(parameters('enableDataConnectorsKind')))]",
+            "name": "enableDataConnectorsKind",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
             "dependsOn": [
@@ -286,8 +286,8 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "dataConnectors": {
-                        "value": "[parameters('enableDataConnectors')]"
+                    "dataConnectorsKind": {
+                        "value": "[parameters('enableDataConnectorsKind')]"
                     },
                     "workspaceName": {
                         "value": "[variables('uniqueWorkspace')]"

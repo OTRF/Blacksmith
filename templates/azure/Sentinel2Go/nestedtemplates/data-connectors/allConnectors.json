@@ -2,11 +2,11 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "dataConnectors": {
+        "dataConnectorsKind": {
             "type": "array",
             "defaultValue": [],
             "metadata": {
-                "description": "The current list of data connectors that can be deployed via ARM templates: [\"AzureActivityLog\",\"SecurityEvents\",\"WindowsFirewall\",\"DnsAnalytics\"]"
+                "description": "The kind of data connectors that can be deployed via ARM templates: [\"AzureActivityLog\",\"SecurityInsightsSecurityEventCollectionConfiguration\",\"WindowsFirewall\",\"DnsAnalytics\"]"
             }
         },
         "workspaceName": {
@@ -52,7 +52,7 @@
     },
     "resources": [
         {
-            "condition": "[contains(parameters('dataConnectors'), 'AzureActivityLog')]",
+            "condition": "[contains(parameters('dataConnectorsKind'), 'AzureActivityLog')]",
             "type": "Microsoft.OperationalInsights/workspaces/dataSources",
             "apiVersion": "2015-11-01-preview",
             "location": "[parameters('location')]",
@@ -63,7 +63,7 @@
             }
         },
         {
-            "condition": "[contains(parameters('dataConnectors'), 'SecurityEvents')]",
+            "condition": "[contains(parameters('dataConnectorsKind'), 'SecurityInsightsSecurityEventCollectionConfiguration')]",
             "type": "Microsoft.OperationalInsights/workspaces/dataSources",
             "apiVersion": "2015-11-01-preview",
             "location": "[parameters('location')]",
@@ -75,7 +75,7 @@
             }
         },
         {
-            "condition": "[contains(parameters('dataConnectors'), 'WindowsFirewall')]",
+            "condition": "[contains(parameters('dataConnectorsKind'), 'WindowsFirewall')]",
             "type": "Microsoft.OperationsManagement/solutions",
             "apiVersion": "2015-11-01-preview",
             "name": "[concat('WindowsFirewall','(', parameters('workspaceName'),')')]",
@@ -92,7 +92,7 @@
             }
         },
         {
-            "condition": "[contains(parameters('dataConnectors'), 'DnsAnalytics')]",
+            "condition": "[contains(parameters('dataConnectorsKind'), 'DnsAnalytics')]",
             "type": "Microsoft.OperationsManagement/solutions",
             "apiVersion": "2015-11-01-preview",
             "name": "[concat('DnsAnalytics','(', parameters('workspaceName'),')')]",
