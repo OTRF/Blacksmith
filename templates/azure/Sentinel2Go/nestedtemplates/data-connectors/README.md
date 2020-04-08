@@ -6,7 +6,7 @@
 <br/>
 <br/>
 
-Current Data Connectors deployed via ARM templates:
+Current Data Connectors deployed via ARM templates in this project:
 
 | Name | Display Name | Description | Data Source / Solution | Data Table |
 |----|----|----|----|----|
