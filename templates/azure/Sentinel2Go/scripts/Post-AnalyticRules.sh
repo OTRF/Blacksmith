@@ -40,10 +40,26 @@ if [ -z "$RESOURCE_GROUP_NAME" ] || [ -z "$WORKSPACE_NAME" ]; then
     usage
 else
     for row in $(curl -sS https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Sentinel2Go/analytic-rules/allAnalyticRules.json | jq -r '.[] | @base64'); do
-        name=$(cat /proc/sys/kernel/random/uuid)
-        echo "[+] Uploading"
-        echo ${row} | base64 -d | jq -r ${1}
-        echo ${row} | base64 -d | jq -r ${1} | az rest -m put -u "https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/${RESOURCE_GROUP_NAME}/providers/Microsoft.OperationalInsights/workspaces/${WORKSPACE_NAME}/providers/Microsoft.SecurityInsights/alertRules/${name}?api-version=2019-01-01-preview" --body @-  --verbose
+        return_code=$?
+        # Generating GUID for analytic rule Id
+        if [ "$SYSTEM_KERNEL" == "Linux" ]; then
+            name=$(cat /proc/sys/kernel/random/uuid)
+        elif [ "$SYSTEM_KERNEL" == "Darwin" ]; then
+            name=$(uuidgen)
+        fi
+        # Getting analytic rule name
+        ruleName=$(echo ${row} | base64 -d | jq -r ${1}.properties.displayName)
+        # Posting analytic rule to Azure Sentinel's workspace
+        echo -e  "\n[+] Analytic Rule: $ruleName"
+        echo ${row} | base64 -d | jq -r ${1} | az rest -m put -u "https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/${RESOURCE_GROUP_NAME}/providers/Microsoft.OperationalInsights/workspaces/${WORKSPACE_NAME}/providers/Microsoft.SecurityInsights/alertRules/${name}?api-version=2019-01-01-preview" --body @-  --verbose || return_code=$?
+        # Handling error
+        if [ "$return_code" != "0" ] && [ "$return_code" ]; then
+            RED='\033[0;31m'
+            NC='\033[0m'
+            echo -e "${RED}[!] Creation of analytic rule failed.."
+            echo ${row} | base64 -d | jq -Mr ${1}
+            echo -e "${NC}"
+        fi
         sleep 1
     done
 fi
