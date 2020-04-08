@@ -11,7 +11,7 @@ The current kind of Data Connectors deployed via ARM templates in this project a
 
 | Display Name | Data Table | Type | Kind |
 |----|----|----|----|
-| [Amazon Web Services](https://docs.microsoft.com/en-us/azure/sentinel/connect-aws) | Data Connector | AWSCloudTrail |
+| [Amazon Web Services](https://docs.microsoft.com/en-us/azure/sentinel/connect-aws) | AWSCloudTrail | Data Connector | AmazonWebServicesCloudTrail |
 | [Azure Activity](https://docs.microsoft.com/en-us/azure/sentinel/connect-azure-activity) | AzureActivity | Data Source | AzureActivityLog |
 | [Azure Security Center](https://docs.microsoft.com/en-us/azure/sentinel/connect-azure-security-center) | SecurityAlert | Data Connector | AzureSecurityCenter |
 | [DNS (Preview)](https://docs.microsoft.com/en-us/azure/sentinel/connect-dns) | DnsEvents, DnsInventory | Solution | DnsAnalytics |
