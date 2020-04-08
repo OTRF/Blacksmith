@@ -4,10 +4,8 @@
     <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/> 
 </a>
 <br/>
-<br/>
 
-
-The current kind of Data Connectors deployed via ARM templates in this project are of type [Microsoft.OperationsManagement/solutions](https://docs.microsoft.com/en-us/azure/templates/microsoft.operationsmanagement/2015-11-01-preview/solutions) and [Microsoft.OperationalInsights/workspaces/dataSources(https://docs.microsoft.com/en-us/azure/templates/microsoft.operationalinsights/2015-11-01-preview/workspaces/datasources)
+The current kind of Data Connectors deployed via ARM templates in this project are of type [Microsoft.OperationsManagement/solutions](https://docs.microsoft.com/en-us/azure/templates/microsoft.operationsmanagement/2015-11-01-preview/solutions) and [Microsoft.OperationalInsights/workspaces/dataSources](https://docs.microsoft.com/en-us/azure/templates/microsoft.operationalinsights/2015-11-01-preview/workspaces/datasources)
 
 
 | Kind | Display Name | Description | type | Data Table |
