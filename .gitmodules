@@ -1,0 +1,3 @@
+[submodule "projects/mordor-labs"]
+	path = projects/mordor-labs
+	url = https://github.com/OTRF/mordor-labs

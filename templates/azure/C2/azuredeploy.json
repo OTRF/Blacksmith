@@ -131,7 +131,7 @@
     },
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
-        "c2SetupScript": "[uri(parameters('_artifactsLocation'), concat('scripts/bash/Install-C2s.sh', parameters('_artifactsLocationSasToken')))]",
+        "c2SetupScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/bash/Install-C2s.sh', parameters('_artifactsLocationSasToken')))]",
         "virtualNetworkName": "[parameters('virtualNetworkName')]",
         "subnetName": "[parameters('subnetName')]",
         "virtualNetworkAddressRange": "10.0.0.0/16",

@@ -657,7 +657,7 @@
                     },
                     "fileUris": {
                         "value": [
-                            "[uri(parameters('_artifactsLocation'), concat('scripts/powershell/c2/invoke-sandcat.ps1', parameters('_artifactsLocationSasToken')))]"
+                            "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/c2/invoke-sandcat.ps1', parameters('_artifactsLocationSasToken')))]"
                         ]
                     },
                     "vmName": {
