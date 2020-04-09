@@ -16,6 +16,8 @@ from time import sleep
 import sys
 import logging
 
+TRIGGER_OPERATORS = {"lt": "LessThan", "gt": "GreaterThan", "eq": "Equal", "ne": "NotEqual"}
+
 # Initial description
 text = "This script translates analytic rules from https://github.com/Azure/Azure-Sentinel/tree/master/Detections to JSON files"
 example_text = f'''examples:
@@ -80,7 +82,7 @@ for analytic in all_files:
     analytic_load['displayName'] = analytic_load.pop('name')
 
     # Enabling Rule by adding key 'enabled'
-    analytic_load['enabled'] = True
+    analytic_load["enabled"] = analytic_load.get("enabled", True)
 
     # Transforming string to ISO_8601 format
     # References:
@@ -101,13 +103,14 @@ for analytic in all_files:
     if "M" in queryPeriod:
         analytic_load['queryPeriod'] = f'PT{queryPeriod}'
 
-    # Converting TriggerOperator key value 'gt' to type 'Microsoft.Azure.Sentinel.Analytics.Management.AnalyticsManagement.Contracts.Model.AlertTriggerOperator'
-    if "gt" in analytic_load['triggerOperator']:
-        analytic_load['triggerOperator'] = "GreaterThan"
+    # Converting TriggerOperator key value 'gt', 'lt', 'eq' and 'ne' to type 'Microsoft.Azure.Sentinel.Analytics.Management.AnalyticsManagement.Contracts.Model.AlertTriggerOperator'
+    analytic_load["triggerOperator"] = TRIGGER_OPERATORS.get(
+        analytic_load["triggerOperator"].lower(), analytic_load["triggerOperator"]
+    )
 
     # Adding suppressionDuration to alert
-    analytic_load['suppressionDuration'] = "PT5H"
-    analytic_load['suppressionEnabled'] = False
+    analytic_load["suppressionDuration"] = analytic_load.get("suppressionDuration", "PT5H")
+    analytic_load["suppressionEnabled"] = analytic_load.get("suppressionEnabled", False)
 
     # Adding Rule template to API Scheduled format
     analytic_dict = dict()
