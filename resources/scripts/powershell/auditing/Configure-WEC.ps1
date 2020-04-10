@@ -12,6 +12,8 @@ param (
     [string]$SubscriptionsUrl
 )
 
+$ErrorActionPreference = "Stop"
+
 # ********* Setting WinRM Configs for WEC ***********
 Write-host 'Enabling WinRM..'
 winrm quickconfig -q

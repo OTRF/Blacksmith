@@ -10,6 +10,8 @@ param (
     [string]$ServerAddresses
 )
 
+$ErrorActionPreference = "Stop"
+
 $netip = Get-NetIPConfiguration
 $ipconfig = Get-NetIPAddress | ?{$_.IpAddress -eq $netip.IPv4Address.IpAddress}
 Get-NetAdapter | Set-NetIPInterface -DHCP Disabled

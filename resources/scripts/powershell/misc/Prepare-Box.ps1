@@ -1,6 +1,8 @@
 # Author: Roberto Rodriguez (@Cyb3rWard0g)
 # License: GPL-3.0
 
+$ErrorActionPreference = "Stop"
+
 # Network Changes
 Write-host 'Setting network connection type to Private..'
 Get-NetConnectionProfile | Set-NetConnectionProfile -NetworkCategory Private

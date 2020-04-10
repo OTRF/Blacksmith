@@ -17,6 +17,8 @@ param (
 
 )
 
+$ErrorActionPreference = "Stop"
+
 if($ShipperAgent -eq "Winlogbeat")
 {
     $URL = "https://artifacts.elastic.co/downloads/beats/winlogbeat/winlogbeat-7.4.0-windows-x86_64.zip"

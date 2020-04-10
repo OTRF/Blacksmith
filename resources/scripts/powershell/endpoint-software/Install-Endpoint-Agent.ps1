@@ -14,6 +14,8 @@ param (
     [string]$EndpointAgent
 )
 
+$ErrorActionPreference = "Stop"
+
 write-host "Installing $EndpointAgent .."
 
 if($EndpointAgent -eq "Sysmon")
@@ -43,7 +45,7 @@ if($EndpointAgent -eq "Sysmon")
     # Downloading Sysmon Configuration
     write-Host "Downloading Sysmon config.."
     $SysmonFile = "C:\ProgramData\sysmon.xml"
-    $SysmonConfigUrl = "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/configs/sysmon/sysmon.xml"
+    $SysmonConfigUrl = "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/resources/configs/sysmon/sysmon.xml"
     $wc.DownloadFile($SysmonConfigUrl, $SysmonFile)
     if (!(Test-Path $SysmonFile)){ write-Host "File $SysmonFile does not exists.. "; break }
 

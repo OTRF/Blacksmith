@@ -11,6 +11,8 @@ param (
     [string]$domainFQDN
 )
 
+$ErrorActionPreference = "Stop"
+
 $DomainName1,$DomainName2 = $domainFQDN.split('.')
 
 $folders = @("secrets", "gates")

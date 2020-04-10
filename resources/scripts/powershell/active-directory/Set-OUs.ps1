@@ -10,6 +10,8 @@ param (
     [string]$domainFQDN
 )
 
+$ErrorActionPreference = "Stop"
+
 $DomainName1,$DomainName2 = $domainFQDN.split('.')
 
 $ParentPath = "DC=$DomainName1,DC=$DomainName2"

@@ -7,6 +7,8 @@ param (
     [switch]$SetDC
 )
 
+$ErrorActionPreference = "Stop"
+
 # Enabling Audit Policies
 write-Host "Enabling Sub-categories .."
 
