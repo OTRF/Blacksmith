@@ -17,8 +17,6 @@ param(
     [string]$dcVMName
 )
 
-$ErrorActionPreference = "Stop"
-
 # Verifying ADWS service is running
 $ServiceName = 'ADWS'
 $arrService = Get-Service -Name $ServiceName

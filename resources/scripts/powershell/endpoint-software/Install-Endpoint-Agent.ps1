@@ -14,8 +14,6 @@ param (
     [string]$EndpointAgent
 )
 
-$ErrorActionPreference = "Stop"
-
 write-host "Installing $EndpointAgent .."
 
 if($EndpointAgent -eq "Sysmon")
@@ -38,7 +36,7 @@ $File = "C:\ProgramData\$OutputFile"
 write-Host "Downloading $OutputFile .."
 $wc = new-object System.Net.WebClient
 $wc.DownloadFile($Url, $File)
-if (!(Test-Path $File)){ write-Host "File $File does not exists.. "; break }
+if (!(Test-Path $File)){ Write-Error "File $File does not exist" -ErrorAction Stop }
 
 if($EndpointAgent -eq "Sysmon")
 {
@@ -47,7 +45,7 @@ if($EndpointAgent -eq "Sysmon")
     $SysmonFile = "C:\ProgramData\sysmon.xml"
     $SysmonConfigUrl = "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/resources/configs/sysmon/sysmon.xml"
     $wc.DownloadFile($SysmonConfigUrl, $SysmonFile)
-    if (!(Test-Path $SysmonFile)){ write-Host "File $SysmonFile does not exists.. "; break }
+    if (!(Test-Path $SysmonFile)){ Write-Error "File $SysmonFile does not exist" -ErrorAction Stop }
 
     # Installing Sysmon
     write-Host "Installing Sysmon.."
@@ -82,7 +80,7 @@ else
     write-Host "Decompressing $OutputFile .."
     $FileName = (Get-Item $File).Basename
     expand-archive -path $File -DestinationPath "C:\ProgramData\$FileName"
-    if (!(Test-Path "C:\ProgramData\$FileName")){ write-Host "$File could not be decompressed successfully.. "; break }
+    if (!(Test-Path "C:\ProgramData\$FileName")){ Write-Error "$File was not decompressed successfully" -ErrorAction Stop }
 
     #Installing Dependencies
     #.NET Framework 4.5	All Windows operating systems: 378389
@@ -112,7 +110,7 @@ else
     write-Host "Downloading $OutputFile .."
     $wc = new-object System.Net.WebClient
     $wc.DownloadFile($SilkServiceConfigUrl, $SilkServiceConfigPath)
-    if (!(Test-Path $SilkServiceConfigPath)){ write-Host "SilkServiceConfig.xml does not exists.. "; break }
+    if (!(Test-Path $SilkServiceConfigPath)){ Write-Error "SilkServiceConfig does not exist" -ErrorAction Stop }
 
     # Installing Service
     write-host "Creating the new SilkETW service.."

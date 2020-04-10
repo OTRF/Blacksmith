@@ -14,8 +14,6 @@ param (
     [string]$WECNetBIOSName
 )
 
-$ErrorActionPreference = "Stop"
-
 Write-host 'Enabling WinRM..'
 winrm quickconfig -q
 

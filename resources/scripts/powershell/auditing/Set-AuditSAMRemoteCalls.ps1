@@ -4,8 +4,6 @@
 # Reference:
 # https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/network-access-restrict-clients-allowed-to-make-remote-sam-calls
 
-$ErrorActionPreference = "Stop"
-
 $regConfig = @"
 regKey,name,value,type
 "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa","RestrictRemoteSamAuditOnlyMode",1,"DWord"

@@ -12,8 +12,6 @@ param (
     [string]$SubscriptionsUrl
 )
 
-$ErrorActionPreference = "Stop"
-
 # ********* Setting WinRM Configs for WEC ***********
 Write-host 'Enabling WinRM..'
 winrm quickconfig -q
@@ -99,22 +97,12 @@ write-Host "Downloading $OutputFile .."
 $wc = new-object System.Net.WebClient
 $wc.DownloadFile($SubscriptionsUrl, $ZipFile)
 
-if (!(Test-Path $ZipFile))
-{
-    write-Host "File $ZipFile does not exists.. "
-    break
-}
+if (!(Test-Path $ZipFile)){ Write-Error "File $ZipFile does not exist" -ErrorAction Stop }
 
 # Unzip file
 write-Host "Decompressing $ZipFile .."
 $file = (Get-Item $ZipFile).Basename
 expand-archive -path $Zipfile -DestinationPath "C:\ProgramData\"
-
-if (!(Test-Path "C:\ProgramData\$file"))
-{
-    write-Host "$ZipFile could not be decompressed successfully.. "
-    break
-}
 
 # Importing Subscriptions
 if (Test-Path "C:\ProgramData\$file")
@@ -123,8 +111,7 @@ if (Test-Path "C:\ProgramData\$file")
     Get-ChildItem "C:\ProgramData\$file" | ForEach-Object { wecutil cs $_.FullName}
 }
 else {
-    write-Host "C:\ProgramData\$file does not exist.."
-    break
+    Write-Error "File $ZipFile was not decompressed successfully" -ErrorAction Stop
 }
 
 # ********** Additional Tunning ***************

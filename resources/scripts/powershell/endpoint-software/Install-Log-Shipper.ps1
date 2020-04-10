@@ -17,8 +17,6 @@ param (
 
 )
 
-$ErrorActionPreference = "Stop"
-
 if($ShipperAgent -eq "Winlogbeat")
 {
     $URL = "https://artifacts.elastic.co/downloads/beats/winlogbeat/winlogbeat-7.4.0-windows-x86_64.zip"
@@ -35,7 +33,7 @@ $NewFile = "C:\ProgramData\$outputFile"
 write-Host "Downloading $OutputFile .."
 $wc = new-object System.Net.WebClient
 $wc.DownloadFile($Url, $NewFile)
-if (!(Test-Path $NewFile)){ write-Host "File $NewFile does not exists.. "; break }
+if (!(Test-Path $NewFile)){ Write-Error "File $NewFile does not exist" -ErrorAction Stop}
 
 if($ShipperAgent -eq "Winlogbeat")
 {
@@ -43,7 +41,7 @@ if($ShipperAgent -eq "Winlogbeat")
     write-Host "Decompressing $OutputFile .."
     $file = (Get-Item $NewFile).Basename
     expand-archive -path $NewFile -DestinationPath "C:\Program Files\"
-    if (!(Test-Path "C:\Program Files\$file")){ write-Host "$NewFile could not be decompressed successfully.. "; break }
+    if (!(Test-Path "C:\Program Files\$file")){ Write-Error "$NewFile was not decompressed successfully" -ErrorAction Stop }
 
     # Renaming Folder & File
     write-Host "Renaming folder from C:\Program Files\$file to C:\Program Files\Winlogbeat .."
@@ -82,7 +80,7 @@ else
 # Download shipper config
 write-Host "Downloading shipper config.."
 $wc.DownloadFile($ConfigUrl, $shipperConfig)
-if (!(Test-Path $shipperConfig)){ write-Host "File $shipperConfig does not exists.. "; break }
+if (!(Test-Path $shipperConfig)){ Write-Error "File $shipperConfig does not exist" -ErrorAction Stop }
 
 # Updating Config IP
 ((Get-Content -path $shipperConfig -Raw) -replace 'IPADDRESS',$DestinationIP) | Set-Content -Path $shipperConfig
