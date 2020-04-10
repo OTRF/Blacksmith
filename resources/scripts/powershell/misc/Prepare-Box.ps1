@@ -98,10 +98,6 @@ $regConfig | ConvertFrom-Csv | ForEach-Object {
     New-ItemProperty -Path $_.regKey -Name $_.name -Value $_.value -PropertyType $_.type -force
 }
 
-# Setting UAC level to Never Notify
-Write-Host "Setting UAC level to Never Notify.."
-Set-ItemProperty -Force -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value 0
-
 # Setting WDigest to use LogonCredentials
 Write-Host "Setting WDigest to use logoncredential.."
 Set-ItemProperty -Force -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest" -Name "UseLogonCredential" -Value "1"

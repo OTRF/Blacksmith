@@ -44,6 +44,7 @@ FirstName,LastName,SamAccountName,Department,JobTitle,Password,Identity,UserCont
 Norah,Martha,nmartha,Human Resources,HR Director,S@l@m3!123,Users,DomainUsers
 Pedro,Gustavo,pgustavo,IT Support,CIO,W1n1!2019,Domain Admins,DomainUsers
 Lucho,Rodriguez,lrodriguez,Accounting,VP,T0d@y!2019,Users,DomainUsers
+Stevie,Beavers,sbeavers,Sales,Agent,B1gM@c!2020,Users,DomainUsers
 Sysmon,MS,sysmonsvc,IT Support,Service Account,Buggy!1122,Users,DomainUsers
 "@
 
