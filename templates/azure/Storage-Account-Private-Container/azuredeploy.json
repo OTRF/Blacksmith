@@ -57,8 +57,9 @@
       "uniqueStorageAccountName": "[concat(parameters('storageAccountName'), uniquestring(subscription().subscriptionId, resourceGroup().id, parameters('utcValue')))]",
       "storageAccountNameTidy": "[toLower(trim(variables('uniqueStorageAccountName')))]",
       "listAccountSasRequestContent": {
-            "signedServices": "f",
+            "signedServices": "bf",
             "signedPermission": "r",
+            "keyToSign": "key2",
             "signedExpiry": "2021-10-30T00:00:00Z",
             "signedResourceTypes": "sco"
         }
@@ -95,7 +96,7 @@
             "type": "string",
             "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountNameTidy'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountNameTidy')), '2019-06-01').keys[0].value, ';EndpointSuffix=core.windows.net')]"
         },
-        "accountSASToken": {
+        "SASToken": {
             "type": "string",
             "value": "[listAccountSas(variables('storageAccountNameTidy'), '2019-06-01', variables('listAccountSasRequestContent')).accountSasToken]"
         }
