@@ -80,7 +80,7 @@
                 {
                     "type": "blobServices/containers",
                     "apiVersion": "2019-06-01",
-                    "name": "[parameters('containerName')]",
+                    "name": "[concat('default/',parameters('containerName'))]",
                     "dependsOn": [
                         "[variables('uniqueStorageAccountName')]"
                     ],
