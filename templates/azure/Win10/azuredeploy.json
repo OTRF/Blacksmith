@@ -368,7 +368,7 @@
                     },
                     "fileUris": {
                         "value": [
-                            "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/mordor/scripts/initialSetup.ps1",
+                            "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/Win10/scripts/initialSetup.ps1",
                             "[variables('prepareBoxScript')]",
                             "[variables('setSecurityAuditingScript')]",
                             "[variables('setSACLScript')]"

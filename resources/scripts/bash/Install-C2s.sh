@@ -97,7 +97,7 @@ else
     
     echo "$INFO_TAG Setting up Caldera.."
     mkdir /opt/Caldera
-    curl -L https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/scripts/docker/caldera/2.6.6-040520/docker-compose-caldera.yml -o /opt/Caldera/docker-compose-caldera.yml >> $LOGFILE 2>&1
+    curl -L https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/resources/scripts/docker/caldera/2.6.6-040520/docker-compose-caldera.yml -o /opt/Caldera/docker-compose-caldera.yml >> $LOGFILE 2>&1
     echo "$INFO_TAG Running Caldera by default.."
 
     #U Updating Caldera dmin password
