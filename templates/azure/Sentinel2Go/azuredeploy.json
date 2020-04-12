@@ -75,14 +75,21 @@
             "type": "string",
             "defaultValue": "",
             "metadata": {
-                "description": "A User assigned managed identity with a Contributor role at a subscription scope. Reference: https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli#user-at-a-subscription-scope"
+                "description": "Paremeter needed to uload Sentinel's analytic rules from the Azure-Sentinel GitHub repo. This parameter requires a user assigned managed identity with a Contributor role at a subscription scope. Reference: https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli#user-at-a-subscription-scope"
             }
         },
         "adminUsername": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
-                "description": "Username for the Virtual Machines."
+                "description": "Username for the Virtual Machines (Windows, Linux)."
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Password for all Virtual Machines (Windows , Linux). If you want to enable SSH key authentication for Linux virtual machines, make sure you set the 'linuxAuthenticationType' parameter to 'sshPublicKey' and provide the SSH Public Key string via the 'linuxAdminKey' parameter."
             }
         },
         "linuxAuthenticationType": {
@@ -96,25 +103,31 @@
                 "description": "Type of authentication to use on the Linux Virtual Machine. SSH key is recommended."
             }
         },
-        "linuxAdminPasswordOrKey": {
-            "type": "securestring",
-            "metadata": {
-                "description": "SSH Key or password for the Virtual Machine. SSH key is recommended. Use \"ssh-keygen -t rsa -b 2048\" to generate your SSH key pairs."
-            },
-            "defaultValue": ""
-        },
-        "winAdminPassword": {
+        "linuxAdminKey": {
             "type": "securestring",
             "defaultValue": "",
             "metadata": {
-                "description": "Password for a Windows Virtual Machine."
+                "description": "SSH Key to authenticate against Linux Virtual Machines. Provide the SSH rsa public key file as a string. Use \"ssh-keygen -t rsa -b 2048\" to generate your SSH key pairs."
+            }
+        },
+        "c2Framework": {
+            "type": "string",
+            "defaultValue": "",
+            "allowedValues": [
+                "",
+                "empire",
+                "covenant",
+                "caldera"
+            ],
+            "metadata": {
+                "description": "C2 framework to deploy"
             }
         },
         "c2AdminPassword": {
             "type": "securestring",
             "defaultValue": "",
             "metadata": {
-                "description": "admin user password for a C2 interface"
+                "description": "admin user password for C2 Web Interface if required"
             }
         },
         "vmSize": {
@@ -404,7 +417,7 @@
                         "value": "[parameters('linuxAuthenticationType')]"
                     },
                     "adminPasswordOrKey": {
-                        "value": "[parameters('linuxAdminPasswordOrKey')]"
+                        "value": "[if(equals(parameters('linuxAuthenticationType'), 'password'), parameters('adminPassword'), parameters('linuxAdminKey'))]"
                     },
                     "allowedIPAddresses": {
                         "value": "[parameters('allowedIPAddresses')]"
@@ -530,13 +543,13 @@
                         "value": "[parameters('linuxAuthenticationType')]"
                     },
                     "adminPasswordOrKey": {
-                        "value": "[parameters('linuxAdminPasswordOrKey')]"
+                        "value": "[if(equals(parameters('linuxAuthenticationType'), 'password'), parameters('adminPassword'), parameters('linuxAdminKey'))]"
                     },
                     "allowedIPAddresses": {
                         "value": "[parameters('allowedIPAddresses')]"
                     },
                     "c2Framework": {
-                        "value": "caldera"
+                        "value": "[parameters('c2Framework')]"
                     },
                     "c2AdminPassword": {
                         "value": "[parameters('c2AdminPassword')]"
@@ -563,7 +576,7 @@
                         "value": "[parameters('adminUsername')]"
                     },
                     "adminPassword": {
-                        "value": "[parameters('winAdminPassword')]"
+                        "value": "[parameters('adminPassword')]"
                     },
                     "vmSize": {
                         "value": "[parameters('vmSize')]"
@@ -697,7 +710,7 @@
                         "value": "[parameters('linuxAuthenticationType')]"
                     },
                     "adminPasswordOrKey": {
-                        "value": "[parameters('linuxAdminPasswordOrKey')]"
+                        "value": "[if(equals(parameters('linuxAuthenticationType'), 'password'), parameters('adminPassword'), parameters('linuxAdminKey'))]"
                     },
                     "allowedIPAddresses": {
                         "value": "[parameters('allowedIPAddresses')]"

@@ -323,7 +323,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {},
                 "protectedSettings": {
-                    "commandToExecute": "[concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework'), ' ', '-p', ' ', parameters('c2AdminPassword'))]",
+                    "commandToExecute": "[if(empty(parameters('c2AdminPassword')), concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework'), ' ', '-p', ' ', parameters('c2AdminPassword')), concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework')))]",
                     "fileUris": [
                         "[variables('c2SetupScript')]"
                     ]

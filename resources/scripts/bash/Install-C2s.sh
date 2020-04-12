@@ -20,7 +20,7 @@ usage(){
     echo "Usage: $0 [option...]" >&2
     echo
     echo "   -r         run a specific C2 server (empire or covenant or caldera)"
-    echo "   -p         C2 admin password"
+    echo "   -p         C2 admin password (optional)"
     echo "   -h         help menu"
     echo
     echo "Examples:"
