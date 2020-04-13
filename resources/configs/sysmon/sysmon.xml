@@ -50,6 +50,9 @@
 				<Image condition="is">C:\Windows\System32\mmc.exe</Image>
 				<Image condition="is">C:\Program Files\Microsoft VS Code\Code.exe</Image>
 				<Image condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</Image>
+				<Image condition="is">C:\WindowsAzure\Packages\GuestAgent\WindowsAzureGuestAgent.exe</Image>
+				<Image condition="is">C:\WindowsAzure\Packages\Telemetry\WindowsAzureTelemetryService.exe</Image>
+				<Image condition="is"> C:\WindowsAzure\SecAgent\WaSecAgentProv.exe</Image>
 			</NetworkConnect>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -81,14 +84,15 @@
 				<Image condition="end with">onedrive.exe</Image>
 				<Image condition="end with">skypeapp.exe</Image>
 				<Image condition="is">C:\WindowsAzure\Packages\CollectGuestLogs.exe</Image>
+				<Image condition="is">C:\WindowsAzure\Packages\Telemetry\WindowsAzureTelemetryService.exe</Image>
 			</ImageLoad>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
-			<!-- Event ID 8 == CreateRemoteThread. Log everything -->
+			<!-- Event ID 8 == CreateRemoteThread. Log everything except -->
 			<CreateRemoteThread onmatch="exclude" />
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
-			<!-- Event ID 9 == RawAccessRead. Log everything -->
+			<!-- Event ID 9 == RawAccessRead. Log everything except -->
 			<RawAccessRead onmatch="exclude">
 				<Image condition="is">C:\Program Files\VMware\VMware Tools\vmtoolsd.exe</Image>
 				<Image condition="is">C:\Program Files (x86)\Google\Update\GoogleUpdate.exe</Image>
@@ -99,8 +103,6 @@
 			<!-- Event ID 10 == ProcessAccess. Log everything except -->
 			<ProcessAccess onmatch="exclude">
 				<SourceImage condition="is">C:\Program Files\VMware\VMware Tools\vmtoolsd.exe</SourceImage>
-				<SourceImage condition="is">C:\Windows\system32\taskeng.exe</SourceImage>
-				<SourceImage condition="is">C:\Windows\system32\lsass.exe</SourceImage>
 				<SourceImage condition="image">Sysmon.exe</SourceImage>
 				<SourceImage condition="image">GoogleUpdate.exe</SourceImage>
 				<SourceImage condition="is">C:\Program Files (x86)\Google\Chrome\Application\chrome.exe</SourceImage>
@@ -110,19 +112,17 @@
 				<SourceImage condition="end with">onedrivesetup.exe</SourceImage>
 				<SourceImage condition="is">C:\WindowsAzure\Packages\CollectGuestLogs.exe</SourceImage>
 				<SourceImage condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</SourceImage>
+				<SourceImage condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\MonitoringHost.exe</SourceImage>
 				<TargetImage condition="is">C:\Program Files\VMware\VMware Tools\TPAutoConnSvc.exe</TargetImage>
 				<TargetImage condition="is">C:\Program Files\VMware\VMware Tools\TPAutoConnect.exe</TargetImage>
-				<TargetImage condition="is">C:\Windows\system32\mmc.exe</TargetImage>
 				<TargetImage condition="is">C:\Program Files\Microsoft VS Code\Code.exe</TargetImage>
-				<TargetImage condition="is">C:\Windows\system32\sihost.exe</TargetImage>
 				<TargetImage condition="is">C:\Program Files\Windows Defender\MsMpEng.exe</TargetImage>
 				<TargetImage condition="is">c:\Program Files\Microsoft VS Code\resources\app\out\vs\workbench\services\files\node\watcher\win32\CodeHelper.exe</TargetImage>
-				<TargetImage condition="is">C:\Windows\system32\ApplicationFrameHost.exe</TargetImage>
-				<TargetImage condition="is">C:\Windows\System32\taskhostw.exe</TargetImage>
-				<TargetImage condition="is">C:\Windows\System32\RuntimeBroker.exe</TargetImage>
 				<TargetImage condition="is">C:\Program Files\Amazon\Ec2ConfigService\Ec2Config.exe</TargetImage>
 				<TargetImage condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</TargetImage>
 				<TargetImage condition="is">C:\windows\system32\CompatTelRunner.exe</TargetImage>
+				<TargetImage condition="beign with">C:\Packages\Plugins\</TargetImage>
+				<TargetImage condition="begin with">C:\Program Files\WindowsApps\<TargetImage>
 			</ProcessAccess>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -130,7 +130,6 @@
 			<FileCreate onmatch="exclude">
 				<Image condition="image">SearchIndexer.exe</Image>
 				<Image condition="image">winlogbeat.exe</Image>
-				<Image condition="is">C:\Windows\system32\mmc.exe</Image>
 				<Image condition="is">C:\Program Files (x86)\Google\Chrome\Application\chrome.exe</Image>
 				<Image condition="is">C:\Program Files\Microsoft VS Code\Code.exe</Image>
 				<Image condition="end with">onedrivesetup.exe</Image>
@@ -138,17 +137,14 @@
 				<Image condition="end with">skypeapp.exe</Image>
 				<Image condition="is">C:\WindowsAzure\Packages\CollectGuestLogs.exe</Image>
 				<Image condition="is">C:\WindowsAzure\Packages\GuestAgent\WindowsAzureGuestAgent.exe</Image>
+				<Image condition="begin with">C:\Packages\Plugins\</Image>
 			</FileCreate>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
 			<!-- Event ID 12,13,14 == RegObject added/deleted, RegValue Set, RegObject Renamed. Log everything except -->
 			<RegistryEvent onmatch="exclude">
 				<Image condition="is">C:\Program Files\VMware\VMware Tools\vmtoolsd.exe</Image>
-				<Image condition="is">C:\Windows\system32\mmc.exe</Image>
-				<Image condition="is">C:\Windows\system32\taskeng.exe</Image>
-				<Image condition="is">C:\Windows\System32\svchost.exe</Image>
-				<Image condition="is">C:\Windows\system32\lsass.exe</Image>
-				<Image condition="is">C:\Windows\Sysmon.exe</Image>
+				<Image condition="image">Sysmon.exe</Image>
 				<Image condition="image">GoogleUpdate.exe</Image>
 				<Image condition="is">C:\Program Files\VMware\VMware Tools\TPAutoConnect.exe</Image>
 				<Image condition="is">C:\Program Files\Windows Defender\NisSrv.exe</Image>
@@ -169,6 +165,7 @@
 			<!-- Event ID 17,18 == PipeEvent. Log Named pipe created & Named pipe connected -->
 			<PipeEvent onmatch="exclude">
 				<Image condition="is">C:\WindowsAzure\Packages\CollectGuestLogs.exe</Image>
+				<Image condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\MonitoringHost.exe</Image>
 			</PipeEvent>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">

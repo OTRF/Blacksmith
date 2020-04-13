@@ -588,7 +588,7 @@
                         "value": true
                     },
                     "enableAntimalware": {
-                        "value": true
+                        "value": "[if(contains(parameters('addToCart'), 'c2'), bool('true'), bool('false'))]"
                     },
                     "enableSysmon": {
                         "value": true

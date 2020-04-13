@@ -407,11 +407,11 @@
         },
         {
             "condition": "[parameters('enableSysmon')]",
-            "name": "WindowsSysmon",
+            "name": "EnableSysmon",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
             "dependsOn": [
-                "WindowsSetup"
+                "SetUpWindows"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -458,7 +458,7 @@
                     "AntimalwareEnabled": true,
                     "Exclusions": {
                         "Extensions": ".bat;.exe;.dll;.ps1;.sct;.vbs;.hta;.py;.tmp;.csproj",
-                        "Paths": "C:\\ProgramData\\;C:\\Users\\Public\\",
+                        "Paths": "C:\\ProgramData\\;C:\\Users\\",
                         "Processes": "powershell.exe;sandcat.exe"
                     },
                     "RealtimeProtectionEnabled": "false",
