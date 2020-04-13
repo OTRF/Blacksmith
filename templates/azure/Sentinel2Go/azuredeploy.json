@@ -64,8 +64,7 @@
             "allowedValues": [
                 "",
                 "win10",
-                "win10-c2",
-                "ubuntu-c2"
+                "win10-calderaC2"
             ],
             "metadata": {
                 "description": "Do you want to deploy additional resources and connect them to your current Azure Sentinel's workspace?"
@@ -103,24 +102,11 @@
                 "description": "SSH Key to authenticate against Linux Virtual Machines. Provide the SSH rsa public key file as a string. Use \"ssh-keygen -t rsa -b 2048\" to generate your SSH key pairs."
             }
         },
-        "c2Framework": {
-            "type": "string",
-            "defaultValue": "",
-            "allowedValues": [
-                "",
-                "empire",
-                "covenant",
-                "caldera"
-            ],
-            "metadata": {
-                "description": "C2 framework to deploy"
-            }
-        },
-        "c2AdminPassword": {
+        "c2CalderaAdminPassword": {
             "type": "securestring",
             "defaultValue": "",
             "metadata": {
-                "description": "admin user password for C2 Web Interface if required. The only C2 that requires a password for its web interface is Caldera."
+                "description": "Caldera C2 admin user password for its Web Interface. If you add calderaC2 to the 'addToCart' parameter, make sure you set this parameter. If this parameter is left empty, a random password will be generated for it and you will have to access and read the Caldera local conf file in the Caldera docker container to retrieve the random password."
             }
         },
         "vmSize": {
@@ -522,7 +508,7 @@
             }
         },
         {
-            "condition": "[contains(parameters('addToCart'), 'c2')]",
+            "condition": "[contains(parameters('addToCart'), 'calderaC2')]",
             "name": "deployC2VM",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
@@ -549,10 +535,10 @@
                         "value": "[parameters('allowedIPAddresses')]"
                     },
                     "c2Framework": {
-                        "value": "[parameters('c2Framework')]"
+                        "value": "caldera"
                     },
                     "c2AdminPassword": {
-                        "value": "[parameters('c2AdminPassword')]"
+                        "value": "[parameters('c2CalderaAdminPassword')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -588,7 +574,7 @@
                         "value": true
                     },
                     "enableAntimalware": {
-                        "value": "[if(contains(parameters('addToCart'), 'c2'), bool('true'), bool('false'))]"
+                        "value": "[if(contains(parameters('addToCart'), 'calderaC2'), bool('true'), bool('false'))]"
                     },
                     "enableSysmon": {
                         "value": true
@@ -606,7 +592,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('addToCart'), 'win10-c2')]",
+            "condition": "[equals(parameters('addToCart'), 'win10-calderaC2')]",
             "name": "vnet-c2/peering-to-remote-vnet-win",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
@@ -621,12 +607,12 @@
                 "allowGatewayTransit": false,
                 "useRemoteGateways": false,
                 "remoteVirtualNetwork": {
-                    "id": "[if(equals(parameters('addToCart'), 'win10-c2'), reference('deployWin10VM').outputs.virtualNetworkId.value, 'resource not deployed')]"
+                    "id": "[if(equals(parameters('addToCart'), 'win10-calderaC2'), reference('deployWin10VM').outputs.virtualNetworkId.value, 'resource not deployed')]"
                 }
             }
         },
         {
-            "condition": "[equals(parameters('addToCart'), 'win10-c2')]",
+            "condition": "[equals(parameters('addToCart'), 'win10-calderaC2')]",
             "name": "vnet-win/peering-to-remote-vnet-c2",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
@@ -641,12 +627,12 @@
                 "allowGatewayTransit": false,
                 "useRemoteGateways": false,
                 "remoteVirtualNetwork": {
-                    "id": "[if(equals(parameters('addToCart'), 'win10-c2'), reference('deployC2VM').outputs.virtualNetworkId.value, 'resource not deployed')]"
+                    "id": "[if(equals(parameters('addToCart'), 'win10-calderaC2'), reference('deployC2VM').outputs.virtualNetworkId.value, 'resource not deployed')]"
                 }
             }
         },
         {
-            "condition": "[equals(parameters('addToCart'), 'win10-c2')]",
+            "condition": "[equals(parameters('addToCart'), 'win10-calderaC2')]",
             "name": "WinExecC2Payload",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
@@ -666,11 +652,11 @@
                         "value": "SetupWinVM"
                     },
                     "commandToExecute": {
-                        "value": "powershell -ExecutionPolicy Unrestricted -File ./invoke-sandcat.ps1 -C2IPAddress 10.0.0.8"
+                        "value": "powershell -ExecutionPolicy Unrestricted -File ./Invoke-Manx.ps1 -C2IPAddress 10.0.0.8"
                     },
                     "fileUris": {
                         "value": [
-                            "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/c2/invoke-sandcat.ps1', parameters('_artifactsLocationSasToken')))]"
+                            "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/c2/Invoke-Manx.ps1', parameters('_artifactsLocationSasToken')))]"
                         ]
                     },
                     "vmName": {
@@ -683,7 +669,7 @@
             }
         },
         {
-           "condition": "[equals(parameters('addToCart'), 'ubuntu-c2')]",
+           "condition": "[equals(parameters('addToCart'), 'ubuntu-calderaC2')]",
             "name": "deployUbuntuVM",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
@@ -722,7 +708,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('addToCart'), 'ubuntu-c2')]",
+            "condition": "[equals(parameters('addToCart'), 'ubuntu-calderaC2')]",
             "name": "vnet-c2/peering-to-remote-vnet-ubuntu",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
@@ -737,12 +723,12 @@
                 "allowGatewayTransit": false,
                 "useRemoteGateways": false,
                 "remoteVirtualNetwork": {
-                    "id": "[if(equals(parameters('addToCart'), 'ubuntu-c2'), reference('deployUbuntuVM').outputs.virtualNetworkId.value, 'resource not deployed')]"
+                    "id": "[if(equals(parameters('addToCart'), 'ubuntu-calderaC2'), reference('deployUbuntuVM').outputs.virtualNetworkId.value, 'resource not deployed')]"
                 }
             }
         },
         {
-            "condition": "[equals(parameters('addToCart'), 'ubuntu-c2')]",
+            "condition": "[equals(parameters('addToCart'), 'ubuntu-calderaC2')]",
             "name": "vnet-ubuntu/peering-to-remote-vnet-c2",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
@@ -757,7 +743,7 @@
                 "allowGatewayTransit": false,
                 "useRemoteGateways": false,
                 "remoteVirtualNetwork": {
-                    "id": "[if(equals(parameters('addToCart'), 'ubuntu-c2'), reference('deployC2VM').outputs.virtualNetworkId.value, 'resource not deployed')]"
+                    "id": "[if(equals(parameters('addToCart'), 'ubuntu-calderaC2'), reference('deployC2VM').outputs.virtualNetworkId.value, 'resource not deployed')]"
                 }
             }
         }
