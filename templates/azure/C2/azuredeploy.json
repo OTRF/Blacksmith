@@ -166,7 +166,7 @@
         },
         {
             "condition": "[equals(parameters('c2Framework'), 'empire')]",
-            "name": "nsg-empire",
+            "name": "[concat('nsg-', parameters('c2Framework'))]",
             "comments": "Default Network Security Group for Linux endpoints",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-08-01",
@@ -191,7 +191,7 @@
         },
         {
             "condition": "[equals(parameters('c2Framework'), 'covenant')]",
-            "name": "nsg-covenant",
+            "name": "[concat('nsg-', parameters('c2Framework'))]",
             "comments": "Default Network Security Group for Linux endpoints",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-08-01",
@@ -229,7 +229,7 @@
         },
         {
             "condition": "[equals(parameters('c2Framework'), 'caldera')]",
-            "name": "nsg-caldera",
+            "name": "[concat('nsg-', parameters('c2Framework'))]",
             "comments": "Default Network Security Group for Linux endpoints",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-08-01",
@@ -271,7 +271,7 @@
             "name": "[variables('virtualNetworkName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-sshallow')]"
+                "[resourceId('Microsoft.Network/networkSecurityGroups', concat('nsg-', parameters('c2Framework')))]"
             ],
             "properties": {
                 "addressSpace": {
@@ -285,7 +285,7 @@
                         "properties": {
                             "addressPrefix": "[variables('subnetRange')]",
                             "networkSecurityGroup": {
-                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-sshallow')]"
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat('nsg-', parameters('c2Framework')))]"
                             }
                         }
                     }
