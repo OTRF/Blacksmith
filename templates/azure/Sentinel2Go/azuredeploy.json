@@ -183,7 +183,7 @@
             "type": "string",
             "defaultValue": "",
             "metadata": {
-                "description": "Paremeter needed to uload Sentinel's analytic rules from the Azure-Sentinel GitHub repo. This parameter requires a user assigned managed identity with a Contributor role at a subscription scope. Reference: https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli#user-at-a-subscription-scope"
+                "description": "Paremeter needed to upload Sentinel's analytic rules from the Azure-Sentinel GitHub repo. This parameter requires a user assigned managed identity with a Contributor role at a subscription scope. Reference: https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli#user-at-a-subscription-scope"
             }
         },
         "allowedIPAddresses": {
