@@ -71,13 +71,6 @@
                 "description": "Do you want to deploy additional resources and connect them to your current Azure Sentinel's workspace?"
             }
         },
-        "userAssignedIdentityName": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Paremeter needed to uload Sentinel's analytic rules from the Azure-Sentinel GitHub repo. This parameter requires a user assigned managed identity with a Contributor role at a subscription scope. Reference: https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli#user-at-a-subscription-scope"
-            }
-        },
         "adminUsername": {
             "type": "string",
             "defaultValue": "",
@@ -127,7 +120,7 @@
             "type": "securestring",
             "defaultValue": "",
             "metadata": {
-                "description": "admin user password for C2 Web Interface if required"
+                "description": "admin user password for C2 Web Interface if required. The only C2 that requires a password for its web interface is Caldera."
             }
         },
         "vmSize": {
@@ -156,7 +149,7 @@
             "type": "array",
             "defaultValue": [],
             "metadata": {
-                "description": "The kind of data connectors that can be deployed via ARM templates: [\"AzureActivityLog\",\"SecurityInsightsSecurityEventCollectionConfiguration\",\"WindowsFirewall\",\"DnsAnalytics\"]"
+                "description": "The kind of data connectors that can be deployed via ARM templates are the following: [\"AzureActivityLog\",\"SecurityInsightsSecurityEventCollectionConfiguration\",\"WindowsFirewall\",\"DnsAnalytics\"]"
             }
         },
         "setSecurityCollectionTier": {
@@ -183,7 +176,14 @@
             "type": "bool",
             "defaultValue": false,
             "metadata": {
-                "description": "If set to true, Analytic rules from the official Azure Sentinel GitHub Repository https://github.com/Azure/Azure-Sentinel/tree/master/Detections translated to JSON files in https://github.com/hunters-forge/Blacksmith/tree/azure/templates/azure/Sentinel2Go/analytic-rules are created in your Log Analytics workspace."
+                "description": "If set to true, Analytic rules from the official Azure Sentinel GitHub Repository https://github.com/Azure/Azure-Sentinel/tree/master/Detections translated to JSON files in https://github.com/hunters-forge/Blacksmith/tree/azure/templates/azure/Sentinel2Go/analytic-rules are created in your Log Analytics workspace. Remember that several queries need specific data tables to be enabled in Log Analytics."
+            }
+        },
+        "userAssignedIdentityName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Paremeter needed to uload Sentinel's analytic rules from the Azure-Sentinel GitHub repo. This parameter requires a user assigned managed identity with a Contributor role at a subscription scope. Reference: https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-cli#user-at-a-subscription-scope"
             }
         },
         "allowedIPAddresses": {
