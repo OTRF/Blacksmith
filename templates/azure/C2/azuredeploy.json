@@ -166,7 +166,7 @@
         },
         {
             "condition": "[equals(parameters('c2Framework'), 'empire')]",
-            "name": "[concat('nsg-', parameters('c2Framework'))]",
+            "name": "nsg-empire",
             "comments": "Default Network Security Group for Linux endpoints",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-08-01",
@@ -191,7 +191,7 @@
         },
         {
             "condition": "[equals(parameters('c2Framework'), 'covenant')]",
-            "name": "[concat('nsg-', parameters('c2Framework'))]",
+            "name": "nsg-covenant",
             "comments": "Default Network Security Group for Linux endpoints",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-08-01",
@@ -229,7 +229,7 @@
         },
         {
             "condition": "[equals(parameters('c2Framework'), 'caldera')]",
-            "name": "[concat('nsg-', parameters('c2Framework'))]",
+            "name": "nsg-caldera",
             "comments": "Default Network Security Group for Linux endpoints",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-08-01",
