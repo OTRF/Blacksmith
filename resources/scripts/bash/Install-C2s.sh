@@ -73,7 +73,7 @@ if [[ $RUN_C2 == "covenant" ]]; then
     cd /opt/Covenant/Covenant && docker build -t covenant . >> $LOGFILE 2>&1
 
     echo "$INFO_TAG Running Covenant by default.."
-    docker run -d -it -p 7443:7443 -p 80:80 -p 443:443 --name covenant -v /opt/Covenant/Covenant/Data:/app/Data covenant >> $LOGFILE 2>&1  
+    docker run -d -it -p 7443:7443 -p 80:80 -p 443:443 -p 8443-8500:8443-8500 --name covenant -v /opt/Covenant/Covenant/Data:/app/Data covenant >> $LOGFILE 2>&1  
 elif [[ $RUN_C2 == "empire" ]]; then
     # *********** Installing Empire ***************
     echo "$INFO_TAG Setting up Empire.."
@@ -82,7 +82,7 @@ elif [[ $RUN_C2 == "empire" ]]; then
     docker create -v /opt/Empire --name data empire >> $LOGFILE 2>&1
 
     echo "$INFO_TAG Running Empire by default.."
-    cd /opt/Empire && docker run -d -it -p 80:80 -p 443:443 -p 999:999 --name empire --volumes-from data empire /bin/bash >> $LOGFILE 2>&1
+    cd /opt/Empire && docker run -d -it -p 80:80 -p 443:443 -p 8443-8500:8443-8500 --name empire --volumes-from data empire /bin/bash >> $LOGFILE 2>&1
 else
     # *********** Installing Caldera ***************
     if [ -x "$(command -v docker-compose)" ]; then

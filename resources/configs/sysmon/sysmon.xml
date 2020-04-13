@@ -52,7 +52,7 @@
 				<Image condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</Image>
 				<Image condition="is">C:\WindowsAzure\Packages\GuestAgent\WindowsAzureGuestAgent.exe</Image>
 				<Image condition="is">C:\WindowsAzure\Packages\Telemetry\WindowsAzureTelemetryService.exe</Image>
-				<Image condition="is"> C:\WindowsAzure\SecAgent\WaSecAgentProv.exe</Image>
+				<Image condition="is">C:\WindowsAzure\SecAgent\WaSecAgentProv.exe</Image>
 			</NetworkConnect>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -122,7 +122,7 @@
 				<TargetImage condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</TargetImage>
 				<TargetImage condition="is">C:\windows\system32\CompatTelRunner.exe</TargetImage>
 				<TargetImage condition="beign with">C:\Packages\Plugins\</TargetImage>
-				<TargetImage condition="begin with">C:\Program Files\WindowsApps\<TargetImage>
+				<TargetImage condition="begin with">C:\Program Files\WindowsApps\</TargetImage>
 			</ProcessAccess>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
