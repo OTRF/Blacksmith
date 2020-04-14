@@ -6,6 +6,7 @@ services:
     container_name: docker-caldera
     restart: always
     environment:
+      CALDERA_RED_ADMIN_NAME: ${CALDERA_RED_ADMIN_NAME}
       CALDERA_RED_ADMIN_PASSWORD: ${CALDERA_RED_ADMIN_PASSWORD}
     ports:
       - "8888:8888"

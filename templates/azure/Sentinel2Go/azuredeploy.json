@@ -102,7 +102,7 @@
                 "description": "SSH Key to authenticate against Linux Virtual Machines. Provide the SSH rsa public key file as a string. Use \"ssh-keygen -t rsa -b 2048\" to generate your SSH key pairs."
             }
         },
-        "c2CalderaAdminPassword": {
+        "calderaC2AdminPassword": {
             "type": "securestring",
             "defaultValue": "",
             "metadata": {
@@ -538,7 +538,7 @@
                         "value": "caldera"
                     },
                     "c2AdminPassword": {
-                        "value": "[parameters('c2CalderaAdminPassword')]"
+                        "value": "[parameters('calderaC2AdminPassword')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"

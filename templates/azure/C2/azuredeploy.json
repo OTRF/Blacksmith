@@ -100,6 +100,13 @@
                 "description": "C2 framework to deploy"
             }
         },
+        "c2AdminUserName": {
+            "type": "string",
+            "defaultValue": "admin",
+            "metadata": {
+                "description": "admin user name for C2 interface"
+            }
+        },
         "c2AdminPassword": {
             "type": "securestring",
             "defaultValue": "",
@@ -400,7 +407,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {},
                 "protectedSettings": {
-                    "commandToExecute": "[if(empty(parameters('c2AdminPassword')), concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework')), concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework'), ' ', '-p', ' ', parameters('c2AdminPassword')))]",
+                    "commandToExecute": "[if(empty(parameters('c2AdminPassword')), concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework'), ' ', '-u', ' ', parameters('c2AdminUserName')), concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework'), ' ', '-u', ' ', parameters('c2AdminUserName'), ' ', '-p', ' ', parameters('c2AdminPassword')))]",
                     "fileUris": [
                         "[variables('c2SetupScript')]"
                     ]

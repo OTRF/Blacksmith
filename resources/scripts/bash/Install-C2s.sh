@@ -20,6 +20,7 @@ usage(){
     echo "Usage: $0 [option...]" >&2
     echo
     echo "   -r         run a specific C2 server (empire or covenant or caldera)"
+    echo "   -u         C2 admin user name (optional)"
     echo "   -p         C2 admin password (optional)"
     echo "   -h         help menu"
     echo
@@ -30,11 +31,12 @@ usage(){
 }
 
 # ************ Command Options **********************
-while getopts r:p:h option
+while getopts r:u:p:h option
 do
     case "${option}"
     in
         r) RUN_C2=$OPTARG;;
+        u) ADMIN_USER_NAME=$OPTARG;;
         p) ADMIN_PASSWORD=$OPTARG;;
         h) usage;;
         \?) usage;;
@@ -102,6 +104,7 @@ else
 
     #U Updating Caldera dmin password
     export CALDERA_RED_ADMIN_PASSWORD=$ADMIN_PASSWORD
+    export CALDERA_RED_ADMIN_NAME=$ADMIN_USER_NAME
 
     docker-compose -f /opt/Caldera/docker-compose-caldera.yml up --build -d
 fi
