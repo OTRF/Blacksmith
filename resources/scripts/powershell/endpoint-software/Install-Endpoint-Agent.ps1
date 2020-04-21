@@ -43,7 +43,7 @@ if($EndpointAgent -eq "Sysmon")
     # Downloading Sysmon Configuration
     write-Host "Downloading Sysmon config.."
     $SysmonFile = "C:\ProgramData\sysmon.xml"
-    $SysmonConfigUrl = "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/resources/configs/sysmon/sysmon.xml"
+    $SysmonConfigUrl = "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/resources/configs/sysmon/sysmon.xml"
     $wc.DownloadFile($SysmonConfigUrl, $SysmonFile)
     if (!(Test-Path $SysmonFile)){ Write-Error "File $SysmonFile does not exist" -ErrorAction Stop }
 
@@ -101,7 +101,7 @@ else
     }
 
     # Download SilkServiceConfig.xml
-    $SilkServiceConfigUrl = "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/configs/SilkETW/SilkServiceConfig.xml"
+    $SilkServiceConfigUrl = "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/configs/SilkETW/SilkServiceConfig.xml"
 
     $OutputFile = Split-Path $SilkServiceConfigUrl -leaf
     $SilkServiceConfigPath = "C:\ProgramData\$FileName\v8\SilkService\SilkServiceConfig.xml"

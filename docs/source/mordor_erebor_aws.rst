@@ -1,6 +1,14 @@
 Erebor CloudFormation Deployment
 ================================
 
+Pre-Requirements
+################
+
+* An existing AWS Account (Free tier is recommended)
+* AWS CLI installed
+* EC2 Key Pair Available
+* 20 mins of your day
+
 Pre-Deployment
 ##############
 

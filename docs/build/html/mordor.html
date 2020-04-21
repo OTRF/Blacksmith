@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Shire CloudFormation Deployment" href="mordor_shire.html" />
-    <link rel="prev" title="AWS EC2 Key Pairs" href="aws_ec2_keys.html" /> 
+    <link rel="next" title="Shire CloudFormation Deployment" href="mordor_shire_aws.html" />
+    <link rel="prev" title="Azure CLI Installation" href="azure_cli_setup.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -83,21 +83,24 @@
               <p class="caption"><span class="caption-text">Getting Started:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="aws_setup.html">AWS Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure_setup.html">Azure Setup</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Available Templates:</span></p>
+<p class="caption"><span class="caption-text">Available Deployments:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Mordor Environments</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#templates">Templates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#pre-requirements">Pre-Requirements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#environments">Environments</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="mordor_shire.html">The Shire</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mordor_erebor.html">Erebor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mordor-shire">Mordor Shire</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mordor_shire_aws.html">AWS</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mordor-erebor">Mordor Erebor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mordor_erebor_aws.html">AWS</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="silketw.html">SilkETW</a></li>
 <li class="toctree-l1"><a class="reference internal" href="attack_website.html">ATT&amp;CK Website</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sentinel2go.html">Sentinel2Go</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Licenses:</span></p>
 <ul>
@@ -171,68 +174,39 @@
 <p>The mordor project provides pre-recorded datasets to the community to expedite the analytics validation process and allow hunters to learn more about adversarial techniques.
 Each Mordor environment was designed to replicate a very small network with the essential devices to colllect information from adversarial activities.
 The Blacksmith project maintains the design and code to deploy custom mordor network environments to simulate adversarial techniques and export all the data generated.</p>
-<p>The project provides the following templates and parameter files for a more dynamic build:</p>
-<div class="section" id="templates">
-<h2>Templates<a class="headerlink" href="#templates" title="Permalink to this headline">¶</a></h2>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 22%" />
-<col style="width: 78%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Template</p></th>
-<th class="head"><p>Format</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Mordor-EC2-Network</p></td>
-<td><p><a class="reference external" href="https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-templates/ec2-network-template.json">JSON</a></p></td>
-</tr>
-<tr class="row-odd"><td><p>Mordor-HELK-Server</p></td>
-<td><p><a class="reference external" href="https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-templates/helk-server-template.json">JSON</a></p></td>
-</tr>
-<tr class="row-even"><td><p>Mordor-C2-Server</p></td>
-<td><p><a class="reference external" href="https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-templates/c2-server-template.json">JSON</a></p></td>
-</tr>
-<tr class="row-odd"><td><p>Mordor-Windows-DC</p></td>
-<td><p><a class="reference external" href="https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-templates/windows-dc-template.json">JSON</a></p></td>
-</tr>
-<tr class="row-even"><td><p>Mordor-Windows-Servers</p></td>
-<td><p><a class="reference external" href="https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-templates/windows-servers-template.json">JSON</a></p></td>
-</tr>
-<tr class="row-odd"><td><p>Mordor-Windows-Workstations</p></td>
-<td><p><a class="reference external" href="https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-templates/windows-workstations-template.json">JSON</a></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="pre-requirements">
-<h2>Pre-Requirements<a class="headerlink" href="#pre-requirements" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>An existing AWS Account (Free tier is recommended)</p></li>
-<li><p>AWS CLI installed</p></li>
-<li><p>EC2 Key Pair Available</p></li>
-<li><p>20 mins of your day</p></li>
-</ul>
-</div>
-<div class="section" id="environments">
-<h2>Environments<a class="headerlink" href="#environments" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mordor-shire">
+<h2>Mordor Shire<a class="headerlink" href="#mordor-shire" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/mordor-shire-network.png"><img alt="Erebor" src="_images/mordor-shire-network.png" style="width: 560.4px; height: 308.09999999999997px;" /></a>
+<p>This mordor environment was designed to replicate a very small network with the essential devices to colllect information from adversarial activities.
+This environment is a Windows environment with several Windows event providers enabled and Sysmon deployed.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="mordor_shire.html">The Shire</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="mordor_shire.html#pre-deployment">Pre-Deployment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mordor_shire.html#automatic-deployment">Automatic Deployment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mordor_shire.html#monitor-stack-build-logs">Monitor Stack Build Logs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mordor_shire.html#connect-to-instances">Connect to Instances</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mordor_shire.html#delete-stacks">Delete Stacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mordor_shire_aws.html">AWS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mordor_shire_aws.html#pre-requirements">Pre-Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_shire_aws.html#pre-deployment">Pre-Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_shire_aws.html#automatic-deployment">Automatic Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_shire_aws.html#monitor-stack-build-logs">Monitor Stack Build Logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_shire_aws.html#connect-to-instances">Connect to Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_shire_aws.html#delete-stacks">Delete Stacks</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="mordor_erebor.html">Erebor</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="mordor_erebor.html#pre-deployment">Pre-Deployment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mordor_erebor.html#automatic-deployment">Automatic Deployment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mordor_erebor.html#monitor-stack-build-logs">Monitor Stack Build Logs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mordor_erebor.html#connect-to-instances">Connect to Instances</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mordor_erebor.html#delete-stacks">Delete Stacks</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="mordor-erebor">
+<h2>Mordor Erebor<a class="headerlink" href="#mordor-erebor" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/mordor-erebor-network.png"><img alt="Erebor" src="_images/mordor-erebor-network.png" style="width: 569.1px; height: 305.4px;" /></a>
+<p>This mordor environment was designed to replicate a very small network with the essential devices to colllect information from adversarial activities.
+This environment is a Windows environment with SilkETW running on every endpoints to collect ETW telemetry via the event log.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mordor_erebor_aws.html">AWS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mordor_erebor_aws.html#pre-requirements">Pre-Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_erebor_aws.html#pre-deployment">Pre-Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_erebor_aws.html#automatic-deployment">Automatic Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_erebor_aws.html#monitor-stack-build-logs">Monitor Stack Build Logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_erebor_aws.html#connect-to-instances">Connect to Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_erebor_aws.html#delete-stacks">Delete Stacks</a></li>
 </ul>
 </li>
 </ul>
@@ -248,10 +222,10 @@ The Blacksmith project maintains the design and code to deploy custom mordor net
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="mordor_shire.html" class="btn btn-neutral float-right" title="Shire CloudFormation Deployment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="mordor_shire_aws.html" class="btn btn-neutral float-right" title="Shire CloudFormation Deployment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="aws_ec2_keys.html" class="btn btn-neutral float-left" title="AWS EC2 Key Pairs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="azure_cli_setup.html" class="btn btn-neutral float-left" title="Azure CLI Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

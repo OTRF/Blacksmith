@@ -1,136 +1,66 @@
-Shire CloudFormation Deployment
-===============================
+Mordor Shire
+============
 
-Pre-Deployment
+.. image:: _static/mordor-shire.png
+    :alt: Erebor
+    :scale: 30%
+
+This mordor environment was designed to replicate a very small network with the essential devices to colllect information from adversarial activities.
+This environment is a Windows environment.
+
+Network Design
 ##############
 
-First, make sure you **git clone** the main repo:
-
-.. code-block:: console
-
-    $ git clone https://github.com/hunters-forge/Blacksmith
-    $ cd Blacksmith/aws/mordor/
-
-Update Parameters File
-**********************
-
-You can update the parameters applied to the whole environment in the following folder:
-
-.. code-block:: console
-
-    $ cd cfn-parameters/shire
-
-Most of them are already filled out for you to build the official standard environment that the mordor project uses.
-However, you must upate the following parametes:
-
-* Parameter File: **ec2-network-parameters**, Parameter value for key: **RestrictLocation** (this is the public IP address that you want to whitelist for external connections)
-* Parameter File: **All other parameters files**, Parameter value for key: **KeyName** (Pair Key Name you created for your stacks. Check the AWS EC2 Key Pairs document in this wiki)
-
-Automatic Deployment
-####################
-
-You will just have to run the script named **deploy-mordor.sh** with the arguments **-e 'shire'** as shown below in the Blacksmith/aws/mordor/ path
-
-.. code-block:: console
-
-    $ cd ../
-    $ ./deploy-mordor.sh -e 'shire'
-
-Monitor Stack Build Logs
-########################
-
-AWS CLI View
-************
-
-The aws cloudformation list-stacks command returns summary information about any of your running or deleted stacks, including the name, stack identifier, template, and status.
-
-.. code-block:: console
-
-    $ aws --region us-east-1 cloudformation list-stacks --stack-status-filter CREATE_COMPLETE
-
-The aws cloudformation describe-stacks command provides information on your running stacks.
-You can use an option to filter results on a stack name.
-This command returns information about the stack, including the name, stack identifier, and status. 
-
-.. code-block:: console
-
-    $ aws --region us-east-1 cloudformation describe-stack-events --stack-name MordorWindowsWorkstationsStack
-
-AWS CloudFormation Console
-**************************
-
-You can use the AWS CloudFormation console to see all your stacks, their events, templates uploaded and more.
-
-.. image:: _static/CFN-Services-CloudFormation.png
-    :alt: The Shire
+.. image:: _static/mordor-shire-network.png
+    :alt: Erebor
     :scale: 30%
 
-All the templates that you sent over to AWS will start being processed immediately
+Endpoints To Users
+##################
 
-.. image:: _static/CFN-Stacks-Console.png
-    :alt: The Shire
-    :scale: 30%
+| Platform  | Version     | Purpose       | FQDN                | IP Address    | Main User     |
+|:---|:---|:---|:---|:---|:---|
+| Windows   | Win 2019    | DC            | HFDC01.shire.com    | 172.18.39.5   | Administrator |
+| Windows   | Win 10      | Client        | HR001.shire.com     | 172.18.39.106 | nmartha       | 
+| Windows   | Win 10      | Client        | IT001.shire.com     | 172.18.39.105 | pgustavo      |
+| Windows   | Win 10      | Client        | ACCT001.shire.com   | 172.18.39.100 | lrodriguez    |
+| Windows   | Win 2019    | Log Collector | WECServer.shire.com | 172.18.39.102 | Administrator |
+| Windows   | Win 2019    | File Server   | FILE001.shire.com   | 172.18.39.103 | Administrator |
+| Linux     | Ubuntu 18   | Data Analysis | HELK                | 172.18.39.6   | ubuntu        |
+| Linux     | Ubuntu 18   | Red Team C2   | RTO                 | 172.18.39.8   | ubuntu        |
+ 
 
-You can click on each stack and get more information about the deployment
+## Windows Users Information
 
-.. image:: _static/CFN-Stack-Workstations-Events.png
-    :alt: The Shire
-    :scale: 30%
+|FirstName |LastName |Sam |Department |JobTitle |Password |Identity |
+|---|---|---|---|---|---|---|
+|Norah |Martha |nmartha |Human Resources |HR Director |S@l@m3!123 |Users |
+|Pedro |Gustavo |pgustavo |IT Support |CIO |W1n1!2019 |Domain Admins |
+|Lucho |Rodriguez |lrodriguez |Accounting |VP |T0d@y!2019 |Users |
+|Sysmon |MS |sysmonsvc |IT Support |Service Account |Buggy!1122 |Users |
+|Administrator||Administrator|||P1ls3n!|Users|
 
-You can also see the specific template mapped to each stack
+## HELK User Information
 
-.. image:: _static/CFN-Stack-Workstations-Template.png
-    :alt: The Shire
-    :scale: 30%
+You can update the HELK's password in the [HELK's paramaters file](https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-parameters/shire/helk-server-parameters.json) used to deploy the environment.
+This file is hosted by the project [Blacksmith](https://github.com/hunters-forge/Blacksmith) since it is the official repo for all the templates used to deploy every mordor environment.
 
-Once a stack is complete you will be able to see it sending a successful signal back to the management console
+* Default Username: helk
+* Default Password: hunt1ng!
 
-.. image:: _static/CFN-Stack-DC-Complete.png
-    :alt: The Shire
-    :scale: 30%
+## Data Sources Collected
 
-Once all your instances are up and running you will be able to see them via the CloudFormation and the EC2 instances dashboard
+### Windows Security Auditing
 
-.. image:: _static/CFN-Stacks-AllComplete.png
-    :alt: The Shire
-    :scale: 30%
+* https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-files/scripts/default/Set-Auditing.ps1
 
-.. image:: _static/CFN-EC2-Running.png
-    :alt: The Shire
-    :scale: 30%
+### Sysmon Auditing
 
-Connect to Instances
-####################
+Sysmon Configuration:
 
-SSH (Linux)
-***********
+* https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-files/configs/shire/shire_sysmon.xml
 
-.. code-block:: console
+## Environment Deployment
 
-    $ ssh -v -i <Private Key File>.pem ubuntu@<public-DNS-name>
-
-
-RDP (Windows)
-*************
-
-.. image:: _static/CFN-Stack-DC-AD.png
-    :alt: The Shire
-    :scale: 30%
-
-Browser (HELK & Covenant C2)
-****************************
-
-.. image:: _static/CFN-Stack-HELK-Kibana.png
-    :alt: The Shire
-    :scale: 30%
-
-.. image:: _static/CFN-Stack-C2-Covenant.png
-    :alt: The Shire
-    :scale: 30%
-
-Delete Stacks
-#############
-
-.. code-block:: console
-
-    $ aws --region us-east-1 cloudformation delete-stack --stack-name MordorWindowsServersStack
+The [Blacksmith Project](https://blacksmith.readthedocs.io/en/latest/) is responsible for deploying this environment.
+Therefore, you can follow the instructions provided in [here](https://blacksmith.readthedocs.io/en/latest/mordor_shire.html)

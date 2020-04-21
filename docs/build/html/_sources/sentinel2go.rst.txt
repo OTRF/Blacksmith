@@ -1,0 +1,47 @@
+Sentinel To-Go
+==============
+
+Sentinel To-Go is a project that expedites the deployment of a Microsoft Azure Sentinel cloud solution without having to write sequence of programming commands to create it.
+It leverages Azure Resource Manager (ARM) templates to orchestrate, create and deploy the infrastructure declaratively and in a consistent manner.
+The main goal of the project is to empower security researchers to deploy, learn and perform research with Microsoft Azure Sentinel. 
+
+Mordor Shire
+############
+
+.. image:: _static/mordor-shire-network.png
+    :alt: Erebor
+    :scale: 30%
+
+This mordor environment was designed to replicate a very small network with the essential devices to colllect information from adversarial activities.
+This environment is a Windows environment with several Windows event providers enabled and Sysmon deployed.
+
+.. toctree::
+   :maxdepth: 2
+
+   AWS <mordor_shire_aws>
+   Azure <mordor_shire_azure>
+
+Mordor Erebor
+#############
+
+.. image:: _static/mordor-erebor-network.png
+    :alt: Erebor
+    :scale: 30%
+
+This mordor environment was designed to replicate a very small network with the essential devices to colllect information from adversarial activities.
+This environment is a Windows environment with SilkETW running on every endpoints to collect ETW telemetry via the event log.
+
+.. toctree::
+   :maxdepth: 2
+
+   AWS <mordor_erebor_aws>
+   Azure <mordor_erebor_azure>
+
+
+Since we are deploying a Linux VM to host our Logstash server, I set up the VM to use an SSH rsa public key and disabled password authentication for security reasons. Use the following commands in your local computer terminal to generate your SSH key pairs if you have not done it yet.
+mkdir ~/.ssh/authorized_keys
+ssh-keygen -t rsa -b 2048 -f ~/.ssh/authorized_keys/mykey
+Those commands will generate two keys. Later, you will need to copy the contents of the public key file for one of the parameters in the ARM template.
+
+In macOS you can use the following command to copy it:
+ cat ~/.ssh/authorized_keys/mykey.pub | pbcopy

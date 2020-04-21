@@ -6,10 +6,10 @@
 The Blacksmith Project
 ======================
 
-The Blacksmit project focuses on providing dynamic easy-to-use templates for security researches to model and provision resources needed to automatically deploy applications in the cloud.
-It currently leverages "`AWS CloudFormation <https://aws.amazon.com/cloudformation/>`_" to model infrastructure and architecture of applications in AWS.
-Even though the goal is to deploy resources in the cloud, the project also hosts Docker files to deploy container-based applications.
-Those docker containers can then be also used with resources in the cloud to expedite deployment.
+The Blacksmith project focuses on providing dynamic easy-to-use templates for security researches to model 
+and provision resources to automatically deploy applications and small networks in the cloud. It currently 
+leverages `AWS CloudFormation <https://aws.amazon.com/cloudformation/>`_ and `Microsoft Azure Resource Manager (ARM) <https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/overview>`_
+templates to implement infrastructure as code for cloud solutions.
 
 Goals
 *****
@@ -18,21 +18,23 @@ Goals
 * Translate favorite applications or tools into cloud templates for developing and testing.
 * Replicate research environments for training purposes
 * Learn more about AWS CloudFormation
+* Learn more about Microsoft's Azure Resource Manager (ARM) templates
 
 .. toctree::
    :maxdepth: 2
    :caption: Getting Started:
 
    AWS Setup <aws_setup>
-   Azure Setup <azure_cli_setup>
+   Azure Setup <azure_setup>
 
 .. toctree::
    :maxdepth: 2
-   :caption: Available Templates:
+   :caption: Available Projects:
 
-   Mordor Environments <mordor>
+   Mordor Labs <mordor_labs>
    SilkETW <silketw>
    ATT&CK Website <attack_website>
+   Azure Sentinel2Go <azure_sentinel2go>
 
 .. toctree::
    :maxdepth: 2

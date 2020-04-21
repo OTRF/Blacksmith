@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="AWS Account Creation" href="aws_account_setup.html" />
+    <link rel="next" title="AWS CLI Installation" href="aws_cli_setup.html" />
     <link rel="prev" title="The Blacksmith Project" href="index.html" /> 
 </head>
 
@@ -85,21 +85,26 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">AWS Setup</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#aws-cloudformation">AWS CloudFormation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#aws-free-tier-account">AWS Free Tier Account</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="aws_account_setup.html">Account Creation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="aws_cli_setup.html">AWS CLI Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#aws-account-creation">AWS Account Creation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-iam-user">Add IAM User</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aws-cli">AWS CLI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="aws_cli_setup.html">Installation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="aws_ec2_keys.html">EC2 Key Pairs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="azure_cli_setup.html">Azure Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure_setup.html">Azure Setup</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Available Templates:</span></p>
+<p class="caption"><span class="caption-text">Available Projects:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="mordor.html">Mordor Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mordor_labs.html">Mordor Labs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="silketw.html">SilkETW</a></li>
 <li class="toctree-l1"><a class="reference internal" href="attack_website.html">ATT&amp;CK Website</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure_sentinel2go.html">Azure Sentinel2Go</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Licenses:</span></p>
 <ul>
@@ -170,7 +175,7 @@
             
   <div class="section" id="amazon-web-services-setup">
 <h1>Amazon Web Services Setup<a class="headerlink" href="#amazon-web-services-setup" title="Permalink to this headline">¶</a></h1>
-<p>The Blacksmith project leverages Amazon Web Services (AWS) to host and manage the infrastructure that is created through the templates provided.
+<p>The Blacksmith project leverages Amazon Web Services (AWS) to host and manage the infrastructure that is created through the Cloud Formation (CFN) templates provided.
 Also, it uses CloudFormation to describe and provision all the infrastructure resources in AWS.</p>
 <div class="section" id="aws-cloudformation">
 <h2>AWS CloudFormation<a class="headerlink" href="#aws-cloudformation" title="Permalink to this headline">¶</a></h2>
@@ -194,31 +199,49 @@ Remember that you are charged <strong>ONLY</strong> for the services that you us
 Part of the sign-up procedure involves receiving a phone call and entering a verification code on the phone keypad.
 Note your AWS account ID and information.</p>
 <p>For the purpose of this project, remember that you will have to follow all those steps below <strong>ONCE</strong> in order to set up your local AWS environment.</p>
+<div class="section" id="aws-account-creation">
+<h3>AWS Account Creation<a class="headerlink" href="#aws-account-creation" title="Permalink to this headline">¶</a></h3>
+<p>To access and use any service offered by AWS, you must first create an AWS account at <a class="reference external" href="http://aws.amazon.com">http://aws.amazon.com</a>.</p>
+<ul class="simple">
+<li><p>Follow these instructions: <a class="reference external" href="https://portal.aws.amazon.com/billing/signup">https://portal.aws.amazon.com/billing/signup</a>.</p></li>
+</ul>
+</div>
+<div class="section" id="add-iam-user">
+<h3>Add IAM User<a class="headerlink" href="#add-iam-user" title="Permalink to this headline">¶</a></h3>
+<p>It is not best practices to use your root AWS account for development.
+Therefore, I highly recommend to add an IAM user to your account and use it whilte testing and using the templates provided by this project.</p>
+<ul class="simple">
+<li><p>Follow these instructions: <a class="reference external" href="https://docs.aws.amazon.com/en_pv/IAM/latest/UserGuide/id_users_create.html">https://docs.aws.amazon.com/en_pv/IAM/latest/UserGuide/id_users_create.html</a></p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="aws-cli">
+<h2>AWS CLI<a class="headerlink" href="#aws-cli" title="Permalink to this headline">¶</a></h2>
+<p>The AWS Command Line Interface (CLI) is a unified tool to manage your AWS services.
+With just one tool to download and configure, you can control multiple AWS services from the command line and automate them through scripts.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="aws_account_setup.html">Account Creation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="aws_account_setup.html#add-iam-user">Add IAM User</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="aws_cli_setup.html">AWS CLI Setup</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="aws_cli_setup.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="aws_cli_setup.html#pip-install">PIP Install</a></li>
 <li class="toctree-l2"><a class="reference internal" href="aws_cli_setup.html#configure-aws-creds">Configure AWS Creds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="aws_cli_setup.html#references">References</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="aws_ec2_keys.html">EC2 Key Pairs</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="aws_ec2_keys.html#create-key-pair">Create Key Pair</a></li>
 <li class="toctree-l2"><a class="reference internal" href="aws_ec2_keys.html#verify-key">Verify Key</a></li>
 <li class="toctree-l2"><a class="reference internal" href="aws_ec2_keys.html#update-key-permissions">Update Key Permissions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="aws_ec2_keys.html#references">References</a></li>
 </ul>
 </li>
 </ul>
 </div>
+</div>
 <div class="section" id="references">
-<h3>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h3>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://aws.amazon.com/cloudformation/">https://aws.amazon.com/cloudformation/</a></p></li>
 </ul>
-</div>
 </div>
 </div>
 
@@ -230,7 +253,7 @@ Note your AWS account ID and information.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="aws_account_setup.html" class="btn btn-neutral float-right" title="AWS Account Creation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="aws_cli_setup.html" class="btn btn-neutral float-right" title="AWS CLI Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral float-left" title="The Blacksmith Project" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

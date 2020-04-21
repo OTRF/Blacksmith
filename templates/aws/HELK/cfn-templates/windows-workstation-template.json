@@ -112,22 +112,22 @@
                                 }
                             },
                             "c:\\cfn\\scripts\\Prepare-Box.ps1": {
-                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/HELK/cfn-files/scripts/default/Prepare-Box.ps1"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/aws/HELK/cfn-files/scripts/default/Prepare-Box.ps1"
                             },
                             "c:\\cfn\\scripts\\Set-StaticIP.ps1": {
-                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/HELK/cfn-files/scripts/default/Set-StaticIP.ps1"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/aws/HELK/cfn-files/scripts/default/Set-StaticIP.ps1"
                             },
                             "c:\\cfn\\scripts\\Rename-Computer.ps1": {
-                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/HELK/cfn-files/scripts/default/Rename-Computer.ps1"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/aws/HELK/cfn-files/scripts/default/Rename-Computer.ps1"
                             },
                             "c:\\cfn\\scripts\\Set-Auditing.ps1": {
-                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/HELK/cfn-files/scripts/default/Set-Auditing.ps1"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/aws/HELK/cfn-files/scripts/default/Set-Auditing.ps1"
                             },
                             "c:\\cfn\\scripts\\Install-Endpoint-Agent.ps1": {
-                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/HELK/cfn-files/scripts/default/Install-Endpoint-Agent.ps1"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/aws/HELK/cfn-files/scripts/default/Install-Endpoint-Agent.ps1"
                             },
                             "c:\\cfn\\scripts\\Install-Shipper.ps1": {
-                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/HELK/cfn-files/scripts/default/Install-Shipper.ps1"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/aws/HELK/cfn-files/scripts/default/Install-Shipper.ps1"
                             }
                         },
                         "services": {

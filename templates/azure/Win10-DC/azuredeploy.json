@@ -1,64 +1,82 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "utcValue": {
             "type": "string",
-            "defaultValue": "[utcNow()]",
             "metadata": {
                 "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
-            }
+            },
+            "defaultValue": "[utcNow()]"
         },
         "adminUsername": {
             "type": "string",
             "metadata": {
-                "description": "Username for the Virtual Machine."
+                "description": "Username for all Virtual Machines."
             }
         },
         "adminPassword": {
             "type": "securestring",
             "metadata": {
-                "description": "Password for the Virtual Machine."
+                "description": "Password for all Virtual Machines. If you want to enable SSH key authentication for Linux virtual machines, make sure you set the 'linuxAuthenticationType' parameter to 'sshPublicKey' and provide the SSH Public Key string via the 'linuxAdminKey' parameter."
             }
         },
         "windowsDesktopSKU": {
             "type": "string",
-            "defaultValue": "19h2-pro",
-            "allowedValues": [
-                "19h1-pro",
-                "19h2-pro",
-                "rs4-pro",
-                "rs5-pro"
-            ],
+            "defaultValue": "19h1-pro",
             "metadata": {
-                "description": "The Windows version for the Desktop VM. This will pick a fully patched image of this given Windows version."
+                "description": "The Windows virtual machine release distribution. (e.g. Version 1903 -> 19h1)"
             }
+        },
+        "windowsDesktopVersion": {
+            "type": "string",
+            "defaultValue": "18362.720.2003120536",
+            "allowedValues": [
+                "18362.720.2003120536"
+            ]
         },
         "windowsDesktopVmSize": {
             "type": "string",
             "defaultValue": "Standard_B2s",
             "allowedValues": [
-                "Standard_A2",
-                "Standard_A3",
                 "Standard_B2s",
-                "Standard_B2ms",
-                "Standard_A2_v2",
-                "Standard_A4_v2"
+                "Standard_A3"
             ],
             "metadata": {
                 "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
             }
         },
-        "allowedIPAddresses": {
+        "windowsServerSKU": {
             "type": "string",
+            "defaultValue": "2019-Datacenter",
+            "allowedValues": [
+                "2019-Datacenter"
+            ],
             "metadata": {
-                "description": "The sourceAddressPrefixes allowed to connect to this deployment"
-            },
-            "defaultValue": "*"
+                "description": "The Windows version for the Server VM. This will pick a fully patched image of this given Windows version."
+            }
+        },
+        "windowsServerVersion": {
+            "type": "string",
+            "defaultValue": "latest",
+            "allowedValues": [
+                "latest"
+            ]
+        },
+        "windowsServerVmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B2s",
+            "allowedValues": [
+                "Standard_B2s",
+                "Standard_A3"
+            ],
+            "metadata": {
+                "description": "Size of the virtual machine."
+            }
         },
         "_artifactsLocation": {
             "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/",
+            "defaultValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/",
             "metadata": {
                 "description": "The location of resources, such as templates and DSC modules, that the template depends on"
             }
@@ -70,32 +88,23 @@
                 "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
             }
         },
-        "enableMonitoringAgent": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to enable the Microsoft Log Analytics Monitoring agent? "
-            }
-        },
-        "enableSysmon": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to install Sysmon on the endpoint?"
-            }
-        },
-        "workspaceId": {
+        "domainFQDN": {
             "type": "string",
-            "defaultValue": "",
             "metadata": {
-                "description": "Log analytics workspace ID"
+                "description": "The FQDN of the Active Directory Domain to be created"
             }
         },
-        "workspaceKey": {
+        "allowedIPAddresses": {
             "type": "string",
-            "defaultValue": "",
             "metadata": {
-                "description": "Log analytics workspace keys"
+                "description": "The sourceAddressPrefixes allowed to connect to this deployment"
+            }
+        },
+        "domainJoinOptions": {
+            "type": "int",
+            "defaultValue": 3,
+            "metadata": {
+                "description": "Set of bit flags that define the join options. Default value of 3 is a combination of NETSETUP_JOIN_DOMAIN (0x00000001) & NETSETUP_ACCT_CREATE (0x00000002) i.e. will join the domain and create the account on the domain. For more information see https://msdn.microsoft.com/en-us/library/aa392154(v=vs.85).aspx"
             }
         },
         "location": {
@@ -108,64 +117,85 @@
     },
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
-        "virtualNetworkName": "vnet-winvm",
-        "subnetName": "snet-LAN",
+        
+        "virtualNetworkName": "vnet-mordor-apt29",
+        "subnetName": "snet-mordor-apt29",
         "virtualNetworkAddressRange": "192.168.0.0/16",
-        "subnetRange": "192.168.1.0/24",
+        "subnetRange": "192.168.0.0/24",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
-        "VMName": "VM001",
-        "VMPrivateIPAddress": "192.168.1.10",
-        "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Windows1-VM/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
+
+        "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('environments/attack-evals/apt29/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
         "prepareBoxScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Prepare-Box.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSecurityAuditingScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Set-SecurityAuditing.ps1', parameters('_artifactsLocationSasToken')))]",
+        "setIPAddressScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Set-StaticIP.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSACLScript": "https://raw.githubusercontent.com/hunters-forge/Set-AuditRule/master/Set-AuditRule.ps1",
-        "installAgentScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/endpoint-software/Install-Endpoint-Agent.ps1', parameters('_artifactsLocationSasToken')))]"
+        "installAgentScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/endpoint-software/Install-Endpoint-Agent.ps1', parameters('_artifactsLocationSasToken')))]",
+        
+        "endpoints": [
+            {
+                "tag": "domainController",
+                "vmName": "DC01",
+                "os": "windows",
+                "ipAddress": "192.168.0.10",
+                "vmSize": "[parameters('windowsServerVmSize')]",
+                "publisher": "MicrosoftWindowsServer",
+                "offer": "WindowsServer",
+                "sku": "[parameters('windowsServerSKU')]",
+                "version": "[parameters('windowsServerVersion')]"
+            },
+            {
+                "tag": "workstation",
+                "vmName": "VICTIM01",
+                "os": "windows",
+                "ipAddress": "192.168.0.40",
+                "vmSize": "[parameters('windowsDesktopVmSize')]",
+                "publisher": "MicrosoftWindowsDesktop",
+                "offer": "Windows-10",
+                "sku": "[parameters('windowsDesktopSKU')]",
+                "version": "[parameters('windowsDesktopVersion')]"
+            }
+        ],
+
+        "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
+        "ouPath": "[concat('OU=Workstations; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]"
     },
     "resources": [
         {
+            "name": "[variables('storageAccountName')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2018-11-01",
-            "name": "[variables('storageAccountName')]",
             "location": "[parameters('location')]",
             "sku": {
                 "name": "Standard_LRS"
             },
             "kind": "Storage",
-            "properties": {
-            }
+            "properties": {}
         },
         {
-            "comments": "Default Network Security Group for Windows endpoints",
-            "type": "Microsoft.Network/networkSecurityGroups",
-            "apiVersion": "2019-08-01",
-            "name": "nsg-rdpallow",
-            "location": "[parameters('location')]",
+            "name": "deployEventHub",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
             "properties": {
-                "securityRules": [
-                    {
-                        "name": "default-allow-3389",
-                        "properties": {
-                            "priority": 100,
-                            "access": "Allow",
-                            "direction": "Inbound",
-                            "destinationPortRange": "3389",
-                            "protocol": "Tcp",
-                            "sourcePortRange": "*",
-                            "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
-                            "destinationAddressPrefix": "*"
-                        }
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsBlacksmithLocation'), concat('templates/azure/EventHub/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "projectName": {
+                        "value": "MordorData"
+                    },
+                    "eventHubSku": {
+                        "value": "Standard"
                     }
-                ]
+                }
             }
         },
         {
+            "name": "[variables('virtualNetworkName')]",
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2019-02-01",
-            "name": "[variables('virtualNetworkName')]",
             "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-rdpallow')]"
-            ],
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
@@ -176,45 +206,74 @@
                     {
                         "name": "[variables('subnetName')]",
                         "properties": {
-                            "addressPrefix": "[variables('subnetRange')]",
-                            "networkSecurityGroup": {
-                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-rdpallow')]"
-                            }
+                            "addressPrefix": "[variables('subnetRange')]"
                         }
                     }
                 ]
             }
         },
         {
-            "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2018-11-01",
-            "name": "[concat('pip-', variables('VMName'))]",
-            "location": "[parameters('location')]",
+            "name": "nsgRules",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
             "properties": {
-                "publicIPAllocationMethod": "Dynamic",
-                "dnsSettings": {
-                    "domainNameLabel": "[toLower(concat('pip-', variables('VMName'), '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('environments/attack-evals/apt29/nestedtemplates/nsg-rules.json', parameters('_artifactsLocationSasToken')))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "allowedIPAddresses": {
+                        "value": "[parameters('allowedIPAddresses')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
                 }
             }
         },
         {
+            "name": "[concat('pip-', variables('endpoints')[copyIndex()].vmName)]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2018-11-01",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "vmPublicIPCopy",
+                "count": "[length(variables('endpoints'))]"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[toLower(concat(variables('endpoints')[copyIndex()].vmName, '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
+                }
+            }
+        },
+        {
+            "name": "[concat('nic-', variables('endpoints')[copyIndex()].vmName)]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-11-01",
-            "name": "[concat('nic-', variables('VMName'))]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('VMName')))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('endpoints')[copyIndex()].vmName))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
+                "nsgRules"
             ],
+            "copy": {
+                "name": "vmNetworkInterfaceCopy",
+                "count": "[length(variables('endpoints'))]"
+            },
             "properties": {
+                "networkSecurityGroup": {
+                    "id": "[if(equals(variables('endpoints')[copyIndex()].os, 'linux'), reference('nsgRules').outputs.linuxNSGID.value, reference('nsgRules').outputs.windowsNSGID.value)]"
+                },
                 "ipConfigurations": [
                     {
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAllocationMethod": "Static",
-                            "privateIPAddress": "[variables('VMPrivateIPAddress')]",
+                            "privateIPAddress": "[variables('endpoints')[copyIndex()].ipAddress]",
                             "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('VMName')))]"
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('endpoints')[copyIndex()].vmName))]"
                             },
                             "subnet": {
                                 "id": "[variables('subnetRef')]"
@@ -225,29 +284,33 @@
             }
         },
         {
+            "name": "[variables('endpoints')[copyIndex()].vmName]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2018-10-01",
-            "name": "[variables('VMName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('VMName')))]"
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('endpoints')[copyIndex()].vmName))]"
             ],
+            "copy": {
+                "name": "vmVMCopy",
+                "count": "[length(variables('endpoints'))]"
+            },
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "[parameters('windowsDesktopVmSize')]"
+                    "vmSize": "[variables('endpoints')[copyIndex()].vmSize]"
                 },
                 "osProfile": {
-                    "computerName": "[variables('VMName')]",
+                    "computerName": "[variables('endpoints')[copyIndex()].vmName]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "publisher": "MicrosoftWindowsDesktop",
-                        "offer": "Windows-10",
-                        "sku": "[parameters('windowsDesktopSKU')]",
-                        "version": "latest"
+                        "publisher": "[variables('endpoints')[copyIndex()].publisher]",
+                        "offer": "[variables('endpoints')[copyIndex()].offer]",
+                        "sku": "[variables('endpoints')[copyIndex()].sku]",
+                        "version": "[variables('endpoints')[copyIndex()].version]"
                     },
                     "osDisk": {
                         "createOption": "FromImage"
@@ -263,7 +326,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('VMName')))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('endpoints')[copyIndex()].vmName))]"
                         }
                     ]
                 },
@@ -273,36 +336,197 @@
                         "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
                     }
                 }
-            }
+            },
+            "resources": [
+                {
+                    "condition": "[equals(variables('endpoints')[copyIndex()].os, 'windows')]",
+                    "name": "AntiMalware",
+                    "type": "extensions",
+                    "apiVersion": "2019-07-01",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Compute/virtualMachines/', variables('endpoints')[copyIndex()].vmName)]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Azure.Security",
+                        "type": "IaaSAntimalware",
+                        "typeHandlerVersion": "1.3",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                            "AntimalwareEnabled": "true",
+                            "Exclusions": {
+                                "Extensions": ".bat;.exe;.dll;.ps1;.sct;.vbs;.hta;.py;.tmp;.csproj;.scr",
+                                "Paths": "C:\\ProgramData\\;C:\\Packages\\Plugins\\;C:\\Program Files\\;C:\\Users\\;C:\\Windows\\Temp\\;C:\\Windows\\System32\\",
+                                "Processes": "powershell.exe"
+                            },
+                            "RealtimeProtectionEnabled": "false",
+                            "ScheduledScanSettings": {
+                                "isEnabled": "false",
+                                "scanType": "Quick",
+                                "day": "8",
+                                "time": "120"
+                            }
+                        },
+                        "protectedSettings": null
+                    }
+                }
+            ]
         },
         {
-            "condition": "[parameters('enableMonitoringAgent')]",
+            "condition": "[equals(variables('endpoints')[copyIndex()].tag, 'workstation')]",
+            "name": "[concat(variables('endpoints')[copyIndex()].vmName, '/SetUpWKS')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-03-01",
-            "name": "[concat(variables('VMName'), '/OMSExtension')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('endpoints')[copyIndex()].vmName)]"
             ],
+            "copy": {
+                "name": "InitialSetUpWKSCopy",
+                "count": "[length(variables('endpoints'))]"
+            },
             "properties": {
-                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                "type": "MicrosoftMonitoringAgent",
-                "typeHandlerVersion": "1.0",
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.8",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    "workspaceId": "[parameters('workspaceId')]"
+                    "fileUris": [
+                        "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/azure/Win10-DC/scripts/initialSetup.ps1",
+                        "[variables('prepareBoxScript')]",
+                        "[variables('setSecurityAuditingScript')]",
+                        "[variables('installAgentScript')]",
+                        "[variables('setIPAddressScript')]",
+                        "[variables('setSACLScript')]"
+                    ],
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./initialSetup.ps1', ' ', '-ServerAddresses', ' ', variables('endpoints')[0].ipAddress)]"
+                },
+                "protectedSettings": {}
+            }
+        },
+        {
+            "name": "[concat(variables('endpoints')[0].vmName, '/SetUpDC')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-03-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/', variables('endpoints')[0].vmName)]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.8",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/azure/Win10-DC/scripts/initialSetup.ps1",
+                        "[variables('prepareBoxScript')]",
+                        "[variables('setSecurityAuditingScript')]",
+                        "[variables('installAgentScript')]",
+                        "[variables('setSACLScript')]"
+                    ],
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./initialSetup.ps1',' ', '-SetDC')]"
+                },
+                "protectedSettings": {}
+            }
+        },
+        {
+            "condition": "[and(equals(variables('endpoints')[copyIndex()].os, 'linux'), not(equals(variables('endpoints')[copyIndex()].tag, 'redirector')))]",
+            "name": "[concat(variables('endpoints')[copyIndex()].vmName, '/DockerExtension')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-03-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('endpoints')[copyIndex()].vmName)]"
+            ],
+            "copy": {
+                "name": "DockerExtCopy",
+                "count": "[length(variables('endpoints'))]"
+            },
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "DockerExtension",
+                "typeHandlerVersion": "1.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {},
+                "protectedSettings": {}
+            }
+        },
+        {
+            "name": "[concat(variables('endpoints')[0].vmName, '/CreateADForest')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-03-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpoints')[0].vmName, 'AntiMalware')]",
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpoints')[0].vmName, 'SetUpDC')]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.19",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "ModulesUrl": "[uri(parameters('_artifactsBlacksmithLocation'), concat('resources/scripts/powershell/active-directory/DSC/CreateADPDC.zip', parameters('_artifactsLocationSasToken')))]",
+                    "ConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
+                    "Properties": {
+                        "DomainName": "[parameters('domainFQDN')]",
+                        "AdminCreds": {
+                            "UserName": "[parameters('adminUsername')]",
+                            "Password": "PrivateSettingsRef:AdminPassword"
+                        }
+                    }
                 },
                 "protectedSettings": {
-                    "workspaceKey": "[parameters('workspaceKey')]"
+                    "Items": {
+                        "AdminPassword": "[parameters('adminPassword')]"
+                    }
                 }
             }
         },
         {
-            "name": "WindowsSetup",
+            "name": "UpdateVNetDNS",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpoints')[0].vmName, 'CreateADForest')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('environments/attack-evals/apt29/nestedtemplates/vnet-dns-server.json', parameters('_artifactsLocationSasToken')))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "virtualNetworkName": {
+                        "value": "[variables('virtualNetworkName')]"
+                    },
+                    "virtualNetworkAddressRange": {
+                        "value": "[variables('virtualNetworkAddressRange')]"
+                    },
+                    "subnetName": {
+                        "value": "[variables('subnetName')]"
+                    },
+                    "subnetRange": {
+                        "value": "[variables('subnetRange')]"
+                    },
+                    "DNSServerAddress": {
+                        "value": [
+                            "[variables('endpoints')[0].ipAddress]"
+                        ]
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "adSetup",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "dependsOn": [
+                "UpdateVNetDNS"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -312,21 +536,21 @@
                 },
                 "parameters": {
                     "extensionName": {
-                        "value": "SetupWinVM"
+                        "value": "SetUpWKS"
                     },
                     "commandToExecute": {
-                        "value": "powershell -ExecutionPolicy Unrestricted -File ./initialSetup.ps1"
+                        "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-AD.ps1',' ', '-domainFQDN',' ', parameters('domainFQDN'),' ', '-dcVMName',' ', variables('endpoints')[0].vmName)]"
                     },
                     "fileUris": {
                         "value": [
-                            "https://raw.githubusercontent.com/hunters-forge/Blacksmith/azure/templates/azure/mordor/scripts/initialSetup.ps1",
-                            "[variables('prepareBoxScript')]",
-                            "[variables('setSecurityAuditingScript')]",
-                            "[variables('setSACLScript')]"
+                            "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/azure/Win10-DC/scripts/Set-AD.ps1",
+                            "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/Set-OUs.ps1', parameters('_artifactsLocationSasToken')))]",
+                            "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/Add-DomainUsers.ps1', parameters('_artifactsLocationSasToken')))]",
+                            "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Set-AuditSAMRemoteCalls.ps1', parameters('_artifactsLocationSasToken')))]"
                         ]
                     },
                     "vmName": {
-                        "value": "[variables('VMName')]"
+                        "value": "[variables('endpoints')[0].vmName]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -335,40 +559,54 @@
             }
         },
         {
-            "condition": "[parameters('enableSysmon')]",
-            "name": "WindowsSysmon",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-05-01",
+            "condition": "[equals(variables('endpoints')[copyIndex()].tag, 'workstation')]",
+            "name": "[concat(variables('endpoints')[copyIndex()].vmName,'/joindomain')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-03-01",
+            "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('VMName'))]"
+                "InitialSetUpWKSCopy",
+                "adSetup",
+                "UpdateVNetDNS"
             ],
+            "copy": {
+                "name": "vmDomainJoinCopy",
+                "count": "[length(variables('endpoints'))]"
+            },
             "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('customScriptExTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
+                "publisher": "Microsoft.Compute",
+                "type": "JsonADDomainExtension",
+                "typeHandlerVersion": "1.3",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "Name": "[parameters('domainFQDN')]",
+                    "User": "[concat(parameters('domainFQDN'), '\\', parameters('adminUsername'))]",
+                    "Restart": "true",
+                    "Options": "[parameters('domainJoinOptions')]",
+                    "OUPath": "[variables('ouPath')]"
                 },
-                "parameters": {
-                    "extensionName": {
-                        "value": "SetupWinVM"
-                    },
-                    "commandToExecute": {
-                        "value": "powershell -ExecutionPolicy Unrestricted -File ./installAgentScript.ps1 -EndpointAgent Sysmon"
-                    },
-                    "fileUris": {
-                        "value": [
-                            "[variables('installAgentScript')]"
-                        ]
-                    },
-                    "vmName": {
-                        "value": "[variables('VMName')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
+                "protectedSettings": {
+                    "Password": "[parameters('adminPassword')]"
                 }
             }
         }
     ],
-    "outputs": {}
+    "outputs": {
+        "vmName": {
+            "type": "string",
+            "value": "[variables('vmName')]"
+        },
+        "vmResourceID": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "value": "[variables('virtualNetworkName')]"
+        },
+        "virtualNetworkId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+        }
+    }
 }

@@ -1,0 +1,266 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Mordor Labs &mdash; Blacksmith 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Shire CloudFormation Deployment" href="mordor_shire_aws.html" />
+    <link rel="prev" title="Azure CLI Installation" href="azure_cli_setup.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Blacksmith
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="aws_setup.html">AWS Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure_setup.html">Azure Setup</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Available Projects:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Mordor Labs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mordor-shire">Mordor Shire</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mordor_shire_aws.html">AWS</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mordor-erebor">Mordor Erebor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mordor_erebor_aws.html">AWS</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="silketw.html">SilkETW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="attack_website.html">ATT&amp;CK Website</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure_sentinel2go.html">Azure Sentinel2Go</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Licenses:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">GNU General Public License V3</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Blacksmith</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Mordor Labs</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/mordor_labs.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="mordor-labs">
+<h1>Mordor Labs<a class="headerlink" href="#mordor-labs" title="Permalink to this headline">¶</a></h1>
+<p>The mordor project provides pre-recorded datasets to the community to expedite the analytics validation process and allow hunters to learn more about adversarial techniques.
+Each Mordor environment was designed to replicate a very small network with the essential devices to colllect information from adversarial activities.
+The Blacksmith project maintains the design and code to deploy custom mordor network environments to simulate adversarial techniques and export all the data generated.</p>
+<div class="section" id="mordor-shire">
+<h2>Mordor Shire<a class="headerlink" href="#mordor-shire" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/mordor-shire-network.png"><img alt="Erebor" src="_images/mordor-shire-network.png" style="width: 560.4px; height: 308.09999999999997px;" /></a>
+<p>This mordor environment was designed to replicate a very small network with the essential devices to colllect information from adversarial activities.
+This environment is a Windows environment with several Windows event providers enabled and Sysmon deployed.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mordor_shire_aws.html">AWS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mordor_shire_aws.html#pre-requirements">Pre-Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_shire_aws.html#pre-deployment">Pre-Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_shire_aws.html#automatic-deployment">Automatic Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_shire_aws.html#monitor-stack-build-logs">Monitor Stack Build Logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_shire_aws.html#connect-to-instances">Connect to Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_shire_aws.html#delete-stacks">Delete Stacks</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="mordor-erebor">
+<h2>Mordor Erebor<a class="headerlink" href="#mordor-erebor" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/mordor-erebor-network.png"><img alt="Erebor" src="_images/mordor-erebor-network.png" style="width: 569.1px; height: 305.4px;" /></a>
+<p>This mordor environment was designed to replicate a very small network with the essential devices to colllect information from adversarial activities.
+This environment is a Windows environment with SilkETW running on every endpoints to collect ETW telemetry via the event log.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mordor_erebor_aws.html">AWS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mordor_erebor_aws.html#pre-requirements">Pre-Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_erebor_aws.html#pre-deployment">Pre-Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_erebor_aws.html#automatic-deployment">Automatic Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_erebor_aws.html#monitor-stack-build-logs">Monitor Stack Build Logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_erebor_aws.html#connect-to-instances">Connect to Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_erebor_aws.html#delete-stacks">Delete Stacks</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mordor_shire_aws.html" class="btn btn-neutral float-right" title="Shire CloudFormation Deployment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="azure_cli_setup.html" class="btn btn-neutral float-left" title="Azure CLI Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Roberto Rodriguez
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

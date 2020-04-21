@@ -61,6 +61,6 @@ For more information, see: `Error: Unprotected Private Key File <https://docs.aw
     $ chmod 400 aws-ubuntu-key.pem
 
 References
-**********
+##########
 
 * https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html

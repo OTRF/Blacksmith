@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Mordor Environments" href="mordor.html" />
-    <link rel="prev" title="AWS EC2 Key Pairs" href="aws_ec2_keys.html" /> 
+    <link rel="next" title="Mordor Labs" href="mordor_labs.html" />
+    <link rel="prev" title="Azure Setup" href="azure_setup.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -83,20 +83,32 @@
               <p class="caption"><span class="caption-text">Getting Started:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="aws_setup.html">AWS Setup</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Azure Setup</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#homebrew">Homebrew</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#configure-azure-login">Configure Azure Login</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="azure_setup.html">Azure Setup</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#azure-resource-manager">Azure Resource Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#arm-templates">ARM Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#azure-free-account">Azure Free Account</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="azure_setup.html#azure-cli">Azure CLI</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#homebrew">Homebrew</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configure-azure-login">Configure Azure Login</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#set-default-active-subscription">Set Default Active Subscription</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#set-default-location">Set Default Location</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#create-resource-group">Create Resource Group</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#references">References</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Available Templates:</span></p>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Available Projects:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="mordor.html">Mordor Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mordor_labs.html">Mordor Labs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="silketw.html">SilkETW</a></li>
 <li class="toctree-l1"><a class="reference internal" href="attack_website.html">ATT&amp;CK Website</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure_sentinel2go.html">Azure Sentinel2Go</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Licenses:</span></p>
 <ul>
@@ -146,6 +158,8 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
+          <li><a href="azure_setup.html">Azure Setup</a> &raquo;</li>
+        
       <li>Azure CLI Installation</li>
     
     
@@ -167,9 +181,6 @@
             
   <div class="section" id="azure-cli-installation">
 <h1>Azure CLI Installation<a class="headerlink" href="#azure-cli-installation" title="Permalink to this headline">¶</a></h1>
-<p>The Azure command-line interface (CLI) is Microsoft’s cross-platform command-line experience for managing Azure resources.
-The Azure CLI is available to install in Windows, maxOS and Linux environments.
-It can also be run in a Docker container and Azure Cloud Shell.</p>
 <p>You can learn more about the installation steps for each platform here <a class="reference external" href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest">https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest</a></p>
 <div class="section" id="homebrew">
 <h2>Homebrew<a class="headerlink" href="#homebrew" title="Permalink to this headline">¶</a></h2>
@@ -228,13 +239,56 @@ You will be redirected to your default browser to log in with your Azure account
 <span class="go">.....</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="set-default-active-subscription">
+<h2>Set Default Active Subscription<a class="headerlink" href="#set-default-active-subscription" title="Permalink to this headline">¶</a></h2>
+<p>If you have more than one subscription mapped to your azure account, you can set a specific subscription to be the default current active subscription.</p>
+<p>First, I recommend to always retrieve up-to-date subscriptions from server</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> az account list --refresh
+</pre></div>
+</div>
+<p>Then, set active subscription</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> az account <span class="nb">set</span> --subscription xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+</pre></div>
+</div>
+</div>
+<div class="section" id="set-default-location">
+<h2>Set Default Location<a class="headerlink" href="#set-default-location" title="Permalink to this headline">¶</a></h2>
+<p>You can configure the default location (eastus, westus, etc) using:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> az configure --defaults <span class="nv">location</span><span class="o">=</span>&lt;location&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-resource-group">
+<h2>Create Resource Group<a class="headerlink" href="#create-resource-group" title="Permalink to this headline">¶</a></h2>
+<p>A container that holds related resources for an Azure solution.
+The resource group includes those resources that you want to manage as a group.
+I recommend for you to create your own resource group for research purposes and deploy everything in there.
+You can do that with the following commands:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> az group create --location eastus --resource-group MyResourceGroup
+</pre></div>
+</div>
+<p>You can check if the group exists with the following commands:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> az group exists --resource-group MyResourceGroup
+</pre></div>
+</div>
+<p>Or you can also go to your azure portal at <a class="reference external" href="https://portal.azure.com/">https://portal.azure.com/</a> &gt; Resource Groups and look for the name of the resource group you just created:</p>
+<a class="reference internal image-reference" href="_images/Azure-Resource-Group.png"><img alt="Azure Resource Group" src="_images/Azure-Resource-Group.png" style="width: 675.0px; height: 291.6px;" /></a>
+<p>You can also delete your resource group with the following commands:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> az group delete --resource-group MyResourceGroup
+</pre></div>
+</div>
+<p>At this point you should be ready to deploy Azure ARM templates.</p>
+</div>
 <div class="section" id="references">
-<h3>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h3>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-macos?view=azure-cli-latest">https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-macos?view=azure-cli-latest</a></p></li>
 <li><p><a class="reference external" href="https://docs.microsoft.com/en-us/cli/azure/reference-index?view=azure-cli-latest#az-login">https://docs.microsoft.com/en-us/cli/azure/reference-index?view=azure-cli-latest#az-login</a></p></li>
+<li><p><a class="reference external" href="https://docs.microsoft.com/en-us/cli/azure/account?view=azure-cli-latest">https://docs.microsoft.com/en-us/cli/azure/account?view=azure-cli-latest</a></p></li>
+<li><p><a class="reference external" href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview">https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/overview</a></p></li>
+<li><p><a class="reference external" href="https://docs.microsoft.com/en-us/cli/azure/group?view=azure-cli-latest#az-group-create">https://docs.microsoft.com/en-us/cli/azure/group?view=azure-cli-latest#az-group-create</a></p></li>
 </ul>
-</div>
 </div>
 </div>
 
@@ -246,10 +300,10 @@ You will be redirected to your default browser to log in with your Azure account
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="mordor.html" class="btn btn-neutral float-right" title="Mordor Environments" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="mordor_labs.html" class="btn btn-neutral float-right" title="Mordor Labs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="aws_ec2_keys.html" class="btn btn-neutral float-left" title="AWS EC2 Key Pairs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="azure_setup.html" class="btn btn-neutral float-left" title="Azure Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

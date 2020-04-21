@@ -120,7 +120,7 @@
                                 }
                             },
                             "/etc/cfn/Install-C2s.sh": {
-                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/scripts/default/Install-C2s.sh"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/aws/mordor/cfn-files/scripts/default/Install-C2s.sh"
                             }
                         }, 
                         "commands" : {

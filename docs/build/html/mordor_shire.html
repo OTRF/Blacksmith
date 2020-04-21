@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Shire CloudFormation Deployment &mdash; Blacksmith 0.0.1 documentation</title>
+  <title>Mordor Shire &mdash; Blacksmith 0.0.1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Erebor CloudFormation Deployment" href="mordor_erebor.html" />
+    <link rel="next" title="Mordor AWS" href="mordor_aws.html" />
     <link rel="prev" title="Mordor Environments" href="mordor.html" /> 
 </head>
 
@@ -83,22 +83,26 @@
               <p class="caption"><span class="caption-text">Getting Started:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="aws_setup.html">AWS Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure_cli_setup.html">Azure Setup</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Available Templates:</span></p>
+<p class="caption"><span class="caption-text">Available Deployments:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="mordor.html">Mordor Environments</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="mordor.html#templates">Templates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mordor.html#pre-requirements">Pre-Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor.html#pre-deployment">Pre-Deployment</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="mordor.html#environments">Environments</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">The Shire</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#pre-deployment">Pre-Deployment</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#automatic-deployment">Automatic Deployment</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#monitor-stack-build-logs">Monitor Stack Build Logs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#connect-to-instances">Connect to Instances</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#delete-stacks">Delete Stacks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#network-design">Network Design</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#endpoints-to-users">Endpoints To Users</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="mordor_erebor.html">Erebor</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="mordor.html#templates">Templates</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="mordor_aws.html">AWS</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="mordor_aws.html#pre-requirements">Pre-Requirements</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="mordor_aws.html#environments">Environments</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -156,7 +160,7 @@
         
           <li><a href="mordor.html">Mordor Environments</a> &raquo;</li>
         
-      <li>Shire CloudFormation Deployment</li>
+      <li>Mordor Shire</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -175,92 +179,57 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="shire-cloudformation-deployment">
-<h1>Shire CloudFormation Deployment<a class="headerlink" href="#shire-cloudformation-deployment" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="pre-deployment">
-<h2>Pre-Deployment<a class="headerlink" href="#pre-deployment" title="Permalink to this headline">¶</a></h2>
-<p>First, make sure you <strong>git clone</strong> the main repo:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git clone https://github.com/hunters-forge/Blacksmith
-<span class="gp">$</span> <span class="nb">cd</span> Blacksmith/aws/mordor/
-</pre></div>
+  <div class="section" id="mordor-shire">
+<h1>Mordor Shire<a class="headerlink" href="#mordor-shire" title="Permalink to this headline">¶</a></h1>
+<a class="reference internal image-reference" href="_images/mordor-shire.png"><img alt="Erebor" src="_images/mordor-shire.png" style="width: 384.0px; height: 158.4px;" /></a>
+<p>This mordor environment was designed to replicate a very small network with the essential devices to colllect information from adversarial activities.
+This environment is a Windows environment.</p>
+<div class="section" id="network-design">
+<h2>Network Design<a class="headerlink" href="#network-design" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="_images/mordor-shire-network.png"><img alt="Erebor" src="_images/mordor-shire-network.png" style="width: 560.4px; height: 308.09999999999997px;" /></a>
 </div>
-<div class="section" id="update-parameters-file">
-<h3>Update Parameters File<a class="headerlink" href="#update-parameters-file" title="Permalink to this headline">¶</a></h3>
-<p>You can update the parameters applied to the whole environment in the following folder:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">cd</span> cfn-parameters/shire
-</pre></div>
+<div class="section" id="endpoints-to-users">
+<h2>Endpoints To Users<a class="headerlink" href="#endpoints-to-users" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Platform  | Version     | Purpose       | FQDN                | IP Address    | Main User     |</div>
 </div>
-<p>Most of them are already filled out for you to build the official standard environment that the mordor project uses.
-However, you must upate the following parametes:</p>
+<p><a href="#id1"><span class="problematic" id="id2">|:---|</span></a>:—<a href="#id3"><span class="problematic" id="id4">|:---|</span></a>:—<a href="#id5"><span class="problematic" id="id6">|:---|</span></a>:—|
+| Windows   | Win 2019    | DC            | HFDC01.shire.com    | 172.18.39.5   | Administrator |
+| Windows   | Win 10      | Client        | HR001.shire.com     | 172.18.39.106 | nmartha       |
+| Windows   | Win 10      | Client        | IT001.shire.com     | 172.18.39.105 | pgustavo      |
+| Windows   | Win 10      | Client        | ACCT001.shire.com   | 172.18.39.100 | lrodriguez    |
+| Windows   | Win 2019    | Log Collector | WECServer.shire.com | 172.18.39.102 | Administrator |
+| Windows   | Win 2019    | File Server   | FILE001.shire.com   | 172.18.39.103 | Administrator |
+| Linux     | Ubuntu 18   | Data Analysis | HELK                | 172.18.39.6   | ubuntu        |
+| Linux     | Ubuntu 18   | Red Team C2   | RTO                 | 172.18.39.8   | ubuntu        |</p>
+<p>## Windows Users Information</p>
+<p><a href="#id7"><span class="problematic" id="id8">|FirstName |LastName |Sam |Department |JobTitle |Password |Identity |
+|---|</span></a>—<a href="#id9"><span class="problematic" id="id10">|---|</span></a>—<a href="#id11"><span class="problematic" id="id12">|---|</span></a>—<a href="#id13"><span class="problematic" id="id14">|---|</span></a>
+<a href="#id15"><span class="problematic" id="id16">|Norah |Martha |nmartha |Human Resources |HR Director |S&#64;l&#64;m3!123 |Users |
+|Pedro |Gustavo |pgustavo |IT Support |CIO |W1n1!2019 |Domain Admins |
+|Lucho |Rodriguez |lrodriguez |Accounting |VP |T0d&#64;y!2019 |Users |
+|Sysmon |MS |sysmonsvc |IT Support |Service Account |Buggy!1122 |Users |
+|Administrator||Administrator|||P1ls3n!|Users|</span></a></p>
+<p>## HELK User Information</p>
+<p>You can update the HELK’s password in the [HELK’s paramaters file](<a class="reference external" href="https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-parameters/shire/helk-server-parameters.json">https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-parameters/shire/helk-server-parameters.json</a>) used to deploy the environment.
+This file is hosted by the project [Blacksmith](<a class="reference external" href="https://github.com/hunters-forge/Blacksmith">https://github.com/hunters-forge/Blacksmith</a>) since it is the official repo for all the templates used to deploy every mordor environment.</p>
 <ul class="simple">
-<li><p>Parameter File: <strong>ec2-network-parameters</strong>, Parameter value for key: <strong>RestrictLocation</strong> (this is the public IP address that you want to whitelist for external connections)</p></li>
-<li><p>Parameter File: <strong>All other parameters files</strong>, Parameter value for key: <strong>KeyName</strong> (Pair Key Name you created for your stacks. Check the AWS EC2 Key Pairs document in this wiki)</p></li>
+<li><p>Default Username: helk</p></li>
+<li><p>Default Password: hunt1ng!</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="automatic-deployment">
-<h2>Automatic Deployment<a class="headerlink" href="#automatic-deployment" title="Permalink to this headline">¶</a></h2>
-<p>You will just have to run the script named <strong>deploy-mordor.sh</strong> with the arguments <strong>-e ‘shire’</strong> as shown below in the Blacksmith/aws/mordor/ path</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">cd</span> ../
-<span class="gp">$</span> ./deploy-mordor.sh -e <span class="s1">&#39;shire&#39;</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="monitor-stack-build-logs">
-<h2>Monitor Stack Build Logs<a class="headerlink" href="#monitor-stack-build-logs" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="aws-cli-view">
-<h3>AWS CLI View<a class="headerlink" href="#aws-cli-view" title="Permalink to this headline">¶</a></h3>
-<p>The aws cloudformation list-stacks command returns summary information about any of your running or deleted stacks, including the name, stack identifier, template, and status.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> aws --region us-east-1 cloudformation list-stacks --stack-status-filter CREATE_COMPLETE
-</pre></div>
-</div>
-<p>The aws cloudformation describe-stacks command provides information on your running stacks.
-You can use an option to filter results on a stack name.
-This command returns information about the stack, including the name, stack identifier, and status.</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> aws --region us-east-1 cloudformation describe-stack-events --stack-name MordorWindowsWorkstationsStack
-</pre></div>
-</div>
-</div>
-<div class="section" id="aws-cloudformation-console">
-<h3>AWS CloudFormation Console<a class="headerlink" href="#aws-cloudformation-console" title="Permalink to this headline">¶</a></h3>
-<p>You can use the AWS CloudFormation console to see all your stacks, their events, templates uploaded and more.</p>
-<a class="reference internal image-reference" href="_images/CFN-Services-CloudFormation.png"><img alt="The Shire" src="_images/CFN-Services-CloudFormation.png" style="width: 496.79999999999995px; height: 335.4px;" /></a>
-<p>All the templates that you sent over to AWS will start being processed immediately</p>
-<a class="reference internal image-reference" href="_images/CFN-Stacks-Console.png"><img alt="The Shire" src="_images/CFN-Stacks-Console.png" style="width: 599.6999999999999px; height: 211.79999999999998px;" /></a>
-<p>You can click on each stack and get more information about the deployment</p>
-<a class="reference internal image-reference" href="_images/CFN-Stack-Workstations-Events.png"><img alt="The Shire" src="_images/CFN-Stack-Workstations-Events.png" style="width: 599.6999999999999px; height: 293.09999999999997px;" /></a>
-<p>You can also see the specific template mapped to each stack</p>
-<a class="reference internal image-reference" href="_images/CFN-Stack-Workstations-Template.png"><img alt="The Shire" src="_images/CFN-Stack-Workstations-Template.png" style="width: 599.6999999999999px; height: 293.09999999999997px;" /></a>
-<p>Once a stack is complete you will be able to see it sending a successful signal back to the management console</p>
-<a class="reference internal image-reference" href="_images/CFN-Stack-DC-Complete.png"><img alt="The Shire" src="_images/CFN-Stack-DC-Complete.png" style="width: 599.6999999999999px; height: 305.4px;" /></a>
-<p>Once all your instances are up and running you will be able to see them via the CloudFormation and the EC2 instances dashboard</p>
-<a class="reference internal image-reference" href="_images/CFN-Stacks-AllComplete.png"><img alt="The Shire" src="_images/CFN-Stacks-AllComplete.png" style="width: 599.6999999999999px; height: 211.79999999999998px;" /></a>
-<a class="reference internal image-reference" href="_images/CFN-EC2-Running.png"><img alt="The Shire" src="_images/CFN-EC2-Running.png" style="width: 599.6999999999999px; height: 216.6px;" /></a>
-</div>
-</div>
-<div class="section" id="connect-to-instances">
-<h2>Connect to Instances<a class="headerlink" href="#connect-to-instances" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="ssh-linux">
-<h3>SSH (Linux)<a class="headerlink" href="#ssh-linux" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ssh -v -i &lt;Private Key File&gt;.pem ubuntu@&lt;public-DNS-name&gt;
-</pre></div>
-</div>
-</div>
-<div class="section" id="rdp-windows">
-<h3>RDP (Windows)<a class="headerlink" href="#rdp-windows" title="Permalink to this headline">¶</a></h3>
-<a class="reference internal image-reference" href="_images/CFN-Stack-DC-AD.png"><img alt="The Shire" src="_images/CFN-Stack-DC-AD.png" style="width: 569.1px; height: 337.5px;" /></a>
-</div>
-<div class="section" id="browser-helk-covenant-c2">
-<h3>Browser (HELK &amp; Covenant C2)<a class="headerlink" href="#browser-helk-covenant-c2" title="Permalink to this headline">¶</a></h3>
-<a class="reference internal image-reference" href="_images/CFN-Stack-HELK-Kibana.png"><img alt="The Shire" src="_images/CFN-Stack-HELK-Kibana.png" style="width: 594.3px; height: 337.5px;" /></a>
-<a class="reference internal image-reference" href="_images/CFN-Stack-C2-Covenant.png"><img alt="The Shire" src="_images/CFN-Stack-C2-Covenant.png" style="width: 411.59999999999997px; height: 337.5px;" /></a>
-</div>
-</div>
-<div class="section" id="delete-stacks">
-<h2>Delete Stacks<a class="headerlink" href="#delete-stacks" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> aws --region us-east-1 cloudformation delete-stack --stack-name MordorWindowsServersStack
-</pre></div>
-</div>
+<p>## Data Sources Collected</p>
+<p>### Windows Security Auditing</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-files/scripts/default/Set-Auditing.ps1">https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-files/scripts/default/Set-Auditing.ps1</a></p></li>
+</ul>
+<p>### Sysmon Auditing</p>
+<p>Sysmon Configuration:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-files/configs/shire/shire_sysmon.xml">https://github.com/hunters-forge/Blacksmith/blob/master/aws/mordor/cfn-files/configs/shire/shire_sysmon.xml</a></p></li>
+</ul>
+<p>## Environment Deployment</p>
+<p>The [Blacksmith Project](<a class="reference external" href="https://blacksmith.readthedocs.io/en/latest/">https://blacksmith.readthedocs.io/en/latest/</a>) is responsible for deploying this environment.
+Therefore, you can follow the instructions provided in [here](<a class="reference external" href="https://blacksmith.readthedocs.io/en/latest/mordor_shire.html">https://blacksmith.readthedocs.io/en/latest/mordor_shire.html</a>)</p>
 </div>
 </div>
 
@@ -272,7 +241,7 @@ This command returns information about the stack, including the name, stack iden
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="mordor_erebor.html" class="btn btn-neutral float-right" title="Erebor CloudFormation Deployment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="mordor_aws.html" class="btn btn-neutral float-right" title="Mordor AWS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="mordor.html" class="btn btn-neutral float-left" title="Mordor Environments" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

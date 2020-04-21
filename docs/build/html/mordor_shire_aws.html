@@ -1,0 +1,326 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Shire CloudFormation Deployment &mdash; Blacksmith 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Erebor CloudFormation Deployment" href="mordor_erebor_aws.html" />
+    <link rel="prev" title="Mordor Labs" href="mordor_labs.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Blacksmith
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="aws_setup.html">AWS Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure_setup.html">Azure Setup</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Available Projects:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="mordor_labs.html">Mordor Labs</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="mordor_labs.html#mordor-shire">Mordor Shire</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">AWS</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pre-requirements">Pre-Requirements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pre-deployment">Pre-Deployment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#automatic-deployment">Automatic Deployment</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#monitor-stack-build-logs">Monitor Stack Build Logs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#connect-to-instances">Connect to Instances</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#delete-stacks">Delete Stacks</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_labs.html#mordor-erebor">Mordor Erebor</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="silketw.html">SilkETW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="attack_website.html">ATT&amp;CK Website</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure_sentinel2go.html">Azure Sentinel2Go</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Licenses:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">GNU General Public License V3</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Blacksmith</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="mordor_labs.html">Mordor Labs</a> &raquo;</li>
+        
+      <li>Shire CloudFormation Deployment</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/mordor_shire_aws.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="shire-cloudformation-deployment">
+<h1>Shire CloudFormation Deployment<a class="headerlink" href="#shire-cloudformation-deployment" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="pre-requirements">
+<h2>Pre-Requirements<a class="headerlink" href="#pre-requirements" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>An existing AWS Account (Free tier is recommended)</p></li>
+<li><p>AWS CLI installed</p></li>
+<li><p>EC2 Key Pair Available</p></li>
+<li><p>20 mins of your day</p></li>
+</ul>
+</div>
+<div class="section" id="pre-deployment">
+<h2>Pre-Deployment<a class="headerlink" href="#pre-deployment" title="Permalink to this headline">¶</a></h2>
+<p>First, make sure you <strong>git clone</strong> the main repo:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git clone https://github.com/hunters-forge/Blacksmith
+<span class="gp">$</span> <span class="nb">cd</span> Blacksmith/aws/mordor/
+</pre></div>
+</div>
+<div class="section" id="update-parameters-file">
+<h3>Update Parameters File<a class="headerlink" href="#update-parameters-file" title="Permalink to this headline">¶</a></h3>
+<p>You can update the parameters applied to the whole environment in the following folder:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">cd</span> cfn-parameters/shire
+</pre></div>
+</div>
+<p>Most of them are already filled out for you to build the official standard environment that the mordor project uses.
+However, you must upate the following parametes:</p>
+<ul class="simple">
+<li><p>Parameter File: <strong>ec2-network-parameters</strong>, Parameter value for key: <strong>RestrictLocation</strong> (this is the public IP address that you want to whitelist for external connections)</p></li>
+<li><p>Parameter File: <strong>All other parameters files</strong>, Parameter value for key: <strong>KeyName</strong> (Pair Key Name you created for your stacks. Check the AWS EC2 Key Pairs document in this wiki)</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="automatic-deployment">
+<h2>Automatic Deployment<a class="headerlink" href="#automatic-deployment" title="Permalink to this headline">¶</a></h2>
+<p>You will just have to run the script named <strong>deploy-mordor.sh</strong> with the arguments <strong>-e ‘shire’</strong> as shown below in the Blacksmith/aws/mordor/ path</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">cd</span> ../
+<span class="gp">$</span> ./deploy-mordor.sh -e <span class="s1">&#39;shire&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="monitor-stack-build-logs">
+<h2>Monitor Stack Build Logs<a class="headerlink" href="#monitor-stack-build-logs" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="aws-cli-view">
+<h3>AWS CLI View<a class="headerlink" href="#aws-cli-view" title="Permalink to this headline">¶</a></h3>
+<p>The aws cloudformation list-stacks command returns summary information about any of your running or deleted stacks, including the name, stack identifier, template, and status.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> aws --region us-east-1 cloudformation list-stacks --stack-status-filter CREATE_COMPLETE
+</pre></div>
+</div>
+<p>The aws cloudformation describe-stacks command provides information on your running stacks.
+You can use an option to filter results on a stack name.
+This command returns information about the stack, including the name, stack identifier, and status.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> aws --region us-east-1 cloudformation describe-stack-events --stack-name MordorWindowsWorkstationsStack
+</pre></div>
+</div>
+</div>
+<div class="section" id="aws-cloudformation-console">
+<h3>AWS CloudFormation Console<a class="headerlink" href="#aws-cloudformation-console" title="Permalink to this headline">¶</a></h3>
+<p>You can use the AWS CloudFormation console to see all your stacks, their events, templates uploaded and more.</p>
+<a class="reference internal image-reference" href="_images/CFN-Services-CloudFormation.png"><img alt="The Shire" src="_images/CFN-Services-CloudFormation.png" style="width: 496.79999999999995px; height: 335.4px;" /></a>
+<p>All the templates that you sent over to AWS will start being processed immediately</p>
+<a class="reference internal image-reference" href="_images/CFN-Stacks-Console.png"><img alt="The Shire" src="_images/CFN-Stacks-Console.png" style="width: 599.6999999999999px; height: 211.79999999999998px;" /></a>
+<p>You can click on each stack and get more information about the deployment</p>
+<a class="reference internal image-reference" href="_images/CFN-Stack-Workstations-Events.png"><img alt="The Shire" src="_images/CFN-Stack-Workstations-Events.png" style="width: 599.6999999999999px; height: 293.09999999999997px;" /></a>
+<p>You can also see the specific template mapped to each stack</p>
+<a class="reference internal image-reference" href="_images/CFN-Stack-Workstations-Template.png"><img alt="The Shire" src="_images/CFN-Stack-Workstations-Template.png" style="width: 599.6999999999999px; height: 293.09999999999997px;" /></a>
+<p>Once a stack is complete you will be able to see it sending a successful signal back to the management console</p>
+<a class="reference internal image-reference" href="_images/CFN-Stack-DC-Complete.png"><img alt="The Shire" src="_images/CFN-Stack-DC-Complete.png" style="width: 599.6999999999999px; height: 305.4px;" /></a>
+<p>Once all your instances are up and running you will be able to see them via the CloudFormation and the EC2 instances dashboard</p>
+<a class="reference internal image-reference" href="_images/CFN-Stacks-AllComplete.png"><img alt="The Shire" src="_images/CFN-Stacks-AllComplete.png" style="width: 599.6999999999999px; height: 211.79999999999998px;" /></a>
+<a class="reference internal image-reference" href="_images/CFN-EC2-Running.png"><img alt="The Shire" src="_images/CFN-EC2-Running.png" style="width: 599.6999999999999px; height: 216.6px;" /></a>
+</div>
+</div>
+<div class="section" id="connect-to-instances">
+<h2>Connect to Instances<a class="headerlink" href="#connect-to-instances" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ssh-linux">
+<h3>SSH (Linux)<a class="headerlink" href="#ssh-linux" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ssh -v -i &lt;Private Key File&gt;.pem ubuntu@&lt;public-DNS-name&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="rdp-windows">
+<h3>RDP (Windows)<a class="headerlink" href="#rdp-windows" title="Permalink to this headline">¶</a></h3>
+<a class="reference internal image-reference" href="_images/CFN-Stack-DC-AD.png"><img alt="The Shire" src="_images/CFN-Stack-DC-AD.png" style="width: 569.1px; height: 337.5px;" /></a>
+</div>
+<div class="section" id="browser-helk-covenant-c2">
+<h3>Browser (HELK &amp; Covenant C2)<a class="headerlink" href="#browser-helk-covenant-c2" title="Permalink to this headline">¶</a></h3>
+<a class="reference internal image-reference" href="_images/CFN-Stack-HELK-Kibana.png"><img alt="The Shire" src="_images/CFN-Stack-HELK-Kibana.png" style="width: 594.3px; height: 337.5px;" /></a>
+<a class="reference internal image-reference" href="_images/CFN-Stack-C2-Covenant.png"><img alt="The Shire" src="_images/CFN-Stack-C2-Covenant.png" style="width: 411.59999999999997px; height: 337.5px;" /></a>
+</div>
+</div>
+<div class="section" id="delete-stacks">
+<h2>Delete Stacks<a class="headerlink" href="#delete-stacks" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> aws --region us-east-1 cloudformation delete-stack --stack-name MordorWindowsServersStack
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mordor_erebor_aws.html" class="btn btn-neutral float-right" title="Erebor CloudFormation Deployment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="mordor_labs.html" class="btn btn-neutral float-left" title="Mordor Labs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Roberto Rodriguez
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

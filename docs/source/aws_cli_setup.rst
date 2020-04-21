@@ -76,7 +76,7 @@ This will reduce the risk of you commiting your AWS keys in templates or other d
     Default output format [None]:
 
 References
-**********
+##########
 
 * https://docs.aws.amazon.com/cli/latest/userguide/install-linux-al2017.html
 * https://aws.amazon.com/cli/

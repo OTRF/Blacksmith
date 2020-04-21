@@ -1,7 +1,7 @@
 Amazon Web Services Setup
 =========================
 
-The Blacksmith project leverages Amazon Web Services (AWS) to host and manage the infrastructure that is created through the templates provided.
+The Blacksmith project leverages Amazon Web Services (AWS) to host and manage the infrastructure that is created through the Cloud Formation (CFN) templates provided.
 Also, it uses CloudFormation to describe and provision all the infrastructure resources in AWS.
 
 AWS CloudFormation
@@ -34,14 +34,34 @@ Note your AWS account ID and information.
 
 For the purpose of this project, remember that you will have to follow all those steps below **ONCE** in order to set up your local AWS environment.
 
+AWS Account Creation
+********************
+
+To access and use any service offered by AWS, you must first create an AWS account at http://aws.amazon.com.
+
+* Follow these instructions: https://portal.aws.amazon.com/billing/signup.
+
+Add IAM User
+************
+
+It is not best practices to use your root AWS account for development.
+Therefore, I highly recommend to add an IAM user to your account and use it whilte testing and using the templates provided by this project.
+
+* Follow these instructions: https://docs.aws.amazon.com/en_pv/IAM/latest/UserGuide/id_users_create.html
+
+AWS CLI
+#######
+
+The AWS Command Line Interface (CLI) is a unified tool to manage your AWS services.
+With just one tool to download and configure, you can control multiple AWS services from the command line and automate them through scripts.
+
 .. toctree::
    :maxdepth: 2
 
-   Account Creation <aws_account_setup>
-   AWS CLI Setup <aws_cli_setup>
+   Installation <aws_cli_setup>
    EC2 Key Pairs <aws_ec2_keys>
 
 References
-**********
+##########
 
 * https://aws.amazon.com/cloudformation/

@@ -107,19 +107,19 @@
                                 }
                             },
                             "c:\\cfn\\scripts\\Prepare-Box.ps1": {
-                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/scripts/default/Prepare-Box.ps1"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/aws/mordor/cfn-files/scripts/default/Prepare-Box.ps1"
                             },
                             "c:\\cfn\\scripts\\Set-StaticIP.ps1": {
-                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/scripts/default/Set-StaticIP.ps1"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/aws/mordor/cfn-files/scripts/default/Set-StaticIP.ps1"
                             },
                             "c:\\cfn\\scripts\\Rename-Computer.ps1": {
-                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/scripts/default/Rename-Computer.ps1"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/aws/mordor/cfn-files/scripts/default/Rename-Computer.ps1"
                             },
                             "c:\\cfn\\scripts\\Install-SilkService.ps1": {
-                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/SilkETW/cfn-files/scripts/Install-SilkService.ps1"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/aws/SilkETW/cfn-files/scripts/Install-SilkService.ps1"
                             },
                             "c:\\cfn\\scripts\\Install-Winlogbeat.ps1": {
-                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/aws/mordor/cfn-files/scripts/default/Install-Winlogbeat.ps1"
+                                "source": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/aws/mordor/cfn-files/scripts/default/Install-Winlogbeat.ps1"
                             }
                         },
                         "services": {

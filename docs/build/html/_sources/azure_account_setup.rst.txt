@@ -1,0 +1,26 @@
+Azure Account Creation
+======================
+
+Azure Free Account
+##################
+
+The Azure free account includes free access to popular Azure products for 12 months, $200 USD credit to spend for the first 30 days, and access to more than 25 products that are always free.
+This is an excellent way for new users to get started and explore.
+To sign up, you need a phone number, a credit card, and a Microsoft or GitHub account.
+Credit card information is used for identity verification only.
+You won’t be charged for any services until you upgrade.
+
+When your Free Tier expires, Azure starts charging the regular rates for any not "always-free" services and resources that you're using.
+
+To avoid charges while on the Free Tier, you must keep your usage below the `Free Tier limits <https://azure.microsoft.com/en-us/free/#new-products>`_.
+You are charged for any usage that exceeds the limits. To help you stay within the limits, you can track your Free Tier usage and set a billing alarm to notify you if you start incurring charges.
+
+* `Available Azure 12 months free services <https://azure.microsoft.com/en-us/free/#new-products>`_
+
+Remember that you are charged **ONLY** for the services that you use.
+
+The first step to using Azure is to sign up.
+You may sign up directly through Azure.com, with the help of a Microsoft representative, or through a partner.
+If you’re new to Azure, you may sign up for an Azure free account to start exploring with $200 USD free credit and free services.
+
+* Follow these instructions: https://docs.microsoft.com/en-us/learn/modules/create-an-azure-account/.

@@ -82,13 +82,14 @@
               <p class="caption"><span class="caption-text">Getting Started:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="aws_setup.html">AWS Setup</a></li>
-<li class="toctree-l1"><a class="reference internal" href="azure_cli_setup.html">Azure Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure_setup.html">Azure Setup</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Available Templates:</span></p>
+<p class="caption"><span class="caption-text">Available Projects:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="mordor.html">Mordor Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mordor_labs.html">Mordor Labs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="silketw.html">SilkETW</a></li>
 <li class="toctree-l1"><a class="reference internal" href="attack_website.html">ATT&amp;CK Website</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure_sentinel2go.html">Azure Sentinel2Go</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Licenses:</span></p>
 <ul>
@@ -159,10 +160,10 @@
             
   <div class="section" id="the-blacksmith-project">
 <h1>The Blacksmith Project<a class="headerlink" href="#the-blacksmith-project" title="Permalink to this headline">¶</a></h1>
-<p>The Blacksmit project focuses on providing dynamic easy-to-use templates for security researches to model and provision resources needed to automatically deploy applications in the cloud.
-It currently leverages “<a class="reference external" href="https://aws.amazon.com/cloudformation/">AWS CloudFormation</a>” to model infrastructure and architecture of applications in AWS.
-Even though the goal is to deploy resources in the cloud, the project also hosts Docker files to deploy container-based applications.
-Those docker containers can then be also used with resources in the cloud to expedite deployment.</p>
+<p>The Blacksmith project focuses on providing dynamic easy-to-use templates for security researches to model
+and provision resources to automatically deploy applications and small networks in the cloud. It currently
+leverages <a class="reference external" href="https://aws.amazon.com/cloudformation/">AWS CloudFormation</a> and <a class="reference external" href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/overview">Microsoft Azure Resource Manager (ARM)</a>
+templates to implement infrastructure as code for cloud solutions.</p>
 <div class="section" id="goals">
 <h2>Goals<a class="headerlink" href="#goals" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -170,6 +171,7 @@ Those docker containers can then be also used with resources in the cloud to exp
 <li><p>Translate favorite applications or tools into cloud templates for developing and testing.</p></li>
 <li><p>Replicate research environments for training purposes</p></li>
 <li><p>Learn more about AWS CloudFormation</p></li>
+<li><p>Learn more about Microsoft’s Azure Resource Manager (ARM) templates</p></li>
 </ul>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Getting Started:</span></p>
@@ -177,22 +179,26 @@ Those docker containers can then be also used with resources in the cloud to exp
 <li class="toctree-l1"><a class="reference internal" href="aws_setup.html">AWS Setup</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="aws_setup.html#aws-cloudformation">AWS CloudFormation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="aws_setup.html#aws-free-tier-account">AWS Free Tier Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="aws_setup.html#aws-cli">AWS CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="aws_setup.html#references">References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="azure_cli_setup.html">Azure Setup</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="azure_cli_setup.html#homebrew">Homebrew</a></li>
-<li class="toctree-l2"><a class="reference internal" href="azure_cli_setup.html#configure-azure-login">Configure Azure Login</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure_setup.html">Azure Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#azure-resource-manager">Azure Resource Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#arm-templates">ARM Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#azure-free-account">Azure Free Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#azure-cli">Azure CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#references">References</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Available Templates:</span></p>
+<p class="caption"><span class="caption-text">Available Projects:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="mordor.html">Mordor Environments</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="mordor.html#templates">Templates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mordor.html#pre-requirements">Pre-Requirements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mordor.html#environments">Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mordor_labs.html">Mordor Labs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mordor_labs.html#mordor-shire">Mordor Shire</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mordor_labs.html#mordor-erebor">Mordor Erebor</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="silketw.html">SilkETW</a><ul>
@@ -209,6 +215,7 @@ Those docker containers can then be also used with resources in the cloud to exp
 <li class="toctree-l2"><a class="reference internal" href="attack_website.html#deployments">Deployments</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="azure_sentinel2go.html">Azure Sentinel2Go</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
