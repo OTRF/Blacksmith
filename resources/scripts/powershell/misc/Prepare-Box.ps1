@@ -16,9 +16,6 @@ Stop-Service wuauserv
 Write-Host "Allow ICMP Traffic through firewall"
 & netsh advfirewall firewall add rule name="ALL ICMP V4" protocol=icmpv4:any,any dir=in action=allow
 
-Write-Host "Enable File and Printer Sharing"
-& netsh advfirewall firewall set rule group="File and Printer Sharing" new enable=Yes
-
 Write-Host "Enable WMI traffic through the firewall"
 & netsh advfirewall firewall set rule group="windows management instrumentation (wmi)" new enable=yes
 
@@ -28,6 +25,19 @@ $HPGuid = (Get-WmiObject -Class win32_powerplan -Namespace root\cimv2\power -Fil
 $regex = [regex]"{(.*?)}$"
 $PowerConfig = $regex.Match($HPGuid).groups[1].value 
 & powercfg -S $PowerConfig
+# Idle timeouts
+powercfg.exe -x -monitor-timeout-ac 0
+powercfg.exe -x -monitor-timeout-dc 0
+powercfg.exe -x -disk-timeout-ac 0
+powercfg.exe -x -disk-timeout-dc 0
+powercfg.exe -x -standby-timeout-ac 0
+powercfg.exe -x -standby-timeout-dc 0
+powercfg.exe -x -hibernate-timeout-ac 0
+powercfg.exe -x -hibernate-timeout-dc 0
+
+# Disable Hibernation
+Set-ItemProperty HKLM:\SYSTEM\CurrentControlSet\Control\Power\ -name HiberFileSizePercent -value 0
+Set-ItemProperty HKLM:\SYSTEM\CurrentControlSet\Control\Power\ -name HibernateEnabled -value 0
 
 # Set TimeZone
 Write-host "Setting Time Zone to Eastern Standard Time"
@@ -68,6 +78,20 @@ regKey,name,value,type
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata","PreventDeviceMetadataFromNetwork",1,"DWord"
 "HKLM:\SOFTWARE\Policies\Microsoft\FindMyDevice","AllowFindMyDevice",0,"DWord"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PreviewBuilds","AllowBuildPreview",0,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Suggested Sites","Enabled",0,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer","AllowServicePoweredQSA",0,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Explorer\AutoComplete","AutoSuggest","no","String"
+"HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Geolocation","PolicyDisableGeolocation",1,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\PhishingFilter","EnabledV9",0,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\BrowserEmulation","DisableSiteListEditing",1,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\FlipAhead","Enabled",0,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Internet Explorer\Feeds","BackgroundSyncStatus",0,"DWord"
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer","AllowOnlineTips",0,"DWord"
+"HKCU:\SOFTWARE\Microsoft\Internet Explorer\Main","Start Page","about:blank","String"
+"HKCU:\SOFTWARE\Microsoft\Internet Explorer\Control Panel","HomePage",1,"DWord"
+"HKCU:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main","DisableFirstRunCustomize",1,"DWord"
+"HKLM:\SYSTEM\CurrentControlSet\Services\LicenseManager","Start",4,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main","PreventFirstRunPage",1,"DWord"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications","NoCloudApplicationNotification",1,"DWord"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive","DisableFileSyncNGSC",1,"DWord"
 "HKLM:\SOFTWARE\Microsoft\OneDrive","PreventNetworkTrafficPreUserSignIn",1,"DWord"
@@ -97,10 +121,6 @@ $regConfig | ConvertFrom-Csv | ForEach-Object {
     Write-Host "Setting " $_.regKey
     New-ItemProperty -Path $_.regKey -Name $_.name -Value $_.value -PropertyType $_.type -force
 }
-
-# Setting WDigest to use LogonCredentials
-Write-Host "Setting WDigest to use logoncredential.."
-Set-ItemProperty -Force -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest" -Name "UseLogonCredential" -Value "1"
 
 # Additional registry configurations
 # References:
