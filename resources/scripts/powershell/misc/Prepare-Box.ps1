@@ -17,7 +17,7 @@ Write-Host "Allow ICMP Traffic through firewall"
 & netsh advfirewall firewall add rule name="ALL ICMP V4" protocol=icmpv4:any,any dir=in action=allow
 
 Write-Host "Enable File and Printer Sharing"
-& netsh firewall set service type = fileandprint mode = enable
+& netsh advfirewall firewall set rule group="File and Printer Sharing" new enable=Yes
 
 Write-Host "Enable WMI traffic through the firewall"
 & netsh advfirewall firewall set rule group="windows management instrumentation (wmi)" new enable=yes
