@@ -45,7 +45,9 @@ Norah,Martha,nmartha,Human Resources,HR Director,S@l@m3!123,Users,DomainUsers
 Pedro,Gustavo,pgustavo,IT Support,CIO,W1n1!2019,Domain Admins,DomainUsers
 Lucho,Rodriguez,lrodriguez,Accounting,VP,T0d@y!2019,Users,DomainUsers
 Stevie,Beavers,sbeavers,Sales,Agent,B1gM@c!2020,Users,DomainUsers
-Pam,Beesly,Reception,Receptionist,Fl0nk3rt0n!T0by,Users,DomainUsers
+Pam,Beesly,pbeesly,Reception,Receptionist,Fl0nk3rt0n!T0by,Users,DomainUsers
+Dwight,Schrute,dschrute,Sales,Assistant,Schrut3F@rms!B33ts,Users,DomainUsers
+Michael,Scott,mscott,Management,BestBoss,abc123!D@t3M1k3,Domain Admins,DomainUsers 
 Sysmon,MS,sysmonsvc,IT Support,Service Account,Buggy!1122,Users,DomainUsers
 "@
 
