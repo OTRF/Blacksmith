@@ -75,6 +75,14 @@ Almost every Azure environment developed under the Blacksmith's initiative uses 
 
    Setup <azure_p2s_vpn_setup>
 
+Securing Resources
+##################
+
+.. toctree::
+   :maxdepth: 2
+
+   Secure Resources <azure_secure_resources>
+
 References
 ##########
 

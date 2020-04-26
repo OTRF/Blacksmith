@@ -1,0 +1,309 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Securing Resources &mdash; Blacksmith 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Mordor Labs" href="mordor_labs.html" />
+    <link rel="prev" title="Azure P2S VPN Setup" href="azure_p2s_vpn_setup.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Blacksmith
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="aws_setup.html">AWS Setup</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="azure_setup.html">Azure Setup</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#azure-resource-manager">Azure Resource Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#arm-templates">ARM Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#azure-free-account">Azure Free Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#azure-cli">Azure CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#p2s-vpn-certificate">P2S VPN Certificate</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="azure_setup.html#securing-resources">Securing Resources</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Secure Resources</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#what-is-an-azure-blog-storage">What is an Azure Blog Storage?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#what-are-azure-storage-accounts">What are Azure Storage Accounts?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#what-are-azure-private-containers">What are Azure Private Containers?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#what-is-an-account-sas">What is an Account SAS?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deploying-an-azure-account-storage-and-a-private-container">Deploying an Azure Account Storage and a Private container</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#uploading-resources-to-private-container">Uploading Resources to Private Container</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#calling-private-resources-from-arm-templates">Calling Private Resources from ARM Templates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#references">References</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Available Projects:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mordor_labs.html">Mordor Labs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="silketw.html">SilkETW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="attack_website.html">ATT&amp;CK Website</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure_sentinel2go.html">Azure Sentinel2Go</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Licenses:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">GNU General Public License V3</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Blacksmith</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="azure_setup.html">Azure Setup</a> &raquo;</li>
+        
+      <li>Securing Resources</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/azure_secure_resources.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="securing-resources">
+<h1>Securing Resources<a class="headerlink" href="#securing-resources" title="Permalink to this headline">¶</a></h1>
+<p>Almost all resources that cannot be disclosed to the public yet while building environments for several projects under Blacksmith require restricted access configurations.
+Therefore, the project uses <a class="reference external" href="https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction">Azure storage accounts and private containers</a> to do so.
+Teams collaborating with projects under Blacksmith such as <a class="reference external" href="https://github.com/OTRF/mordor-labs">Mordor Labs</a> do it via public GitHub repositories, and it is crucial to maintain a similar level of flexibility while developing Azure Resources Manager (ARM) templates and scripts to deploy environments.
+Every resource that we believe should be restricted from public access are moved to an Azure private container in the cloud where only those with a <a class="reference external" href="https://docs.microsoft.com/en-us/azure/storage/common/storage-sas-overview">shared access signature (SAS) token</a> can access it.
+The concept of storing files in Azure is handled via <a class="reference external" href="https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction#blob-storage-resources">Azure blob storage</a> resources.</p>
+<div class="section" id="what-is-an-azure-blog-storage">
+<h2>What is an Azure Blog Storage?<a class="headerlink" href="#what-is-an-azure-blog-storage" title="Permalink to this headline">¶</a></h2>
+<p>Azure Blob storage is Microsoft’s object storage solution for the cloud. Blob storage offers three types of resources:</p>
+<ul class="simple">
+<li><p>The storage account</p></li>
+<li><p>A container in the storage account</p></li>
+<li><p>A blob in a container</p></li>
+</ul>
+</div>
+<div class="section" id="what-are-azure-storage-accounts">
+<h2>What are Azure Storage Accounts?<a class="headerlink" href="#what-are-azure-storage-accounts" title="Permalink to this headline">¶</a></h2>
+<p>A storage account provides a unique namespace in Azure for your data. Every object that you store in Azure Storage has an address that includes your unique account name.</p>
+</div>
+<div class="section" id="what-are-azure-private-containers">
+<h2>What are Azure Private Containers?<a class="headerlink" href="#what-are-azure-private-containers" title="Permalink to this headline">¶</a></h2>
+<p>A container organizes a set of blobs, similar to a directory in a file system. A storage account can include an unlimited number of containers, and a container can store an unlimited number of blobs. We can also restrict access to a container by disabling public access to it and [granting limited access using shared access signatures (SAS)](<a class="reference external" href="https://docs.microsoft.com/en-us/azure/storage/common/storage-sas-overview">https://docs.microsoft.com/en-us/azure/storage/common/storage-sas-overview</a>). The specific SAS that we use is an Account SAS.</p>
+</div>
+<div class="section" id="what-is-an-account-sas">
+<h2>What is an Account SAS?<a class="headerlink" href="#what-is-an-account-sas" title="Permalink to this headline">¶</a></h2>
+<p>An account SAS is secured with the storage account key. An account SAS delegates access to resources in one or more of the storage services.</p>
+</div>
+<div class="section" id="deploying-an-azure-account-storage-and-a-private-container">
+<h2>Deploying an Azure Account Storage and a Private container<a class="headerlink" href="#deploying-an-azure-account-storage-and-a-private-container" title="Permalink to this headline">¶</a></h2>
+<p>The project comes with an ARM template to create everything for you</p>
+<ul class="simple">
+<li><p>Download the following template: <a class="reference external" href="https://github.com/hunters-forge/Blacksmith/blob/azure/templates/azure/Storage-Account-Private-Container/azuredeploy.json">https://github.com/hunters-forge/Blacksmith/blob/azure/templates/azure/Storage-Account-Private-Container/azuredeploy.json</a></p></li>
+<li><p><a class="reference external" href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest">Install Azure CLI</a>.</p></li>
+<li><p>Run the following command to create an Azure Storage Account and an Azure Private Container in it. Make sure you define your <strong>Resource Group</strong> , <strong>Azure Storage Account Name</strong> and <strong>Azure Private Container Name</strong></p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">az group deployment create --resource-group &lt;resourcegroup&gt; --template-file azuredeploy.json --parameters storageAccountName=&lt;name&gt; containerName=&lt;name&gt;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Thats it! If you go to your <a class="reference external" href="https://portal.azure.com">Azure Portal</a> &gt; Resource Groups &gt; GroupName, you will see the Azure Storage Account resource available.</p></li>
+<li><p>One thing to remember is that you can get the Account SAS token by checking your deployment output values. I created the template so that it creates one for you and saves it as part of the output variables.</p></li>
+</ul>
+</div>
+<div class="section" id="uploading-resources-to-private-container">
+<h2>Uploading Resources to Private Container<a class="headerlink" href="#uploading-resources-to-private-container" title="Permalink to this headline">¶</a></h2>
+<p>We can upload a file with the following Azure CLI command</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">az storage blob upload --container-name &lt;container-name&gt; --file &lt;local-filename&gt; --name &lt;filename-on-target&gt; --connection-string &lt;connection-string-SAS-token&gt;</span>
+</pre></div>
+</div>
+<p>We can also upload all the contents from a folder with the following Azure CLI command</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">az storage blob upload-batch -d &lt;container-name&gt; -s &lt;day1/payloads&gt; --destination-path &lt;day1/&gt; --connection-string &lt;connection-string-SAS-token&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="calling-private-resources-from-arm-templates">
+<h2>Calling Private Resources from ARM Templates<a class="headerlink" href="#calling-private-resources-from-arm-templates" title="Permalink to this headline">¶</a></h2>
+<p>All we need to do in the ARM templates is use the following URI syntax for every URL that we want to access. I like to set two parameters:</p>
+<ul class="simple">
+<li><p><strong>_artifactsLocation</strong>: This is the Account Storage / Container URL (e.g <a class="reference external" href="https://name-of-storage-account.blob.core.windows.net/name-of-container/">https://name-of-storage-account.blob.core.windows.net/name-of-container/</a>)</p></li>
+<li><p><strong>_artifactsLocationSasToken</strong>: This is the Account SAS Token that you get after deploying your Azure Account Storage and Private container via the ARM template. Go to deployments, select your deployment and look at the Deployment Output values.</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">&quot;[uri(parameters(&#39;_artifactsLocation&#39;), concat(&#39;private-script.ps1&#39;, parameters(&#39;_artifactsLocationSasToken&#39;)))]&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction">https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction</a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mordor_labs.html" class="btn btn-neutral float-right" title="Mordor Labs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="azure_p2s_vpn_setup.html" class="btn btn-neutral float-left" title="Azure P2S VPN Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Roberto Rodriguez
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
