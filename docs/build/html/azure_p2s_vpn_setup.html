@@ -1,0 +1,310 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Azure P2S VPN Setup &mdash; Blacksmith 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Mordor Labs" href="mordor_labs.html" />
+    <link rel="prev" title="Azure CLI Installation" href="azure_cli_setup.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Blacksmith
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="aws_setup.html">AWS Setup</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="azure_setup.html">Azure Setup</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#azure-resource-manager">Azure Resource Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#arm-templates">ARM Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#azure-free-account">Azure Free Account</a></li>
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#azure-cli">Azure CLI</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="azure_setup.html#p2s-vpn-certificate">P2S VPN Certificate</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Setup</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#azure-vpn-gateway">Azure VPN Gateway</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#azure-vpn-gateway-subnet">Azure VPN Gateway Subnet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#p2s-vpn-certificates">P2S VPN Certificates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#openvpn-client-setup">OpenVPN Client Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="azure_setup.html#references">References</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Available Projects:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mordor_labs.html">Mordor Labs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="silketw.html">SilkETW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="attack_website.html">ATT&amp;CK Website</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure_sentinel2go.html">Azure Sentinel2Go</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Licenses:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">GNU General Public License V3</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Blacksmith</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="azure_setup.html">Azure Setup</a> &raquo;</li>
+        
+      <li>Azure P2S VPN Setup</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/azure_p2s_vpn_setup.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="azure-p2s-vpn-setup">
+<h1>Azure P2S VPN Setup<a class="headerlink" href="#azure-p2s-vpn-setup" title="Permalink to this headline">¶</a></h1>
+<p>A Point-to-Site (P2S) VPN gateway connection lets you create a secure connection to your virtual network from an individual client computer.
+A P2S connection is established by starting it from the client computer.</p>
+<p>Almost every Azure environment deployed under the Blacksmith’s project leverages the OpenVPN® Protocol, an SSL/TLS based VPN protocol for P2S VPN.</p>
+<div class="section" id="azure-vpn-gateway">
+<h2>Azure VPN Gateway<a class="headerlink" href="#azure-vpn-gateway" title="Permalink to this headline">¶</a></h2>
+<p>In order to connect a local endpoints to the environments deployed in Azure, the project leverages an <a class="reference external" href="https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-vpngateways">Azure VPN Gateway</a>.
+A VPN gateway is a specific type of virtual network gateway that is used to send encrypted traffic between an Azure virtual network and an on-premises location over the public Internet.</p>
+<p>Azure ARM Tepmplate: <a class="reference external" href="https://docs.microsoft.com/en-us/azure/templates/microsoft.network/2019-04-01/virtualnetworkgateways">https://docs.microsoft.com/en-us/azure/templates/microsoft.network/2019-04-01/virtualnetworkgateways</a></p>
+</div>
+<div class="section" id="azure-vpn-gateway-subnet">
+<h2>Azure VPN Gateway Subnet<a class="headerlink" href="#azure-vpn-gateway-subnet" title="Permalink to this headline">¶</a></h2>
+<p>Before creating a VPN gateway, a gateway subnet is created first to define the range of IP Addresses that the virtual network gateway VMs would use.
+The gateway subnet must be always named ‘GatewaySubnet’ to work properly.
+According to Azure documentation, naming the gateway subnet ‘GatewaySubnet’ lets Azure know that this is the subnet to deploy the virtual network gateway VMs and services to.</p>
+</div>
+<div class="section" id="p2s-vpn-certificates">
+<h2>P2S VPN Certificates<a class="headerlink" href="#p2s-vpn-certificates" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="install-strongswan-mac">
+<h3>Install strongSwan (MAC)<a class="headerlink" href="#install-strongswan-mac" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">brew install strongSwan</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-a-root-ca-certificate">
+<h3>Create a root CA certificate<a class="headerlink" href="#create-a-root-ca-certificate" title="Permalink to this headline">¶</a></h3>
+<p>create the root CA Key</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ipsec pki --gen --outform pem &gt; caKey.pem</span>
+</pre></div>
+</div>
+<p>Generate the root CA certificate and sign it with the CA’s root key</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ipsec pki --self --in caKey.pem --dn &quot;CN=VPNrootCA&quot; --ca --outform pem &gt; caCert.pem</span>
+</pre></div>
+</div>
+<p>You can verify new root CA certificate</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">openssl x509 -in caCert.pem -text -noout</span>
+</pre></div>
+</div>
+<p>Copy root CA cert one-line</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">openssl x509 -in caCert.pem -outform def | base64 | pbcopy</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-a-client-certificate-signed-with-the-ca-s-root-key">
+<h3>Create a Client Certificate signed with the CA’s root key<a class="headerlink" href="#create-a-client-certificate-signed-with-the-ca-s-root-key" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">export USERNAME=&quot;xxxxxxxx&quot;</span>
+</pre></div>
+</div>
+<p>create the child Key</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ipsec pki --gen --outform pem &gt; &quot;${USERNAME}Key.pem&quot;</span>
+</pre></div>
+</div>
+<p>Generate the certificate with the device CSR and the device key and sign it with the CA’s certificate</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ipsec pki --pub --in &quot;${USERNAME}Key.pem&quot; | ipsec pki --issue --cacert caCert.pem --cakey caKey.pem --dn &quot;CN=${USERNAME}&quot; --san &quot;${USERNAME}&quot; --flag clientAuth --outform pem &gt; &quot;${USERNAME}Cert.pem&quot;</span>
+</pre></div>
+</div>
+<p>Get Certificate Public Key</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">openssl x509 -in &quot;${USERNAME}Cert.pem&quot; -outform der | base64 | pbcopy</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="openvpn-client-setup">
+<h2>OpenVPN Client Setup<a class="headerlink" href="#openvpn-client-setup" title="Permalink to this headline">¶</a></h2>
+<p>This is a great reference to do it in platforms such as Windows, Linux and Mac : <a class="reference external" href="https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-howto-openvpn-clients">https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-howto-openvpn-clients</a></p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.microsoft.com/en-us/azure/vpn-gateway/point-to-site-about">https://docs.microsoft.com/en-us/azure/vpn-gateway/point-to-site-about</a></p></li>
+<li><p><a class="reference external" href="https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-vpngateways">https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-vpngateways</a></p></li>
+<li><p><a class="reference external" href="https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-vpn-gateway-settings#gwsub">https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-vpn-gateway-settings#gwsub</a></p></li>
+<li><p><a class="reference external" href="https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-certificates-point-to-site-linux">https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-certificates-point-to-site-linux</a></p></li>
+<li><p><a class="reference external" href="https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-howto-openvpn-clients#mac">https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-howto-openvpn-clients#mac</a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mordor_labs.html" class="btn btn-neutral float-right" title="Mordor Labs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="azure_cli_setup.html" class="btn btn-neutral float-left" title="Azure CLI Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Roberto Rodriguez
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

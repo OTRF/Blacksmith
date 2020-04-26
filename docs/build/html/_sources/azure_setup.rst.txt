@@ -63,7 +63,17 @@ It can also be run in a Docker container and Azure Cloud Shell.
 .. toctree::
    :maxdepth: 2
 
-   Installation <azure_cli_setup>
+   Setup <azure_cli_setup>
+
+P2S VPN Certificate
+###################
+
+Almost every Azure environment developed under the Blacksmith's initiative uses a Point-To-Site (P2S) VPN to secure every resource deployed, avoid direct communication from the outside, and enable client certificate authentication at a gateway level.
+
+.. toctree::
+   :maxdepth: 2
+
+   Setup <azure_p2s_vpn_setup>
 
 References
 ##########
