@@ -181,9 +181,10 @@
         <RuleGroup name="" groupRelation="or">
 			<!--Event ID 23 == File Delete-->
 			<FileDelete onmatch="include">
-                <TargetFilename condition="begin with">C:\Users</TargetFilename>
-                <TargetFilename condition="begin with">C:\ProgramData</TargetFilename>
-                <TargetFilename condition="begin with">C:\Windows\Temp</TargetFilename>
+				<TargetFilename condition="begin with">C:\Users</TargetFilename>
+				<TargetFilename condition="begin with">C:\ProgramData</TargetFilename>
+				<TargetFilename condition="begin with">C:\Windows\Temp</TargetFilename>
+				<TargetFilename condition="begin with">C:\Program Files</TargetFilename>
             </FileDelete>
 		</RuleGroup>
   </EventFiltering>
