@@ -123,7 +123,7 @@
 				<TargetImage condition="is">C:\Program Files\Amazon\Ec2ConfigService\Ec2Config.exe</TargetImage>
 				<TargetImage condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</TargetImage>
 				<TargetImage condition="is">C:\windows\system32\CompatTelRunner.exe</TargetImage>
-				<TargetImage condition="beign with">C:\Packages\Plugins\</TargetImage>
+				<TargetImage condition="begin with">C:\Packages\Plugins\</TargetImage>
 				<TargetImage condition="begin with">C:\Program Files\WindowsApps\</TargetImage>
 			</ProcessAccess>
 		</RuleGroup>
