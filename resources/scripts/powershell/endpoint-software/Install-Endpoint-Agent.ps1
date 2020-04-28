@@ -49,7 +49,7 @@ if($EndpointAgent -eq "Sysmon")
 
     # Installing Sysmon
     write-Host "Installing Sysmon.."
-    & $File -i C:\ProgramData\sysmon.xml -accepteula -h md5,sha256,imphash -l -n
+    & $File -i C:\ProgramData\sysmon.xml -accepteula
     
     write-Host "Setting Sysmon to start automatically.."
     & sc.exe config Sysmon start= auto
