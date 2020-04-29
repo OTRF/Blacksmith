@@ -55,7 +55,10 @@ if ($onedrive) {
 }
 if (Test-Path "$env:systemroot\SysWOW64\OneDriveSetup.exe") {
     & $env:systemroot\SysWOW64\OneDriveSetup.exe /uninstall /q
-    New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
+     if (!(Test-Path HKCR:))
+    {
+        New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
+    }
     if (Test-Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}") {
         Remove-Item -Force -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}"
     }
@@ -160,4 +163,4 @@ else
 }
 
 write-host "Setting trusted hosts"
-Set-Item WSMan:\localhost\Client\TrustedHosts -Value '*'
+Set-Item WSMan:\localhost\Client\TrustedHosts -Value '*' -Force
