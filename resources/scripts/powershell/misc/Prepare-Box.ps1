@@ -161,6 +161,3 @@ else
     write-Host "Setting WinRM to start automatically.."
     & sc.exe config WinRM start= auto
 }
-
-write-host "Setting trusted hosts"
-Set-Item WSMan:\localhost\Client\TrustedHosts -Value '*' -Force
