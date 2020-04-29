@@ -142,3 +142,22 @@ $regConfig | ConvertFrom-Csv | ForEach-Object {
     Write-Host "Setting " $_.regKey
     New-ItemProperty -Path $_.regKey -Name $_.name -Value $_.value -PropertyType $_.type -force
 }
+
+# Set up PSRemoting 
+$ServiceName = 'WinRM'
+$arrService = Get-Service -Name $ServiceName
+
+if ($arrService.Status -eq 'Running')
+{
+    Write-Host "$ServiceName Service is now Running"
+}
+else
+{
+    Write-host 'Enabling WinRM..'
+    winrm quickconfig -q
+    write-Host "Setting WinRM to start automatically.."
+    & sc.exe config WinRM start= auto
+}
+
+write-host "Setting trusted hosts"
+Set-Item WSMan:\localhost\Client\TrustedHosts -Value '*'

@@ -14,11 +14,21 @@ param (
     [string]$WECNetBIOSName
 )
 
-Write-host 'Enabling WinRM..'
-winrm quickconfig -q
+# Enable WinRM if it is not enabled
+$ServiceName = 'WinRM'
+$arrService = Get-Service -Name $ServiceName
 
-write-Host "Setting WinRM to start automatically.."
-& sc.exe config WinRM start= auto
+if ($arrService.Status -eq 'Running')
+{
+    Write-Host "$ServiceName Service is now Running"
+}
+else
+{
+    Write-host 'Enabling WinRM..'
+    winrm quickconfig -q
+    write-Host "Setting WinRM to start automatically.."
+    & sc.exe config WinRM start= auto
+}
 
 # Grant the Network Service account READ access to the event log by appending (A;;0x1;;;NS)
 write-Host "Granting the Network Service account READ access to the Security event log.."
