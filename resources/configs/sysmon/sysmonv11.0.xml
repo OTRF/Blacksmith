@@ -52,7 +52,7 @@
 				<Image condition="is">C:\Windows\System32\mmc.exe</Image>
 				<Image condition="is">C:\Program Files\Microsoft VS Code\Code.exe</Image>
 				<Image condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</Image>
-				<Image condiiton="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
+				<Image condition="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
 				<Image condition="begin with">C:\WindowsAzure\</Image> <!--Azure -->
 				<DestinationIp condition="is">10.0.1.10</DestinationIp> <!--Mordor APT29 Evals: Windows Event Collector-->
 			</NetworkConnect>
@@ -85,7 +85,7 @@
 				<Image condition="end with">onedrivesetup.exe</Image>
 				<Image condition="end with">onedrive.exe</Image>
 				<Image condition="end with">skypeapp.exe</Image>
-				<Image condiiton="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
+				<Image condition="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
 				<Image condition="begin with">C:\WindowsAzure\</Image> <!--Azure -->
 			</ImageLoad>
 		</RuleGroup>
@@ -123,7 +123,7 @@
 				<TargetImage condition="is">C:\Program Files\Amazon\Ec2ConfigService\Ec2Config.exe</TargetImage>
 				<TargetImage condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</TargetImage>
 				<TargetImage condition="is">C:\windows\system32\CompatTelRunner.exe</TargetImage>
-				<TargetImage condiiton="begin with">C:\Packages\Plugins\</TargetImage> <!--Azure ARM Extensions -->
+				<TargetImage condition="begin with">C:\Packages\Plugins\</TargetImage> <!--Azure ARM Extensions -->
 				<TargetImage condition="begin with">C:\WindowsAzure\</TargetImage> <!--Azure -->
 				<TargetImage condition="begin with">C:\Program Files\WindowsApps\</TargetImage>
 			</ProcessAccess>
@@ -138,7 +138,7 @@
 				<Image condition="end with">onedrivesetup.exe</Image>
 				<Image condition="end with">onedrive.exe</Image>
 				<Image condition="end with">skypeapp.exe</Image>
-				<Image condiiton="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
+				<Image condition="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
 				<Image condition="begin with">C:\WindowsAzure\</Image> <!--Azure -->
 			</FileCreate>
 		</RuleGroup>
@@ -166,7 +166,7 @@
 		<RuleGroup name="" groupRelation="or">
 			<!-- Event ID 17,18 == PipeEvent. Log Named pipe created & Named pipe connected -->
 			<PipeEvent onmatch="exclude">
-				<Image condiiton="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
+				<Image condition="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
 				<Image condition="begin with">C:\WindowsAzure\</Image> <!--Azure -->
 				<Image condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\MonitoringHost.exe</Image>
 			</PipeEvent>
