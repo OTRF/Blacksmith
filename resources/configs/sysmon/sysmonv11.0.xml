@@ -55,6 +55,7 @@
 				<Image condition="is">C:\WindowsAzure\Packages\GuestAgent\WindowsAzureGuestAgent.exe</Image>
 				<Image condition="is">C:\WindowsAzure\Packages\Telemetry\WindowsAzureTelemetryService.exe</Image>
 				<Image condition="is">C:\WindowsAzure\SecAgent\WaSecAgentProv.exe</Image>
+				<DestinationIp condition="is">10.0.1.10</DestinationIp> <!--Mordor APT29 Evals: Windows Event Collector-->
 			</NetworkConnect>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
