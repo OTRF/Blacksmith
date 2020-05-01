@@ -173,11 +173,13 @@
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
 			<!-- Event ID 19,20,21, == WmiEvent. Log all WmiEventFilter, WmiEventConsumer, WmiEventConsumerToFilter activity-->
-			<WmiEvent onmatch="exclude" />
+			<WmiEvent onmatch="exclude"/>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
 			<!--Event ID 22 == DNS Query-->
-			<DnsQuery onmatch="exclude"/>
+			<DnsQuery onmatch="exclude">
+				<Image condition="is">C:\Program Files (x86)\nxlog\nxlog.exe</Image>
+			</DnsQuery>
 		</RuleGroup>
         <RuleGroup name="" groupRelation="or">
 			<!--Event ID 23 == File Delete-->
