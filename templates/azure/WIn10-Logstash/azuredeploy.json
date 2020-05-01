@@ -1,0 +1,223 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Username for the Virtual Machines (Windows, Linux)."
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Password for all Virtual Machines (Windows , Linux). If you want to enable SSH key authentication for Linux virtual machines, make sure you set the 'linuxAuthenticationType' parameter to 'sshPublicKey' and provide the SSH Public Key string via the 'linuxAdminKey' parameter."
+            }
+        },
+        "linuxAuthenticationType": {
+            "type": "string",
+            "defaultValue": "password",
+            "allowedValues": [
+                "sshPublicKey",
+                "password"
+            ],
+            "metadata": {
+                "description": "Type of authentication to use on the Linux Virtual Machine. SSH key is recommended."
+            }
+        },
+        "linuxAdminKey": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "SSH Key to authenticate against Linux Virtual Machines. Provide the SSH rsa public key file as a string. Use \"ssh-keygen -t rsa -b 2048\" to generate your SSH key pairs."
+            }
+        },
+        "vmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B2s",
+            "allowedValues": [
+                "Standard_A2",
+                "Standard_A3",
+                "Standard_B2s",
+                "Standard_B2ms",
+                "Standard_A2_v2",
+                "Standard_A4_v2"
+            ],
+            "metadata": {
+                "description": "Size of Linux and Windows virtual machines. References: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-previous-gen, https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
+            }
+        },
+        "allowedIPAddresses": {
+            "type": "string",
+            "metadata": {
+                "description": "The sourceAddressPrefixes allowed to connect to the Windows 10 VM"
+            },
+            "defaultValue": "*"
+        },
+        "_artifactsLocation": {
+            "type": "string",
+            "metadata": {
+                "description": "The location of resources"
+            },
+            "defaultValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/"
+        },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
+            },
+            "defaultValue": ""
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    },
+    "variables": {
+        "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-Logstash/linkedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]"
+    },
+    "resources": [
+        {
+            "name": "deployLogstashVM",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), 'templates/azure/LinuxVM/azuredeploy.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmSize": {
+                        "value": "[parameters('vmSize')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "authenticationType": {
+                        "value": "[parameters('linuxAuthenticationType')]"
+                    },
+                    "adminPasswordOrKey": {
+                        "value": "[if(equals(parameters('linuxAuthenticationType'), 'password'), parameters('adminPassword'), parameters('linuxAdminKey'))]"
+                    },
+                    "allowedIPAddresses": {
+                        "value": "[parameters('allowedIPAddresses')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "pipelineSetup",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "dependsOn": [
+                "deployLogstashVM"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "extensionName": {
+                        "value": "SetupLogstash"
+                    },
+                    "commandToExecute": {
+                        "value": "bash logstash-setup.sh"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-Logstash/scripts/logstash-setup.sh', parameters('_artifactsLocationSasToken')))]"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[reference('deployLogstashVM').outputs.vmName.value]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "deployWin10VM",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), 'templates/azure/Win10/azuredeploy.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('vmSize')]"
+                    },
+                    "allowedIPAddresses": {
+                        "value": "[parameters('allowedIPAddresses')]"
+                    },
+                    "enableSysmon": {
+                        "value": true
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "vnet-logstash/peering-to-remote-vnet-win",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2019-11-01",
+            "dependsOn": [
+                "deployLogstashVM",
+                "deployWin10VM"
+            ],
+            "location": "[parameters('location')]",
+            "properties": {
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": false,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteVirtualNetwork": {
+                    "id": "[reference('deployWin10VM').outputs.virtualNetworkId.value]"
+                }
+            }
+        },
+        {
+            "name": "vnet-win/peering-to-remote-vnet-logstash",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2019-11-01",
+            "dependsOn": [
+                "deployLogstashVM",
+                "deployWin10VM"
+            ],
+            "location": "[parameters('location')]",
+            "properties": {
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": false,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteVirtualNetwork": {
+                    "id": "[reference('deployLogstashVM').outputs.virtualNetworkId.value]"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

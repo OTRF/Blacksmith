@@ -1,0 +1,26 @@
+version: '3.5'
+
+services:
+  win-logstash:
+    image: docker.elastic.co/logstash/logstash:7.5.2
+    container_name: win-logstash
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "9"
+        max-size: "6m"
+    volumes:
+      - /opt/logstash/pipeline:/usr/share/logstash/pipeline
+      - /opt/logstash/scripts:/usr/share/logstash/scripts
+      - /opt/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - /opt/datasets:/usr/share/logstash/datasets
+    entrypoint: /usr/share/logstash/scripts/logstash-entrypoint.sh
+    environment:
+      - xpack.monitoring.enabled=false
+    restart: always
+    networks:
+      logstash:
+
+networks:
+    logstash:
+        driver: bridge
