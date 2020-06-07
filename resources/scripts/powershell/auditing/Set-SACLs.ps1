@@ -21,6 +21,7 @@ regKey,identityReference,rights,inheritanceFlags,propagationFlags,auditFlags
 "HKLM:\SYSTEM\CurrentControlSet\Services\SysmonDrv\Parameters","Everyone","QueryValues","None","None","Success"
 "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System\Audit","Everyone","QueryValues","None","None","Success"
 "HKLM:\Software\Policies\Microsoft\Windows\EventLog\EventForwarding\SubscriptionManager","Everyone","QueryValues","None","None","Success"
+"HKLM:\Software\Microsoft\.NETFramework","Everyone","WriteKey","None","None","Success"
 "@
 
 write-host "Enabling audit rules.."
