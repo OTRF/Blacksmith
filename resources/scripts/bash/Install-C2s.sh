@@ -62,6 +62,9 @@ case $RUN_C2 in
     ;;
 esac
 
+# Install Docker and Docker-Compose
+./Install-Docker.sh
+
 # Downloading Impacker Binaries from https://github.com/ropnop/impacket_static_binaries
 echo "$INFO_TAG Downloading Impacket binaries.."
 mkdir /opt/Impacket
