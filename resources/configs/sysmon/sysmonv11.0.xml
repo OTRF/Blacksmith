@@ -140,6 +140,7 @@
 				<Image condition="end with">skypeapp.exe</Image>
 				<Image condition="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
 				<Image condition="begin with">C:\WindowsAzure\</Image> <!--Azure -->
+				<TargetFilename condition="begin with">C:\Windows\System32\winevt\Logs\</TargetFilename>
 			</FileCreate>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">

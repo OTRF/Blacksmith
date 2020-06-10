@@ -56,6 +56,7 @@ case $RUN_C2 in
     empire);;
     covenant);;
     caldera);;
+    metasploit);;
     *)
         echo "$ERROR_TAG Not a valid C2 option. Valid Options: empire or covenant or caldera"
         usage
@@ -64,6 +65,10 @@ esac
 
 # Install Docker and Docker-Compose
 ./Install-Docker.sh
+
+# Create Adversary Directory
+mkdir /opt/attack-platform
+chmod -R 755 /opt/attack-platform/
 
 # Downloading Impacker Binaries from https://github.com/ropnop/impacket_static_binaries
 echo "$INFO_TAG Downloading Impacket binaries.."
@@ -88,18 +93,8 @@ elif [[ $RUN_C2 == "empire" ]]; then
 
     echo "$INFO_TAG Running Empire by default.."
     cd /opt/Empire && docker run -d -it -p 80:80 -p 443:443 -p 8443-8500:8443-8500 --name empire --volumes-from data empire /bin/bash >> $LOGFILE 2>&1
-else
+elif [[ $RUN_C2 == "caldera" ]]; then
     # *********** Installing Caldera ***************
-    if [ -x "$(command -v docker-compose)" ]; then
-        echo "$INFO_TAG removing docker-compose.."
-        rm $(which docker-compose)
-    fi
-    
-    echo "$INFO_TAG Installing docker-compose.."
-    COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d\" -f4)
-    curl -L https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose >> $LOGFILE 2>&1
-    chmod +x /usr/local/bin/docker-compose >> $LOGFILE 2>&1
-    
     echo "$INFO_TAG Setting up Caldera.."
     mkdir /opt/Caldera
     curl -L https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/resources/scripts/docker/caldera/2.6.6-040520/docker-compose-caldera.yml -o /opt/Caldera/docker-compose-caldera.yml >> $LOGFILE 2>&1
@@ -110,4 +105,11 @@ else
     export CALDERA_RED_ADMIN_NAME=$ADMIN_USER_NAME
 
     docker-compose -f /opt/Caldera/docker-compose-caldera.yml up --build -d
+elif [[ $RUN_C2 == "metasploit" ]]; then
+    # *********** Installing Metasploit ***************
+    docker image pull metasploitframework/metasploit-framework
+
+    # Run manually:
+    # docker run --rm -it -p 443:443 -v "/opt/attack-platform:/tmp/attack-platform" metasploitframework/metasploit-framework ./msfconsole
+    # docker run --rm -it -p 8443:8443 -v "/opt/attack-platform:/tmp/attack-platform" metasploitframework/metasploit-framework ./msfconsole
 fi
