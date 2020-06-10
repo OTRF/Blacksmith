@@ -24,6 +24,7 @@ regKey;identityReference;rights;inheritanceFlags;propagationFlags;auditFlags
 "HKLM:\Software\Microsoft\.NETFramework";"Everyone";"WriteKey";"None";"None";"Success"
 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\webcam";"Everyone";"SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone";"Everyone"; "SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
+"HKLM:\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\TelemetryController";"Everyone"; "SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
 "@
 
 write-host "Enabling audit rules.."
