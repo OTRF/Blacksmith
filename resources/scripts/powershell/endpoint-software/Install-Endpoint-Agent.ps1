@@ -43,7 +43,7 @@ if($EndpointAgent -eq "Sysmon")
     # Downloading Sysmon Configuration
     write-Host "Downloading Sysmon config.."
     $SysmonFile = "C:\ProgramData\sysmon.xml"
-    $SysmonConfigUrl = "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/resources/configs/sysmon/sysmonv11.0.xml"
+    $SysmonConfigUrl = "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/resources/configs/sysmon/sysmon.xml"
     $wc.DownloadFile($SysmonConfigUrl, $SysmonFile)
     if (!(Test-Path $SysmonFile)){ Write-Error "File $SysmonFile does not exist" -ErrorAction Stop }
 

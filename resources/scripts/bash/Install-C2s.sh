@@ -93,7 +93,7 @@ elif [[ $RUN_C2 == "caldera" ]]; then
     git clone https://github.com/Cyb3rWard0g/docker-caldera /opt/caldera $LOGFILE 2>&1
     cd /opt/caldera && docker build -t caldera . $LOGFILE 2>&1
     
-    docker run -t -it -p 8888:8888 -p 7010:7010/tcp -p 7010:7010/udp -p 7012:7012 --name caldera caldera $LOGFILE 2>&1
+    docker run -d -it -p 8888:8888 -p 7010:7010/tcp -p 7010:7010/udp -p 7012:7012 --name caldera caldera $LOGFILE 2>&1
 elif [[ $RUN_C2 == "metasploit" ]]; then
     # *********** Installing Metasploit ***************
     docker image pull metasploitframework/metasploit-framework

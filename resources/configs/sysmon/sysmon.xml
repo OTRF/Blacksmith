@@ -1,6 +1,8 @@
-<Sysmon schemaversion="4.22">
+<Sysmon schemaversion="4.32">
    <!-- Capture all hashes -->
    <HashAlgorithms>*</HashAlgorithms>
+   <DnsLookup>False</DnsLookup>
+   <ArchiveDirectory>Archive</ArchiveDirectory>
    <EventFiltering>
    		<RuleGroup name="" groupRelation="or">
 			<!-- Event ID 1 == Process Creation. Log all newly created processes except -->
@@ -50,9 +52,9 @@
 				<Image condition="is">C:\Windows\System32\mmc.exe</Image>
 				<Image condition="is">C:\Program Files\Microsoft VS Code\Code.exe</Image>
 				<Image condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</Image>
-				<Image condition="is">C:\WindowsAzure\Packages\GuestAgent\WindowsAzureGuestAgent.exe</Image>
-				<Image condition="is">C:\WindowsAzure\Packages\Telemetry\WindowsAzureTelemetryService.exe</Image>
-				<Image condition="is">C:\WindowsAzure\SecAgent\WaSecAgentProv.exe</Image>
+				<Image condition="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
+				<Image condition="begin with">C:\WindowsAzure\</Image> <!--Azure -->
+				<DestinationIp condition="is">10.0.1.10</DestinationIp> <!--Mordor APT29 Evals: Windows Event Collector-->
 			</NetworkConnect>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -83,8 +85,8 @@
 				<Image condition="end with">onedrivesetup.exe</Image>
 				<Image condition="end with">onedrive.exe</Image>
 				<Image condition="end with">skypeapp.exe</Image>
-				<Image condition="is">C:\WindowsAzure\Packages\CollectGuestLogs.exe</Image>
-				<Image condition="is">C:\WindowsAzure\Packages\Telemetry\WindowsAzureTelemetryService.exe</Image>
+				<Image condition="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
+				<Image condition="begin with">C:\WindowsAzure\</Image> <!--Azure -->
 			</ImageLoad>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -121,7 +123,8 @@
 				<TargetImage condition="is">C:\Program Files\Amazon\Ec2ConfigService\Ec2Config.exe</TargetImage>
 				<TargetImage condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</TargetImage>
 				<TargetImage condition="is">C:\windows\system32\CompatTelRunner.exe</TargetImage>
-				<TargetImage condition="begin with">C:\Packages\Plugins\</TargetImage>
+				<TargetImage condition="begin with">C:\Packages\Plugins\</TargetImage> <!--Azure ARM Extensions -->
+				<TargetImage condition="begin with">C:\WindowsAzure\</TargetImage> <!--Azure -->
 				<TargetImage condition="begin with">C:\Program Files\WindowsApps\</TargetImage>
 			</ProcessAccess>
 		</RuleGroup>
@@ -135,9 +138,9 @@
 				<Image condition="end with">onedrivesetup.exe</Image>
 				<Image condition="end with">onedrive.exe</Image>
 				<Image condition="end with">skypeapp.exe</Image>
-				<Image condition="is">C:\WindowsAzure\Packages\CollectGuestLogs.exe</Image>
-				<Image condition="is">C:\WindowsAzure\Packages\GuestAgent\WindowsAzureGuestAgent.exe</Image>
-				<Image condition="begin with">C:\Packages\Plugins\</Image>
+				<Image condition="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
+				<Image condition="begin with">C:\WindowsAzure\</Image> <!--Azure -->
+				<TargetFilename condition="begin with">C:\Windows\System32\winevt\Logs\</TargetFilename>
 			</FileCreate>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -164,17 +167,29 @@
 		<RuleGroup name="" groupRelation="or">
 			<!-- Event ID 17,18 == PipeEvent. Log Named pipe created & Named pipe connected -->
 			<PipeEvent onmatch="exclude">
-				<Image condition="is">C:\WindowsAzure\Packages\CollectGuestLogs.exe</Image>
+				<Image condition="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
+				<Image condition="begin with">C:\WindowsAzure\</Image> <!--Azure -->
 				<Image condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\MonitoringHost.exe</Image>
 			</PipeEvent>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
 			<!-- Event ID 19,20,21, == WmiEvent. Log all WmiEventFilter, WmiEventConsumer, WmiEventConsumerToFilter activity-->
-			<WmiEvent onmatch="exclude" />
+			<WmiEvent onmatch="exclude"/>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
 			<!--Event ID 22 == DNS Query-->
-			<DnsQuery onmatch="exclude"/>
+			<DnsQuery onmatch="exclude">
+				<Image condition="is">C:\Program Files (x86)\nxlog\nxlog.exe</Image>
+			</DnsQuery>
+		</RuleGroup>
+        <RuleGroup name="" groupRelation="or">
+			<!--Event ID 23 == File Delete-->
+			<FileDelete onmatch="include">
+				<TargetFilename condition="begin with">C:\Users\</TargetFilename>
+				<TargetFilename condition="begin with">C:\ProgramData\</TargetFilename>
+				<TargetFilename condition="begin with">C:\Windows\Temp\</TargetFilename>
+				<TargetFilename condition="begin with">C:\Program Files\</TargetFilename>
+            </FileDelete>
 		</RuleGroup>
   </EventFiltering>
 </Sysmon>

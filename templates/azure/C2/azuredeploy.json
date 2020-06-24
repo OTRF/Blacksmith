@@ -193,6 +193,7 @@
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
         "c2SetupScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/bash/Install-C2s.sh', parameters('_artifactsLocationSasToken')))]",
+        "dockerSetupScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/bash/Install-Docker.sh', parameters('_artifactsLocationSasToken')))]",
         "win10Template": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]",
         "vmName": "[parameters('vmName')]",
@@ -443,6 +444,7 @@
                 "protectedSettings": {
                     "commandToExecute": "[concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework'), ' ', '-i', ' ', parameters('VMPrivateIPAddress'))]",
                     "fileUris": [
+                        "[variables('dockerSetupScript')]",
                         "[variables('c2SetupScript')]"
                     ]
                 }
