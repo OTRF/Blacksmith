@@ -83,20 +83,20 @@ if [[ $RUN_C2 == "covenant" ]]; then
     docker run -d -it -p 7443:7443 -p 80:80 -p 443:443 -p 8443-8500:8443-8500 --name covenant -v /opt/Covenant/Covenant/Data:/app/Data covenant >> $LOGFILE 2>&1  
 elif [[ $RUN_C2 == "empire" ]]; then
     # *********** Installing Empire ***************
-    git clone https://github.com/BC-SECURITY/Empire /opt/Empire $LOGFILE 2>&1
+    git clone https://github.com/BC-SECURITY/Empire /opt/Empire >> $LOGFILE 2>&1
     cd /opt/Empire && docker build -t empire . >> $LOGFILE 2>&1
     docker create -v /opt/Empire --name data empire >> $LOGFILE 2>&1
 
     docker run -d -it -p 80:80 -p 443:443 -p 8443-8500:8443-8500 --name empire --volumes-from data empire /bin/bash >> $LOGFILE 2>&1
 elif [[ $RUN_C2 == "caldera" ]]; then
     # *********** Installing Caldera ***************
-    git clone https://github.com/Cyb3rWard0g/docker-caldera /opt/caldera $LOGFILE 2>&1
+    git clone https://github.com/Cyb3rWard0g/docker-caldera /opt/caldera >> $LOGFILE 2>&1
     cd /opt/caldera && docker build -t caldera . $LOGFILE 2>&1
     
-    docker run -d -it -p 8888:8888 -p 7010:7010/tcp -p 7010:7010/udp -p 7012:7012 --name caldera caldera $LOGFILE 2>&1
+    docker run -d -it -p 8888:8888 -p 7010:7010/tcp -p 7010:7010/udp -p 7012:7012 --name caldera caldera >> $LOGFILE 2>&1
 elif [[ $RUN_C2 == "metasploit" ]]; then
     # *********** Installing Metasploit ***************
-    docker image pull metasploitframework/metasploit-framework
+    docker image pull metasploitframework/metasploit-framework >> $LOGFILE 2>&1
 
     # Run manually:
     # docker run --rm -it -p 443:443 -v "/opt/attack-platform:/tmp/attack-platform" metasploitframework/metasploit-framework ./msfconsole
