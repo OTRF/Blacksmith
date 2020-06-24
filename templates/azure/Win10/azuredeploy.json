@@ -119,6 +119,27 @@
             },
             "defaultValue": "vnet-win"
         },
+        "virtualNetworkAddressRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the virtual network"
+            },
+            "defaultValue": "192.168.0.0/16"
+        },
+        "subnetRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the subnet"
+            },
+            "defaultValue": "192.168.2.0/24"
+        },
+        "vmPrivateIPAddress": {
+            "type": "string",
+            "metadata": {
+                "description": "Private IP address of the VM"
+            },
+            "defaultValue": "192.168.2.10"
+        },
         "subnetName": {
             "type": "string",
             "metadata": {
@@ -159,11 +180,11 @@
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
         "virtualNetworkName": "[parameters('virtualNetworkName')]",
         "subnetName": "[parameters('subnetName')]",
-        "virtualNetworkAddressRange": "192.168.0.0/16",
-        "subnetRange": "192.168.2.0/24",
+        "virtualNetworkAddressRange": "[parameters('virtualNetworkAddressRange')]",
+        "subnetRange": "[parameters('subnetRange')]",
+        "vmPrivateIPAddress": "[parameters('vmPrivateIPAddress')]",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
         "vmName": "[parameters('vmName')]",
-        "vmPrivateIPAddress": "192.168.2.10",
         "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
         "prepareBoxScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Prepare-Box.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSecurityAuditingScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1', parameters('_artifactsLocationSasToken')))]",
@@ -458,7 +479,7 @@
                     "AntimalwareEnabled": true,
                     "Exclusions": {
                         "Extensions": ".bat;.exe;.dll;.ps1;.sct;.vbs;.hta;.py;.tmp;.csproj",
-                        "Paths": "C:\\ProgramData\\;C:\\Users\\",
+                        "Paths": "C:\\",
                         "Processes": "powershell.exe;sandcat.exe"
                     },
                     "RealtimeProtectionEnabled": "false",

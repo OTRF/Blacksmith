@@ -19,9 +19,6 @@
             "type": "string",
             "defaultValue": "18.04-LTS",
             "allowedValues": [
-                "12.04.5-LTS",
-                "14.04.5-LTS",
-                "16.04.0-LTS",
                 "18.04-LTS",
                 "19.04"
             ],
@@ -82,6 +79,27 @@
             },
             "defaultValue": "vnet-c2"
         },
+        "virtualNetworkAddressRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Virtual Network address range"
+            },
+            "defaultValue": "10.0.0.0/16"
+        },
+        "subnetRange": {
+            "type": "string",
+            "metadata": {
+                "description": "subnet range"
+            },
+            "defaultValue": "10.0.0.0/24"
+        },
+        "VMPrivateIPAddress": {
+            "type": "string",
+            "metadata": {
+                "description": "Private IP for the C2 VM"
+            },
+            "defaultValue": "10.0.0.8"
+        },
         "subnetName": {
             "type": "string",
             "metadata": {
@@ -94,25 +112,61 @@
             "allowedValues": [
                 "empire",
                 "covenant",
-                "caldera"
+                "caldera",
+                "shad0w"
             ],
             "metadata": {
                 "description": "C2 framework to deploy"
             }
         },
-        "c2AdminUserName": {
-            "type": "string",
-            "defaultValue": "admin",
+        "enableDemoEnv": {
+            "type": "bool",
+            "defaultValue": false,
             "metadata": {
-                "description": "admin user name for C2 interface"
+                "description": "Deploys a Windows VM and the project Azure Sentinel2Go"
             }
         },
-        "c2AdminPassword": {
+        "winAdminPassword": {
             "type": "securestring",
             "defaultValue": "",
             "metadata": {
-                "description": "admin user password for C2 interface"
+                "description": "Password for Windows machine"
             }
+        },
+        "winVirtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Virtual Network"
+            },
+            "defaultValue": "vnet-win"
+        },
+        "winVirtualNetworkAddressRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the virtual network"
+            },
+            "defaultValue": "192.168.0.0/16"
+        },
+        "winSubnetRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the subnet"
+            },
+            "defaultValue": "192.168.2.0/24"
+        },
+        "winVmPrivateIPAddress": {
+            "type": "string",
+            "metadata": {
+                "description": "Private IP address of the VM"
+            },
+            "defaultValue": "192.168.2.10"
+        },
+        "winSubnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the subnet"
+            },
+            "defaultValue": "snet-win"
         },
         "_artifactsLocation": {
             "type": "string",
@@ -139,13 +193,9 @@
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
         "c2SetupScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/bash/Install-C2s.sh', parameters('_artifactsLocationSasToken')))]",
-        "virtualNetworkName": "[parameters('virtualNetworkName')]",
-        "subnetName": "[parameters('subnetName')]",
-        "virtualNetworkAddressRange": "10.0.0.0/16",
-        "subnetRange": "10.0.0.0/24",
-        "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
+        "win10Template": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
+        "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]",
         "vmName": "[parameters('vmName')]",
-        "VMPrivateIPAddress": "10.0.0.8",
         "linuxConfiguration": {
             "disablePasswordAuthentication": true,
             "ssh": {
@@ -172,7 +222,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('c2Framework'), 'empire')]",
+            "condition": "[not(or(equals(parameters('c2Framework'), 'covenant'),equals(parameters('c2Framework'), 'caldera')))]",
             "name": "nsg-empire",
             "comments": "Default Network Security Group for Linux endpoints",
             "type": "Microsoft.Network/networkSecurityGroups",
@@ -275,7 +325,7 @@
         {
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2019-02-01",
-            "name": "[variables('virtualNetworkName')]",
+            "name": "[parameters('virtualNetworkName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/networkSecurityGroups', concat('nsg-', parameters('c2Framework')))]"
@@ -283,14 +333,14 @@
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
-                        "[variables('virtualNetworkAddressRange')]"
+                        "[parameters('virtualNetworkAddressRange')]"
                     ]
                 },
                 "subnets": [
                     {
-                        "name": "[variables('subnetName')]",
+                        "name": "[parameters('subnetName')]",
                         "properties": {
-                            "addressPrefix": "[variables('subnetRange')]",
+                            "addressPrefix": "[parameters('subnetRange')]",
                             "networkSecurityGroup": {
                                 "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat('nsg-', parameters('c2Framework')))]"
                             }
@@ -318,7 +368,7 @@
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('vmName')))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+                "[resourceId('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
             ],
             "properties": {
                 "ipConfigurations": [
@@ -326,7 +376,7 @@
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAllocationMethod": "Static",
-                            "privateIPAddress": "[variables('VMPrivateIPAddress')]",
+                            "privateIPAddress": "[parameters('VMPrivateIPAddress')]",
                             "publicIPAddress": {
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('vmName')))]"
                             },
@@ -378,27 +428,11 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(variables('vmName'),'/DockerExtension')]",
-            "apiVersion": "2017-03-30",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
-            ],
-            "properties": {
-                "publisher": "Microsoft.Azure.Extensions",
-                "type": "DockerExtension",
-                "typeHandlerVersion": "1.0",
-                "autoUpgradeMinorVersion": true,
-                "settings": {}
-            }
-        },
-        {
-            "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-03-01",
             "name": "[concat(variables('vmName'), '/C2Setup')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('vmName'), 'DockerExtension')]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
             ],
             "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
@@ -407,10 +441,152 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {},
                 "protectedSettings": {
-                    "commandToExecute": "[if(empty(parameters('c2AdminPassword')), concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework'), ' ', '-u', ' ', parameters('c2AdminUserName')), concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework'), ' ', '-u', ' ', parameters('c2AdminUserName'), ' ', '-p', ' ', parameters('c2AdminPassword')))]",
+                    "commandToExecute": "[concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework'), ' ', '-i', ' ', parameters('VMPrivateIPAddress'))]",
                     "fileUris": [
                         "[variables('c2SetupScript')]"
                     ]
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableDemoEnv')]",
+            "name": "deployAzureSentinel2Go",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri('https://raw.githubusercontent.com/OTRF/','Azure-Sentinel2Go/master/azuredeploy.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "workspaceName": {
+                        "value": "C2"
+                    },
+                    "enableDataConnectorsKind": {
+                        "value": ["SecurityInsightsSecurityEventCollectionConfiguration"]
+                    }, 
+                    "setSecurityCollectionTier": {
+                        "value": "All"
+                    },
+                    "enableWinEventProviders": {
+                        "value": [
+                            "System",
+                            "Microsoft-Windows-Sysmon/Operational",
+                            "Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational",
+                            "Microsoft-Windows-Bits-Client/Operational",
+                            "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
+                            "Directory Service",
+                            "Microsoft-Windows-DNS-Client/Operational",
+                            "Microsoft-Windows-Windows Firewall With Advanced Security/Firewall",
+                            "Windows PowerShell",
+                            "Microsoft-Windows-PowerShell/Operational",
+                            "Microsoft-Windows-WMI-Activity/Operational"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableDemoEnv')]",
+            "name": "deployWin10VM",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-05-01",
+            "dependsOn": [
+                "deployAzureSentinel2Go"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('win10Template')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('winAdminPassword')]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('vmSize')]"
+                    },
+                    "allowedIPAddresses": {
+                        "value": "[parameters('allowedIPAddresses')]"
+                    },
+                    "virtualNetworkName": {
+                        "value": "[parameters('winVirtualNetworkName')]"
+                    },
+                    "virtualNetworkAddressRange": {
+                        "value": "[parameters('winVirtualNetworkAddressRange')]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('winSubnetName')]"
+                    },
+                    "subnetRange": {
+                        "value": "[parameters('winSubnetRange')]"
+                    },
+                    "vmPrivateIPAddress": {
+                        "value": "[parameters('winVmPrivateIPAddress')]"
+                    },
+                    "enableMonitoringAgent": {
+                        "value": true
+                    },
+                    "enableAntimalware": {
+                        "value": true
+                    },
+                    "enableSysmon": {
+                        "value": true
+                    },
+                    "workspaceId": {
+                        "value": "[if(parameters('enableDemoEnv'), reference('deployAzureSentinel2Go').outputs.workspaceIdOutput.value, 'Resource not deployed')]"
+                    },
+                    "workspaceKey": {
+                        "value": "[if(parameters('enableDemoEnv'), reference('deployAzureSentinel2Go').outputs.workspaceKeyOutput.value, 'Resource not deployed')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableDemoEnv')]",
+            "name": "[concat(parameters('virtualNetworkName'), '/peering-to-remote-', parameters('winVirtualNetworkName'))]",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2019-11-01",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]",
+                "deployWin10VM"
+            ],
+            "location": "[parameters('location')]",
+            "properties": {
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": false,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteVirtualNetwork": {
+                    "id": "[if(parameters('enableDemoEnv'), reference('deployWin10VM').outputs.virtualNetworkId.value, 'resource not deployed')]"
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableDemoEnv')]",
+            "name": "[concat(parameters('winVirtualNetworkName'), '/peering-to-remote-', parameters('VirtualNetworkName'))]",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2019-11-01",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]",
+                "deployWin10VM"
+            ],
+            "location": "[parameters('location')]",
+            "properties": {
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": false,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteVirtualNetwork": {
+                    "id": "[if(parameters('enableDemoEnv'), resourceId('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName')), 'resource not deployed')]"
                 }
             }
         }
@@ -426,11 +602,11 @@
         },
         "virtualNetworkName": {
             "type": "string",
-            "value": "[variables('virtualNetworkName')]"
+            "value": "[parameters('virtualNetworkName')]"
         },
         "virtualNetworkId": {
             "type": "string",
-            "value": "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+            "value": "[resourceId('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
         }
     }
 }
