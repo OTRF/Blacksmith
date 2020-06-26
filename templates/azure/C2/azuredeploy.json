@@ -223,8 +223,7 @@
             }
         },
         {
-            "condition": "[not(or(equals(parameters('c2Framework'), 'covenant'),equals(parameters('c2Framework'), 'caldera')))]",
-            "name": "nsg-empire",
+            "name": "nsg-c2",
             "comments": "Default Network Security Group for Linux endpoints",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-08-01",
@@ -238,82 +237,6 @@
                             "access": "Allow",
                             "direction": "Inbound",
                             "destinationPortRange": "22",
-                            "protocol": "Tcp",
-                            "sourcePortRange": "*",
-                            "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
-                            "destinationAddressPrefix": "*"
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "condition": "[equals(parameters('c2Framework'), 'covenant')]",
-            "name": "nsg-covenant",
-            "comments": "Default Network Security Group for Linux endpoints",
-            "type": "Microsoft.Network/networkSecurityGroups",
-            "apiVersion": "2019-08-01",
-            "location": "[parameters('location')]",
-            "properties": {
-                "securityRules": [
-                    {
-                        "name": "default-allow-22",
-                        "properties": {
-                            "priority": 100,
-                            "access": "Allow",
-                            "direction": "Inbound",
-                            "destinationPortRange": "22",
-                            "protocol": "Tcp",
-                            "sourcePortRange": "*",
-                            "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
-                            "destinationAddressPrefix": "*"
-                        }
-                    },
-                    {
-                        "name": "default-allow-7443",
-                        "properties": {
-                            "priority": 101,
-                            "access": "Allow",
-                            "direction": "Inbound",
-                            "destinationPortRange": "7443",
-                            "protocol": "Tcp",
-                            "sourcePortRange": "*",
-                            "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
-                            "destinationAddressPrefix": "*"
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "condition": "[equals(parameters('c2Framework'), 'caldera')]",
-            "name": "nsg-caldera",
-            "comments": "Default Network Security Group for Linux endpoints",
-            "type": "Microsoft.Network/networkSecurityGroups",
-            "apiVersion": "2019-08-01",
-            "location": "[parameters('location')]",
-            "properties": {
-                "securityRules": [
-                    {
-                        "name": "default-allow-22",
-                        "properties": {
-                            "priority": 100,
-                            "access": "Allow",
-                            "direction": "Inbound",
-                            "destinationPortRange": "22",
-                            "protocol": "Tcp",
-                            "sourcePortRange": "*",
-                            "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
-                            "destinationAddressPrefix": "*"
-                        }
-                    },
-                    {
-                        "name": "default-allow-8888",
-                        "properties": {
-                            "priority": 101,
-                            "access": "Allow",
-                            "direction": "Inbound",
-                            "destinationPortRange": "8888",
                             "protocol": "Tcp",
                             "sourcePortRange": "*",
                             "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
@@ -343,7 +266,7 @@
                         "properties": {
                             "addressPrefix": "[parameters('subnetRange')]",
                             "networkSecurityGroup": {
-                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat('nsg-', parameters('c2Framework')))]"
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-c2')]"
                             }
                         }
                     }
