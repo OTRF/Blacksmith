@@ -3,6 +3,8 @@
 
 & .\Prepare-Box.ps1
 
+& .\Enable-WinAuditCategories.ps1
+
 # Set Audit Rules (SACL)
 Import-Module .\Set-AuditRule.ps1
 

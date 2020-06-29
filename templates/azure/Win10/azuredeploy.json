@@ -21,6 +21,15 @@
                 "description": "Password for the Virtual Machine."
             }
         },
+        "numberOfWorkstations": {
+            "type": "int",
+            "defaultValue": 1,
+            "minValue": 1,
+            "maxValue": 100,
+            "metadata": {
+                "description": "Number of VMs to deploy"
+            }
+        },
         "windowsDesktopSKU": {
             "type": "string",
             "defaultValue": "19h2-pro",
@@ -34,12 +43,9 @@
                 "description": "The Windows version for the Desktop VM. This will pick a fully patched image of this given Windows version."
             }
         },
-        "vmName": {
+        "windowsDesktopVersion": {
             "type": "string",
-            "defaultValue": "WIN001",
-            "metadata": {
-                "description": "Name of the virtual machine"
-            }
+            "defaultValue": "latest"
         },
         "vmSize": {
             "type": "string",
@@ -133,13 +139,6 @@
             },
             "defaultValue": "192.168.2.0/24"
         },
-        "vmPrivateIPAddress": {
-            "type": "string",
-            "metadata": {
-                "description": "Private IP address of the VM"
-            },
-            "defaultValue": "192.168.2.10"
-        },
         "subnetName": {
             "type": "string",
             "metadata": {
@@ -182,15 +181,34 @@
         "subnetName": "[parameters('subnetName')]",
         "virtualNetworkAddressRange": "[parameters('virtualNetworkAddressRange')]",
         "subnetRange": "[parameters('subnetRange')]",
-        "vmPrivateIPAddress": "[parameters('vmPrivateIPAddress')]",
+        "vmPrivateIPPrefixArray": "[take(split(variables('subnetRange'),'.'),3)]",
+        "vmPrivateIPAddresPrefix": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray')[0], variables('vmPrivateIPPrefixArray')[1], variables('vmPrivateIPPrefixArray')[2])]",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
-        "vmName": "[parameters('vmName')]",
         "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
         "prepareBoxScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Prepare-Box.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSecurityAuditingScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSACLScript": "https://raw.githubusercontent.com/hunters-forge/Set-AuditRule/master/Set-AuditRule.ps1",
-        "installAgentScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/endpoint-software/Install-Endpoint-Agent.ps1', parameters('_artifactsLocationSasToken')))]"
-    },
+        "installAgentScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/endpoint-software/Install-Endpoint-Agent.ps1', parameters('_artifactsLocationSasToken')))]",
+
+        "copy": [
+            {
+                "name": "endpointsDynamic",
+                "count": "[parameters('numberOfWorkstations')]",
+                "input": {
+                    "tag": "workstation",
+                    "vmName": "[concat('WORKSTATION',copyIndex('endpointsDynamic',5))]",
+                    "os": "windows",
+                    "subnetref": "[variables('subnetRef')]",                   
+                    "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('endpointsDynamic',5))]",
+                    "vmSize": "[parameters('vmSize')]",
+                    "publisher": "MicrosoftWindowsDesktop",
+                    "offer": "Windows-10",
+                    "sku": "[parameters('windowsDesktopSKU')]",
+                    "version": "[parameters('windowsDesktopVersion')]"
+                } 
+            }
+        ]
+    }, 
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
@@ -280,36 +298,44 @@
         {
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2018-11-01",
-            "name": "[concat('pip-', variables('vmName'))]",
+            "name": "[concat('pip-', variables('endpointsDynamic')[copyIndex('vmPublicIpCopy')].vmName)]",
             "location": "[parameters('location')]",
+            "copy": {
+                "name": "vmPublicIpCopy",
+                "count": "[length(variables('endpointsDynamic'))]"
+            },
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "[toLower(concat(variables('vmName'), '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
+                    "domainNameLabel": "[toLower(concat(variables('endpointsDynamic')[copyIndex('vmPublicIpCopy')].vmName, '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
                 }
             }
         },
         {
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-11-01",
-            "name": "[concat('nic-', variables('vmName'))]",
+            "name": "[concat('nic-', variables('endpointsDynamic')[copyIndex('vmNetworkInterfaceCopy')].vmName)]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('vmName')))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('endpointsDynamic')[copyIndex('vmVMCopy')].vmName))]",
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
             ],
+            "copy": {
+                "name": "vmNetworkInterfaceCopy",
+                "count": "[length(variables('endpointsDynamic'))]"
+            },
             "properties": {
                 "ipConfigurations": [
                     {
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAllocationMethod": "Static",
-                            "privateIPAddress": "[variables('vmPrivateIPAddress')]",
+                            "privateIPAddress": "[variables('endpointsDynamic')[copyIndex('vmNetworkInterfaceCopy')].ipAddress]",
                             "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('vmName')))]"
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('endpointsDynamic')[copyIndex('vmNetworkInterfaceCopy')].vmName))]"
                             },
                             "subnet": {
-                                "id": "[variables('subnetRef')]"
+                                "id": "[variables('endpointsDynamic')[copyIndex('vmNetworkInterfaceCopy')].subnetref]"
                             }
                         }
                     }
@@ -319,34 +345,38 @@
         {
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2018-10-01",
-            "name": "[variables('vmName')]",
+            "name": "[variables('endpointsDynamic')[copyIndex('vmVMCopy')].vmName]",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('vmName')))]"
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('endpointsDynamic')[copyIndex('vmVMCopy')].vmName))]"
             ],
+            "copy": {
+                "name": "vmVMCopy",
+                "count": "[length(variables('endpointsDynamic'))]"
+            },
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "[parameters('vmSize')]"
+                    "vmSize": "[variables('endpointsDynamic')[copyIndex('vmVMCopy')].vmSize]"
                 },
                 "osProfile": {
-                    "computerName": "[variables('vmName')]",
+                    "computerName": "[variables('endpointsDynamic')[copyIndex('vmVMCopy')].vmName]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "publisher": "MicrosoftWindowsDesktop",
-                        "offer": "Windows-10",
-                        "sku": "[parameters('windowsDesktopSKU')]",
-                        "version": "latest"
+                        "publisher": "[variables('endpointsDynamic')[copyIndex('vmVMCopy')].publisher]",
+                        "offer": "[variables('endpointsDynamic')[copyIndex('vmVMCopy')].offer]",
+                        "sku": "[variables('endpointsDynamic')[copyIndex('vmVMCopy')].sku]",
+                        "version": "[variables('endpointsDynamic')[copyIndex('vmVMCopy')].version]"
                     },
                     "osDisk": {
                         "createOption": "FromImage"
                     },
                     "dataDisks": [
                         {
-                            "diskSizeGB": 1023,
+                            "diskSizeGB": 500,
                             "lun": 0,
                             "createOption": "Empty"
                         }
@@ -355,7 +385,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('vmName')))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('endpointsDynamic')[copyIndex('vmVMCopy')].vmName))]"
                         }
                     ]
                 },
@@ -368,51 +398,47 @@
             }
         },
         {
-            "name": "SetUpWindows",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-05-01",
+            "name": "[concat(variables('endpointsDynamic')[copyIndex('InitialSetUpWKSCopy')].vmName, '/SetupWinVM')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-12-01",
+            "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('endpointsDynamic')[copyIndex('InitialSetUpWKSCopy')].vmName)]"
             ],
+            "copy": {
+                "name": "InitialSetUpWKSCopy",
+                "count": "[length(variables('endpointsDynamic'))]"
+            },
             "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('customScriptExTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.8",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/azure/Win10/scripts/initialSetup.ps1",
+                        "[variables('prepareBoxScript')]",
+                        "[variables('setSecurityAuditingScript')]",
+                        "[variables('setSACLScript')]"
+                    ],
+                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ./initialSetup.ps1"
                 },
-                "parameters": {
-                    "extensionName": {
-                        "value": "SetupWinVM"
-                    },
-                    "commandToExecute": {
-                        "value": "powershell -ExecutionPolicy Unrestricted -File ./initialSetup.ps1"
-                    },
-                    "fileUris": {
-                        "value": [
-                            "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/azure/Win10/scripts/initialSetup.ps1",
-                            "[variables('prepareBoxScript')]",
-                            "[variables('setSecurityAuditingScript')]",
-                            "[variables('setSACLScript')]"
-                        ]
-                    },
-                    "vmName": {
-                        "value": "[variables('vmName')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
+                "protectedSettings": {}
             }
         },
         {
             "condition": "[parameters('enableMonitoringAgent')]",
+            "name": "[concat(variables('endpointsDynamic')[copyIndex('vmALAAgentSetUpCopy')].vmName, '/OMSExtension')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-03-01",
-            "name": "[concat(variables('vmName'), '/OMSExtension')]",
+            "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('endpointsDynamic')[copyIndex('vmALAAgentSetUpCopy')].vmName)]"
             ],
+            "copy": {
+                "name": "vmALAAgentSetUpCopy",
+                "count": "[length(variables('endpointsDynamic'))]"
+            },
             "properties": {
                 "publisher": "Microsoft.EnterpriseCloud.Monitoring",
                 "type": "MicrosoftMonitoringAgent",
@@ -428,12 +454,16 @@
         },
         {
             "condition": "[parameters('enableSysmon')]",
-            "name": "EnableSysmon",
+            "name": "[concat(variables('endpointsDynamic')[copyIndex('vmSysmonSetUpCopy')].vmName, '/Sysmon')]",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-05-01",
+            "apiVersion": "2019-10-01",
             "dependsOn": [
-                "SetUpWindows"
+                "InitialSetUpWKSCopy"
             ],
+            "copy": {
+                "name": "vmSysmonSetUpCopy",
+                "count": "[length(variables('endpointsDynamic'))]"
+            },
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -453,7 +483,7 @@
                         ]
                     },
                     "vmName": {
-                        "value": "[variables('vmName')]"
+                        "value": "[variables('endpointsDynamic')[copyIndex('vmSysmonSetUpCopy')].vmName]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -463,13 +493,17 @@
         },
         {
             "condition": "[parameters('enableAntimalware')]",
+            "name": "[concat(variables('endpointsDynamic')[copyIndex('vmAntiMalwareSetUpCopy')].vmName, '/AntiMalware')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(variables('vmName'), '/AntiMalware')]",
-            "apiVersion": "2019-07-01",
-            "location": "[resourceGroup().location]",
+            "apiVersion": "2019-12-01",
+            "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('endpointsDynamic')[copyIndex('vmAntiMalwareSetUpCopy')].vmName)]"
             ],
+            "copy": {
+                "name": "vmAntiMalwareSetUpCopy",
+                "count": "[length(variables('endpointsDynamic'))]"
+            },
             "properties": {
                 "publisher": "Microsoft.Azure.Security",
                 "type": "IaaSAntimalware",
@@ -495,14 +529,6 @@
         }
     ],
     "outputs": {
-        "vmName": {
-            "type": "string",
-            "value": "[variables('vmName')]"
-        },
-        "vmResourceID": {
-            "type": "string",
-            "value": "[resourceId('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
-        },
         "virtualNetworkName": {
             "type": "string",
             "value": "[variables('virtualNetworkName')]"

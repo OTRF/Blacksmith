@@ -109,6 +109,7 @@
         },
         "c2Framework": {
             "type": "string",
+            "defaultValue": "empire",
             "allowedValues": [
                 "empire",
                 "covenant",
@@ -119,11 +120,13 @@
                 "description": "C2 framework to deploy"
             }
         },
-        "enableDemoEnv": {
-            "type": "bool",
-            "defaultValue": false,
+        "numberOfWorkstations": {
+            "type": "int",
+            "defaultValue": 0,
+            "minValue": 1,
+            "maxValue": 10,
             "metadata": {
-                "description": "Deploys a Windows VM and the project Azure Sentinel2Go"
+                "description": "Number of Windows VMs to deploy"
             }
         },
         "winAdminPassword": {
@@ -374,7 +377,7 @@
             }
         },
         {
-            "condition": "[parameters('enableDemoEnv')]",
+            "condition": "[greater(parameters('numberOfWorkstations'), 0)]",
             "name": "deployAzureSentinel2Go",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
@@ -413,7 +416,7 @@
             }
         },
         {
-            "condition": "[parameters('enableDemoEnv')]",
+            "condition": "[greater(parameters('numberOfWorkstations'), 0)]",
             "name": "deployWin10VM",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-05-01",
@@ -463,11 +466,14 @@
                     "enableSysmon": {
                         "value": true
                     },
+                    "numberOfWorkstations": {
+                        "value": "[parameters('numberOfWorkstations')]"
+                    },
                     "workspaceId": {
-                        "value": "[if(parameters('enableDemoEnv'), reference('deployAzureSentinel2Go').outputs.workspaceIdOutput.value, 'Resource not deployed')]"
+                        "value": "[if(greater(parameters('numberOfWorkstations'), 0), reference('deployAzureSentinel2Go').outputs.workspaceIdOutput.value, 'Resource not deployed')]"
                     },
                     "workspaceKey": {
-                        "value": "[if(parameters('enableDemoEnv'), reference('deployAzureSentinel2Go').outputs.workspaceKeyOutput.value, 'Resource not deployed')]"
+                        "value": "[if(greater(parameters('numberOfWorkstations'), 0), reference('deployAzureSentinel2Go').outputs.workspaceKeyOutput.value, 'Resource not deployed')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -476,7 +482,7 @@
             }
         },
         {
-            "condition": "[parameters('enableDemoEnv')]",
+            "condition": "[greater(parameters('numberOfWorkstations'), 0)]",
             "name": "[concat(parameters('virtualNetworkName'), '/peering-to-remote-', parameters('winVirtualNetworkName'))]",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
@@ -491,12 +497,12 @@
                 "allowGatewayTransit": false,
                 "useRemoteGateways": false,
                 "remoteVirtualNetwork": {
-                    "id": "[if(parameters('enableDemoEnv'), reference('deployWin10VM').outputs.virtualNetworkId.value, 'resource not deployed')]"
+                    "id": "[if(greater(parameters('numberOfWorkstations'), 0), reference('deployWin10VM').outputs.virtualNetworkId.value, 'resource not deployed')]"
                 }
             }
         },
         {
-            "condition": "[parameters('enableDemoEnv')]",
+            "condition": "[greater(parameters('numberOfWorkstations'), 0)]",
             "name": "[concat(parameters('winVirtualNetworkName'), '/peering-to-remote-', parameters('VirtualNetworkName'))]",
             "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
             "apiVersion": "2019-11-01",
@@ -511,7 +517,7 @@
                 "allowGatewayTransit": false,
                 "useRemoteGateways": false,
                 "remoteVirtualNetwork": {
-                    "id": "[if(parameters('enableDemoEnv'), resourceId('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName')), 'resource not deployed')]"
+                    "id": "[if(greater(parameters('numberOfWorkstations'), 0), resourceId('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName')), 'resource not deployed')]"
                 }
             }
         }
