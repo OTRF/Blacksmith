@@ -19,7 +19,6 @@ usage(){
     echo "Usage: $0 [option...]" >&2
     echo
     echo "   -r         run a specific C2 server (empire or covenant or caldera)"
-    echo "   -i         C2 IP address (it could be the redirector too)"
     echo "   -h         help menu"
     echo
     echo "Examples:"
@@ -29,12 +28,11 @@ usage(){
 }
 
 # ************ Command Options **********************
-while getopts r:i:h option
+while getopts r:h option
 do
     case "${option}"
     in
         r) RUN_C2=$OPTARG;;
-        i) IP_ADDDRESS=$OPTARG;;
         h) usage;;
         \?) usage;;
         :  ) echo "Missing option argument for -$OPTARG" >&2; exit 1;;
@@ -107,7 +105,7 @@ elif [[ $RUN_C2 == "shad0w" ]]; then
     cd /opt/shad0w && sudo ./shad0w install >> $LOGFILE 2>&1
     
     # *********** Creating PowerShell Payload ***********
-    ./shad0w beacon -p x64/windows/secure/static -H $IP_ADDDRESS -f psh -o beacon.ps1 >> $LOGFILE 2>&1
+    #./shad0w beacon -p x64/windows/secure/static -H $IP_ADDDRESS -f psh -o beacon.ps1 >> $LOGFILE 2>&1
 
     # shad0w beacon -p x64/windows/secure/static -H 192.168.1.1 -f psh -o beacon.ps1
     # shad0w listen
