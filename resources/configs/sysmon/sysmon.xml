@@ -55,6 +55,7 @@
 				<Image condition="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
 				<Image condition="begin with">C:\WindowsAzure\</Image> <!--Azure -->
 				<DestinationIp condition="is">10.0.1.10</DestinationIp> <!--Mordor APT29 Evals: Windows Event Collector-->
+				<DestinationIp condition="is">172.18.38.6</DestinationIp> <!--Mordor Shire: Windows Event Collector-->
 			</NetworkConnect>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
