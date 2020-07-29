@@ -457,7 +457,7 @@
         },
         {
             "condition": "[parameters('enableSysmon')]",
-            "name": "[concat(variables('endpointsDynamic')[copyIndex('vmSysmonSetUpCopy')].vmName, '/Sysmon')]",
+            "name": "[concat(variables('endpointsDynamic')[copyIndex('vmSysmonSetUpCopy')].vmName, '-Sysmon')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
