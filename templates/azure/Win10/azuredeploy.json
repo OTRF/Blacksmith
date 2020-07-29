@@ -21,6 +21,13 @@
                 "description": "Password for the Virtual Machine."
             }
         },
+        "vmNamePrefix": {
+            "type": "string",
+            "defaultValue": "WORKSTATION",
+            "metadata": {
+                "description": "Prefix for the name of your virtual machine. Template will add a number starting from 5."
+            }
+        },
         "numberOfWorkstations": {
             "type": "int",
             "defaultValue": 1,
@@ -196,7 +203,7 @@
                 "count": "[parameters('numberOfWorkstations')]",
                 "input": {
                     "tag": "workstation",
-                    "vmName": "[concat('WORKSTATION',copyIndex('endpointsDynamic',5))]",
+                    "vmName": "[concat(parameters('vmNamePrefix'),copyIndex('endpointsDynamic',5))]",
                     "os": "windows",
                     "subnetref": "[variables('subnetRef')]",                   
                     "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('endpointsDynamic',5))]",
