@@ -35,17 +35,17 @@
         "enableMonitoringAgent": {
             "value": false
         },
-        "enableSysmon": {
-            "value": false
-        },
-        "enableAntimalware": {
-            "value": false
-        },
         "workspaceId": {
             "value": ""
         },
         "workspaceKey": {
             "value": ""
+        },
+        "enableSysmon": {
+            "value": false
+        },
+        "enableAntimalware": {
+            "value": false
         },
         "virtualNetworkName": {
             "value": "vnet-win"

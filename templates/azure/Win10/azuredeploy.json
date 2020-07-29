@@ -97,20 +97,6 @@
                 "description": "Do you want to enable the Microsoft Log Analytics Monitoring agent? "
             }
         },
-        "enableSysmon": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to install Sysmon on the endpoint?"
-            }
-        },
-        "enableAntimalware": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Enable Antimalware extension to filter out some folders and file extensions from the Windows Defender service"
-            }
-        },
         "workspaceId": {
             "type": "string",
             "defaultValue": "",
@@ -123,6 +109,20 @@
             "defaultValue": "",
             "metadata": {
                 "description": "Log analytics workspace keys"
+            }
+        },
+        "enableSysmon": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to install Sysmon on the endpoint?"
+            }
+        },
+        "enableAntimalware": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Enable Antimalware extension to filter out some folders and file extensions from the Windows Defender service"
             }
         },
         "virtualNetworkName": {
