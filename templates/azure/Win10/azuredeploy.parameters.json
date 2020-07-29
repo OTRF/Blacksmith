@@ -8,11 +8,29 @@
         "adminPassword": {
             "value": "GEN-PASSWORD"
         },
-        "dnsLabelPrefix": {
-            "value": "mordor"
+        "vmNamePrefix": {
+            "value": "WORKSTATION"
+        },
+        "numberOfWorkstations": {
+            "value": 1
+        },
+        "windowsDesktopSKU": {
+            "value": "19h2-pro"
+        },
+        "windowsDesktopVersion": {
+            "value": "latest"
+        },
+        "vmSize": {
+            "value": "Standard_B2s"
         },
         "allowedIPAddresses": {
             "value": "*"
+        },
+        "_artifactsLocation": {
+            "value": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/"
+        },
+        "_artifactsLocationSasToken": {
+            "value": ""
         },
         "enableMonitoringAgent": {
             "value": false
@@ -27,6 +45,27 @@
             "value": ""
         },
         "workspaceKey": {
+            "value": ""
+        },
+        "virtualNetworkName": {
+            "value": "vnet-win"
+        },
+        "virtualNetworkAddressRange": {
+            "value": "192.168.0.0/16"
+        },
+        "subnetRange": {
+            "value": "192.168.2.0/24"
+        },
+        "subnetName": {
+            "value": "snet-win"
+        },
+        "peeringVNET": {
+            "value": false
+        },
+        "peeringVNETName": {
+            "value": ""
+        },
+        "peeringVNETId": {
             "value": ""
         }
     }

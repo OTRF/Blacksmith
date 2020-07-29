@@ -16,7 +16,7 @@ Stop-Service wuauserv
 Write-Host "Allow ICMP Traffic through firewall"
 & netsh advfirewall firewall add rule name="ALL ICMP V4" protocol=icmpv4:any,any dir=in action=allow
 
-Write-Host "Enable WMI traffic through the firewall"
+Write-Host "Enable WMI traffic through firewall"
 & netsh advfirewall firewall set rule group="windows management instrumentation (wmi)" new enable=yes
 
 # Power Settings
