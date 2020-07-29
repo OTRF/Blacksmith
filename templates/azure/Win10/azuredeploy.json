@@ -317,7 +317,7 @@
             "name": "[concat('nic-', variables('endpointsDynamic')[copyIndex('vmNetworkInterfaceCopy')].vmName)]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('endpointsDynamic')[copyIndex('vmVMCopy')].vmName))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('endpointsDynamic')[copyIndex('vmNetworkInterfaceCopy')].vmName))]",
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
             ],
             "copy": {
@@ -374,13 +374,7 @@
                     "osDisk": {
                         "createOption": "FromImage"
                     },
-                    "dataDisks": [
-                        {
-                            "diskSizeGB": 500,
-                            "lun": 0,
-                            "createOption": "Empty"
-                        }
-                    ]
+                    "dataDisks": []
                 },
                 "networkProfile": {
                     "networkInterfaces": [
