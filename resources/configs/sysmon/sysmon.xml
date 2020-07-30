@@ -127,6 +127,7 @@
 				<TargetImage condition="begin with">C:\Packages\Plugins\</TargetImage> <!--Azure ARM Extensions -->
 				<TargetImage condition="begin with">C:\WindowsAzure\</TargetImage> <!--Azure -->
 				<TargetImage condition="begin with">C:\Program Files\WindowsApps\</TargetImage>
+				<TargetImage condition="contains">Microsoft.Windows.Cortana</TargetImage>
 			</ProcessAccess>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -152,13 +153,25 @@
 				<Image condition="image">GoogleUpdate.exe</Image>
 				<Image condition="is">C:\Program Files\VMware\VMware Tools\TPAutoConnect.exe</Image>
 				<Image condition="is">C:\Program Files\Windows Defender\NisSrv.exe</Image>
+				<Image condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</Image>
+				<Image condition="is">C:\windows\system32\AUDIODG.EXE</Image>
+				<TargetObject condition="is">HKLM\System\CurrentControlSet\Services\W32Time\Config\LastKnownGoodTime</TargetObject>
+				<TargetObject condition="begin with">HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppReadiness\</TargetObject>
 				<Image condition="end with">onedrivesetup.exe</Image>
 				<Image condition="end with">onedrive.exe</Image>
 				<Image condition="end with">skypeapp.exe</Image>
-				<Image condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</Image>
-				<Image condition="is">C:\windows\system32\AUDIODG.EXE</Image>
 				<TargetObject condition="is">\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\Microsoft Print to PDF\PrinterDriverData</TargetObject>
 				<TargetObject condition="end with">LanguageList</TargetObject>
+				<TargetObject condition="end with">Windows.UI.SettingsAppThreshold.pri</TargetObject>
+				<TargetObject condition="end with">\Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications</TargetObject>
+				<TargetObject condition="end with">\Software\Microsoft\Input\Settings\Insights</TargetObject>
+				<TargetObject condition="end with">\Schemas\StateSchema</TargetObject>
+				<TargetObject condition="end with">\Windows Search\CrawlScopeManager\Windows\SystemIndex</TargetObject>
+				<TargetObject condition="end with">\AppModel\StateRepository\Cache\Metadata</TargetObject>
+				<TargetObject condition="contains">\OpenWithProgids\</TargetObject>
+				<TargetObject condition="contains">\Microsoft.WindowsMaps</TargetObject>
+				<TargetObject condition="contains">\AppModel\Deployment\Package</TargetObject>
+				<TargetObject condition="contains">\AppModel\SystemAppData\Microsoft.Windows.ContentDeliveryManager</TargetObject>
 			</RegistryEvent>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
