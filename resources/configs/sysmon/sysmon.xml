@@ -52,6 +52,7 @@
 				<Image condition="is">C:\Windows\System32\mmc.exe</Image>
 				<Image condition="is">C:\Program Files\Microsoft VS Code\Code.exe</Image>
 				<Image condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</Image>
+				<Image condition="begin with">C:\Program Files\Windows Defender Advanced Threat Protection\</Image>
 				<Image condition="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
 				<Image condition="begin with">C:\WindowsAzure\</Image> <!--Azure -->
 				<DestinationIp condition="is">10.0.1.10</DestinationIp> <!--Mordor APT29 Evals: Windows Event Collector-->
@@ -112,7 +113,6 @@
 				<SourceImage condition="is">C:\Program Files\Windows Defender\MsMpEng.exe</SourceImage>
 				<SourceImage condition="is">C:\ProgramData\Microsoft\Windows Defender\platform\4.18.1907.4-0\MsMpEng.exe</SourceImage>
 				<SourceImage condition="is">C:\Program Files\Microsoft VS Code\Code.exe</SourceImage>
-				<SourceImage condition="end with">onedrivesetup.exe</SourceImage>
 				<SourceImage condition="is">C:\WindowsAzure\Packages\CollectGuestLogs.exe</SourceImage>
 				<SourceImage condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</SourceImage>
 				<SourceImage condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\MonitoringHost.exe</SourceImage>
@@ -127,6 +127,19 @@
 				<TargetImage condition="begin with">C:\Packages\Plugins\</TargetImage> <!--Azure ARM Extensions -->
 				<TargetImage condition="begin with">C:\WindowsAzure\</TargetImage> <!--Azure -->
 				<TargetImage condition="begin with">C:\Program Files\WindowsApps\</TargetImage>
+				<TargetImage condition="begin with">C:\Program Files\Windows Defender Advanced Threat Protection\</TargetImage>
+				<SourceImage condition="begin with">C:\Program Files\Windows Defender Advanced Threat Protection\</SourceImage>
+				<SourceImage condition="end with">onedrivesetup.exe</SourceImage>
+				<TargetImage condition="end with">\StartMenuExperienceHost.exe</TargetImage>
+				<TargetImage condition="end with">\ShellExperienceHost.exe</TargetImage>
+				<Rule name="RuntimeBroker" groupRelation="and">
+					<SourceImage condition="is">C:\Windows\System32\RuntimeBroker.exe</SourceImage>
+					<TargetImage condition="is">C:\windows\Explorer.EXE</TargetImage>
+				</Rule>
+				<Rule name="MsMpEng" groupRelation="and">
+					<SourceImage condition="begin with">C:\ProgramData\Microsoft\Windows Defender\platform\</SourceImage>
+					<TargetImage condition="end with">\svchost.exe</TargetImage>
+				</Rule>
 				<TargetImage condition="contains">Microsoft.Windows.Cortana</TargetImage>
 			</ProcessAccess>
 		</RuleGroup>
@@ -155,6 +168,8 @@
 				<Image condition="is">C:\Program Files\Windows Defender\NisSrv.exe</Image>
 				<Image condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</Image>
 				<Image condition="is">C:\windows\system32\AUDIODG.EXE</Image>
+				<Image condition="is">C:\Program Files\Windows Defender Advanced Threat Protection\MsSense.exe</Image>  <!--MDATP-->
+				<Image condition="is">C:\Program Files\Windows Defender Advanced Threat Protection\SenseCncProxy.exe</Image> <!--MDATP-->
 				<TargetObject condition="is">HKLM\System\CurrentControlSet\Services\W32Time\Config\LastKnownGoodTime</TargetObject>
 				<TargetObject condition="begin with">HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppReadiness\</TargetObject>
 				<Image condition="end with">onedrivesetup.exe</Image>
