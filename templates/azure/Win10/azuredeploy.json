@@ -419,14 +419,14 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/azure/Win10/scripts/initialSetup.ps1",
+                        "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/azure/Win10/scripts/Set-Initial-Settings.ps1",
                         "[variables('prepareBoxScript')]",
                         "[variables('setSecurityAuditingScript')]",
                         "[variables('saclModule')]",
                         "[variables('setSACLScript')]",
                         "[variables('setWallPaperScript')]"
                     ],
-                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ./initialSetup.ps1"
+                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1"
                 },
                 "protectedSettings": {}
             }
