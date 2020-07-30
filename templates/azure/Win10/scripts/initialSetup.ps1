@@ -1,9 +1,6 @@
 # Author: Roberto Rodriguez (@Cyb3rWard0g)
 # License: GPL-3.0
 
-# Move Desktop Wallpaper
-Move-Item -Path .\otr.png -Destination C:\ProgramData\otr.png
-
 # Custom Settings applied
 & .\Prepare-Box.ps1
 
@@ -12,3 +9,6 @@ Move-Item -Path .\otr.png -Destination C:\ProgramData\otr.png
 
 # Set Audit Rules from Set-AuditRule project
 & .\Set-SACLs.ps1
+
+# Set Wallpaper
+& .\Set-WallPaper.ps1
