@@ -147,23 +147,6 @@ $regConfig | ConvertFrom-Csv | ForEach-Object {
     New-ItemProperty -Path $_.regKey -Name $_.name -Value $_.value -PropertyType $_.type -force
 }
 
-# Setting up Desktop WallPaper
-$regConfig = @"
-regKey,name,value,type
-"HKCU:\Control Panel\Desktop","WallPaper","C:\ProgramData\otr.png","String"
-"HKCU:\Control Panel\Desktop","WallpaperStyle","6","String"
-"@
-
-Write-host "Setting up Registry keys for Desktop Wallpaper.."
-$regConfig | ConvertFrom-Csv | ForEach-Object {
-    if(!(Test-Path $_.regKey)){
-        Write-Host $_.regKey " does not exist.."
-        New-Item $_.regKey -Force
-    }
-    Write-Host "Setting " $_.regKey
-    New-ItemProperty -Path $_.regKey -Name $_.name -Value $_.value -PropertyType $_.type -force
-}
-
 # Set up PSRemoting 
 $ServiceName = 'WinRM'
 $arrService = Get-Service -Name $ServiceName
