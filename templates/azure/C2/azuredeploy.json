@@ -120,57 +120,6 @@
                 "description": "C2 framework to deploy"
             }
         },
-        "numberOfWorkstations": {
-            "type": "int",
-            "defaultValue": 0,
-            "minValue": 1,
-            "maxValue": 10,
-            "metadata": {
-                "description": "Number of Windows VMs to deploy"
-            }
-        },
-        "winAdminPassword": {
-            "type": "securestring",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Password for Windows machine"
-            }
-        },
-        "winVirtualNetworkName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the Virtual Network"
-            },
-            "defaultValue": "vnet-win"
-        },
-        "winVirtualNetworkAddressRange": {
-            "type": "string",
-            "metadata": {
-                "description": "Address Range of the virtual network"
-            },
-            "defaultValue": "192.168.0.0/16"
-        },
-        "winSubnetRange": {
-            "type": "string",
-            "metadata": {
-                "description": "Address Range of the subnet"
-            },
-            "defaultValue": "192.168.2.0/24"
-        },
-        "winVmPrivateIPAddress": {
-            "type": "string",
-            "metadata": {
-                "description": "Private IP address of the VM"
-            },
-            "defaultValue": "192.168.2.10"
-        },
-        "winSubnetName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the subnet"
-            },
-            "defaultValue": "snet-win"
-        },
         "_artifactsLocation": {
             "type": "string",
             "defaultValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/",
@@ -197,7 +146,6 @@
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
         "c2SetupScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/bash/Install-C2s.sh', parameters('_artifactsLocationSasToken')))]",
         "dockerSetupScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/bash/Install-Docker.sh', parameters('_artifactsLocationSasToken')))]",
-        "win10Template": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]",
         "vmName": "[parameters('vmName')]",
         "linuxConfiguration": {
@@ -226,7 +174,7 @@
             }
         },
         {
-            "name": "nsg-c2",
+            "name": "nsg-sshallow",
             "comments": "Default Network Security Group for Linux endpoints",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-08-01",
@@ -255,7 +203,7 @@
             "name": "[parameters('virtualNetworkName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', concat('nsg-', parameters('c2Framework')))]"
+                "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-sshallow')]"
             ],
             "properties": {
                 "addressSpace": {
@@ -269,7 +217,7 @@
                         "properties": {
                             "addressPrefix": "[parameters('subnetRange')]",
                             "networkSecurityGroup": {
-                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-c2')]"
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-sshallow')]"
                             }
                         }
                     }
@@ -368,156 +316,11 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {},
                 "protectedSettings": {
-                    "commandToExecute": "[concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework'), ' ', '-i', ' ', parameters('VMPrivateIPAddress'))]",
+                    "commandToExecute": "[concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework'))]",
                     "fileUris": [
                         "[variables('dockerSetupScript')]",
                         "[variables('c2SetupScript')]"
                     ]
-                }
-            }
-        },
-        {
-            "condition": "[greater(parameters('numberOfWorkstations'), 0)]",
-            "name": "deployAzureSentinel2Go",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[uri('https://raw.githubusercontent.com/OTRF/','Azure-Sentinel2Go/master/azuredeploy.json')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName": {
-                        "value": "C2"
-                    },
-                    "enableDataConnectorsKind": {
-                        "value": ["SecurityInsightsSecurityEventCollectionConfiguration"]
-                    }, 
-                    "setSecurityCollectionTier": {
-                        "value": "All"
-                    },
-                    "enableWinEventProviders": {
-                        "value": [
-                            "System",
-                            "Microsoft-Windows-Sysmon/Operational",
-                            "Microsoft-Windows-TerminalServices-RemoteConnectionManager/Operational",
-                            "Microsoft-Windows-Bits-Client/Operational",
-                            "Microsoft-Windows-TerminalServices-LocalSessionManager/Operational",
-                            "Directory Service",
-                            "Microsoft-Windows-DNS-Client/Operational",
-                            "Microsoft-Windows-Windows Firewall With Advanced Security/Firewall",
-                            "Windows PowerShell",
-                            "Microsoft-Windows-PowerShell/Operational",
-                            "Microsoft-Windows-WMI-Activity/Operational"
-                        ]
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[greater(parameters('numberOfWorkstations'), 0)]",
-            "name": "deployWin10VM",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-05-01",
-            "dependsOn": [
-                "deployAzureSentinel2Go"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('win10Template')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "adminUsername": {
-                        "value": "[parameters('adminUsername')]"
-                    },
-                    "adminPassword": {
-                        "value": "[parameters('winAdminPassword')]"
-                    },
-                    "vmSize": {
-                        "value": "[parameters('vmSize')]"
-                    },
-                    "allowedIPAddresses": {
-                        "value": "[parameters('allowedIPAddresses')]"
-                    },
-                    "virtualNetworkName": {
-                        "value": "[parameters('winVirtualNetworkName')]"
-                    },
-                    "virtualNetworkAddressRange": {
-                        "value": "[parameters('winVirtualNetworkAddressRange')]"
-                    },
-                    "subnetName": {
-                        "value": "[parameters('winSubnetName')]"
-                    },
-                    "subnetRange": {
-                        "value": "[parameters('winSubnetRange')]"
-                    },
-                    "vmPrivateIPAddress": {
-                        "value": "[parameters('winVmPrivateIPAddress')]"
-                    },
-                    "enableMonitoringAgent": {
-                        "value": true
-                    },
-                    "enableAntimalware": {
-                        "value": true
-                    },
-                    "enableSysmon": {
-                        "value": true
-                    },
-                    "numberOfWorkstations": {
-                        "value": "[parameters('numberOfWorkstations')]"
-                    },
-                    "workspaceId": {
-                        "value": "[if(greater(parameters('numberOfWorkstations'), 0), reference('deployAzureSentinel2Go').outputs.workspaceIdOutput.value, 'Resource not deployed')]"
-                    },
-                    "workspaceKey": {
-                        "value": "[if(greater(parameters('numberOfWorkstations'), 0), reference('deployAzureSentinel2Go').outputs.workspaceKeyOutput.value, 'Resource not deployed')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[greater(parameters('numberOfWorkstations'), 0)]",
-            "name": "[concat(parameters('virtualNetworkName'), '/peering-to-remote-', parameters('winVirtualNetworkName'))]",
-            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
-            "apiVersion": "2019-11-01",
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]",
-                "deployWin10VM"
-            ],
-            "location": "[parameters('location')]",
-            "properties": {
-                "allowVirtualNetworkAccess": true,
-                "allowForwardedTraffic": false,
-                "allowGatewayTransit": false,
-                "useRemoteGateways": false,
-                "remoteVirtualNetwork": {
-                    "id": "[if(greater(parameters('numberOfWorkstations'), 0), reference('deployWin10VM').outputs.virtualNetworkId.value, 'resource not deployed')]"
-                }
-            }
-        },
-        {
-            "condition": "[greater(parameters('numberOfWorkstations'), 0)]",
-            "name": "[concat(parameters('winVirtualNetworkName'), '/peering-to-remote-', parameters('VirtualNetworkName'))]",
-            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
-            "apiVersion": "2019-11-01",
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]",
-                "deployWin10VM"
-            ],
-            "location": "[parameters('location')]",
-            "properties": {
-                "allowVirtualNetworkAccess": true,
-                "allowForwardedTraffic": false,
-                "allowGatewayTransit": false,
-                "useRemoteGateways": false,
-                "remoteVirtualNetwork": {
-                    "id": "[if(greater(parameters('numberOfWorkstations'), 0), resourceId('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName')), 'resource not deployed')]"
                 }
             }
         }
