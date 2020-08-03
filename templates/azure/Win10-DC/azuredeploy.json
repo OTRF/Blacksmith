@@ -761,20 +761,20 @@
             }
         },
         {
-            "condition": "[equals(variables('allEndpoints')[copyIndex('vmDomainJoinCopy')].tag, 'workstation')]",
-            "name": "[concat(variables('allEndpoints')[copyIndex('vmDomainJoinCopy')].vmName,'/joindomain')]",
+            "name": "[concat(variables('endpointsDynamic')[copyIndex('vmDomainJoinCopy')].vmName,'/joindomain')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "InitialSetUpWKSCopy",
                 "vmSysmonSetupCopy",
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpointsDynamic')[copyIndex('vmDomainJoinCopy')].vmName, 'OMSExtension')]",
                 "ADSetup",
                 "UpdateVNetDNS"
             ],
             "copy": {
                 "name": "vmDomainJoinCopy",
-                "count": "[length(variables('allEndpoints'))]"
+                "count": "[length(variables('endpointsDynamic'))]"
             },
             "properties": {
                 "publisher": "Microsoft.Compute",
