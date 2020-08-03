@@ -544,7 +544,8 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('allEndpoints')[copyIndex('vmSysmonSetupCopy')].vmName)]"
+                "InitialSetUpWKSCopy",
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('domainController')[0].vmName, variables('domainController')[0].extensionName)]"
             ],
             "copy": {
                 "name": "vmSysmonSetupCopy",
