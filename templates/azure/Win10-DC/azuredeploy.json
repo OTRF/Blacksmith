@@ -253,6 +253,7 @@
                 "tag": "domainController",
                 "vmName": "DC01",
                 "os": "windows",
+                "subnetref": "[variables('subnetRef')]",
                 "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),'4')]",
                 "vmSize": "[parameters('vmSize')]",
                 "publisher": "MicrosoftWindowsServer",
