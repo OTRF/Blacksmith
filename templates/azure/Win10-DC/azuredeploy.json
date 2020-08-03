@@ -227,6 +227,7 @@
         "setPowerShellLogging": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Enable-PowerShell-Logging.ps1', parameters('_artifactsLocationSasToken')))]",
         "saclModule": "https://raw.githubusercontent.com/hunters-forge/Set-AuditRule/master/Set-AuditRule.ps1",
         "setSACLScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/auditing/Set-SACLs.ps1')]",
+        "setIPAddressScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Set-StaticIP.ps1', parameters('_artifactsLocationSasToken')))]",
         "installAgentScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/endpoint-software/Install-Endpoint-Agent.ps1', parameters('_artifactsLocationSasToken')))]",
         "setWallPaperScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Set-WallPaper.ps1', parameters('_artifactsLocationSasToken')))]",
 
@@ -477,6 +478,7 @@
                         "[variables('setPowerShellLogging')]",
                         "[variables('saclModule')]",
                         "[variables('setSACLScript')]",
+                        "[variables('setIPAddressScript')]",
                         "[variables('setWallPaperScript')]"
                     ],
                     "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1', ' ', '-ServerAddresses', ' ', variables('domainController')[0].ipAddress)]"
