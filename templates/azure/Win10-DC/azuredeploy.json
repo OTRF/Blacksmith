@@ -244,7 +244,8 @@
                     "publisher": "MicrosoftWindowsDesktop",
                     "offer": "Windows-10",
                     "sku": "[parameters('windowsDesktopSKU')]",
-                    "version": "[parameters('windowsDesktopVersion')]"
+                    "version": "[parameters('windowsDesktopVersion')]",
+                    "extensionName": "SetupWinVM"
                 } 
             }
         ],
@@ -259,7 +260,8 @@
                 "publisher": "MicrosoftWindowsServer",
                 "offer": "WindowsServer",
                 "sku": "[parameters('windowsServerSKU')]",
-                "version": "[parameters('windowsServerVersion')]"
+                "version": "[parameters('windowsServerVersion')]",
+                "extensionName": "SetUpDC"
             }
         ],
 
@@ -452,7 +454,7 @@
         },
         {
             "condition": "[equals(variables('allEndpoints')[copyIndex('InitialSetUpWKSCopy')].tag, 'workstation')]",
-            "name": "[concat(variables('allEndpoints')[copyIndex('InitialSetUpWKSCopy')].vmName, '/SetupWinVM')]",
+            "name": "[concat(variables('allEndpoints')[copyIndex('InitialSetUpWKSCopy')].vmName, '/', variables('allEndpoints')[copyIndex('InitialSetUpWKSCopy')].extensionName)]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
@@ -484,7 +486,7 @@
             }
         },
         {
-            "name": "[concat(variables('domainController')[0].vmName, '/SetUpDC')]",
+            "name": "[concat(variables('domainController')[0].vmName, '/', variables('domainController')[0].extensionName)]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
@@ -543,7 +545,8 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "InitialSetUpWKSCopy"
+                "InitialSetUpWKSCopy",
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('domainController')[0].vmName, variables('domainController')[0].extensionName)]"
             ],
             "copy": {
                 "name": "vmSysmonSetupCopy",
@@ -557,7 +560,7 @@
                 },
                 "parameters": {
                     "extensionName": {
-                        "value": "SetupWinVM"
+                        "value": "[variables('allEndpoints')[copyIndex('vmSysmonSetupCopy')].extensionName]"
                     },
                     "commandToExecute": {
                         "value": "powershell -ExecutionPolicy Unrestricted -File ./Install-Endpoint-Agent.ps1 -EndpointAgent Sysmon"
@@ -583,7 +586,8 @@
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "InitialSetUpWKSCopy"
+                "InitialSetUpWKSCopy",
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('domainController')[0].vmName, variables('domainController')[0].extensionName)]"
             ],
             "copy": {
                 "name": "vmAntiMalwareSetupCopy",
@@ -618,9 +622,9 @@
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('domainController')[0].vmName, 'AntiMalware')]",
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('domainController')[0].vmName, variables('domainController')[0].extensionName)]",
                 "[concat(variables('domainController')[0].vmName, '-Sysmon')]",
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('domainController')[0].vmName, 'SetUpDC')]"
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('domainController')[0].vmName, 'AntiMalware')]"
             ],
             "properties": {
                 "publisher": "Microsoft.Powershell",
@@ -700,7 +704,7 @@
                 },
                 "parameters": {
                     "extensionName": {
-                        "value": "SetUpDC"
+                        "value": "[variables('domainController')[0].extensionName]"
                     },
                     "commandToExecute": {
                         "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-AD.ps1',' ', '-domainFQDN',' ', parameters('domainFQDN'),' ', '-dcVMName',' ', variables('domainController')[0].vmName)]"
