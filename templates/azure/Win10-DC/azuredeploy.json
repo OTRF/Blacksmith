@@ -540,16 +540,15 @@
         },
         {
             "condition": "[parameters('enableSysmon')]",
-            "name": "[concat(variables('allEndpoints')[copyIndex('vmSysmonSetUpCopy')].vmName, '-Sysmon')]",
+            "name": "[concat(variables('endpointsDynamic')[copyIndex('vmSysmonSetUpCopy')].vmName, '-Sysmon')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "InitialSetUpWKSCopy",
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('domainController')[0].vmName, variables('domainController')[0].extensionName)]"
+                "InitialSetUpWKSCopy"
             ],
             "copy": {
                 "name": "vmSysmonSetupCopy",
-                "count": "[length(variables('allEndpoints'))]"
+                "count": "[length(variables('endpointsDynamic'))]"
             },
             "properties": {
                 "mode": "Incremental",
@@ -559,7 +558,7 @@
                 },
                 "parameters": {
                     "extensionName": {
-                        "value": "[variables('allEndpoints')[copyIndex('vmSysmonSetupCopy')].extensionName]"
+                        "value": "[variables('endpointsDynamic')[copyIndex('vmSysmonSetupCopy')].extensionName]"
                     },
                     "commandToExecute": {
                         "value": "powershell -ExecutionPolicy Unrestricted -File ./Install-Endpoint-Agent.ps1 -EndpointAgent Sysmon"
@@ -570,7 +569,42 @@
                         ]
                     },
                     "vmName": {
-                        "value": "[variables('allEndpoints')[copyIndex('vmSysmonSetupCopy')].vmName]"
+                        "value": "[variables('endpointsDynamic')[copyIndex('vmSysmonSetupCopy')].vmName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableSysmon')]",
+            "name": "[concat(variables('domainController')[0].vmName, '-Sysmon')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('domainController')[0].vmName, variables('domainController')[0].extensionName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptExTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "extensionName": {
+                        "value": "[variables('domainController')[0].extensionName]"
+                    },
+                    "commandToExecute": {
+                        "value": "powershell -ExecutionPolicy Unrestricted -File ./Install-Endpoint-Agent.ps1 -EndpointAgent Sysmon"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "[variables('installAgentScript')]"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[variables('domainController')[0].vmName]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
