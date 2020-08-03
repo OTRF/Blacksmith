@@ -541,6 +541,10 @@
         "virtualNetworkId": {
             "type": "string",
             "value": "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+        },
+        "endpoints": {
+            "type": "array",
+            "value": "[variables('endpointsDynamic')]"
         }
     }
 }
