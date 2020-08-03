@@ -664,10 +664,10 @@
                     "virtualNetworkAddressRange": {
                         "value": "[variables('virtualNetworkAddressRange')]"
                     },
-                    "subnetName1": {
+                    "subnetName": {
                         "value": "[variables('subnetName')]"
                     },
-                    "subnetRange1": {
+                    "subnetRange": {
                         "value": "[variables('subnetRange')]"
                     },
                     "networkSecurityGroupId": {
