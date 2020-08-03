@@ -453,17 +453,16 @@
             }
         },
         {
-            "condition": "[equals(variables('allEndpoints')[copyIndex('InitialSetUpWKSCopy')].tag, 'workstation')]",
-            "name": "[concat(variables('allEndpoints')[copyIndex('InitialSetUpWKSCopy')].vmName, '/', variables('allEndpoints')[copyIndex('InitialSetUpWKSCopy')].extensionName)]",
+            "name": "[concat(variables('endpointsDynamic')[copyIndex('InitialSetUpWKSCopy')].vmName, '/', variables('endpointsDynamic')[copyIndex('InitialSetUpWKSCopy')].extensionName)]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('allEndpoints')[copyIndex('InitialSetUpWKSCopy')].vmName)]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('endpointsDynamic')[copyIndex('InitialSetUpWKSCopy')].vmName)]"
             ],
             "copy": {
                 "name": "InitialSetUpWKSCopy",
-                "count": "[length(variables('allEndpoints'))]"
+                "count": "[length(variables('endpointsDynamic'))]"
             },
             "properties": {
                 "publisher": "Microsoft.Compute",
