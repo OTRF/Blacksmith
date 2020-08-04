@@ -214,6 +214,7 @@
     },
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
+        
         "virtualNetworkName": "[parameters('virtualNetworkName')]",
         "subnetName": "[parameters('subnetName')]",
         "virtualNetworkAddressRange": "[parameters('virtualNetworkAddressRange')]",
@@ -221,6 +222,7 @@
         "vmPrivateIPPrefixArray": "[take(split(variables('subnetRange'),'.'),3)]",
         "vmPrivateIPAddresPrefix": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray')[0], variables('vmPrivateIPPrefixArray')[1], variables('vmPrivateIPPrefixArray')[2])]",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
+        
         "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-DC/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
         "prepareBoxScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Prepare-Box.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSecurityAuditingScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1', parameters('_artifactsLocationSasToken')))]",
@@ -265,7 +267,7 @@
                 "extensionName": "SetUpDC"
             }
         ],
-
+        
         "allEndpoints": "[concat(variables('endpointsDynamic'), variables('domainController'))]",
 
         "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
