@@ -1,6 +1,7 @@
 # Blacksmith
 
-![Open_Threat_Research Community](https://img.shields.io/badge/Open_Threat_Research-Community-brightgreen.svg)
+[![Open_Threat_Research Community](https://img.shields.io/badge/Open_Threat_Research-Community-brightgreen.svg)](https://twitter.com/OTR_Community)
+[![Open Source Love](https://badges.frapsoft.com/os/v3/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
 
 The Blacksmith project focuses on providing dynamic easy-to-use templates for security researches to model and provision resources to automatically deploy applications and small networks in the cloud. It currently leverages [AWS CloudFormation](https://aws.amazon.com/cloudformation/) and [Microsoft Azure Resource Manager (ARM)]() templates to implement infrastructure as code for cloud solutions.
 

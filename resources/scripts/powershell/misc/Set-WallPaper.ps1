@@ -3,10 +3,6 @@
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-Resolve-DnsName github.com
-Resolve-DnsName raw.githubusercontent.com
-Resolve-DnsName live.sysinternals.com
-
 # Download BgInfo
 (New-Object Net.WebClient).DownloadFile('http://live.sysinternals.com/bginfo.exe', 'C:\ProgramData\bginfo.exe')
 
