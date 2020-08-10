@@ -19,6 +19,10 @@ Write-Host "Allow ICMP Traffic through firewall"
 Write-Host "Enable WMI traffic through firewall"
 & netsh advfirewall firewall set rule group="windows management instrumentation (wmi)" new enable=yes
 
+## Configured firewall to allow SMB
+Write-Host "Enable File and Printer Sharing"
+& netsh advfirewall firewall set rule group="File and Printer Sharing" new enable=Yes
+
 # Power Settings
 Write-Host "Setting Power Performance"
 $HPGuid = (Get-WmiObject -Class win32_powerplan -Namespace root\cimv2\power -Filter "ElementName='High performance'").InstanceID.tostring()
@@ -162,3 +166,11 @@ else
     write-Host "Setting WinRM to start automatically.."
     & sc.exe config WinRM start= auto
 }
+
+# Setting UAC level to Never Notify
+Write-Host "Setting UAC level to Never Notify.."
+Set-ItemProperty -Force -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value 0
+
+# RDP enabled for all Windows hosts
+Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 0
+Enable-NetFirewallRule -DisplayGroup "Remote Desktop"

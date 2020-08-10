@@ -27,11 +27,11 @@ else{
 # Set SACLs
 & .\Set-SACLs.ps1
 
+# Set Wallpaper
+& .\Set-WallPaper.ps1
+
 # Setting static IP and DNS server IP
 if ($ServerAddresses)
 {
     & .\Set-StaticIP.ps1 -ServerAddresses $ServerAddresses
 }
-
-# Set Wallpaper
-& .\Set-WallPaper.ps1

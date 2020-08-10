@@ -1,6 +1,7 @@
 # Author: Roberto Rodriguez (@Cyb3rWard0g)
 # License: GPL-3.0
 
+# REGISTRY
 Import-Module .\Set-AuditRule.ps1
 
 $AuditRules = @"
@@ -38,3 +39,44 @@ $AuditRules | ConvertFrom-Csv -Delimiter ';' | ForEach-Object {
         Set-AuditRule -RegistryPath $_.regKey -IdentityReference $_.identityReference  -Rights $_.rights.split(",") -InheritanceFlags $_.inheritanceFlags -PropagationFlags $_.propagationFlags -AuditFlags $_.auditFlags -ErrorAction SilentlyContinue
     }
 }
+
+# SERVICES
+
+# Update SDDL of a service and add (AU;SAFA;RPWPDTCCLC;;;WD)
+<#
+Ace Type:
+"AU": SYSTEM_AUDIT_ACE_TYPE
+Ace Flags:
+"SA"    : SUCCESSFUL_ACCESS_ACE_FLAG
+"FA"    : FAILED_ACCESS_ACE_FLAG
+Rights:
+RP : SERVICE_START – start the service
+WP: SERVICE_STOP – stop the service
+DT: SERVICE_PAUSE_CONTINUE – pause / continue the service
+CC – SERVICE_QUERY_CONFIG – ask the SCM for the service's current configuration
+LC – SERVICE_QUERY_STATUS – ask the SCM for the service's current status
+Object Guid: NA
+Inherit Object Guid: NA
+Account SIDs:
+  * WD: SDDL_EVERYONE
+  * NU: SDDL_NETWORK
+#>
+$ServiceRules = @"
+service;addition
+"IKEEXT";"(AU;SAFA;RPWPDTCCLC;;;WD)"
+"SessionEnv";"S:(AU;SAFA;RPWPDTCCLC;;;WD)"
+"scmanager":"(AU;SAFA;GA;;;NU)"
+"@
+
+$ServiceRules | ConvertFrom-Csv -Delimiter ';' | ForEach-Object {
+    if(Get-Service $service){
+        Write-Host "[+] Processing " $_.service
+        # Get Sddl
+        $sddl = (& $env:SystemRoot\System32\sc.exe sdshow $_.service | Out-String).Trim()
+        # Define new Sddl
+        $newSddl = ('{0}{1}' -f $sddl, $_.addition).Trim()
+        # Update Sddl
+        write-host "  [>] Updating SDDL.."
+        & $env:SystemRoot\System32\sc.exe sdset $_.service "$newSddl"
+    }
+} 
