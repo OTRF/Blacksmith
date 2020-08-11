@@ -32,7 +32,6 @@ write-host "Enabling audit rules.."
 $AuditRules | ConvertFrom-Csv -Delimiter ';' | ForEach-Object {
     if(!(Test-Path $_.regKey)){
         Write-Host $_.regKey " does not exist.."
-        New-Item $_.regKey -Force
     }
     else {
         Write-Host "Updating SACL of " $_.regKey
@@ -65,7 +64,7 @@ $ServiceRules = @"
 service;addition
 "IKEEXT";"(AU;SAFA;RPWPDTCCLC;;;WD)"
 "SessionEnv";"S:(AU;SAFA;RPWPDTCCLC;;;WD)"
-"scmanager":"(AU;SAFA;GA;;;NU)"
+"scmanager";"(AU;SAFA;GA;;;NU)"
 "@
 
 $ServiceRules | ConvertFrom-Csv -Delimiter ';' | ForEach-Object {

@@ -171,6 +171,10 @@ else
 Write-Host "Setting UAC level to Never Notify.."
 Set-ItemProperty -Force -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value 0
 
+# *** Registry modified to allow storage of wdigest credentials ***
+Write-Host "Setting WDigest to use logoncredential.."
+Set-ItemProperty -Force -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest" -Name "UseLogonCredential" -Value "1"
+
 # RDP enabled for all Windows hosts
 Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 0
 Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
