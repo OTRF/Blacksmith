@@ -9,12 +9,25 @@ if [ -x "$(command -v docker)" ]; then
     apt-get remove -y docker docker-engine docker.io containerd runc
 fi
 
+# Clean APT
+apt-get clean
+
 # Installing latest Docker
 echo "Installing docker via convenience script.."
 curl -fsSL https://get.docker.com -o get-docker.sh
 chmod +x get-docker.sh
-./get-docker.sh
+count=1
+until ./get-docker.sh || [ $count -eq 10 ]; do
+    echo "Docker installation failed. Trying again.."
+    sleep 5
+    ((count++))
+done
 
+if [[ "$count" == '10' ]]; then
+    exit 1
+fi
+
+count=1
 # Starting Docker service
 while true; do
     if (systemctl --quiet is-active docker.service); then
@@ -25,9 +38,17 @@ while true; do
         echo "Docker is not running. Attempting to start it.."
         systemctl enable docker.service
         systemctl start docker.service
-        sleep 2
+        sleep 5
+        ((count++))
+        if [[ "$count" == '10' ]]; then
+            break
+        fi
     fi
 done
+
+if [[ "$count" == '10' ]]; then
+    exit 1
+fi
 
 # ****** Installing latest docker compose
 if [ -x "$(command -v docker-compose)" ]; then
