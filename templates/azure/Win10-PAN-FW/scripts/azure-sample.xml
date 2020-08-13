@@ -1,0 +1,1068 @@
+<?xml version="1.0"?>
+<config version="9.1.0" urldb="paloaltonetworks">
+  <mgt-config>
+    <users>
+      <entry name="admin">
+        <phash>*</phash>
+        <permissions>
+          <role-based>
+            <superuser>yes</superuser>
+          </role-based>
+        </permissions>
+      </entry>
+      <entry name="DEMO-USER">
+        <phash>DEMO-PASSWORD-HASH</phash>
+        <permissions>
+          <role-based>
+            <superuser>yes</superuser>
+          </role-based>
+        </permissions>
+      </entry>
+    </users>
+    <password-complexity>
+      <enabled>yes</enabled>
+      <minimum-length>8</minimum-length>
+    </password-complexity>
+  </mgt-config>
+  <shared>
+    <application/>
+    <application-group/>
+    <service/>
+    <service-group/>
+    <botnet>
+      <configuration>
+        <http>
+          <dynamic-dns>
+            <enabled>yes</enabled>
+            <threshold>5</threshold>
+          </dynamic-dns>
+          <malware-sites>
+            <enabled>yes</enabled>
+            <threshold>5</threshold>
+          </malware-sites>
+          <recent-domains>
+            <enabled>yes</enabled>
+            <threshold>5</threshold>
+          </recent-domains>
+          <ip-domains>
+            <enabled>yes</enabled>
+            <threshold>10</threshold>
+          </ip-domains>
+          <executables-from-unknown-sites>
+            <enabled>yes</enabled>
+            <threshold>5</threshold>
+          </executables-from-unknown-sites>
+        </http>
+        <other-applications>
+          <irc>yes</irc>
+        </other-applications>
+        <unknown-applications>
+          <unknown-tcp>
+            <destinations-per-hour>10</destinations-per-hour>
+            <sessions-per-hour>10</sessions-per-hour>
+            <session-length>
+              <maximum-bytes>100</maximum-bytes>
+              <minimum-bytes>50</minimum-bytes>
+            </session-length>
+          </unknown-tcp>
+          <unknown-udp>
+            <destinations-per-hour>10</destinations-per-hour>
+            <sessions-per-hour>10</sessions-per-hour>
+            <session-length>
+              <maximum-bytes>100</maximum-bytes>
+              <minimum-bytes>50</minimum-bytes>
+            </session-length>
+          </unknown-udp>
+        </unknown-applications>
+      </configuration>
+      <report>
+        <topn>100</topn>
+        <scheduled>yes</scheduled>
+      </report>
+    </botnet>
+    <log-settings>
+      <syslog>
+        <entry name="default">
+          <server>
+            <entry name="PANSyslogCEF">
+              <transport>UDP</transport>
+              <port>514</port>
+              <format>BSD</format>
+              <server>10.2.3.4</server>
+              <facility>LOG_LOCAL4</facility>
+            </entry>
+          </server>
+          <format>
+            <config>CEF:0|Palo Alto Networks|PAN-OS|$sender_sw_version|$result|$type|1|rt=$cef-formatted-receive_time
+deviceExternalId=$serial shost=$host cs3Label=Virtual System cs3=$vsys act=$cmd duser=$admin
+destinationServiceName=$client msg=$path externalId=$seqno PanOSDGl1=$dg_hier_level_1
+PanOSDGl2=$dg_hier_level_2 PanOSDGl3=$dg_hier_level_3 PanOSDGl4=$dg_hier_level_4
+PanOSVsysName=$vsys_name dvchost=$device_name PanOSActionFlags=$actionflags
+ cs1Label=Before Change Detail cs1=$before-change-detail cs2Label=After Change Detail
+cs2=$after-change-detail</config>
+            <system>CEF:0|Palo Alto Networks|PAN-OS|$sender_sw_version|$subtype|$type|$number-of-severity|rt=$cef-formatted-receive_time
+deviceExternalId=$serial cs3Label=Virtual System cs3=$vsys fname=$object flexString2Label=Module
+flexString2=$module msg=$opaque externalId=$seqno cat=$eventid PanOSDGl1=$dg_hier_level_1
+PanOSDGl2=$dg_hier_level_2 PanOSDGl3=$dg_hier_level_3 PanOSDGl4=$dg_hier_level_4
+PanOSVsysName=$vsys_name dvchost=$device_name PanOSActionFlags=$actionflags</system>
+            <threat>CEF:0|Palo Alto Networks|PAN-OS|$sender_sw_version|$threatid|$type|$number-of-severity|rt=$cef-formatted-receive_time deviceExternalId=$serial src=$src dst=$dst sourceTranslatedAddress=$natsrc destinationTranslatedAddress=$natdst cs1Label=Rule cs1=$rule suser=$srcuser duser=$dstuser app=$app cs3Label=Virtual System cs3=$vsys cs4Label=Source Zone cs4=$from cs5Label=Destination Zone cs5=$to deviceInboundInterface=$inbound_if deviceOutboundInterface=$outbound_if cs6Label=LogProfile cs6=$logset cn1Label=SessionID cn1=$sessionid cnt=$repeatcnt spt=$sport dpt=$dport sourceTranslatedPort=$natsport destinationTranslatedPort=$natdport flexString1Label=Flags flexString1=$flags proto=$proto act=$action request=$misc cs2Label=URL Category cs2=$category flexString2Label=Direction flexString2=$direction PanOSActionFlags=$actionflags externalId=$seqno cat=$threatid fileId=$pcap_id PanOSDGl1=$dg_hier_level_1 PanOSDGl2=$dg_hier_level_2 PanOSDGl3=$dg_hier_level_3 PanOSDGl4=$dg_hier_level_4 PanOSVsysName=$vsys_name dvchost=$device_name PanOSSrcUUID=$src_uuid PanOSDstUUID=$dst_uuid PanOSTunnelID=$tunnelid PanOSMonitorTag=$monitortag PanOSParentSessionID=$parent_session_id PanOSParentStartTime=$parent_start_time PanOSTunnelType=$tunnel PanOSThreatCategory=$thr_category PanOSContentVer=$contentver PanOSAssocID=$assoc_id PanOSPPID=$ppid PanOSHTTPHeader=$http_headers PanOSURLCatList=$url_category_list PanOSRuleUUID=$rule_uuid PanOSHTTP2Con=$http2_connection</threat>
+            <traffic>CEF:0|Palo Alto Networks|PAN-OS|$sender_sw_version|$subtype|$type|1|rt=$cef-formatted-receive_time deviceExternalId=$serial src=$src dst=$dst sourceTranslatedAddress=$natsrc destinationTranslatedAddress=$natdst cs1Label=Rule cs1=$rule suser=$srcuser duser=$dstuser app=$app cs3Label=Virtual System cs3=$vsys cs4Label=Source Zone cs4=$from cs5Label=Destination Zone cs5=$to deviceInboundInterface=$inbound_if deviceOutboundInterface=$outbound_if cs6Label=LogProfile cs6=$logset cn1Label=SessionID cn1=$sessionid cnt=$repeatcnt spt=$sport dpt=$dport sourceTranslatedPort=$natsport destinationTranslatedPort=$natdport flexString1Label=Flags flexString1=$flags proto=$proto act=$action flexNumber1Label=Total bytes flexNumber1=$bytes in=$bytes_sent out=$bytes_received cn2Label=Packets cn2=$packets PanOSPacketsReceived=$pkts_received PanOSPacketsSent=$pkts_sent start=$cef-formatted-time_generated cn3Label=Elapsed time in seconds cn3=$elapsed cs2Label=URL Category cs2=$category externalId=$seqno reason=$session_end_reason PanOSDGl1=$dg_hier_level_1 PanOSDGl2=$dg_hier_level_2 PanOSDGl3=$dg_hier_level_3 PanOSDGl4=$dg_hier_level_4 PanOSVsysName=$vsys_name dvchost=$device_name cat=$action_source PanOSActionFlags=$actionflags PanOSSrcUUID=$src_uuid PanOSDstUUID=$dst_uuid PanOSTunnelID=$tunnelid PanOSMonitorTag=$monitortag PanOSParentSessionID=$parent_session_id PanOSParentStartTime=$parent_start_time PanOSTunnelType=$tunnel PanOSSCTPAssocID=$assoc_id PanOSSCTPChunks=$chunks PanOSSCTPChunkSent=$chunks_sent PanOSSCTPChunksRcv=$chunks_received PanOSRuleUUID=$rule_uuid PanOSHTTP2Con=$http2_connection</traffic>
+            <url>CEF:0|Palo Alto Networks|PAN-OS|$sender_sw_version|$subtype|$type|$number-of-severity|rt=$cef-formatted-receive_time
+deviceExternalId=$serial src=$src dst=$dst sourceTranslatedAddress=$natsrc
+destinationTranslatedAddress=$natdst cs1Label=Rule cs1=$rule suser=$srcuser duser=$dstuser app=$app
+cs3Label=Virtual System cs3=$vsys cs4Label=Source Zone cs4=$from cs5Label=Destination Zone cs5=$to
+deviceInboundInterface=$inbound_if deviceOutboundInterface=$outbound_if cs6Label=LogProfile cs6=$logset
+cn1Label=SessionID cn1=$sessionid cnt=$repeatcnt spt=$sport dpt=$dport sourceTranslatedPort=$natsport
+destinationTranslatedPort=$natdport flexString1Label=Flags flexString1=$flags proto=$proto act=$action
+request=$misc cs2Label=URL Category cs2=$category flexString2Label=Direction flexString2=$direction
+PanOSActionFlags=$actionflags externalId=$seqno requestContext=$contenttype cat=$threatid fileId=$pcap_id
+requestMethod=$http_method requestClientApplication=$user_agent PanOSXForwarderfor=$xff
+PanOSReferer=$referer PanOSDGl1=$dg_hier_level_1 PanOSDGl2=$dg_hier_level_2
+PanOSDGl3=$dg_hier_level_3 PanOSDGl4=$dg_hier_level_4 PanOSVsysName=$vsys_name
+dvchost=$device_name PanOSSrcUUID=$src_uuid PanOSDstUUID=$dst_uuid PanOSTunnelID=$tunnelid
+PanOSMonitorTag=$monitortag PanOSParentSessionID=$parent_session_id
+PanOSParentStartTime=$parent_start_time PanOSTunnelType=$tunnel PanOSThreatCategory=$thr_category
+PanOSContentVer=$contentver PanOSAssocID=$assoc_id PanOSPPID=$ppid PanOSHTTPHeader=$http_headers
+PanOSRuleUUID=$rule_uuid PanOSURLCatList=$url_category_list PanOSHTTP2Con=$http2_connection</url>
+            <data>CEF:0|Palo Alto Networks|PAN-OS|$sender_sw_version|$subtype|$type|$number-of-severity|rt=$cef-formatted-receive_time
+deviceExternalId=$serial src=$src dst=$dst sourceTranslatedAddress=$natsrc
+destinationTranslatedAddress=$natdst cs1Label=Rule cs1=$rule suser=$srcuser duser=$dstuser app=$app
+cs3Label=Virtual System cs3=$vsys cs4Label=Source Zone cs4=$from cs5Label=Destination Zone cs5=$to
+deviceInboundInterface=$inbound_if deviceOutboundInterface=$outbound_if cs6Label=LogProfile cs6=$logset
+cn1Label=SessionID cn1=$sessionid cnt=$repeatcnt spt=$sport dpt=$dport sourceTranslatedPort=$natsport
+destinationTranslatedPort=$natdport flexString1Label=Flags flexString1=$flags proto=$proto act=$action
+request=$misc cs2Label=URL Category cs2=$category flexString2Label=Direction flexString2=$direction
+PanOSActionFlags=$actionflags externalId=$seqno cat=$threatid fileId=$pcap_id PanOSDGl1=$dg_hier_level_1
+PanOSDGl2=$dg_hier_level_2 PanOSDGl3=$dg_hier_level_3 PanOSDGl4=$dg_hier_level_4
+PanOSVsysName=$vsys_name dvchost=$device_name PanOSSrcUUID=$src_uuid PanOSDstUUID=$dst_uuid
+PanOSTunnelID=$tunnelid PanOSMonitorTag=$monitortag PanOSParentSessionID=$parent_session_id
+PanOSParentStartTime=$parent_start_time PanOSTunnelType=$tunnel PanOSThreatCategory=$thr_category
+PanOSContentVer=$contentver PanOSAssocID=$assoc_id PanOSPPID=$ppid PanOSHTTPHeader=$http_headers
+PanOSRuleUUID=$rule_uuid</data>
+            <wildfire>CEF:0|Palo Alto Networks|PAN-OS|$sender_sw_version|$subtype|$type|$number-of-severity|rt=$cef-formatted-receive_time
+deviceExternalId=$serial src=$src dst=$dst sourceTranslatedAddress=$natsrc
+destinationTranslatedAddress=$natdst cs1Label=Rule cs1=$rule suser=$srcuser duser=$dstuser app=$app
+cs3Label=Virtual System cs3=$vsys cs4Label=Source Zone cs4=$from cs5Label=Destination Zone cs5=$to
+deviceInboundInterface=$inbound_if deviceOutboundInterface=$outbound_if cs6Label=LogProfile cs6=$logset
+cn1Label=SessionID cn1=$sessionid cnt=$repeatcnt spt=$sport dpt=$dport sourceTranslatedPort=$natsport
+destinationTranslatedPort=$natdport flexString1Label=Flags flexString1=$flags proto=$proto act=$action
+request=$misc cs2Label=URL Category cs2=$category flexString2Label=Direction flexString2=$direction
+PanOSActionFlags=$actionflags externalId=$seqno cat=$threatid filePath=$cloud fileId=$pcap_id
+fileHash=$filedigest fileType=$filetype suid=$sender msg=$subject duid=$recipient oldFileId=$reportid
+PanOSDGl1=$dg_hier_level_1 PanOSDGl2=$dg_hier_level_2 PanOSDGl3=$dg_hier_level_3
+PanOSDGl4=$dg_hier_level_4 PanOSVsysName=$vsys_name dvchost=$device_name PanOSSrcUUID=$src_uuid
+PanOSDstUUID=$dst_uuid PanOSTunnelID=$tunnelid PanOSMonitorTag=$monitortag
+PanOSParentSessionID=$parent_session_id PanOSParentStartTime=$parent_start_time
+PanOSTunnelType=$tunnel PanOSThreatCategory=$thr_category PanOSContentVer=$contentver
+PanOSAssocID=$assoc_id PanOSPPID=$ppid PanOSHTTPHeader=$http_headers PanOSRuleUUID=$rule_uuid</wildfire>
+            <auth>CEF:0|Palo Alto Networks|PAN-OS|$sender_sw_version|$subtype|$type|1|rt=$cef-formatted-receive_time
+deviceExternalId=$serial cs1Label=Server Profile cs1=$serverprofile cs2Label=Normalize User
+cs2=$normalize_user cs3Label=Virtual System cs3=$vsys cs4Label=Authentication Policy cs4=$authpolicy
+cs5Label=Client Type cs5=$clienttype cs6Label=Log Action cs6=$logset fname=$object cn1Label=Factor Number
+cn1=$factorno cn2Label=Authentication ID cn2=$authid src=$ip cnt=$repeatcnt duser=$user
+flexString2Label=Vendor flexString2=$vendor msg=$event externalId=$seqno PanOSDGl1=$dg_hier_level_1
+PanOSDGl2=$dg_hier_level_2 PanOSDGl3=$dg_hier_level_3 PanOSDGl4=$dg_hier_level_4
+PanOSVsysName=$vsys_name dvchost=$device_name PanOSActionFlags=$actionflags PanOSDesc=$desc
+PanOSRuleUUID=$rule_uuid</auth>
+          </format>
+        </entry>
+      </syslog>
+    </log-settings>
+    <content-preview>
+      <application/>
+      <application-type>
+        <category/>
+        <technology/>
+      </application-type>
+    </content-preview>
+  </shared>
+  <devices>
+    <entry name="localhost.localdomain">
+      <network>
+        <interface>
+          <ethernet>
+            <entry name="ethernet1/1">
+              <layer3>
+                <ndp-proxy>
+                  <enabled>no</enabled>
+                </ndp-proxy>
+                <lldp>
+                  <enable>no</enable>
+                </lldp>
+                <dhcp-client>
+                  <create-default-route>no</create-default-route>
+                </dhcp-client>
+              </layer3>
+              <link-state>up</link-state>
+            </entry>
+            <entry name="ethernet1/2">
+              <layer3>
+                <ndp-proxy>
+                  <enabled>no</enabled>
+                </ndp-proxy>
+                <lldp>
+                  <enable>no</enable>
+                </lldp>
+                <dhcp-client>
+                  <create-default-route>no</create-default-route>
+                </dhcp-client>
+              </layer3>
+            </entry>
+            <entry name="ethernet1/3">
+              <ha/>
+            </entry>
+            <entry name="ethernet1/4">
+              <ha/>
+            </entry>
+          </ethernet>
+        </interface>
+        <profiles>
+          <monitor-profile>
+            <entry name="default">
+              <interval>3</interval>
+              <threshold>5</threshold>
+              <action>wait-recover</action>
+            </entry>
+          </monitor-profile>
+        </profiles>
+        <ike>
+          <crypto-profiles>
+            <ike-crypto-profiles>
+              <entry name="default">
+                <encryption>
+                  <member>aes-128-cbc</member>
+                  <member>3des</member>
+                </encryption>
+                <hash>
+                  <member>sha1</member>
+                </hash>
+                <dh-group>
+                  <member>group2</member>
+                </dh-group>
+                <lifetime>
+                  <hours>8</hours>
+                </lifetime>
+              </entry>
+              <entry name="Suite-B-GCM-128">
+                <encryption>
+                  <member>aes-128-cbc</member>
+                </encryption>
+                <hash>
+                  <member>sha256</member>
+                </hash>
+                <dh-group>
+                  <member>group19</member>
+                </dh-group>
+                <lifetime>
+                  <hours>8</hours>
+                </lifetime>
+              </entry>
+              <entry name="Suite-B-GCM-256">
+                <encryption>
+                  <member>aes-256-cbc</member>
+                </encryption>
+                <hash>
+                  <member>sha384</member>
+                </hash>
+                <dh-group>
+                  <member>group20</member>
+                </dh-group>
+                <lifetime>
+                  <hours>8</hours>
+                </lifetime>
+              </entry>
+            </ike-crypto-profiles>
+            <ipsec-crypto-profiles>
+              <entry name="default">
+                <esp>
+                  <encryption>
+                    <member>aes-128-cbc</member>
+                    <member>3des</member>
+                  </encryption>
+                  <authentication>
+                    <member>sha1</member>
+                  </authentication>
+                </esp>
+                <dh-group>group2</dh-group>
+                <lifetime>
+                  <hours>1</hours>
+                </lifetime>
+              </entry>
+              <entry name="Suite-B-GCM-128">
+                <esp>
+                  <encryption>
+                    <member>aes-128-gcm</member>
+                  </encryption>
+                  <authentication>
+                    <member>none</member>
+                  </authentication>
+                </esp>
+                <dh-group>group19</dh-group>
+                <lifetime>
+                  <hours>1</hours>
+                </lifetime>
+              </entry>
+              <entry name="Suite-B-GCM-256">
+                <esp>
+                  <encryption>
+                    <member>aes-256-gcm</member>
+                  </encryption>
+                  <authentication>
+                    <member>none</member>
+                  </authentication>
+                </esp>
+                <dh-group>group20</dh-group>
+                <lifetime>
+                  <hours>1</hours>
+                </lifetime>
+              </entry>
+            </ipsec-crypto-profiles>
+            <global-protect-app-crypto-profiles>
+              <entry name="default">
+                <encryption>
+                  <member>aes-128-cbc</member>
+                </encryption>
+                <authentication>
+                  <member>sha1</member>
+                </authentication>
+              </entry>
+            </global-protect-app-crypto-profiles>
+          </crypto-profiles>
+        </ike>
+        <qos>
+          <profile>
+            <entry name="default">
+              <class-bandwidth-type>
+                <mbps>
+                  <class>
+                    <entry name="class1">
+                      <priority>real-time</priority>
+                    </entry>
+                    <entry name="class2">
+                      <priority>high</priority>
+                    </entry>
+                    <entry name="class3">
+                      <priority>high</priority>
+                    </entry>
+                    <entry name="class4">
+                      <priority>medium</priority>
+                    </entry>
+                    <entry name="class5">
+                      <priority>medium</priority>
+                    </entry>
+                    <entry name="class6">
+                      <priority>low</priority>
+                    </entry>
+                    <entry name="class7">
+                      <priority>low</priority>
+                    </entry>
+                    <entry name="class8">
+                      <priority>low</priority>
+                    </entry>
+                  </class>
+                </mbps>
+              </class-bandwidth-type>
+            </entry>
+          </profile>
+        </qos>
+        <virtual-router>
+          <entry name="default">
+            <protocol>
+              <bgp>
+                <enable>no</enable>
+                <dampening-profile>
+                  <entry name="default">
+                    <cutoff>1.25</cutoff>
+                    <reuse>0.5</reuse>
+                    <max-hold-time>900</max-hold-time>
+                    <decay-half-life-reachable>300</decay-half-life-reachable>
+                    <decay-half-life-unreachable>900</decay-half-life-unreachable>
+                    <enable>yes</enable>
+                  </entry>
+                </dampening-profile>
+                <routing-options>
+                  <graceful-restart>
+                    <enable>yes</enable>
+                  </graceful-restart>
+                </routing-options>
+              </bgp>
+              <rip>
+                <enable>no</enable>
+              </rip>
+              <ospf>
+                <enable>no</enable>
+              </ospf>
+              <ospfv3>
+                <enable>no</enable>
+              </ospfv3>
+            </protocol>
+            <interface>
+              <member>ethernet1/1</member>
+              <member>ethernet1/2</member>
+            </interface>
+            <ecmp>
+              <algorithm>
+                <ip-modulo/>
+              </algorithm>
+            </ecmp>
+            <routing-table>
+              <ip>
+                <static-route>
+                  <entry name="to-outbound">
+                    <nexthop>
+                      <ip-address>10.2.1.1</ip-address>
+                    </nexthop>
+                    <bfd>
+                      <profile>None</profile>
+                    </bfd>
+                    <path-monitor>
+                      <enable>no</enable>
+                      <failure-condition>any</failure-condition>
+                      <hold-time>2</hold-time>
+                    </path-monitor>
+                    <interface>ethernet1/1</interface>
+                    <metric>10</metric>
+                    <destination>0.0.0.0/0</destination>
+                    <route-table>
+                      <unicast/>
+                    </route-table>
+                  </entry>
+                  <entry name="to-trust">
+                    <nexthop>
+                      <ip-address>10.2.2.1</ip-address>
+                    </nexthop>
+                    <bfd>
+                      <profile>None</profile>
+                    </bfd>
+                    <path-monitor>
+                      <enable>no</enable>
+                      <failure-condition>any</failure-condition>
+                      <hold-time>2</hold-time>
+                    </path-monitor>
+                    <interface>ethernet1/2</interface>
+                    <metric>10</metric>
+                    <destination>10.2.2.0/24</destination>
+                    <route-table>
+                      <unicast/>
+                    </route-table>
+                  </entry>
+                  <entry name="to-victim">
+                    <path-monitor>
+                      <enable>no</enable>
+                      <failure-condition>any</failure-condition>
+                      <hold-time>2</hold-time>
+                    </path-monitor>
+                    <nexthop>
+                      <ip-address>10.2.2.1</ip-address>
+                    </nexthop>
+                    <bfd>
+                      <profile>None</profile>
+                    </bfd>
+                    <interface>ethernet1/2</interface>
+                    <metric>10</metric>
+                    <destination>10.2.4.0/24</destination>
+                    <route-table>
+                      <unicast/>
+                    </route-table>
+                  </entry>
+                  <entry name="to-cef">
+                    <path-monitor>
+                      <enable>no</enable>
+                      <failure-condition>any</failure-condition>
+                      <hold-time>2</hold-time>
+                    </path-monitor>
+                    <nexthop>
+                      <ip-address>10.2.2.1</ip-address>
+                    </nexthop>
+                    <bfd>
+                      <profile>None</profile>
+                    </bfd>
+                    <interface>ethernet1/2</interface>
+                    <metric>10</metric>
+                    <destination>10.2.3.0/24</destination>
+                    <route-table>
+                      <unicast/>
+                    </route-table>
+                  </entry>
+                </static-route>
+              </ip>
+            </routing-table>
+          </entry>
+        </virtual-router>
+      </network>
+      <deviceconfig>
+        <system>
+          <type>
+            <dhcp-client>
+              <send-hostname>yes</send-hostname>
+              <send-client-id>no</send-client-id>
+              <accept-dhcp-hostname>no</accept-dhcp-hostname>
+              <accept-dhcp-domain>no</accept-dhcp-domain>
+            </dhcp-client>
+          </type>
+          <update-server>updates.paloaltonetworks.com</update-server>
+          <update-schedule>
+            <threats>
+              <recurring>
+                <every-30-mins>
+                  <at>0</at>
+                </every-30-mins>
+              </recurring>
+            </threats>
+            <wildfire>
+              <recurring>
+                <every-hour>
+                  <action>download-and-install</action>
+                </every-hour>
+              </recurring>
+            </wildfire>
+            <global-protect-clientless-vpn>
+              <recurring>
+                <daily>
+                  <at>04:00</at>
+                  <action>download-and-install</action>
+                </daily>
+              </recurring>
+            </global-protect-clientless-vpn>
+          </update-schedule>
+          <timezone>US/Pacific</timezone>
+          <service>
+            <disable-telnet>yes</disable-telnet>
+            <disable-http>yes</disable-http>
+          </service>
+          <hostname>pannwfusiondemo</hostname>
+          <dns-setting>
+            <servers>
+              <primary>8.8.8.8</primary>
+              <secondary>8.8.4.4</secondary>
+            </servers>
+          </dns-setting>
+        </system>
+        <setting>
+          <config>
+            <rematch>yes</rematch>
+          </config>
+          <management>
+            <hostname-type-in-syslog>ipv4-address</hostname-type-in-syslog>
+            <initcfg>
+              <type>
+                <dhcp-client>
+                  <send-hostname>yes</send-hostname>
+                  <send-client-id>no</send-client-id>
+                  <accept-dhcp-hostname>no</accept-dhcp-hostname>
+                  <accept-dhcp-domain>no</accept-dhcp-domain>
+                </dhcp-client>
+              </type>
+              <hostname>pannwfusiondemo</hostname>
+              <username>panadmin</username>
+            </initcfg>
+            <quota-settings>
+              <disk-quota>
+                <alarm>3</alarm>
+                <appstat>4</appstat>
+                <trsum>7</trsum>
+                <thsum>2</thsum>
+                <sctpsum>0</sctpsum>
+                <hourlysctpsum>0</hourlysctpsum>
+                <dailysctpsum>0</dailysctpsum>
+                <weeklysctpsum>0</weeklysctpsum>
+                <hipmatch>3</hipmatch>
+                <dlp-logs>1</dlp-logs>
+                <application-pcaps>1</application-pcaps>
+                <debug-filter-pcaps>1</debug-filter-pcaps>
+                <hip-reports>1</hip-reports>
+                <sctp>0</sctp>
+                <traffic>30</traffic>
+                <threat>15</threat>
+                <config>4</config>
+                <system>4</system>
+              </disk-quota>
+            </quota-settings>
+          </management>
+        </setting>
+      </deviceconfig>
+      <vsys>
+        <entry name="vsys1">
+          <application/>
+          <application-group/>
+          <zone>
+            <entry name="Untrust">
+              <network>
+                <layer3>
+                  <member>ethernet1/1</member>
+                </layer3>
+                <log-setting>default</log-setting>
+              </network>
+            </entry>
+            <entry name="Trust">
+              <network>
+                <layer3>
+                  <member>ethernet1/2</member>
+                </layer3>
+                <log-setting>default</log-setting>
+              </network>
+            </entry>
+            <entry name="SyslogCEF">
+              <network>
+                <layer3/>
+                <log-setting>default</log-setting>
+              </network>
+              <user-acl>
+                <include-list>
+                  <member>10.2.3.0/24</member>
+                </include-list>
+              </user-acl>
+            </entry>
+            <entry name="VictimPC">
+              <network>
+                <layer3/>
+                <log-setting>default</log-setting>
+              </network>
+              <user-acl>
+                <include-list>
+                  <member>10.2.4.0/24</member>
+                </include-list>
+              </user-acl>
+            </entry>
+          </zone>
+          <service>
+            <entry name="RDP">
+              <protocol>
+                <tcp>
+                  <port>3389</port>
+                  <override>
+                    <no/>
+                  </override>
+                </tcp>
+              </protocol>
+              <description>10.2.3.4</description>
+            </entry>
+            <entry name="DNS">
+              <protocol>
+                <udp>
+                  <port>53</port>
+                  <override>
+                    <no/>
+                  </override>
+                </udp>
+              </protocol>
+            </entry>
+            <entry name="Syslog-TCP">
+              <protocol>
+                <tcp>
+                  <port>514</port>
+                  <override>
+                    <no/>
+                  </override>
+                </tcp>
+              </protocol>
+            </entry>
+            <entry name="Syslog-UDP">
+              <protocol>
+                <udp>
+                  <port>514</port>
+                  <override>
+                    <no/>
+                  </override>
+                </udp>
+              </protocol>
+            </entry>
+            <entry name="SSH">
+              <protocol>
+                <tcp>
+                  <port>22</port>
+                  <override>
+                    <no/>
+                  </override>
+                </tcp>
+              </protocol>
+            </entry>
+          </service>
+          <service-group/>
+          <schedule/>
+          <rulebase>
+            <security>
+              <rules>
+                <entry name="RDP Inbound" uuid="c60266c3-fcfd-4f99-b921-54d5aaae7a54">
+                  <to>
+                    <member>Trust</member>
+                  </to>
+                  <from>
+                    <member>Untrust</member>
+                  </from>
+                  <source>
+                    <member>any</member>
+                  </source>
+                  <destination>
+                    <member>any</member>
+                  </destination>
+                  <source-user>
+                    <member>any</member>
+                  </source-user>
+                  <category>
+                    <member>any</member>
+                  </category>
+                  <application>
+                    <member>ms-rdp</member>
+                    <member>web-browsing</member>
+                  </application>
+                  <service>
+                    <member>application-default</member>
+                  </service>
+                  <hip-profiles>
+                    <member>any</member>
+                  </hip-profiles>
+                  <action>allow</action>
+                  <log-setting>default</log-setting>
+                  <profile-setting>
+                    <group>
+                      <member>default</member>
+                    </group>
+                  </profile-setting>
+                </entry>
+                <entry name="Allow_All_Outbound">
+                  <to>
+                    <member>Untrust</member>
+                  </to>
+                  <from>
+                    <member>Trust</member>
+                  </from>
+                  <source>
+                    <member>any</member>
+                  </source>
+                  <destination>
+                    <member>any</member>
+                  </destination>
+                  <source-user>
+                    <member>any</member>
+                  </source-user>
+                  <category>
+                    <member>any</member>
+                  </category>
+                  <application>
+                    <member>any</member>
+                  </application>
+                  <service>
+                    <member>any</member>
+                  </service>
+                  <hip-profiles>
+                    <member>any</member>
+                  </hip-profiles>
+                  <action>allow</action>
+                  <log-setting>default</log-setting>
+                  <profile-setting>
+                    <group>
+                      <member>default</member>
+                    </group>
+                  </profile-setting>
+                  <log-start>yes</log-start>
+                  <log-end>no</log-end>
+                </entry>
+                <entry name="Log_Incoming_All">
+                  <to>
+                    <member>any</member>
+                  </to>
+                  <from>
+                    <member>Untrust</member>
+                  </from>
+                  <source>
+                    <member>any</member>
+                  </source>
+                  <destination>
+                    <member>any</member>
+                  </destination>
+                  <source-user>
+                    <member>any</member>
+                  </source-user>
+                  <category>
+                    <member>any</member>
+                  </category>
+                  <application>
+                    <member>any</member>
+                  </application>
+                  <service>
+                    <member>any</member>
+                  </service>
+                  <hip-profiles>
+                    <member>any</member>
+                  </hip-profiles>
+                  <action>allow</action>
+                  <log-start>no</log-start>
+                  <rule-type>universal</rule-type>
+                  <log-setting>default</log-setting>
+                  <profile-setting>
+                    <group>
+                      <member>default</member>
+                    </group>
+                  </profile-setting>
+                </entry>
+                <entry name="Allow_Ping">
+                  <to>
+                    <member>any</member>
+                  </to>
+                  <from>
+                    <member>any</member>
+                  </from>
+                  <source>
+                    <member>any</member>
+                  </source>
+                  <destination>
+                    <member>any</member>
+                  </destination>
+                  <source-user>
+                    <member>any</member>
+                  </source-user>
+                  <category>
+                    <member>any</member>
+                  </category>
+                  <application>
+                    <member>ping</member>
+                    <member>ping6</member>
+                  </application>
+                  <service>
+                    <member>any</member>
+                  </service>
+                  <hip-profiles>
+                    <member>any</member>
+                  </hip-profiles>
+                  <action>allow</action>
+                  <log-setting>default</log-setting>
+                </entry>
+              </rules>
+            </security>
+            <default-security-rules>
+              <rules>
+                <entry name="intrazone-default">
+                  <action>allow</action>
+                  <log-start>no</log-start>
+                  <log-end>yes</log-end>
+                  <log-setting>default</log-setting>
+                </entry>
+                <entry name="interzone-default">
+                  <action>deny</action>
+                  <log-start>no</log-start>
+                  <log-end>yes</log-end>
+                  <log-setting>default</log-setting>
+                </entry>
+              </rules>
+            </default-security-rules>
+            <nat>
+              <rules>
+                <entry name="Victim RDP">
+                  <source-translation>
+                    <dynamic-ip-and-port>
+                      <interface-address>
+                        <interface>ethernet1/2</interface>
+                      </interface-address>
+                    </dynamic-ip-and-port>
+                  </source-translation>
+                  <destination-translation>
+                    <translated-address>10.2.4.4</translated-address>
+                  </destination-translation>
+                  <to>
+                    <member>Untrust</member>
+                  </to>
+                  <from>
+                    <member>Untrust</member>
+                  </from>
+                  <source>
+                    <member>any</member>
+                  </source>
+                  <destination>
+                    <member>10.2.1.4</member>
+                  </destination>
+                  <service>RDP</service>
+                </entry>
+                <entry name="Outbound NAT">
+                  <source-translation>
+                    <dynamic-ip-and-port>
+                      <interface-address>
+                        <interface>ethernet1/1</interface>
+                      </interface-address>
+                    </dynamic-ip-and-port>
+                  </source-translation>
+                  <to>
+                    <member>Untrust</member>
+                  </to>
+                  <from>
+                    <member>any</member>
+                  </from>
+                  <source>
+                    <member>any</member>
+                  </source>
+                  <destination>
+                    <member>any</member>
+                  </destination>
+                  <service>any</service>
+                </entry>
+              </rules>
+            </nat>
+          </rulebase>
+          <log-settings>
+            <profiles>
+              <entry name="default">
+                <match-list>
+                  <entry name="trafficlogs">
+                    <send-syslog>
+                      <member>default</member>
+                    </send-syslog>
+                    <log-type>traffic</log-type>
+                    <filter>All Logs</filter>
+                    <send-to-panorama>no</send-to-panorama>
+                  </entry>
+                  <entry name="threat">
+                    <send-syslog>
+                      <member>default</member>
+                    </send-syslog>
+                    <log-type>threat</log-type>
+                    <filter>All Logs</filter>
+                    <send-to-panorama>no</send-to-panorama>
+                  </entry>
+                  <entry name="authlogs">
+                    <send-syslog>
+                      <member>default</member>
+                    </send-syslog>
+                    <log-type>auth</log-type>
+                    <filter>All Logs</filter>
+                    <send-to-panorama>no</send-to-panorama>
+                  </entry>
+                  <entry name="datalogs">
+                    <send-syslog>
+                      <member>default</member>
+                    </send-syslog>
+                    <log-type>data</log-type>
+                    <filter>All Logs</filter>
+                    <send-to-panorama>no</send-to-panorama>
+                  </entry>
+                  <entry name="tunnel">
+                    <send-syslog>
+                      <member>default</member>
+                    </send-syslog>
+                    <log-type>tunnel</log-type>
+                    <filter>All Logs</filter>
+                    <send-to-panorama>no</send-to-panorama>
+                  </entry>
+                  <entry name="urllogs">
+                    <send-syslog>
+                      <member>default</member>
+                    </send-syslog>
+                    <log-type>url</log-type>
+                    <filter>All Logs</filter>
+                    <send-to-panorama>no</send-to-panorama>
+                  </entry>
+                  <entry name="wildfirelogs">
+                    <send-syslog>
+                      <member>default</member>
+                    </send-syslog>
+                    <log-type>wildfire</log-type>
+                    <filter>All Logs</filter>
+                    <send-to-panorama>no</send-to-panorama>
+                  </entry>
+                  <entry name="auth">
+                    <send-syslog>
+                      <member>default</member>
+                    </send-syslog>
+                    <log-type>auth</log-type>
+                    <filter>All Logs</filter>
+                    <send-to-panorama>no</send-to-panorama>
+                  </entry>
+                </match-list>
+              </entry>
+            </profiles>
+          </log-settings>
+          <import>
+            <network>
+              <interface>
+                <member>ethernet1/1</member>
+                <member>ethernet1/2</member>
+              </interface>
+            </network>
+          </import>
+          <address>
+            <entry name="CEF-SYSLOG_FQDN">
+              <fqdn>10.2.3.4</fqdn>
+            </entry>
+            <entry name="CEF-SYSLOG">
+              <ip-netmask>10.2.3.4</ip-netmask>
+            </entry>
+            <entry name="WORKSTATION5">
+              <ip-netmask>10.2.4.4</ip-netmask>
+            </entry>
+          </address>
+          <profile-group>
+            <entry name="default">
+              <virus>
+                <member>default</member>
+              </virus>
+              <spyware>
+                <member>default</member>
+              </spyware>
+              <vulnerability>
+                <member>default</member>
+              </vulnerability>
+              <url-filtering>
+                <member>default-1</member>
+              </url-filtering>
+              <file-blocking>
+                <member>basic file blocking</member>
+              </file-blocking>
+              <wildfire-analysis>
+                <member>default</member>
+              </wildfire-analysis>
+            </entry>
+          </profile-group>
+          <profiles>
+            <url-filtering>
+              <entry name="default-1">
+                <credential-enforcement>
+                  <mode>
+                    <disabled/>
+                  </mode>
+                  <log-severity>medium</log-severity>
+                  <alert>
+                    <member>abortion</member>
+                    <member>abused-drugs</member>
+                  </alert>
+                  <block>
+                    <member>command-and-control</member>
+                    <member>computer-and-internet-info</member>
+                    <member>gambling</member>
+                    <member>hacking</member>
+                    <member>malware</member>
+                    <member>phishing</member>
+                    <member>questionable</member>
+                    <member>social-networking</member>
+                    <member>weapons</member>
+                  </block>
+                </credential-enforcement>
+                <log-http-hdr-xff>yes</log-http-hdr-xff>
+                <log-http-hdr-user-agent>yes</log-http-hdr-user-agent>
+                <log-http-hdr-referer>yes</log-http-hdr-referer>
+                <alert>
+                  <member>abortion</member>
+                  <member>abused-drugs</member>
+                  <member>adult</member>
+                  <member>command-and-control</member>
+                  <member>high-risk</member>
+                  <member>medium-risk</member>
+                  <member>newly-registered-domain</member>
+                  <member>online-storage-and-backup</member>
+                </alert>
+                <block>
+                  <member>computer-and-internet-info</member>
+                  <member>gambling</member>
+                  <member>hacking</member>
+                  <member>malware</member>
+                  <member>phishing</member>
+                  <member>questionable</member>
+                  <member>social-networking</member>
+                  <member>weapons</member>
+                </block>
+              </entry>
+            </url-filtering>
+          </profiles>
+        </entry>
+      </vsys>
+    </entry>
+  </devices>
+</config>
