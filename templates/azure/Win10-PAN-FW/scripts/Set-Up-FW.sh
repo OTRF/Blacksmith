@@ -70,6 +70,11 @@ API_KEY=$(echo $API_RESPONSE | sed -e 's,.*<key>\([^<]*\)</key>.*,\1,g')
 
 # Get Admin Password-hash
 echo "$INFO_TAG Getting Password Hash.." >> $LOGFILE 2>&1
+until curl --silent -k -u $FW_CREDS -X GET "https://$PRIVATE_IP/api/?type=op&cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>" --output /dev/null; do
+    echo "$INFO_TAG Waiting for Password HASH API to work.." >> $LOGFILE 2>&1
+    sleep 5
+done
+
 PW_HASH_RESPONSE=$(curl --silent -k -u $FW_CREDS -X GET "https://$PRIVATE_IP/api/?type=op&cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>")
 PW_HASH=$(echo $PW_HASH_RESPONSE | sed -e 's,.*<phash>\([^<]*\)</phash>.*,\1,g')
 
