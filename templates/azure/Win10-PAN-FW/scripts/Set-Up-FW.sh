@@ -56,7 +56,6 @@ fi
 
 # Set FW Creds
 FW_CREDS="$ADMIN_USER:$ADMIN_PASSWORD"
-echo "$INFO_TAG ussing PWD $FW_CREDS.." >> $LOGFILE 2>&1
 
 # *********** Wait for PAN FW ***************
 until curl --silent -k -X GET "https://$PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&password=$ADMIN_PASSWORD" --output /dev/null; do
@@ -68,7 +67,7 @@ done
 echo "$INFO_TAG Getting API Key.." >> $LOGFILE 2>&1
 API_RESPONSE=$(curl --silent -k -X GET "https://$PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&password=$ADMIN_PASSWORD")
 API_KEY=$(echo $API_RESPONSE | sed -e 's,.*<key>\([^<]*\)</key>.*,\1,g')
-echo "$INFO_TAG got this api $API_KEY.." >> $LOGFILE 2>&1
+echo "$INFO_TAG Using the following API $API_KEY .." >> $LOGFILE 2>&1
 
 # Get Admin Password-hash
 echo "$INFO_TAG Getting Password Hash.." >> $LOGFILE 2>&1
@@ -86,5 +85,5 @@ sed -i "s|DEMO-USER|${ADMIN_USER}|g" azure-sample.xml >> $LOGFILE 2>&1
 sed -i "s|DEMO-PASSWORD-HASH|${PW_HASH}|g" azure-sample.xml >> $LOGFILE 2>&1
 
 # Set up PAN FW
-echo "$INFO_TAG Executing Config-PW script.." >>$LOGFILE 2>&1
+echo "$INFO_TAG Executing Config-PW script.." >> $LOGFILE 2>&1
 python Config-FW.py $API_KEY $PRIVATE_IP >> $LOGFILE 2>&1
