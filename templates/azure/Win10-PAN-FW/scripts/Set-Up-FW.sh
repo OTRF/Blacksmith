@@ -58,7 +58,7 @@ fi
 FW_CREDS="$ADMIN_USER:$ADMIN_PASSWORD"
 
 # *********** Wait for PAN FW ***************
-while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' "https://$PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&password=$ADMIN_PASSWORD")" != "200" ]]; do
+while [[ "$(curl --insecure -s -o /dev/null -w ''%{http_code}'' "https://$PRIVATE_IP)" != "200" ]]; do
     echo "$INFO_TAG Waiting for PAN FW to be up.." >> $LOGFILE 2>&1
     sleep 5
 done
