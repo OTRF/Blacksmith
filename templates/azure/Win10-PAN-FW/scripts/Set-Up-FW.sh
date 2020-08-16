@@ -49,11 +49,6 @@ then
     usage
 fi
 
-
-######################
-# PAN FIREWALL SETUP
-######################
-
 # Set FW Creds
 FW_CREDS="$ADMIN_USER:$ADMIN_PASSWORD"
 
@@ -76,10 +71,8 @@ while [ $(curl -s -k "https://$PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&pass
     echo "$INFO_TAG Waiting for API access to be available.." >> $LOGFILE 2>&1
 done
 
-echo "https://$PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&password=$ADMIN_PASSWORD" >> $LOGFILE 2>&1
 API_RESPONSE=$(curl --silent -k "https://$PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&password=$ADMIN_PASSWORD")
 API_KEY=$(echo $API_RESPONSE | sed -e 's,.*<key>\([^<]*\)</key>.*,\1,g')
-echo "$INFO_TAG Using the following API $API_KEY .." >> $LOGFILE 2>&1
 
 # Get Admin Password-hash
 echo "$INFO_TAG Getting Password Hash.." >> $LOGFILE 2>&1
@@ -87,10 +80,8 @@ while [ $(curl -s -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<request
     echo "$INFO_TAG Waiting for Password Hash access to be available.." >> $LOGFILE 2>&1
 done
 
-echo "https://$PRIVATE_IP/api/?type=op&cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>" >> $LOGFILE 2>&1
 PW_HASH_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>")
 PW_HASH=$(echo $PW_HASH_RESPONSE | sed -e 's,.*<phash>\([^<]*\)</phash>.*,\1,g')
-echo "$INFO_TAG Using the following Password Hash $PW_HASH .." >> $LOGFILE 2>&1
 
 # Update Azure Sample XML Config (Username & Password-Hash)
 echo "$INFO_TAG Updating username and password for XML config.." >> $LOGFILE 2>&1
@@ -98,5 +89,14 @@ sed -i "s|DEMO-USER|${ADMIN_USER}|g" azure-sample.xml >> $LOGFILE 2>&1
 sed -i "s|DEMO-PASSWORD-HASH|${PW_HASH}|g" azure-sample.xml >> $LOGFILE 2>&1
 
 # Set up PAN FW
-echo "$INFO_TAG Executing Config-PW script.." >> $LOGFILE 2>&1
-python Config-FW.py $API_KEY $PRIVATE_IP >> $LOGFILE 2>&1
+#echo "$INFO_TAG Executing Config-PW script.." >> $LOGFILE 2>&1
+#python Config-FW.py $API_KEY $PRIVATE_IP >> $LOGFILE 2>&1
+
+echo "$INFO_TAG Importing PAN config.." >> $LOGFILE 2>&1
+curl -k --form file=@"./azure-sample.xml" "https://$PRIVATE_IP/api/?type=import&category=configuration&key=$API_KEY" >> $LOGFILE 2>&1
+
+echo "$INFO_TAG Loading config.." >> $LOGFILE 2>&1
+curl -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<load><config><from>azure-sample.xml</from></config></load>" >> $LOGFILE 2>&1
+
+echo "$INFO_TAG Committing config.." >> $LOGFILE 2>&1
+curl -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=commit&cmd=<commit><force></force></commit>" >> $LOGFILE 2>&1
