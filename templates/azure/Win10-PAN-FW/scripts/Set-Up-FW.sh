@@ -72,15 +72,23 @@ done
 
 # Get API Key
 echo "$INFO_TAG Getting API Key.." >> $LOGFILE 2>&1
+while [ $(curl -s -k "https://$PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&password=$ADMIN_PASSWORD" -o /dev/null -w '%{http_code}') != "200" ]; do
+    echo "$INFO_TAG Waiting for API access to be available.." >> $LOGFILE 2>&1
+done
+
 echo "https://$PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&password=$ADMIN_PASSWORD" >> $LOGFILE 2>&1
-API_RESPONSE=$(curl --silent -k -X GET "https://$PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&password=$ADMIN_PASSWORD")
+API_RESPONSE=$(curl --silent -k "https://$PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&password=$ADMIN_PASSWORD")
 API_KEY=$(echo $API_RESPONSE | sed -e 's,.*<key>\([^<]*\)</key>.*,\1,g')
 echo "$INFO_TAG Using the following API $API_KEY .." >> $LOGFILE 2>&1
 
 # Get Admin Password-hash
 echo "$INFO_TAG Getting Password Hash.." >> $LOGFILE 2>&1
+while [ $(curl -s -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>" -o /dev/null -w '%{http_code}') != "200" ]; do
+    echo "$INFO_TAG Waiting for Password Hash access to be available.." >> $LOGFILE 2>&1
+done
+
 echo "https://$PRIVATE_IP/api/?type=op&cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>" >> $LOGFILE 2>&1
-PW_HASH_RESPONSE=$(curl --silent -k -u $FW_CREDS -X GET "https://$PRIVATE_IP/api/?type=op&cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>")
+PW_HASH_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>")
 PW_HASH=$(echo $PW_HASH_RESPONSE | sed -e 's,.*<phash>\([^<]*\)</phash>.*,\1,g')
 echo "$INFO_TAG Using the following Password Hash $PW_HASH .." >> $LOGFILE 2>&1
 
