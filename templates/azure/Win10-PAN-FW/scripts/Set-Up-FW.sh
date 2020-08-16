@@ -58,8 +58,15 @@ fi
 FW_CREDS="$ADMIN_USER:$ADMIN_PASSWORD"
 
 # *********** Wait for PAN FW ***************
-while [[ "$(curl --insecure -s -o /dev/null -w ''%{http_code}'' "https://$PRIVATE_IP)" != "200" ]]; do
-    echo "$INFO_TAG Waiting for PAN FW to be up.." >> $LOGFILE 2>&1
+echo "$INFO_TAG Checking if PAN access is available.." >> $LOGFILE 2>&1
+attempt_counter=0
+max_attempts=100
+until $(curl --output /dev/null --insecure --silent --head --fail https://$PRIVATE_IP/php/login.php); do
+    if [ ${attempt_counter} -eq ${max_attempts} ];then
+      echo "$ERROR_TAG Max attempts reached"
+      exit 1
+    fi
+    echo "$INFO_TAG Waiting for PAN access to be up.."
     sleep 5
 done
 
@@ -73,13 +80,9 @@ echo "$INFO_TAG Using the following API $API_KEY .." >> $LOGFILE 2>&1
 # Get Admin Password-hash
 echo "$INFO_TAG Getting Password Hash.." >> $LOGFILE 2>&1
 echo "https://$PRIVATE_IP/api/?type=op&cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>" >> $LOGFILE 2>&1
-until curl --silent -k -u $FW_CREDS -X GET "https://$PRIVATE_IP/api/?type=op&cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>" --output /dev/null; do
-    echo "$INFO_TAG Waiting for Password HASH API to work.." >> $LOGFILE 2>&1
-    sleep 5
-done
-
 PW_HASH_RESPONSE=$(curl --silent -k -u $FW_CREDS -X GET "https://$PRIVATE_IP/api/?type=op&cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>")
 PW_HASH=$(echo $PW_HASH_RESPONSE | sed -e 's,.*<phash>\([^<]*\)</phash>.*,\1,g')
+echo "$INFO_TAG Using the following Password Hash $PW_HASH .." >> $LOGFILE 2>&1
 
 # Update Azure Sample XML Config (Username & Password-Hash)
 echo "$INFO_TAG Updating username and password for XML config.." >> $LOGFILE 2>&1
