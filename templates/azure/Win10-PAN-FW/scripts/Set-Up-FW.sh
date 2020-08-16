@@ -127,7 +127,7 @@ JOB_PROGRESS=0
 
 until [ $JOB_RESULTS = "OK" ] && [ $JOB_STATUS = "FIN" ] && [ $JOB_PROGRESS = 100 ]; do
     echo "$INFO_TAG waiting for 100% OK status.." >> $LOGFILE 2>&1
-    JOB_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<show><jobs><id>1</id></jobs></show>&key=")
+    JOB_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<show><jobs><id>1</id></jobs></show>")
     JOB_RESULTS=$(echo $JOB_RESPONSE | sed -e 's,.*<result>\([^<]*\)</result>.*,\1,g')
     JOB_STATUS=$(echo $JOB_RESPONSE | sed -e 's,.*<status>\([^<]*\)</status>.*,\1,g')
     JOB_PROGRESS=$(echo $JOB_RESPONSE | sed -e 's,.*<progress>\([^<]*\)</progress>.*,\1,g')
@@ -168,7 +168,7 @@ JOB_COMMIT_PROGRESS=0
 
 until [ $JOB_COMMIT_RESULTS = "OK" ] && [ $JOB_COMMIT_STATUS = "FIN" ] && [ $JOB_COMMIT_PROGRESS = 100 ]; do
     echo "$INFO_TAG waiting for 100% OK status.." >> $LOGFILE 2>&1
-    JOB_COMMIT_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<show><jobs><id>1</id></jobs></show>&key=")
+    JOB_COMMIT_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<show><jobs><id>$COMMIT_JOB_ID</id></jobs></show>")
     JOB_COMMIT_RESULTS=$(echo $JOB_COMMIT_RESPONSE | sed -e 's,.*<result>\([^<]*\)</result>.*,\1,g')
     JOB_COMMIT_STATUS=$(echo $JOB_COMMIT_RESPONSE | sed -e 's,.*<status>\([^<]*\)</status>.*,\1,g')
     JOB_COMMIT_PROGRESS=$(echo $JOB_COMMIT_RESPONSE | sed -e 's,.*<progress>\([^<]*\)</progress>.*,\1,g')
