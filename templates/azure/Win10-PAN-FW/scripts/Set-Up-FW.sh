@@ -98,6 +98,20 @@ curl -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<load><config><from>a
 echo "$INFO_TAG Committing config.." >> $LOGFILE 2>&1
 #curl -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=commit&cmd=<commit><force></force></commit>" >> $LOGFILE 2>&1
 
+echo "$INFO_TAG CHECKING JOB 1 - AUTO COMMIT.." >> $LOGFILE 2>&1
+JOB_AUTO_COMMIT_CODE=$(curl -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<show><jobs><id>1</id></jobs></show>" -o /dev/null -w '%{http_code}') >> $LOGFILE 2>&1
+JOB_AUTO_COMMIT=$(curl -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<show><jobs><id>1</id></jobs></show>" -v) >> $LOGFILE 2>&1
+
+echo $JOB_AUTO_COMMIT_CODE >> $LOGFILE 2>&1
+echo $JOB_AUTO_COMMIT >> $LOGFILE 2>&1
+
+echo "$INFO_TAG CHECKING CHASIS READY.." >> $LOGFILE 2>&1
+CHASIS_CODE =$(curl -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<show><chassis-ready></chassis-ready></show>" -o /dev/null -w '%{http_code}') >> $LOGFILE 2>&1
+CHASIS_READY=$(curl -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<show><chassis-ready></chassis-ready></show>" -v) >> $LOGFILE 2>&1
+
+echo $CHASIS_CODE >> $LOGFILE 2>&1
+echo $CHASIS_READY >> $LOGFILE 2>&1
+
 # Set up PAN FW
 echo "$INFO_TAG Executing Config-PW script.." >> $LOGFILE 2>&1
 python Config-FW.py $API_KEY $PRIVATE_IP >> $LOGFILE 2>&1
