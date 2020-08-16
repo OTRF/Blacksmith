@@ -63,10 +63,10 @@ attempt_counter=0
 max_attempts=100
 until $(curl --output /dev/null --insecure --silent --head --fail https://$PRIVATE_IP/php/login.php); do
     if [ ${attempt_counter} -eq ${max_attempts} ];then
-      echo "$ERROR_TAG Max attempts reached"
+      echo "$ERROR_TAG Max attempts reached" >> $LOGFILE 2>&1
       exit 1
     fi
-    echo "$INFO_TAG Waiting for PAN access to be up.."
+    echo "$INFO_TAG Waiting for PAN access to be up.." >> $LOGFILE 2>&1
     sleep 5
 done
 
