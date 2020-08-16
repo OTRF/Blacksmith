@@ -89,10 +89,6 @@ echo "$INFO_TAG Updating username and password for XML config.." >> $LOGFILE 2>&
 sed -i "s|DEMO-USER|${ADMIN_USER}|g" azure-sample.xml >> $LOGFILE 2>&1
 sed -i "s|DEMO-PASSWORD-HASH|${PW_HASH}|g" azure-sample.xml >> $LOGFILE 2>&1
 
-# Set up PAN FW
-#echo "$INFO_TAG Executing Config-PW script.." >> $LOGFILE 2>&1
-#python Config-FW.py $API_KEY $PRIVATE_IP >> $LOGFILE 2>&1
-
 echo "$INFO_TAG Importing PAN config.." >> $LOGFILE 2>&1
 curl -k --form file=@"./azure-sample.xml" "https://$PRIVATE_IP/api/?type=import&category=configuration&key=$API_KEY" >> $LOGFILE 2>&1
 
@@ -101,3 +97,7 @@ curl -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<load><config><from>a
 
 echo "$INFO_TAG Committing config.." >> $LOGFILE 2>&1
 #curl -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=commit&cmd=<commit><force></force></commit>" >> $LOGFILE 2>&1
+
+# Set up PAN FW
+echo "$INFO_TAG Executing Config-PW script.." >> $LOGFILE 2>&1
+python Config-FW.py $API_KEY $PRIVATE_IP >> $LOGFILE 2>&1
