@@ -69,6 +69,7 @@ done
 echo "$INFO_TAG Getting API Key.." >> $LOGFILE 2>&1
 while [ $(curl -s -k "https://$PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&password=$ADMIN_PASSWORD" -o /dev/null -w '%{http_code}') != "200" ]; do
     echo "$INFO_TAG Waiting for API access to be available.." >> $LOGFILE 2>&1
+    sleep 5
 done
 
 API_RESPONSE=$(curl --silent -k "https://$PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&password=$ADMIN_PASSWORD")
@@ -99,4 +100,4 @@ echo "$INFO_TAG Loading config.." >> $LOGFILE 2>&1
 curl -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<load><config><from>azure-sample.xml</from></config></load>" >> $LOGFILE 2>&1
 
 echo "$INFO_TAG Committing config.." >> $LOGFILE 2>&1
-curl -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=commit&cmd=<commit><force></force></commit>" >> $LOGFILE 2>&1
+#curl -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=commit&cmd=<commit><force></force></commit>" >> $LOGFILE 2>&1
