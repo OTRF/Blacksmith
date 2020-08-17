@@ -118,7 +118,7 @@ CURRENT_SUBNETS=("10.2.2.0/24" "10.2.3.0/24" "10.2.4.0/24")
 IFS=',' read -r -a NEW_ALL_SUBNETS <<< "$ALL_SUBNETS"
 ARRAY_INDEX=0
 for s in ${CURRENT_SUBNETS[@]}; do 
-  echo "$INFO_TAG updating ${s} subnet.." >> $LOGFILE 2>&1
+  echo "$INFO_TAG updating ${s} subnet to ${NEW_ALL_SUBNETS[$ARRAY_INDEX]}" >> $LOGFILE 2>&1
   sed -i "s|${s}|${NEW_ALL_SUBNETS[$ARRAY_INDEX]}|g" azure-sample.xml >> $LOGFILE 2>&1
   ARRAY_INDEX=$((ARRAY_INDEX + 1))
 done
@@ -128,7 +128,7 @@ CURRENT_PRIVATE_IP_ADDRESSES=("10.2.1.4" "10.2.3.4" "10.2.4.4")
 IFS=',' read -r -a NEW_PRIVATE_IP_ADDRESSES <<< "$ALL_PRIVATE_IPS"
 ARRAY_INDEX=0
 for p in ${CURRENT_PRIVATE_IP_ADDRESSES[@]}; do 
-  echo "$INFO_TAG updating ${p} private ip address.." >> $LOGFILE 2>&1
+  echo "$INFO_TAG updating ${p} private ip address to ${NEW_PRIVATE_IP_ADDRESSES[$ARRAY_INDEX]}" >> $LOGFILE 2>&1
   sed -i "s|${p}|${NEW_PRIVATE_IP_ADDRESSES[$ARRAY_INDEX]}|g" azure-sample.xml >> $LOGFILE 2>&1
   ARRAY_INDEX=$((ARRAY_INDEX + 1))
 done
@@ -138,7 +138,7 @@ CURRENT_HOP_IP_ADDRESSES=("10.2.1.1" "10.2.2.1")
 IFS=',' read -r -a NEW_HOP_IP_ADDRESSES <<< "$ALL_HOP_IPS"
 ARRAY_INDEX=0
 for h in ${CURRENT_HOP_IP_ADDRESSES[@]}; do 
-  echo "$INFO_TAG updating ${h} hop ip address.." >> $LOGFILE 2>&1
+  echo "$INFO_TAG updating ${h} hop ip address to ${NEW_HOP_IP_ADDRESSES[$ARRAY_INDEX]}" >> $LOGFILE 2>&1
   sed -i "s|${h}|${NEW_HOP_IP_ADDRESSES[$ARRAY_INDEX]}|g" azure-sample.xml >> $LOGFILE 2>&1
   ARRAY_INDEX=$((ARRAY_INDEX + 1))
 done

@@ -635,6 +635,7 @@ PanOSRuleUUID=$rule_uuid</auth>
                   </override>
                 </tcp>
               </protocol>
+              <description>10.2.3.4</description>
             </entry>
             <entry name="DNS">
               <protocol>
