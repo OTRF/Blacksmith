@@ -1,0 +1,986 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "utcValue": {
+            "type": "string",
+            "defaultValue": "[utcNow()]",
+            "metadata": {
+                "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Username for the Virtual Machine."
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Password for the Virtual Machine."
+            }
+        },
+        "vmNamePrefix": {
+            "type": "string",
+            "defaultValue": "WORKSTATION",
+            "metadata": {
+                "description": "Prefix for the name of your virtual machine."
+            }
+        },
+        "windowsDesktopSKU": {
+            "type": "string",
+            "defaultValue": "19h2-pro",
+            "allowedValues": [
+                "19h1-pro",
+                "19h2-pro",
+                "rs4-pro",
+                "rs5-pro"
+            ],
+            "metadata": {
+                "description": "The Windows version for the Desktop VM. This will pick a fully patched image of this given Windows version."
+            }
+        },
+        "windowsDesktopVersion": {
+            "type": "string",
+            "defaultValue": "latest"
+        },
+        "vmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B2s",
+            "allowedValues": [
+                "Standard_A2",
+                "Standard_A3",
+                "Standard_B2s",
+                "Standard_B2ms",
+                "Standard_A2_v2",
+                "Standard_A4_v2"
+            ],
+            "metadata": {
+                "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
+            }
+        },
+        "fwVMSize": {
+            "type": "string",
+            "defaultValue": "Standard_D3_v2",
+            "allowedValues": [
+                "Standard_D3_v2",
+                "Standard_D4_v2"
+            ],
+            "metadata": {
+                "description": "This is the size of PAN's firewall VM"
+            }
+        },
+        "allowedIPAddresses": {
+            "type": "string",
+            "metadata": {
+                "description": "The sourceAddressPrefixes allowed to connect to this deployment"
+            },
+            "defaultValue": "*"
+        },
+        "_artifactsLocation": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/",
+            "metadata": {
+                "description": "The location of resources, such as templates and DSC modules, that the template depends on"
+            }
+        },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
+            }
+        },
+        "enableCEFCollector": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Do you want to set up a CEF collector and forward logs to Azure Sentinel? If so, make sure you set the workspaceId and workspaceKey parameters in this template."
+            }
+        },
+        "workspaceId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Log analytics workspace ID"
+            }
+        },
+        "workspaceKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Log analytics workspace keys"
+            }
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Virtual Network"
+            },
+            "defaultValue": "vnet-win"
+        },
+        "virtualNetworkAddressRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the virtual network"
+            },
+            "defaultValue": "10.2.0.0/16"
+        },
+        "subnetRange0": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the subnet"
+            },
+            "defaultValue": "10.2.0.0/24"
+        },
+        "subnetName0": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the subnet"
+            },
+            "defaultValue": "Mgmt"
+        },
+        "subnetRange1": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the subnet"
+            },
+            "defaultValue": "10.2.1.0/24"
+        },
+        "subnetName1": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the subnet"
+            },
+            "defaultValue": "Untrust"
+        },
+        "subnetRange2": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the subnet"
+            },
+            "defaultValue": "10.2.2.0/24"
+        },
+        "subnetName2": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the subnet"
+            },
+            "defaultValue": "Trust"
+        },
+        "subnetRange3": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the subnet"
+            },
+            "defaultValue": "10.2.3.0/24"
+        },
+        "subnetName3": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the subnet"
+            },
+            "defaultValue": "CEF"
+        },
+        "subnetRange4": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the subnet"
+            },
+            "defaultValue": "10.2.4.0/24"
+        },
+        "subnetName4": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the subnet"
+            },
+            "defaultValue": "Victim"
+        },
+        "peeringVNET": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to peer your vnet to a remote vnet?"
+            }
+        },
+        "peeringVNETName": {
+            "type": "string",
+            "metadata": {
+                "description": "Vnet name of the remote vnet you are peering with"
+            },
+            "defaultValue": ""
+        },
+        "peeringVNETId": {
+            "type": "string",
+            "metadata": {
+                "description": "Vnet ID of the remote vnet you are peering with"
+            },
+            "defaultValue": ""
+        },
+        "firewallVmName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of VM-Series VM in the portal"
+            },
+            "defaultValue": "PAN-FW"
+        },
+        "fwSku": {
+            "type": "string",
+            "allowedValues": [
+                "byol",
+                "bundle1",
+                "bundle2"
+            ],
+            "metadata": {
+                "description": "Firewall License Model"
+            },
+            "defaultValue": "bundle2"
+        },
+        "ubuntuSKU": {
+            "type": "string",
+            "defaultValue": "18.04-LTS",
+            "allowedValues": [
+                "12.04.5-LTS",
+                "14.04.5-LTS",
+                "16.04.0-LTS",
+                "18.04-LTS",
+                "19.04"
+            ],
+            "metadata": {
+                "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version."
+            }
+        },
+        "linuxAuthenticationType": {
+            "type": "string",
+            "defaultValue": "password",
+            "allowedValues": [
+                "sshPublicKey",
+                "password"
+            ],
+            "metadata": {
+                "description": "Type of authentication to use on the Linux Virtual Machine. SSH key is recommended."
+            }
+        },
+        "linuxAdminKey": {
+            "type": "securestring",
+            "metadata": {
+                "description": "SSH Key to authenticate against Linux Virtual Machines. Provide the SSH rsa public key file as a string. Use \"ssh-keygen -t rsa -b 2048\" to generate your SSH key pairs."
+            },
+            "defaultValue": ""
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    },
+    "variables": {
+        "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
+
+        "virtualNetworkName": "[parameters('virtualNetworkName')]",
+        "virtualNetworkAddressRange": "[parameters('virtualNetworkAddressRange')]",
+
+        "subnetName0": "[parameters('subnetName0')]",
+        "subnetRange0": "[parameters('subnetRange0')]",
+        "vmPrivateIPPrefixArray0": "[take(split(variables('subnetRange0'),'.'),3)]",
+        "vmPrivateIPAddresPrefix0": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray0')[0], variables('vmPrivateIPPrefixArray0')[1], variables('vmPrivateIPPrefixArray0')[2])]",
+        "subnetRef0": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName0'))]",
+        
+        "subnetName1": "[parameters('subnetName1')]",
+        "subnetRange1": "[parameters('subnetRange1')]",
+        "vmPrivateIPPrefixArray1": "[take(split(variables('subnetRange1'),'.'),3)]",
+        "vmPrivateIPAddresPrefix1": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray1')[0], variables('vmPrivateIPPrefixArray1')[1], variables('vmPrivateIPPrefixArray1')[2])]",
+        "subnetRef1": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName1'))]",
+
+        "subnetName2": "[parameters('subnetName2')]",
+        "subnetRange2": "[parameters('subnetRange2')]",
+        "vmPrivateIPPrefixArray2": "[take(split(variables('subnetRange2'),'.'),3)]",
+        "vmPrivateIPAddresPrefix2": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray2')[0], variables('vmPrivateIPPrefixArray2')[1], variables('vmPrivateIPPrefixArray2')[2])]",
+        "subnetRef2": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName2'))]",
+
+        "subnetName3": "[parameters('subnetName3')]",
+        "subnetRange3": "[parameters('subnetRange3')]",
+        "vmPrivateIPPrefixArray3": "[take(split(variables('subnetRange3'),'.'),3)]",
+        "vmPrivateIPAddresPrefix3": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray3')[0], variables('vmPrivateIPPrefixArray3')[1], variables('vmPrivateIPPrefixArray3')[2])]",
+        "subnetRef3": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName3'))]",
+
+        "subnetName4": "[parameters('subnetName4')]",
+        "subnetRange4": "[parameters('subnetRange4')]",
+        "vmPrivateIPPrefixArray4": "[take(split(variables('subnetRange4'),'.'),3)]",
+        "vmPrivateIPAddresPrefix4": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray4')[0], variables('vmPrivateIPPrefixArray4')[1], variables('vmPrivateIPPrefixArray4')[2])]",
+        "subnetRef4": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName4'))]",
+
+        "routeTables_Victim_to_FW": "Victim-to-FW",
+        "routeTables_Trust_to_Intranetwork": "Trust-to-Intranetwork",
+
+        "allSubnets": "[concat(parameters('subnetRange2'),',',parameters('subnetRange3'),',',parameters('subnetRange4'))]",
+        "allHopsIPs": "[concat(concat(variables('vmPrivateIPAddresPrefix1'),'1'),',',concat(variables('vmPrivateIPAddresPrefix2'),'1'))]",
+        "allPrivateIPs": "[concat(concat(variables('vmPrivateIPAddresPrefix1'),'4'),',',concat(variables('vmPrivateIPAddresPrefix3'),'4'),',',concat(variables('vmPrivateIPAddresPrefix4'),'4'))]",
+
+        "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-PAN-FW/nestedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]",
+        "prepareBoxScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Prepare-Box.ps1', parameters('_artifactsLocationSasToken')))]",
+        "setSecurityAuditingScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1', parameters('_artifactsLocationSasToken')))]",
+        "saclModule": "https://raw.githubusercontent.com/hunters-forge/Set-AuditRule/master/Set-AuditRule.ps1",
+        "setSACLScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/auditing/Set-SACLs.ps1')]",
+        "setWallPaperScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Set-WallPaper.ps1', parameters('_artifactsLocationSasToken')))]",
+
+        "windowsVM": [
+            {
+                "tag": "workstation",
+                "vmName": "[concat(parameters('vmNamePrefix'),'4')]",
+                "os": "windows",
+                "subnetref": "[variables('subnetRef4')]",                   
+                "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix4'),'4')]",
+                "vmSize": "[parameters('vmSize')]",
+                "publisher": "MicrosoftWindowsDesktop",
+                "offer": "Windows-10",
+                "sku": "[parameters('windowsDesktopSKU')]",
+                "version": "[parameters('windowsDesktopVersion')]"
+            }
+        ],
+
+        "panFW": [
+            {
+                "tag": "panFW",
+                "vmName": "[parameters('firewallVmName')]",
+                "os": "linux",
+                "subnetref": "[variables('subnetRef0')]",
+                "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix0'),'4')]",
+                "vmSize": "[parameters('fwVMSize')]",
+                "publisher": "paloaltonetworks",
+                "offer": "vmseries1",
+                "sku": "[parameters('fwSku')]",
+                "version": "latest",
+                "extensionName": "SetUpPAN"
+            }
+        ],
+
+        "cefVM": [
+            {
+                "tag": "cef",
+                "vmName": "CEF-SYSLOG",
+                "os": "linux",
+                "subnetref": "[variables('subnetRef3')]",
+                "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix3'),'4')]",
+                "vmSize": "[parameters('vmSize')]",
+                "publisher": "Canonical",
+                "offer": "UbuntuServer",
+                "sku": "[parameters('ubuntuSKU')]",
+                "version": "latest",
+                "extensionName": "SetUpCEF"
+            }
+        ],
+
+        "allEndpoints": "[concat(variables('windowsVM'), variables('panFW'), variables('cefVM'))]",
+
+        "networkInterfaces": [
+            {
+                "resourceName": "panFW-eth0",
+                "name": "ipconfig-mgmt",
+                "privateIPAddress": "[concat(variables('vmPrivateIPAddresPrefix0'),'4')]",
+                "publicIPAddressID": { "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('panFW')[0].vmName))]"},
+                "subnetID": "[variables('subnetRef0')]",
+                "enableIPForwarding": "[bool('false')]",
+                "enableAcceleratedNetworking": "[bool('false')]"
+            },
+            {
+                "resourceName": "panFW-eth1",
+                "name": "ipconfig-untrust",
+                "privateIPAddress": "[concat(variables('vmPrivateIPAddresPrefix1'),'4')]",
+                "publicIPAddressID": {"id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('windowsVM')[0].vmName))]"},
+                "subnetID": "[variables('subnetRef1')]",
+                "enableIPForwarding": "[bool('true')]",
+                "enableAcceleratedNetworking": "[bool('true')]"
+            },
+            {
+                "resourceName": "panFW-eth2",
+                "name": "ipconfig-trust",
+                "privateIPAddress": "[concat(variables('vmPrivateIPAddresPrefix2'),'4')]",
+                "publicIPAddressID": "[json('null')]",
+                "subnetID": "[variables('subnetRef2')]",
+                "enableIPForwarding": "[bool('true')]",
+                "enableAcceleratedNetworking": "[bool('true')]"
+            },
+            {
+                "resourceName": "cef-eth0",
+                "name": "ipconfig1",
+                "privateIPAddress": "[concat(variables('vmPrivateIPAddresPrefix3'),'4')]",
+                "publicIPAddressID": {"id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('cefVM')[0].vmName))]"},
+                "subnetID": "[variables('subnetRef3')]",
+                "enableIPForwarding": "[bool('false')]",
+                "enableAcceleratedNetworking": "[bool('false')]"
+            },
+            {
+                "resourceName": "victim-eth0",
+                "name": "ipconfig1",
+                "privateIPAddress": "[concat(variables('vmPrivateIPAddresPrefix4'),'4')]",
+                "publicIPAddressID": "[json('null')]",
+                "subnetID": "[variables('subnetRef4')]",
+                "enableIPForwarding": "[bool('false')]",
+                "enableAcceleratedNetworking": "[bool('false')]"
+            }
+        ],
+        
+        "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+                "publicKeys": [
+                    {
+                        "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                        "keyData": "[parameters('linuxAdminKey')]"
+                    }
+                ]
+            }
+        }
+    }, 
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2018-11-01",
+            "name": "[variables('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "Storage",
+            "properties": {
+            }
+        },
+        {
+            "comments": "Default Network Security Group for all endpoints",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-08-01",
+            "name": "nsg-panfw-allow",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-rdp-allow",
+                        "properties": {
+                            "priority": 100,
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "destinationPortRange": "3389",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
+                            "destinationAddressPrefix": "*"
+                        }
+                    },
+                    {
+                        "name": "default-ssh-allow",
+                        "properties": {
+                            "priority": 101,
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "destinationPortRange": "22",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
+                            "destinationAddressPrefix": "*"
+                        }
+                    },
+                    {
+                        "name": "default-http-allow",
+                        "properties": {
+                            "priority": 102,
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "destinationPortRange": "80",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
+                            "destinationAddressPrefix": "*"
+                        }
+                    },
+                    {
+                        "name": "default-https-allow",
+                        "properties": {
+                            "priority": 103,
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "destinationPortRange": "443",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
+                            "destinationAddressPrefix": "*"
+                        }
+                    },
+                    {
+                        "name": "Allow-Intra",
+                        "properties": {
+                            "description": "Allow intra network traffic",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "[parameters('virtualNetworkAddressRange')]",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 104,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "Default-Deny",
+                        "properties": {
+                            "description": "Default-Deny if we don't match Allow rule",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 200,
+                            "direction": "Inbound"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "apiVersion": "2020-05-01",
+            "name": "[variables('routeTables_Trust_to_Intranetwork')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "disableBgpRoutePropagation": false,
+                "routes": [
+                    {
+                        "name": "Trust-to-Intranetwork",
+                        "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[variables('networkInterfaces')[2].privateIPAddress]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "apiVersion": "2020-05-01",
+            "name": "[variables('routeTables_Victim_to_FW')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "disableBgpRoutePropagation": false,
+                "routes": [
+                    {
+                        "name": "Victim-default-route",
+                        "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[variables('networkInterfaces')[2].privateIPAddress]"
+                        }
+                    },
+                    {
+                        "name": "Victim-to-FW",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnetRange3')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "[variables('networkInterfaces')[2].privateIPAddress]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-02-01",
+            "name": "[variables('virtualNetworkName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-panfw-allow')]"
+            ],
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('virtualNetworkAddressRange')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('subnetName0')]",
+                        "properties": {
+                            "addressPrefix": "[variables('subnetRange0')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-panfw-allow')]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[variables('subnetName1')]",
+                        "properties": {
+                            "addressPrefix": "[variables('subnetRange1')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-panfw-allow')]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[variables('subnetName2')]",
+                        "properties": {
+                            "addressPrefix": "[variables('subnetRange2')]",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', variables('routeTables_Trust_to_Intranetwork'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[variables('subnetName3')]",
+                        "properties": {
+                            "addressPrefix": "[variables('subnetRange3')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-panfw-allow')]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[variables('subnetName4')]",
+                        "properties": {
+                            "addressPrefix": "[variables('subnetRange4')]",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', variables('routeTables_Victim_to_FW'))]"
+                            }
+                        }
+                    }
+                ]
+            },
+            "resources": [
+                {
+                   "condition": "[parameters('peeringVNET')]", 
+                   "apiVersion": "2016-06-01",
+                   "type": "virtualNetworkPeerings",
+                   "name": "[concat(variables('virtualNetworkName'), '-', parameters('peeringVNETName'))]",
+                   "location": "[resourceGroup().location]",
+                   "dependsOn": [
+                       "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+                   ],
+                   "comments": "This is the peering from local vnet to remote vnet",
+                   "properties": {
+                       "allowVirtualNetworkAccess": "true",
+                       "allowForwardedTraffic": "false",
+                       "allowGatewayTransit": "false",
+                       "useRemoteGateways": "false",
+                       "remoteVirtualNetwork": {
+                           "id": "[parameters('peeringVNETId')]"
+                       }
+                   }
+               }
+            ]
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2018-11-01",
+            "name": "[concat('pip-', variables('allEndpoints')[copyIndex('vmPublicIpCopy')].vmName)]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "vmPublicIpCopy",
+                "count": "[length(variables('allEndpoints'))]"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[toLower(concat(variables('allEndpoints')[copyIndex('vmPublicIpCopy')].vmName, '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-11-01",
+            "name": "[concat('nic-', variables('networkInterfaces')[copyIndex('vmNetworkInterfaceCopy')].resourceName)]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('windowsVM')[0].vmName))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('panFW')[0].vmName))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+            ],
+            "copy": {
+                "name": "vmNetworkInterfaceCopy",
+                "count": "[length(variables('networkInterfaces'))]"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "[variables('networkInterfaces')[copyIndex('vmNetworkInterfaceCopy')].name]",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "privateIPAddress": "[variables('networkInterfaces')[copyIndex('vmNetworkInterfaceCopy')].privateIPAddress]",
+                            "publicIPAddress": "[variables('networkInterfaces')[copyIndex('vmNetworkInterfaceCopy')].publicIPAddressID]",
+                            "subnet": {
+                                "id": "[variables('networkInterfaces')[copyIndex('vmNetworkInterfaceCopy')].subnetID]"
+                            },
+                            "primary": true,
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "enableAcceleratedNetworking": "[variables('networkInterfaces')[copyIndex('vmNetworkInterfaceCopy')].enableAcceleratedNetworking]",
+                "enableIPForwarding": "[variables('networkInterfaces')[copyIndex('vmNetworkInterfaceCopy')].enableIPForwarding]"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2018-10-01",
+            "name": "[variables('windowsVM')[0].vmName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('networkInterfaces')[4].resourceName))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('windowsVM')[0].vmSize]"
+                },
+                "osProfile": {
+                    "computerName": "[variables('windowsVM')[0].vmName]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('windowsVM')[0].publisher]",
+                        "offer": "[variables('windowsVM')[0].offer]",
+                        "sku": "[variables('windowsVM')[0].sku]",
+                        "version": "[variables('windowsVM')[0].version]"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": []
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('networkInterfaces')[4].resourceName))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-03-01",
+            "name": "[variables('panFW')[0].vmName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('networkInterfaces')[0].resourceName))]",
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('networkInterfaces')[1].resourceName))]",
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('networkInterfaces')[2].resourceName))]"
+            ],
+            "plan": {
+                "name": "[variables('panFW')[0].sku]",
+                "product": "[variables('panFW')[0].offer]",
+                "publisher": "[variables('panFW')[0].publisher]"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('panFW')[0].vmSize]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage"
+                    },
+                    "imageReference": {
+                        "publisher": "[variables('panFW')[0].publisher]",
+                        "offer": "[variables('panFW')[0].offer]",
+                        "sku": "[variables('panFW')[0].sku]",
+                        "version": "latest"
+                    }
+                },
+                "osProfile": {
+                    "computerName": "[variables('panFW')[0].vmName]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "linuxConfiguration": "[if(equals(parameters('linuxAuthenticationType'), 'password'), json('null'), variables('linuxConfiguration'))]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-',variables('networkInterfaces')[0].resourceName))]",
+                            "properties": {
+                                "primary": true
+                            }
+                        },
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-',variables('networkInterfaces')[1].resourceName))]",
+                            "properties": {
+                                "primary": false
+                            }
+                        },
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-',variables('networkInterfaces')[2].resourceName))]",
+                            "properties": {
+                                "primary": false
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-03-01",
+            "name": "[variables('cefVM')[0].vmName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('networkInterfaces')[3].resourceName))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('cefVM')[0].vmSize]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage"
+                    },
+                    "imageReference": {
+                        "publisher": "[variables('cefVM')[0].publisher]",
+                        "offer": "[variables('cefVM')[0].offer]",
+                        "sku": "[variables('cefVM')[0].sku]",
+                        "version": "latest"
+                    }
+                },
+                "osProfile": {
+                    "computerName": "[variables('cefVM')[0].vmName]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "linuxConfiguration": "[if(equals(parameters('linuxAuthenticationType'), 'password'), json('null'), variables('linuxConfiguration'))]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-',variables('networkInterfaces')[3].resourceName))]"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableCEFCollector')]",
+            "name": "[concat(variables('cefVM')[0].vmName, '-CEF-SETUP')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('cefVM')[0].vmName)]",
+                "[concat('Microsoft.Compute/virtualMachines/', variables('panFW')[0].vmName)]",
+                "[concat(variables('cefVM')[0].vmName, '-PAN-FW-SETUP')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "extensionName": {
+                        "value": "[variables('cefVM')[0].extensionName]"
+                    },
+                    "commandToExecute": {
+                        "value": "[concat('bash Set-Up-CEF.sh',' ','-w',' ',parameters('workspaceId'),'-k',' ',parameters('workspaceKey'))]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/azure/Win10-PAN-FW/scripts/Set-Up-CEF.sh",
+                            "https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/DataConnectors/CEF/cef_installer.py"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[variables('cefVM')[0].vmName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "[concat(variables('cefVM')[0].vmName, '-PAN-FW-SETUP')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('cefVM')[0].vmName)]",
+                "[concat('Microsoft.Compute/virtualMachines/', variables('panFW')[0].vmName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "extensionName": {
+                        "value": "[variables('cefVM')[0].extensionName]"
+                    },
+                    "commandToExecute": {
+                        "value": "[concat('bash Set-Up-FW.sh',' ','-u',' ',parameters('adminUsername'),' ','-p',' ',parameters('adminPassword'),' ','-i',' ',variables('panFW')[0].ipAddress,' ','-s',' ',variables('allSubnets'),' ','-a',' ',variables('allPrivateIPs'),' ','-t',' ',variables('allHopsIPs'))]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/azure/Win10-PAN-FW/scripts/Set-Up-FW.sh",
+                            "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/azure/Win10-PAN-FW/scripts/azure-sample.xml"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[variables('cefVM')[0].vmName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "[concat(variables('windowsVM')[0].vmName, '/SetupWinVM')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-12-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('windowsVM')[0].vmName)]",
+                "[concat(variables('cefVM')[0].vmName, '-PAN-FW-SETUP')]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.8",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/azure/Win10-PAN-FW/scripts/Set-Initial-Settings.ps1",
+                        "[variables('prepareBoxScript')]",
+                        "[variables('setSecurityAuditingScript')]",
+                        "[variables('saclModule')]",
+                        "[variables('setSACLScript')]",
+                        "[variables('setWallPaperScript')]"
+                    ],
+                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1"
+                },
+                "protectedSettings": {}
+            }
+        }
+    ],
+    "outputs": {
+        "virtualNetworkName": {
+            "type": "string",
+            "value": "[variables('virtualNetworkName')]"
+        },
+        "virtualNetworkId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+        },
+        "endpoints": {
+            "type": "array",
+            "value": "[variables('allEndpoints')]"
+        }
+    }
+}
