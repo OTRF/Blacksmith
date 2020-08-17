@@ -683,7 +683,7 @@ PanOSRuleUUID=$rule_uuid</auth>
           <rulebase>
             <security>
               <rules>
-                <entry name="RDP Inbound" uuid="c60266c3-fcfd-4f99-b921-54d5aaae7a54">
+                <entry name="RDP Inbound" uuid="a5e0c9ec-54bf-429c-8898-2fd5399ad79a">
                   <to>
                     <member>Trust</member>
                   </to>
@@ -720,7 +720,7 @@ PanOSRuleUUID=$rule_uuid</auth>
                     </group>
                   </profile-setting>
                 </entry>
-                <entry name="Allow_All_Outbound" uuid="799dd9aa-80e7-4e9d-9df3-076490f5b452">
+                <entry name="Allow_All_Outbound" uuid="9a924427-33ac-4179-87fb-99d5ea8423d0">
                   <to>
                     <member>Untrust</member>
                   </to>
@@ -758,7 +758,7 @@ PanOSRuleUUID=$rule_uuid</auth>
                   <log-start>yes</log-start>
                   <log-end>no</log-end>
                 </entry>
-                <entry name="Log_Incoming_All" uuid="3df15925-f9a5-478a-9f5c-e82113fab9ed">
+                <entry name="Log_Incoming_All" uuid="a4b18970-6c56-4fe2-af53-90d835a0e36a">
                   <to>
                     <member>any</member>
                   </to>
@@ -796,7 +796,7 @@ PanOSRuleUUID=$rule_uuid</auth>
                     </group>
                   </profile-setting>
                 </entry>
-                <entry name="Allow_Ping" uuid="129b3a4f-fbfb-4af5-ba27-a69e32d5ff6e">
+                <entry name="Allow_Ping" uuid="eb45cee0-97a5-493a-baa5-84c005e0a0e4">
                   <to>
                     <member>any</member>
                   </to>
@@ -832,13 +832,13 @@ PanOSRuleUUID=$rule_uuid</auth>
             </security>
             <default-security-rules>
               <rules>
-                <entry name="intrazone-default" uuid="7b5a8707-0fc9-48d4-8ade-6210dc0a6b41">
+                <entry name="intrazone-default" uuid="f33e92c8-ed6e-481b-8cf1-3c989412df79">
                   <action>allow</action>
                   <log-start>no</log-start>
                   <log-end>yes</log-end>
                   <log-setting>default</log-setting>
                 </entry>
-                <entry name="interzone-default" uuid="423d4efa-26b2-4589-bb50-0491be150cb3">
+                <entry name="interzone-default" uuid="8ccc1cf9-cddc-4a4f-ba3b-5a541061770f">
                   <action>deny</action>
                   <log-start>no</log-start>
                   <log-end>yes</log-end>
@@ -848,7 +848,7 @@ PanOSRuleUUID=$rule_uuid</auth>
             </default-security-rules>
             <nat>
               <rules>
-                <entry name="Victim RDP" uuid="13fb9b9d-9454-4275-9b41-569430e71f9d">
+                <entry name="Victim RDP" uuid="8a5bf0e0-8e02-466e-8ae7-b541943b732f">
                   <source-translation>
                     <dynamic-ip-and-port>
                       <interface-address>
@@ -873,7 +873,7 @@ PanOSRuleUUID=$rule_uuid</auth>
                   </destination>
                   <service>RDP</service>
                 </entry>
-                <entry name="Outbound NAT" uuid="f43ce95b-6a3d-401e-9cdb-91a578d07b5d">
+                <entry name="Outbound NAT" uuid="8d1cad84-0d7d-4b7b-bfba-ef10349df01e">
                   <source-translation>
                     <dynamic-ip-and-port>
                       <interface-address>
@@ -1000,15 +1000,15 @@ PanOSRuleUUID=$rule_uuid</auth>
               <vulnerability>
                 <member>default</member>
               </vulnerability>
-              <url-filtering>
-                <member>default-1</member>
-              </url-filtering>
-              <file-blocking>
-                <member>basic file blocking</member>
-              </file-blocking>
               <wildfire-analysis>
                 <member>default</member>
               </wildfire-analysis>
+              <file-blocking>
+                <member>FileAudit</member>
+              </file-blocking>
+              <url-filtering>
+                <member>default</member>
+              </url-filtering>
             </entry>
           </profile-group>
           <profiles>
@@ -1060,6 +1060,35 @@ PanOSRuleUUID=$rule_uuid</auth>
                 </block>
               </entry>
             </url-filtering>
+            <file-blocking>
+              <entry name="FileAudit">
+                <rules>
+                  <entry name="FileAlert">
+                    <application>
+                      <member>any</member>
+                    </application>
+                    <file-type>
+                      <member>bat</member>
+                      <member>dll</member>
+                      <member>encrypted-rar</member>
+                      <member>exe</member>
+                      <member>hta</member>
+                      <member>jar</member>
+                      <member>msi</member>
+                      <member>powershell</member>
+                      <member>py</member>
+                      <member>rar</member>
+                      <member>tar</member>
+                      <member>vbe</member>
+                      <member>vbs</member>
+                      <member>zip</member>
+                    </file-type>
+                    <direction>both</direction>
+                    <action>alert</action>
+                  </entry>
+                </rules>
+              </entry>
+            </file-blocking>
           </profiles>
         </entry>
       </vsys>
