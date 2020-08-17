@@ -446,25 +446,6 @@ PanOSRuleUUID=$rule_uuid</auth>
                       <unicast/>
                     </route-table>
                   </entry>
-                  <entry name="to-cef">
-                    <path-monitor>
-                      <enable>no</enable>
-                      <failure-condition>any</failure-condition>
-                      <hold-time>2</hold-time>
-                    </path-monitor>
-                    <nexthop>
-                      <ip-address>10.2.2.1</ip-address>
-                    </nexthop>
-                    <bfd>
-                      <profile>None</profile>
-                    </bfd>
-                    <interface>ethernet1/2</interface>
-                    <metric>10</metric>
-                    <destination>10.2.3.0/24</destination>
-                    <route-table>
-                      <unicast/>
-                    </route-table>
-                  </entry>
                   <entry name="to-victim">
                     <path-monitor>
                       <enable>no</enable>
@@ -480,6 +461,25 @@ PanOSRuleUUID=$rule_uuid</auth>
                     <interface>ethernet1/2</interface>
                     <metric>10</metric>
                     <destination>10.2.4.0/24</destination>
+                    <route-table>
+                      <unicast/>
+                    </route-table>
+                  </entry>
+                  <entry name="to-cef">
+                    <path-monitor>
+                      <enable>no</enable>
+                      <failure-condition>any</failure-condition>
+                      <hold-time>2</hold-time>
+                    </path-monitor>
+                    <nexthop>
+                      <ip-address>10.2.2.1</ip-address>
+                    </nexthop>
+                    <bfd>
+                      <profile>None</profile>
+                    </bfd>
+                    <interface>ethernet1/2</interface>
+                    <metric>10</metric>
+                    <destination>10.2.3.0/24</destination>
                     <route-table>
                       <unicast/>
                     </route-table>
@@ -635,6 +635,7 @@ PanOSRuleUUID=$rule_uuid</auth>
                   </override>
                 </tcp>
               </protocol>
+              <description>10.2.3.4</description>
             </entry>
             <entry name="DNS">
               <protocol>
@@ -682,7 +683,7 @@ PanOSRuleUUID=$rule_uuid</auth>
           <rulebase>
             <security>
               <rules>
-                <entry name="RDP Inbound">
+                <entry name="RDP Inbound" uuid="c60266c3-fcfd-4f99-b921-54d5aaae7a54">
                   <to>
                     <member>Trust</member>
                   </to>
@@ -719,7 +720,7 @@ PanOSRuleUUID=$rule_uuid</auth>
                     </group>
                   </profile-setting>
                 </entry>
-                <entry name="Allow_All_Outbound">
+                <entry name="Allow_All_Outbound" uuid="799dd9aa-80e7-4e9d-9df3-076490f5b452">
                   <to>
                     <member>Untrust</member>
                   </to>
@@ -757,7 +758,7 @@ PanOSRuleUUID=$rule_uuid</auth>
                   <log-start>yes</log-start>
                   <log-end>no</log-end>
                 </entry>
-                <entry name="Log_Incoming_All">
+                <entry name="Log_Incoming_All" uuid="3df15925-f9a5-478a-9f5c-e82113fab9ed">
                   <to>
                     <member>any</member>
                   </to>
@@ -795,7 +796,7 @@ PanOSRuleUUID=$rule_uuid</auth>
                     </group>
                   </profile-setting>
                 </entry>
-                <entry name="Allow_Ping">
+                <entry name="Allow_Ping" uuid="129b3a4f-fbfb-4af5-ba27-a69e32d5ff6e">
                   <to>
                     <member>any</member>
                   </to>
@@ -831,13 +832,13 @@ PanOSRuleUUID=$rule_uuid</auth>
             </security>
             <default-security-rules>
               <rules>
-                <entry name="intrazone-default">
+                <entry name="intrazone-default" uuid="7b5a8707-0fc9-48d4-8ade-6210dc0a6b41">
                   <action>allow</action>
                   <log-start>no</log-start>
                   <log-end>yes</log-end>
                   <log-setting>default</log-setting>
                 </entry>
-                <entry name="interzone-default">
+                <entry name="interzone-default" uuid="423d4efa-26b2-4589-bb50-0491be150cb3">
                   <action>deny</action>
                   <log-start>no</log-start>
                   <log-end>yes</log-end>
@@ -847,7 +848,7 @@ PanOSRuleUUID=$rule_uuid</auth>
             </default-security-rules>
             <nat>
               <rules>
-                <entry name="Victim RDP">
+                <entry name="Victim RDP" uuid="13fb9b9d-9454-4275-9b41-569430e71f9d">
                   <source-translation>
                     <dynamic-ip-and-port>
                       <interface-address>
@@ -872,7 +873,7 @@ PanOSRuleUUID=$rule_uuid</auth>
                   </destination>
                   <service>RDP</service>
                 </entry>
-                <entry name="Outbound NAT">
+                <entry name="Outbound NAT" uuid="f43ce95b-6a3d-401e-9cdb-91a578d07b5d">
                   <source-translation>
                     <dynamic-ip-and-port>
                       <interface-address>
@@ -978,13 +979,13 @@ PanOSRuleUUID=$rule_uuid</auth>
             </network>
           </import>
           <address>
-            <entry name="CEF-SYSLOG_FQDN">
+            <entry name="PanSyslogCEF_FQDN">
               <fqdn>10.2.3.4</fqdn>
             </entry>
-            <entry name="CEF-SYSLOG">
+            <entry name="PANSyslogCEF">
               <ip-netmask>10.2.3.4</ip-netmask>
             </entry>
-            <entry name="WORKSTATION5">
+            <entry name="VictimPC-object">
               <ip-netmask>10.2.4.4</ip-netmask>
             </entry>
           </address>
