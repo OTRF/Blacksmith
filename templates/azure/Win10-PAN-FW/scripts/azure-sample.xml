@@ -635,7 +635,6 @@ PanOSRuleUUID=$rule_uuid</auth>
                   </override>
                 </tcp>
               </protocol>
-              <description>10.2.3.4</description>
             </entry>
             <entry name="DNS">
               <protocol>
@@ -683,7 +682,7 @@ PanOSRuleUUID=$rule_uuid</auth>
           <rulebase>
             <security>
               <rules>
-                <entry name="RDP Inbound" uuid="c60266c3-fcfd-4f99-b921-54d5aaae7a54">
+                <entry name="RDP Inbound">
                   <to>
                     <member>Trust</member>
                   </to>
