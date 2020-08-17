@@ -143,20 +143,6 @@ for h in ${CURRENT_HOP_IP_ADDRESSES[@]}; do
   ARRAY_INDEX=$((ARRAY_INDEX + 1))
 done
 
-#######################
-# Importing XML Config
-#######################
-
-echo "$INFO_TAG Importing PAN config.." >> $LOGFILE 2>&1
-curl -k --form file=@"./azure-sample.xml" "https://$FW_PRIVATE_IP/api/?type=import&category=configuration&key=$API_KEY" >> $LOGFILE 2>&1
-
-#####################
-# Loading XML Config
-#####################
-
-echo "$INFO_TAG Loading config.." >> $LOGFILE 2>&1
-curl -k -u $FW_CREDS "https://$FW_PRIVATE_IP/api/?type=op&cmd=<load><config><from>azure-sample.xml</from></config></load>" >> $LOGFILE 2>&1
-
 ##############################
 # Checking Auto-Commit Status
 ##############################
@@ -192,6 +178,20 @@ until [ $CHASIS_READY = "yes" ]; do
     echo "$INFO_TAG > Current status: $CHASIS_READY" >> $LOGFILE 2>&1
     sleep 5
 done
+
+#######################
+# Importing XML Config
+#######################
+
+echo "$INFO_TAG Importing PAN config.." >> $LOGFILE 2>&1
+curl -k --form file=@"./azure-sample.xml" "https://$FW_PRIVATE_IP/api/?type=import&category=configuration&key=$API_KEY" >> $LOGFILE 2>&1
+
+#####################
+# Loading XML Config
+#####################
+
+echo "$INFO_TAG Loading config.." >> $LOGFILE 2>&1
+curl -k -u $FW_CREDS "https://$FW_PRIVATE_IP/api/?type=op&cmd=<load><config><from>azure-sample.xml</from></config></load>" >> $LOGFILE 2>&1
 
 ########################
 # Committing XML Config
