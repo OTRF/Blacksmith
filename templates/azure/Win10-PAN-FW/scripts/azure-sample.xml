@@ -530,7 +530,7 @@ PanOSRuleUUID=$rule_uuid</auth>
             <disable-telnet>yes</disable-telnet>
             <disable-http>yes</disable-http>
           </service>
-          <hostname>pannwfusiondemo</hostname>
+          <hostname>PAN-FW</hostname>
           <dns-setting>
             <servers>
               <primary>8.8.8.8</primary>
@@ -553,8 +553,8 @@ PanOSRuleUUID=$rule_uuid</auth>
                   <accept-dhcp-domain>no</accept-dhcp-domain>
                 </dhcp-client>
               </type>
-              <hostname>pannwfusiondemo</hostname>
-              <username>panadmin</username>
+              <hostname>PAN-FW</hostname>
+              <username>wardog</username>
             </initcfg>
             <quota-settings>
               <disk-quota>
