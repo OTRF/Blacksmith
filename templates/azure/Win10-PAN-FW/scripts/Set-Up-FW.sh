@@ -178,6 +178,4 @@ until [ $JOB_COMMIT_RESULTS = "OK" ] && [ $JOB_COMMIT_STATUS = "FIN" ] && [ $JOB
     sleep 5
 done
 
-# Set up PAN FW
-#echo "$INFO_TAG Executing Config-PW script.." >> $LOGFILE 2>&1
-#python Config-FW.py $API_KEY $PRIVATE_IP >> $LOGFILE 2>&1
+echo "$INFO_TAG Adios!.." >> $LOGFILE 2>&1
