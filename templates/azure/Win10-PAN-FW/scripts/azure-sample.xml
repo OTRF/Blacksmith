@@ -446,25 +446,6 @@ PanOSRuleUUID=$rule_uuid</auth>
                       <unicast/>
                     </route-table>
                   </entry>
-                  <entry name="to-victim">
-                    <path-monitor>
-                      <enable>no</enable>
-                      <failure-condition>any</failure-condition>
-                      <hold-time>2</hold-time>
-                    </path-monitor>
-                    <nexthop>
-                      <ip-address>10.2.2.1</ip-address>
-                    </nexthop>
-                    <bfd>
-                      <profile>None</profile>
-                    </bfd>
-                    <interface>ethernet1/2</interface>
-                    <metric>10</metric>
-                    <destination>10.2.4.0/24</destination>
-                    <route-table>
-                      <unicast/>
-                    </route-table>
-                  </entry>
                   <entry name="to-cef">
                     <path-monitor>
                       <enable>no</enable>
@@ -480,6 +461,25 @@ PanOSRuleUUID=$rule_uuid</auth>
                     <interface>ethernet1/2</interface>
                     <metric>10</metric>
                     <destination>10.2.3.0/24</destination>
+                    <route-table>
+                      <unicast/>
+                    </route-table>
+                  </entry>
+                  <entry name="to-victim">
+                    <path-monitor>
+                      <enable>no</enable>
+                      <failure-condition>any</failure-condition>
+                      <hold-time>2</hold-time>
+                    </path-monitor>
+                    <nexthop>
+                      <ip-address>10.2.2.1</ip-address>
+                    </nexthop>
+                    <bfd>
+                      <profile>None</profile>
+                    </bfd>
+                    <interface>ethernet1/2</interface>
+                    <metric>10</metric>
+                    <destination>10.2.4.0/24</destination>
                     <route-table>
                       <unicast/>
                     </route-table>
@@ -635,7 +635,6 @@ PanOSRuleUUID=$rule_uuid</auth>
                   </override>
                 </tcp>
               </protocol>
-              <description>10.2.3.4</description>
             </entry>
             <entry name="DNS">
               <protocol>

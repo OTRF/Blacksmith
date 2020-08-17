@@ -11,4 +11,4 @@
 & .\Set-SACLs.ps1
 
 # Set Wallpaper
-& .\Set-WallPaper.ps1
+#& .\Set-WallPaper.ps1

@@ -2,6 +2,9 @@
 
 # Author: Roberto Rodriguez (@Cyb3rWard0g)
 # License: GPL-3.0
+# References:
+# https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClexCAC
+# https://docs.paloaltonetworks.com/pan-os/9-0/pan-os-panorama-api/pan-os-xml-api-request-types/commit-configuration-api/commit
 
 # *********** log tagging variables ***********
 INFO_TAG="[INSTALLATION-INFO]"
@@ -21,21 +24,27 @@ usage(){
     echo "   -u         Admin Username"
     echo "   -p         Admin Password"
     echo "   -i         FW Private IP Address"
+    echo "   -s         All subnets to update XML config (Array)"
+    echo "   -a         All private IP addresses to update XML config (Array)"
+    echo "   -t         Untrusted and trusted hops IP addresses to update XML config (Array)"
     echo
     echo "Examples:"
-    echo " $0 -u wardog -p xxasfsdfsdf -i x.x.x.x"
+    echo " $0 -u wardog -p xxasfsdfsdf -i x.x.x.x -s 10.2.2.0/24,10.2.3.0/24 -a 10.2.1.4,10.2.3.4 -t 10.2.1.1,10.2.2.1"
     echo " "
     exit 1
 }
 
 # ************ Command Options **********************
-while getopts u:p:i:h option
+while getopts u:p:i:s:a:t:h option
 do
     case "${option}"
     in
         u) ADMIN_USER=$OPTARG;;
         p) ADMIN_PASSWORD=$OPTARG;;
-        i) PRIVATE_IP=$OPTARG;;
+        i) FW_PRIVATE_IP=$OPTARG;;
+        s) ALL_SUBNETS=$OPTARG;;
+        a) ALL_PRIVATE_IPS=$OPTARG;;
+        t) ALL_HOP_IPS=$OPTARG;;
         h) usage;;
         \?) usage;;
         :  ) echo "Missing option argument for -$OPTARG" >&2; exit 1;;
@@ -59,12 +68,13 @@ FW_CREDS="$ADMIN_USER:$ADMIN_PASSWORD"
 echo "$INFO_TAG Checking if PAN access is available.." >> $LOGFILE 2>&1
 attempt_counter=0
 max_attempts=100
-until $(curl --output /dev/null --insecure --silent --head --fail https://$PRIVATE_IP/php/login.php); do
+until $(curl --output /dev/null --insecure --silent --head --fail https://$FW_PRIVATE_IP/php/login.php); do
     if [ ${attempt_counter} -eq ${max_attempts} ];then
       echo "$ERROR_TAG Max attempts reached" >> $LOGFILE 2>&1
       exit 1
     fi
     echo "$INFO_TAG Waiting for PAN access to be up.." >> $LOGFILE 2>&1
+    attempt_counter=$((attempt_counter + 1))
     sleep 5
 done
 
@@ -73,12 +83,12 @@ done
 ##################
 
 echo "$INFO_TAG Getting API Key.." >> $LOGFILE 2>&1
-while [ $(curl -s -k "https://$PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&password=$ADMIN_PASSWORD" -o /dev/null -w '%{http_code}') != "200" ]; do
+while [ $(curl -s -k "https://$FW_PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&password=$ADMIN_PASSWORD" -o /dev/null -w '%{http_code}') != "200" ]; do
     echo "$INFO_TAG Waiting for API access to be available.." >> $LOGFILE 2>&1
     sleep 5
 done
 
-API_RESPONSE=$(curl -s -k "https://$PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&password=$ADMIN_PASSWORD")
+API_RESPONSE=$(curl -s -k "https://$FW_PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&password=$ADMIN_PASSWORD")
 API_KEY=$(echo $API_RESPONSE | sed -e 's,.*<key>\([^<]*\)</key>.*,\1,g')
 
 ########################
@@ -86,12 +96,12 @@ API_KEY=$(echo $API_RESPONSE | sed -e 's,.*<key>\([^<]*\)</key>.*,\1,g')
 ########################
 
 echo "$INFO_TAG Getting Password Hash.." >> $LOGFILE 2>&1
-while [ $(curl -s -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>" -o /dev/null -w '%{http_code}') != "200" ]; do
+while [ $(curl -s -k -u $FW_CREDS "https://$FW_PRIVATE_IP/api/?type=op&cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>" -o /dev/null -w '%{http_code}') != "200" ]; do
     echo "$INFO_TAG Waiting for Password Hash access to be available.." >> $LOGFILE 2>&1
     sleep 5
 done
 
-PW_HASH_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>")
+PW_HASH_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$FW_PRIVATE_IP/api/?type=op&cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>")
 PW_HASH=$(echo $PW_HASH_RESPONSE | sed -e 's,.*<phash>\([^<]*\)</phash>.*,\1,g')
 
 ######################
@@ -102,19 +112,50 @@ echo "$INFO_TAG Updating username and password for XML config.." >> $LOGFILE 2>&
 sed -i "s|DEMO-USER|${ADMIN_USER}|g" azure-sample.xml >> $LOGFILE 2>&1
 sed -i "s|DEMO-PASSWORD-HASH|${PW_HASH}|g" azure-sample.xml >> $LOGFILE 2>&1
 
+echo "$INFO_TAG Updating subnet ranges and private IP addresses.." >> $LOGFILE 2>&1
+# Subnets
+CURRENT_SUBNETS=("10.2.2.0/24" "10.2.3.0/24" "10.2.4.0/24")
+IFS=',' read -r -a NEW_ALL_SUBNETS <<< "$ALL_SUBNETS"
+ARRAY_INDEX=0
+for s in ${CURRENT_SUBNETS[@]}; do 
+  echo "$INFO_TAG updating ${s} subnet.." >> $LOGFILE 2>&1
+  sed -i "s|${s}|${NEW_ALL_SUBNETS[$ARRAY_INDEX]}|g" azure-sample.xml >> $LOGFILE 2>&1
+  ARRAY_INDEX=$((ARRAY_INDEX + 1))
+done
+
+# Private IP Addresses
+CURRENT_PRIVATE_IP_ADDRESSES=("10.2.1.4" "10.2.3.4" "10.2.4.4")
+IFS=',' read -r -a NEW_PRIVATE_IP_ADDRESSES <<< "$ALL_PRIVATE_IPS"
+ARRAY_INDEX=0
+for p in ${CURRENT_PRIVATE_IP_ADDRESSES[@]}; do 
+  echo "$INFO_TAG updating ${p} private ip address.." >> $LOGFILE 2>&1
+  sed -i "s|${p}|${NEW_PRIVATE_IP_ADDRESSES[$ARRAY_INDEX]}|g" azure-sample.xml >> $LOGFILE 2>&1
+  ARRAY_INDEX=$((ARRAY_INDEX + 1))
+done
+
+# Untrusted and Trusted Hop IP Addresses
+CURRENT_HOP_IP_ADDRESSES=("10.2.1.1" "10.2.2.1")
+IFS=',' read -r -a NEW_HOP_IP_ADDRESSES <<< "$ALL_HOP_IPS"
+ARRAY_INDEX=0
+for h in ${CURRENT_HOP_IP_ADDRESSES[@]}; do 
+  echo "$INFO_TAG updating ${h} hop ip address.." >> $LOGFILE 2>&1
+  sed -i "s|${h}|${NEW_HOP_IP_ADDRESSES[$ARRAY_INDEX]}|g" azure-sample.xml >> $LOGFILE 2>&1
+  ARRAY_INDEX=$((ARRAY_INDEX + 1))
+done
+
 #######################
 # Importing XML Config
 #######################
 
 echo "$INFO_TAG Importing PAN config.." >> $LOGFILE 2>&1
-curl -k --form file=@"./azure-sample.xml" "https://$PRIVATE_IP/api/?type=import&category=configuration&key=$API_KEY" >> $LOGFILE 2>&1
+curl -k --form file=@"./azure-sample.xml" "https://$FW_PRIVATE_IP/api/?type=import&category=configuration&key=$API_KEY" >> $LOGFILE 2>&1
 
 #####################
 # Loading XML Config
 #####################
 
 echo "$INFO_TAG Loading config.." >> $LOGFILE 2>&1
-curl -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<load><config><from>azure-sample.xml</from></config></load>" >> $LOGFILE 2>&1
+curl -k -u $FW_CREDS "https://$FW_PRIVATE_IP/api/?type=op&cmd=<load><config><from>azure-sample.xml</from></config></load>" >> $LOGFILE 2>&1
 
 ##############################
 # Checking Auto-Commit Status
@@ -127,7 +168,7 @@ JOB_PROGRESS=0
 
 until [ $JOB_RESULTS = "OK" ] && [ $JOB_STATUS = "FIN" ] && [ $JOB_PROGRESS = 100 ]; do
     echo "$INFO_TAG waiting for 100% OK status.." >> $LOGFILE 2>&1
-    JOB_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<show><jobs><id>1</id></jobs></show>")
+    JOB_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$FW_PRIVATE_IP/api/?type=op&cmd=<show><jobs><id>1</id></jobs></show>")
     JOB_RESULTS=$(echo $JOB_RESPONSE | sed -e 's,.*<result>\([^<]*\)</result>.*,\1,g')
     JOB_STATUS=$(echo $JOB_RESPONSE | sed -e 's,.*<status>\([^<]*\)</status>.*,\1,g')
     JOB_PROGRESS=$(echo $JOB_RESPONSE | sed -e 's,.*<progress>\([^<]*\)</progress>.*,\1,g')
@@ -146,7 +187,7 @@ CHASIS_READY="no"
 
 until [ $CHASIS_READY = "yes" ]; do
     echo "$INFO_TAG waiting for positive FW chasis status.." >> $LOGFILE 2>&1
-    CHASIS_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<show><chassis-ready></chassis-ready></show>")
+    CHASIS_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$FW_PRIVATE_IP/api/?type=op&cmd=<show><chassis-ready></chassis-ready></show>")
     CHASIS_READY=$(echo $CHASIS_RESPONSE | sed -e 's,.*<result><!\[CDATA\[\([^<]*\)\]\]></result>.*,\1,g'| sed 's/ //g')
     echo "$INFO_TAG > Current status: $CHASIS_READY" >> $LOGFILE 2>&1
     sleep 5
@@ -157,7 +198,7 @@ done
 ########################
 
 echo "$INFO_TAG Committing config.." >> $LOGFILE 2>&1
-COMMIT_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=commit&cmd=<commit></commit>")
+COMMIT_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$FW_PRIVATE_IP/api/?type=commit&cmd=<commit></commit>")
 COMMIT_JOB_ID=$(echo $COMMIT_RESPONSE | sed -e 's,.*<job>\([^<]*\)</job>.*,\1,g')
 echo "$INFO_TAG > Current Job ID: $COMMIT_JOB_ID" >> $LOGFILE 2>&1
 
@@ -168,7 +209,7 @@ JOB_COMMIT_PROGRESS=0
 
 until [ $JOB_COMMIT_RESULTS = "OK" ] && [ $JOB_COMMIT_STATUS = "FIN" ] && [ $JOB_COMMIT_PROGRESS = 100 ]; do
     echo "$INFO_TAG waiting for 100% OK status.." >> $LOGFILE 2>&1
-    JOB_COMMIT_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$PRIVATE_IP/api/?type=op&cmd=<show><jobs><id>$COMMIT_JOB_ID</id></jobs></show>")
+    JOB_COMMIT_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$FW_PRIVATE_IP/api/?type=op&cmd=<show><jobs><id>$COMMIT_JOB_ID</id></jobs></show>")
     JOB_COMMIT_RESULTS=$(echo $JOB_COMMIT_RESPONSE | sed -e 's,.*<result>\([^<]*\)</result>.*,\1,g')
     JOB_COMMIT_STATUS=$(echo $JOB_COMMIT_RESPONSE | sed -e 's,.*<status>\([^<]*\)</status>.*,\1,g')
     JOB_COMMIT_PROGRESS=$(echo $JOB_COMMIT_RESPONSE | sed -e 's,.*<progress>\([^<]*\)</progress>.*,\1,g')
