@@ -111,6 +111,27 @@
                 "description": "Do you want to set up a CEF collector and forward logs to Azure Sentinel? If so, make sure you set the workspaceId and workspaceKey parameters in this template."
             }
         },
+        "enableMonitoringAgent": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to enable the Microsoft Log Analytics Monitoring agent on your Windows 10 workstation? "
+            }
+        },
+        "enableSysmon": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to install Sysmon on the endpoint?"
+            }
+        },
+        "enableAntimalware": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Enable Antimalware extension to filter out some folders and file extensions from the Windows Defender service"
+            }
+        },
         "workspaceId": {
             "type": "string",
             "defaultValue": "",
@@ -321,11 +342,14 @@
         "allPrivateIPs": "[concat(concat(variables('vmPrivateIPAddresPrefix1'),'4'),',',concat(variables('vmPrivateIPAddresPrefix3'),'4'),',',concat(variables('vmPrivateIPAddresPrefix4'),'4'))]",
 
         "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-PAN-FW/nestedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]",
+        "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-PAN-FW/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
+        
         "prepareBoxScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Prepare-Box.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSecurityAuditingScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1', parameters('_artifactsLocationSasToken')))]",
         "saclModule": "https://raw.githubusercontent.com/hunters-forge/Set-AuditRule/master/Set-AuditRule.ps1",
         "setSACLScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/auditing/Set-SACLs.ps1')]",
         "setWallPaperScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Set-WallPaper.ps1', parameters('_artifactsLocationSasToken')))]",
+        "installAgentScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/endpoint-software/Install-Endpoint-Agent.ps1', parameters('_artifactsLocationSasToken')))]",
 
         "windowsVM": [
             {
@@ -966,6 +990,95 @@
                     "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1"
                 },
                 "protectedSettings": {}
+            }
+        },
+        {
+            "condition": "[parameters('enableMonitoringAgent')]",
+            "name": "[concat(variables('windowsVM')[0].vmName, '/OMSExtension')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-12-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('windowsVM')[0].vmName)]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                "type": "MicrosoftMonitoringAgent",
+                "typeHandlerVersion": "1.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "workspaceId": "[parameters('workspaceId')]"
+                },
+                "protectedSettings": {
+                    "workspaceKey": "[parameters('workspaceKey')]"
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableSysmon')]",
+            "name": "[concat(variables('windowsVM')[0].vmName, '-Sysmon')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('windowsVM')[0].vmName, 'SetupWinVM')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptExTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "extensionName": {
+                        "value": "SetupWinVM"
+                    },
+                    "commandToExecute": {
+                        "value": "powershell -ExecutionPolicy Unrestricted -File ./Install-Endpoint-Agent.ps1 -EndpointAgent Sysmon"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "[variables('installAgentScript')]"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[variables('windowsVM')[0].vmName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[parameters('enableAntimalware')]",
+            "name": "[concat(variables('windowsVM')[0].vmName, '/AntiMalware')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-12-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('windowsVM')[0].vmName)]"
+            ],
+            "properties": {
+                "publisher": "Microsoft.Azure.Security",
+                "type": "IaaSAntimalware",
+                "typeHandlerVersion": "1.3",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "AntimalwareEnabled": true,
+                    "Exclusions": {
+                        "Extensions": ".bat;.exe;.dll;.ps1;.sct;.vbs;.hta;.py;.tmp;.csproj",
+                        "Paths": "C:\\",
+                        "Processes": "powershell.exe;sandcat.exe"
+                    },
+                    "RealtimeProtectionEnabled": "false",
+                    "ScheduledScanSettings": {
+                        "isEnabled": "false",
+                        "scanType": "Quick",
+                        "day": "8",
+                        "time": "120"
+                    }
+                },
+                "protectedSettings": null
             }
         }
     ],
