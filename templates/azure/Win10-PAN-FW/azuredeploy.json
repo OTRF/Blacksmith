@@ -911,7 +911,7 @@
                         "value": "[variables('cefVM')[0].extensionName]"
                     },
                     "commandToExecute": {
-                        "value": "[concat('bash Set-Up-CEF.sh',' ','-w',' ',parameters('workspaceId'),'-k',' ',parameters('workspaceKey'))]"
+                        "value": "[concat('bash Set-Up-CEF.sh',' ','-w',' ',parameters('workspaceId'),' ','-k',' ',parameters('workspaceKey'))]"
                     },
                     "fileUris": {
                         "value": [
