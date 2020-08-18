@@ -21,6 +21,18 @@
                 "description": "Password for the Virtual Machine."
             }
         },
+        "firewallSubscription": {
+            "type": "string",
+            "allowedValues": [
+                "byol",
+                "bundle1",
+                "bundle2"
+            ],
+            "metadata": {
+                "description": "Firewall License Model. Reference: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClDACA0"
+            },
+            "defaultValue": "bundle2"
+        },
         "vmNamePrefix": {
             "type": "string",
             "defaultValue": "WORKSTATION",
@@ -60,7 +72,7 @@
                 "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
             }
         },
-        "fwVMSize": {
+        "firewallVMSize": {
             "type": "string",
             "defaultValue": "Standard_D3_v2",
             "allowedValues": [
@@ -94,7 +106,7 @@
         },
         "enableCEFCollector": {
             "type": "bool",
-            "defaultValue": true,
+            "defaultValue": false,
             "metadata": {
                 "description": "Do you want to set up a CEF collector and forward logs to Azure Sentinel? If so, make sure you set the workspaceId and workspaceKey parameters in this template."
             }
@@ -225,18 +237,6 @@
             },
             "defaultValue": "PAN-FW"
         },
-        "fwSku": {
-            "type": "string",
-            "allowedValues": [
-                "byol",
-                "bundle1",
-                "bundle2"
-            ],
-            "metadata": {
-                "description": "Firewall License Model"
-            },
-            "defaultValue": "bundle2"
-        },
         "ubuntuSKU": {
             "type": "string",
             "defaultValue": "18.04-LTS",
@@ -349,10 +349,10 @@
                 "os": "linux",
                 "subnetref": "[variables('subnetRef0')]",
                 "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix0'),'4')]",
-                "vmSize": "[parameters('fwVMSize')]",
+                "vmSize": "[parameters('firewallVMSize')]",
                 "publisher": "paloaltonetworks",
                 "offer": "vmseries1",
-                "sku": "[parameters('fwSku')]",
+                "sku": "[parameters('firewallSubscription')]",
                 "version": "latest",
                 "extensionName": "SetUpPAN"
             }
