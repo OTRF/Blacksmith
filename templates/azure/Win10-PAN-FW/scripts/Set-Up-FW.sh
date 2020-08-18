@@ -67,7 +67,7 @@ FW_CREDS="$ADMIN_USER:$ADMIN_PASSWORD"
 
 echo "$INFO_TAG Checking if PAN access is available.." >> $LOGFILE 2>&1
 attempt_counter=0
-max_attempts=100
+max_attempts=250
 until $(curl --output /dev/null --insecure --silent --head --fail https://$FW_PRIVATE_IP/php/login.php); do
     if [ ${attempt_counter} -eq ${max_attempts} ];then
       echo "$ERROR_TAG Max attempts reached" >> $LOGFILE 2>&1
@@ -83,12 +83,12 @@ done
 ##################
 
 echo "$INFO_TAG Getting API Key.." >> $LOGFILE 2>&1
-while [ $(curl -s -k "https://$FW_PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&password=$ADMIN_PASSWORD" -o /dev/null -w '%{http_code}') != "200" ]; do
+while [ $(curl -s -k -G --data-urlencode "type=keygen" --data-urlencode "user=$ADMIN_USER" --data-urlencode "password=$ADMIN_PASSWORD" "https://$FW_PRIVATE_IP/api/" -o /dev/null -w '%{http_code}') != "200" ]; do
     echo "$INFO_TAG Waiting for API access to be available.." >> $LOGFILE 2>&1
     sleep 5
 done
 
-API_RESPONSE=$(curl -s -k "https://$FW_PRIVATE_IP/api/?type=keygen&user=$ADMIN_USER&password=$ADMIN_PASSWORD")
+API_RESPONSE=$(curl -s -k -G --data-urlencode "type=keygen" --data-urlencode "user=$ADMIN_USER" --data-urlencode "password=$ADMIN_PASSWORD" "https://$FW_PRIVATE_IP/api/")
 API_KEY=$(echo $API_RESPONSE | sed -e 's,.*<key>\([^<]*\)</key>.*,\1,g')
 
 ########################
@@ -96,12 +96,12 @@ API_KEY=$(echo $API_RESPONSE | sed -e 's,.*<key>\([^<]*\)</key>.*,\1,g')
 ########################
 
 echo "$INFO_TAG Getting Password Hash.." >> $LOGFILE 2>&1
-while [ $(curl -s -k -u $FW_CREDS "https://$FW_PRIVATE_IP/api/?type=op&cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>" -o /dev/null -w '%{http_code}') != "200" ]; do
+while [ $(curl -s -k -u $FW_CREDS -G --data-urlencode "type=op" --data-urlencode 'cmd=<request><password-hash><password>\"$ADMIN_PASSWORD\"</password></password-hash></request>' "https://$FW_PRIVATE_IP/api/" -o /dev/null -w '%{http_code}') != "200" ]; do
     echo "$INFO_TAG Waiting for Password Hash access to be available.." >> $LOGFILE 2>&1
     sleep 5
 done
 
-PW_HASH_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$FW_PRIVATE_IP/api/?type=op&cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>")
+PW_HASH_RESPONSE=$(curl -s -k -u $FW_CREDS -G --data-urlencode "type=op" --data-urlencode 'cmd=<request><password-hash><password>\"$ADMIN_PASSWORD\"</password></password-hash></request>' "https://$FW_PRIVATE_IP/api/")
 PW_HASH=$(echo $PW_HASH_RESPONSE | sed -e 's,.*<phash>\([^<]*\)</phash>.*,\1,g')
 
 ######################
