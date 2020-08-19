@@ -96,12 +96,12 @@ API_KEY=$(echo $API_RESPONSE | sed -e 's,.*<key>\([^<]*\)</key>.*,\1,g')
 ########################
 
 echo "$INFO_TAG Getting Password Hash.." >> $LOGFILE 2>&1
-while [ $(curl -s -k -u $FW_CREDS -G --data-urlencode "type=op" --data-urlencode 'cmd=<request><password-hash><password>\"$ADMIN_PASSWORD\"</password></password-hash></request>' "https://$FW_PRIVATE_IP/api/" -o /dev/null -w '%{http_code}') != "200" ]; do
+while [ $(curl -s -k -u $FW_CREDS -G --data-urlencode "type=op" --data-urlencode "cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>" "https://$FW_PRIVATE_IP/api/" -o /dev/null -w '%{http_code}') != "200" ]; do
     echo "$INFO_TAG Waiting for Password Hash access to be available.." >> $LOGFILE 2>&1
     sleep 5
 done
 
-PW_HASH_RESPONSE=$(curl -s -k -u $FW_CREDS -G --data-urlencode "type=op" --data-urlencode 'cmd=<request><password-hash><password>\"$ADMIN_PASSWORD\"</password></password-hash></request>' "https://$FW_PRIVATE_IP/api/")
+PW_HASH_RESPONSE=$(curl -s -k -u $FW_CREDS -G --data-urlencode "type=op" --data-urlencode "cmd=<request><password-hash><password>$ADMIN_PASSWORD</password></password-hash></request>" "https://$FW_PRIVATE_IP/api/")
 PW_HASH=$(echo $PW_HASH_RESPONSE | sed -e 's,.*<phash>\([^<]*\)</phash>.*,\1,g')
 
 ######################
