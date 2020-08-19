@@ -66,7 +66,7 @@
         "adminPasswordOrKey": {
             "type": "securestring",
             "metadata": {
-                "description": "SSH Key or password for the Virtual Machine. SSH key is recommended."
+                "description": "SSH Key or password for the Virtual Machine. SSH key is recommended. The password must be at least 8 characters in length and must contain at least one digit, one non-alphanumeric character, and one upper or lower case letter."
             }
         },
         "allowedIPAddresses": {
