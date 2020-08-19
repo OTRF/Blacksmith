@@ -891,7 +891,7 @@
             }
         },
         {
-            "condition": "[parameters('enableCEFCollector')]",
+            "condition": "[parameters('enableMonitoringAgent')]",
             "name": "[concat(variables('cefVM')[0].vmName, '-CEF-SETUP')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
@@ -929,6 +929,7 @@
             }
         },
         {
+            "condition": "[parameters('enableMonitoringAgent')]",
             "name": "[concat(variables('cefVM')[0].vmName, '-PAN-FW-SETUP')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
@@ -965,6 +966,7 @@
             }
         },
         {
+            "condition": "[parameters('enableMonitoringAgent')]",
             "name": "[concat(variables('windowsVM')[0].vmName, '/SetupWinVM')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",

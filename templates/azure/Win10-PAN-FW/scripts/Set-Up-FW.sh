@@ -65,10 +65,10 @@ FW_CREDS="$ADMIN_USER:$ADMIN_PASSWORD"
 # Checking PAN Access
 ######################
 
-echo "$INFO_TAG Checking if PAN access is available.." >> $LOGFILE 2>&1
 attempt_counter=0
 max_attempts=250
-until $(curl --output /dev/null --insecure --silent --head --fail https://$FW_PRIVATE_IP/php/login.php); do
+echo "$INFO_TAG Checking if PAN access is available.." >> $LOGFILE 2>&1
+while [ $(curl -s -k https://$FW_PRIVATE_IP/php/login.php -o /dev/null -w '%{http_code}') != "200" ]; do
     if [ ${attempt_counter} -eq ${max_attempts} ];then
       echo "$ERROR_TAG Max attempts reached" >> $LOGFILE 2>&1
       exit 1
