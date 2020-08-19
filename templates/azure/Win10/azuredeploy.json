@@ -22,12 +22,12 @@
             },
             "minLength": 8
         },
-        "vmNamePrefix": {
+        "allowedIPAddresses": {
             "type": "string",
-            "defaultValue": "WORKSTATION",
             "metadata": {
-                "description": "Prefix for the name of your virtual machine. Template will add a number starting from 5."
-            }
+                "description": "The sourceAddressPrefixes allowed to connect to this deployment"
+            },
+            "defaultValue": "*"
         },
         "numberOfWorkstations": {
             "type": "int",
@@ -36,6 +36,13 @@
             "maxValue": 100,
             "metadata": {
                 "description": "Number of VMs to deploy"
+            }
+        },
+        "vmNamePrefix": {
+            "type": "string",
+            "defaultValue": "WORKSTATION",
+            "metadata": {
+                "description": "Prefix for the name of your virtual machine. Template will add a number starting from 5."
             }
         },
         "windowsDesktopSKU": {
@@ -71,46 +78,11 @@
                 "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
             }
         },
-        "allowedIPAddresses": {
-            "type": "string",
-            "metadata": {
-                "description": "The sourceAddressPrefixes allowed to connect to this deployment"
-            },
-            "defaultValue": "*"
-        },
-        "_artifactsLocation": {
-            "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/",
-            "metadata": {
-                "description": "The location of resources, such as templates and DSC modules, that the template depends on"
-            }
-        },
-        "_artifactsLocationSasToken": {
-            "type": "securestring",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
-            }
-        },
         "enableMonitoringAgent": {
             "type": "bool",
             "defaultValue": false,
             "metadata": {
                 "description": "Do you want to enable the Microsoft Log Analytics Monitoring agent? "
-            }
-        },
-        "workspaceId": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Log analytics workspace ID"
-            }
-        },
-        "workspaceKey": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Log analytics workspace keys"
             }
         },
         "enableSysmon": {
@@ -175,6 +147,34 @@
                 "description": "Vnet ID of the remote vnet you are peering with"
             },
             "defaultValue": ""
+        },
+        "workspaceId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Log analytics workspace ID"
+            }
+        },
+        "workspaceKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Log analytics workspace keys"
+            }
+        },
+        "_artifactsLocation": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/",
+            "metadata": {
+                "description": "The location of resources, such as templates and DSC modules, that the template depends on"
+            }
+        },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
+            }
         },
         "location": {
             "type": "string",
