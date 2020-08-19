@@ -19,7 +19,8 @@
             "type": "securestring",
             "metadata": {
                 "description": "Password for the Virtual Machine."
-            }
+            },
+            "minLength": 8
         },
         "windowsDesktopSKU": {
             "type": "string",
