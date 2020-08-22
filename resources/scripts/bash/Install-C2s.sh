@@ -85,7 +85,19 @@ elif [[ $RUN_C2 == "empire" ]]; then
     cd /opt/Empire && docker build -t empire . >> $LOGFILE 2>&1
     docker create -v /opt/Empire --name data empire >> $LOGFILE 2>&1
 
+    # Bash (no Empire server running)
     docker run -d -it -p 80:80 -p 443:443 -p 8443-8500:8443-8500 --name empire --volumes-from data empire /bin/bash >> $LOGFILE 2>&1
+    
+    # Starting Empire headless on port 8443
+    #docker run -d -it -p 80:80 -p 443:443 -p 8443-8500:8443-8500 --name empire --volumes-from data empire ./empire --headless --restport 8443 --username $ADMIN_USER --password $ADMIN_PASSWORD
+
+    # Downloading StarKiller (Latest version always)
+    #STAR_KILLER_VERSION=$(curl -s https://api.github.com/repos/BC-SECURITY/Starkiller/releases/latest | grep 'tag_name' | cut -d\" -f4)
+    #CUSTOM_VERSION="${STAR_KILLER_VERSION:1}"
+
+    #curl -L https://github.com/BC-SECURITY/Starkiller/releases/download/$STAR_KILLER_VERSION/starkiller-$CUSTOM_VERSION.AppImage -o /usr/local/bin/starkiller >> $LOGFILE 2>&1
+    #chmod +x /usr/local/bin/starkiller >> $LOGFILE 2>&1
+
 elif [[ $RUN_C2 == "caldera" ]]; then
     # *********** Installing Caldera ***************
     git clone https://github.com/Cyb3rWard0g/docker-caldera /opt/caldera >> $LOGFILE 2>&1

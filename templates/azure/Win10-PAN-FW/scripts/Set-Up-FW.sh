@@ -153,7 +153,7 @@ JOB_STATUS="ACT"
 JOB_PROGRESS=0  
 
 until [ $JOB_RESULTS = "OK" ] && [ $JOB_STATUS = "FIN" ] && [ $JOB_PROGRESS = 100 ]; do
-    echo "$INFO_TAG waiting for 100% OK status.." >> $LOGFILE 2>&1
+    echo "$INFO_TAG Waiting for Auto-Commit job.." >> $LOGFILE 2>&1
     JOB_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$FW_PRIVATE_IP/api/?type=op&cmd=<show><jobs><id>1</id></jobs></show>")
     JOB_RESULTS=$(echo $JOB_RESPONSE | sed -e 's,.*<result>\([^<]*\)</result>.*,\1,g')
     JOB_STATUS=$(echo $JOB_RESPONSE | sed -e 's,.*<status>\([^<]*\)</status>.*,\1,g')
@@ -172,7 +172,7 @@ echo "$INFO_TAG Checking FW chasis status.." >> $LOGFILE 2>&1
 CHASIS_READY="no"
 
 until [ $CHASIS_READY = "yes" ]; do
-    echo "$INFO_TAG waiting for positive FW chasis status.." >> $LOGFILE 2>&1
+    echo "$INFO_TAG Waiting for positive FW chasis status.." >> $LOGFILE 2>&1
     CHASIS_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$FW_PRIVATE_IP/api/?type=op&cmd=<show><chassis-ready></chassis-ready></show>")
     CHASIS_READY=$(echo $CHASIS_RESPONSE | sed -e 's,.*<result><!\[CDATA\[\([^<]*\)\]\]></result>.*,\1,g'| sed 's/ //g')
     echo "$INFO_TAG > Current status: $CHASIS_READY" >> $LOGFILE 2>&1
@@ -208,7 +208,7 @@ JOB_COMMIT_STATUS="ACT"
 JOB_COMMIT_PROGRESS=0 
 
 until [ $JOB_COMMIT_RESULTS = "OK" ] && [ $JOB_COMMIT_STATUS = "FIN" ] && [ $JOB_COMMIT_PROGRESS = 100 ]; do
-    echo "$INFO_TAG waiting for 100% OK status.." >> $LOGFILE 2>&1
+    echo "$INFO_TAG Waiting for Job $COMMIT_JOB_ID commit.." >> $LOGFILE 2>&1
     JOB_COMMIT_RESPONSE=$(curl -s -k -u $FW_CREDS "https://$FW_PRIVATE_IP/api/?type=op&cmd=<show><jobs><id>$COMMIT_JOB_ID</id></jobs></show>")
     JOB_COMMIT_RESULTS=$(echo $JOB_COMMIT_RESPONSE | sed -e 's,.*<result>\([^<]*\)</result>.*,\1,g')
     JOB_COMMIT_STATUS=$(echo $JOB_COMMIT_RESPONSE | sed -e 's,.*<status>\([^<]*\)</status>.*,\1,g')
