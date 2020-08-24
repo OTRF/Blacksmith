@@ -22,12 +22,37 @@
             },
             "minLength": 8
         },
+        "remoteAccessMode": {
+            "type": "string",
+            "defaultValue": "AllowPublicIP",
+            "allowedValues": [
+                "AllowPublicIP",
+                "AzureBastionHost"
+            ],
+            "metadata": {
+                "description": "Do you want to restrict access to your environment by a Public IP or set up an Azure Bastion Host. If the former, make sure you add your public IP address to the variable 'allowedIPAddresses'"
+            }
+        },
         "allowedIPAddresses": {
             "type": "string",
             "metadata": {
                 "description": "The sourceAddressPrefixes allowed to connect to this deployment"
             },
             "defaultValue": "*"
+        },
+        "azureBastionHostName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of Azure Bastion Host assigned to the Virtual network in this template"
+            },
+            "defaultValue": "WinADBastionHost"
+        },
+        "azureBastionSubnetRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the Azure Bastion service"
+            },
+            "defaultValue": "192.168.3.0/27"
         },
         "domainFQDN": {
             "type": "string",
@@ -107,25 +132,25 @@
                 "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
             }
         },
-        "_artifactsLocation": {
-            "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/",
-            "metadata": {
-                "description": "The location of resources, such as templates and DSC modules, that the template depends on"
-            }
-        },
-        "_artifactsLocationSasToken": {
-            "type": "securestring",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
-            }
-        },
         "enableMonitoringAgent": {
             "type": "bool",
             "defaultValue": false,
             "metadata": {
                 "description": "Do you want to enable the Microsoft Log Analytics Monitoring agent? "
+            }
+        },
+        "workspaceId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Log analytics workspace ID"
+            }
+        },
+        "workspaceKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Log analytics workspace keys"
             }
         },
         "enableSysmon": {
@@ -170,41 +195,6 @@
             },
             "defaultValue": "snet-win"
         },
-        "peeringVNET": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to peer your vnet to a remote vnet?"
-            }
-        },
-        "peeringVNETName": {
-            "type": "string",
-            "metadata": {
-                "description": "Vnet name of the remote vnet you are peering with"
-            },
-            "defaultValue": ""
-        },
-        "peeringVNETId": {
-            "type": "string",
-            "metadata": {
-                "description": "Vnet ID of the remote vnet you are peering with"
-            },
-            "defaultValue": ""
-        },
-        "workspaceId": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Log analytics workspace ID"
-            }
-        },
-        "workspaceKey": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Log analytics workspace keys"
-            }
-        },
         "_artifactsLocation": {
             "type": "string",
             "defaultValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/",
@@ -231,13 +221,38 @@
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
         
         "virtualNetworkName": "[parameters('virtualNetworkName')]",
-        "subnetName": "[parameters('subnetName')]",
         "virtualNetworkAddressRange": "[parameters('virtualNetworkAddressRange')]",
+        
+        "subnetName": "[parameters('subnetName')]",
         "subnetRange": "[parameters('subnetRange')]",
         "vmPrivateIPPrefixArray": "[take(split(variables('subnetRange'),'.'),3)]",
         "vmPrivateIPAddresPrefix": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray')[0], variables('vmPrivateIPPrefixArray')[1], variables('vmPrivateIPPrefixArray')[2])]",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
         
+        "bastionSubnetName": "AzureBastionSubnet",
+
+        "nsg-id": {"id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-rdp-allow')]"},
+        "networkSecurityGroup": "[if(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), variables('nsg-id'), json('null'))]",
+
+        "subnets": [
+            {
+                "name": "[variables('subnetName')]",
+                "properties": {
+                    "addressPrefix": "[variables('subnetRange')]",
+                    "networkSecurityGroup": "[variables('networkSecurityGroup')]"
+                }
+            }
+        ],
+        "azureBastionSubnet": [
+            {
+                "name": "[variables('bastionSubnetName')]",
+                "properties": {
+                    "addressPrefix": "[parameters('azureBastionSubnetRange')]"
+                }
+            }
+        ],
+        "allSubnets": "[if(equals(parameters('remoteAccessMode'),'AzureBastionHost'), concat(variables('subnets'), variables('azureBastionSubnet')), variables('subnets'))]",
+
         "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-DC/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
         "prepareBoxScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Prepare-Box.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSecurityAuditingScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1', parameters('_artifactsLocationSasToken')))]",
@@ -250,14 +265,14 @@
 
         "copy": [
             {
-                "name": "endpointsDynamic",
+                "name": "allWinWKS",
                 "count": "[parameters('numberOfWorkstations')]",
                 "input": {
                     "tag": "workstation",
-                    "vmName": "[concat(parameters('vmNamePrefix'),copyIndex('endpointsDynamic',5))]",
+                    "vmName": "[concat(parameters('vmNamePrefix'),copyIndex('allWinWKS',5))]",
                     "os": "windows",
                     "subnetref": "[variables('subnetRef')]",                   
-                    "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('endpointsDynamic',5))]",
+                    "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('allWinWKS',5))]",
                     "vmSize": "[parameters('vmSize')]",
                     "publisher": "MicrosoftWindowsDesktop",
                     "offer": "Windows-10",
@@ -283,7 +298,7 @@
             }
         ],
         
-        "allEndpoints": "[concat(variables('endpointsDynamic'), variables('domainController'))]",
+        "allEndpoints": "[concat(variables('allWinWKS'), variables('domainController'))]",
 
         "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
         "ouPath": "[concat('OU=Workstations; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]"
@@ -302,10 +317,11 @@
             }
         },
         {
+            "condition": "[equals(parameters('remoteAccessMode'), 'AllowPublicIP')]",
             "comments": "Default Network Security Group for Windows endpoints",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-08-01",
-            "name": "nsg-rdpallow",
+            "name": "nsg-rdp-allow",
             "location": "[parameters('location')]",
             "properties": {
                 "securityRules": [
@@ -331,7 +347,7 @@
             "name": "[variables('virtualNetworkName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-rdpallow')]"
+                "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-rdp-allow')]"
             ],
             "properties": {
                 "addressSpace": {
@@ -339,42 +355,51 @@
                         "[variables('virtualNetworkAddressRange')]"
                     ]
                 },
-                "subnets": [
+                "subnets": "[variables('allSubnets')]"
+            }
+        },
+        {
+            "condition": "[equals(parameters('remoteAccessMode'),'AzureBastionHost')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2018-11-01",
+            "name": "[concat('pip-', parameters('azureBastionHostName'))]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Static"
+            }
+        },
+        {
+            "condition": "[equals(parameters('remoteAccessMode'),'AzureBastionHost')]",
+            "type": "Microsoft.Network/bastionHosts",
+            "apiVersion": "2020-05-01",
+            "name": "[parameters('azureBastionHostName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', parameters('azureBastionHostName')))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
                     {
-                        "name": "[variables('subnetName')]",
+                        "name": "IpConf",
                         "properties": {
-                            "addressPrefix": "[variables('subnetRange')]",
-                            "networkSecurityGroup": {
-                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-rdpallow')]"
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', parameters('azureBastionHostName')))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), variables('bastionSubnetName'))]"
                             }
                         }
                     }
                 ]
-            },
-            "resources": [
-                {
-                   "condition": "[parameters('peeringVNET')]", 
-                   "apiVersion": "2016-06-01",
-                   "type": "virtualNetworkPeerings",
-                   "name": "[concat(variables('virtualNetworkName'), '-', parameters('peeringVNETName'))]",
-                   "location": "[resourceGroup().location]",
-                   "dependsOn": [
-                       "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
-                   ],
-                   "comments": "This is the peering from local vnet to remote vnet",
-                   "properties": {
-                       "allowVirtualNetworkAccess": "true",
-                       "allowForwardedTraffic": "false",
-                       "allowGatewayTransit": "false",
-                       "useRemoteGateways": "false",
-                       "remoteVirtualNetwork": {
-                           "id": "[parameters('peeringVNETId')]"
-                       }
-                   }
-               }
-            ]
+            }
         },
         {
+            "condition": "[equals(parameters('remoteAccessMode'),'AllowPublicIP')]",
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2018-11-01",
             "name": "[concat('pip-', variables('allEndpoints')[copyIndex('vmPublicIpCopy')].vmName)]",
@@ -410,9 +435,7 @@
                         "properties": {
                             "privateIPAllocationMethod": "Static",
                             "privateIPAddress": "[variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].ipAddress]",
-                            "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].vmName))]"
-                            },
+                            "publicIPAddress": "[if(equals(parameters('remoteAccessMode'),'AllowPublicIP'), json(concat('{\"id\":', '\"', resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].vmName)),'\"}')),json('null'))]",
                             "subnet": {
                                 "id": "[variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].subnetref]"
                             }
@@ -471,16 +494,16 @@
             }
         },
         {
-            "name": "[concat(variables('endpointsDynamic')[copyIndex('InitialSetUpWKSCopy')].vmName, '/', variables('endpointsDynamic')[copyIndex('InitialSetUpWKSCopy')].extensionName)]",
+            "name": "[concat(variables('allWinWKS')[copyIndex('InitialSetUpWKSCopy')].vmName, '/', variables('allWinWKS')[copyIndex('InitialSetUpWKSCopy')].extensionName)]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('endpointsDynamic')[copyIndex('InitialSetUpWKSCopy')].vmName)]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('allWinWKS')[copyIndex('InitialSetUpWKSCopy')].vmName)]"
             ],
             "copy": {
                 "name": "InitialSetUpWKSCopy",
-                "count": "[length(variables('endpointsDynamic'))]"
+                "count": "[length(variables('allWinWKS'))]"
             },
             "properties": {
                 "publisher": "Microsoft.Compute",
@@ -533,15 +556,15 @@
         },
         {
             "condition": "[parameters('enableMonitoringAgent')]",
-            "name": "[concat(variables('allEndpoints')[copyIndex('vmALAAgentSetUpCopy')].vmName, '/OMSExtension')]",
+            "name": "[concat(variables('allEndpoints')[copyIndex('vmMMASetUpCopy')].vmName, '/OMSExtension')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('allEndpoints')[copyIndex('vmALAAgentSetUpCopy')].vmName)]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('allEndpoints')[copyIndex('vmMMASetUpCopy')].vmName)]"
             ],
             "copy": {
-                "name": "vmALAAgentSetUpCopy",
+                "name": "vmMMASetUpCopy",
                 "count": "[length(variables('allEndpoints'))]"
             },
             "properties": {
@@ -559,7 +582,7 @@
         },
         {
             "condition": "[parameters('enableSysmon')]",
-            "name": "[concat(variables('endpointsDynamic')[copyIndex('vmSysmonSetUpCopy')].vmName, '-Sysmon')]",
+            "name": "[concat(variables('allWinWKS')[copyIndex('vmSysmonSetUpCopy')].vmName, '-Sysmon')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
@@ -567,7 +590,7 @@
             ],
             "copy": {
                 "name": "vmSysmonSetupCopy",
-                "count": "[length(variables('endpointsDynamic'))]"
+                "count": "[length(variables('allWinWKS'))]"
             },
             "properties": {
                 "mode": "Incremental",
@@ -577,7 +600,7 @@
                 },
                 "parameters": {
                     "extensionName": {
-                        "value": "[variables('endpointsDynamic')[copyIndex('vmSysmonSetupCopy')].extensionName]"
+                        "value": "[variables('allWinWKS')[copyIndex('vmSysmonSetupCopy')].extensionName]"
                     },
                     "commandToExecute": {
                         "value": "powershell -ExecutionPolicy Unrestricted -File ./Install-Endpoint-Agent.ps1 -EndpointAgent Sysmon"
@@ -588,7 +611,7 @@
                         ]
                     },
                     "vmName": {
-                        "value": "[variables('endpointsDynamic')[copyIndex('vmSysmonSetupCopy')].vmName]"
+                        "value": "[variables('allWinWKS')[copyIndex('vmSysmonSetupCopy')].vmName]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -727,7 +750,7 @@
                         "value": "[variables('subnetRange')]"
                     },
                     "networkSecurityGroupId": {
-                        "value": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-rdpallow')]"
+                        "value": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-rdp-allow')]"
                     },
                     "DNSServerAddress": {
                         "value": [
@@ -778,20 +801,20 @@
             }
         },
         {
-            "name": "[concat(variables('endpointsDynamic')[copyIndex('vmDomainJoinCopy')].vmName,'/joindomain')]",
+            "name": "[concat(variables('allWinWKS')[copyIndex('vmDomainJoinCopy')].vmName,'/joindomain')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "InitialSetUpWKSCopy",
                 "vmSysmonSetupCopy",
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('endpointsDynamic')[copyIndex('vmDomainJoinCopy')].vmName, 'OMSExtension')]",
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('allWinWKS')[copyIndex('vmDomainJoinCopy')].vmName, 'OMSExtension')]",
                 "ADSetup",
                 "UpdateVNetDNS"
             ],
             "copy": {
                 "name": "vmDomainJoinCopy",
-                "count": "[length(variables('endpointsDynamic'))]"
+                "count": "[length(variables('allWinWKS'))]"
             },
             "properties": {
                 "publisher": "Microsoft.Compute",
@@ -820,7 +843,7 @@
             "type": "string",
             "value": "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
         },
-        "endpoints": {
+        "allWinVMsDeployed": {
             "type": "array",
             "value": "[variables('allEndpoints')]"
         }

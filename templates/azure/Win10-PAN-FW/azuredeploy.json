@@ -112,6 +112,20 @@
                 "description": "Do you want to enable the Microsoft Log Analytics Monitoring agent on your Windows 10 workstation? "
             }
         },
+        "workspaceId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Log analytics workspace ID"
+            }
+        },
+        "workspaceKey": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Log analytics workspace keys"
+            }
+        },
         "enableSysmon": {
             "type": "bool",
             "defaultValue": false,
@@ -140,13 +154,6 @@
             },
             "defaultValue": "10.2.0.0/16"
         },
-        "subnetRange0": {
-            "type": "string",
-            "metadata": {
-                "description": "Address Range of the subnet"
-            },
-            "defaultValue": "10.2.0.0/24"
-        },
         "subnetName0": {
             "type": "string",
             "metadata": {
@@ -154,12 +161,12 @@
             },
             "defaultValue": "Mgmt"
         },
-        "subnetRange1": {
+        "subnetRange0": {
             "type": "string",
             "metadata": {
                 "description": "Address Range of the subnet"
             },
-            "defaultValue": "10.2.1.0/24"
+            "defaultValue": "10.2.0.0/24"
         },
         "subnetName1": {
             "type": "string",
@@ -168,12 +175,12 @@
             },
             "defaultValue": "Untrust"
         },
-        "subnetRange2": {
+        "subnetRange1": {
             "type": "string",
             "metadata": {
                 "description": "Address Range of the subnet"
             },
-            "defaultValue": "10.2.2.0/24"
+            "defaultValue": "10.2.1.0/24"
         },
         "subnetName2": {
             "type": "string",
@@ -182,12 +189,12 @@
             },
             "defaultValue": "Trust"
         },
-        "subnetRange3": {
+        "subnetRange2": {
             "type": "string",
             "metadata": {
                 "description": "Address Range of the subnet"
             },
-            "defaultValue": "10.2.3.0/24"
+            "defaultValue": "10.2.2.0/24"
         },
         "subnetName3": {
             "type": "string",
@@ -196,12 +203,12 @@
             },
             "defaultValue": "CEF"
         },
-        "subnetRange4": {
+        "subnetRange3": {
             "type": "string",
             "metadata": {
                 "description": "Address Range of the subnet"
             },
-            "defaultValue": "10.2.4.0/24"
+            "defaultValue": "10.2.3.0/24"
         },
         "subnetName4": {
             "type": "string",
@@ -210,26 +217,12 @@
             },
             "defaultValue": "Victim"
         },
-        "peeringVNET": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to peer your vnet to a remote vnet?"
-            }
-        },
-        "peeringVNETName": {
+        "subnetRange4": {
             "type": "string",
             "metadata": {
-                "description": "Vnet name of the remote vnet you are peering with"
+                "description": "Address Range of the subnet"
             },
-            "defaultValue": ""
-        },
-        "peeringVNETId": {
-            "type": "string",
-            "metadata": {
-                "description": "Vnet ID of the remote vnet you are peering with"
-            },
-            "defaultValue": ""
+            "defaultValue": "10.2.4.0/24"
         },
         "ubuntuSKU": {
             "type": "string",
@@ -262,20 +255,6 @@
                 "description": "SSH Key to authenticate against Linux Virtual Machines. Provide the SSH rsa public key file as a string. Use \"ssh-keygen -t rsa -b 2048\" to generate your SSH key pairs."
             },
             "defaultValue": ""
-        },
-        "workspaceId": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Log analytics workspace ID"
-            }
-        },
-        "workspaceKey": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Log analytics workspace keys"
-            }
         },
         "_artifactsLocation": {
             "type": "string",
