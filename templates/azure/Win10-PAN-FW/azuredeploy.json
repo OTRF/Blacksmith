@@ -651,29 +651,7 @@
                         }
                     }
                 ]
-            },
-            "resources": [
-                {
-                   "condition": "[parameters('peeringVNET')]", 
-                   "apiVersion": "2016-06-01",
-                   "type": "virtualNetworkPeerings",
-                   "name": "[concat(variables('virtualNetworkName'), '-', parameters('peeringVNETName'))]",
-                   "location": "[resourceGroup().location]",
-                   "dependsOn": [
-                       "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
-                   ],
-                   "comments": "This is the peering from local vnet to remote vnet",
-                   "properties": {
-                       "allowVirtualNetworkAccess": "true",
-                       "allowForwardedTraffic": "false",
-                       "allowGatewayTransit": "false",
-                       "useRemoteGateways": "false",
-                       "remoteVirtualNetwork": {
-                           "id": "[parameters('peeringVNETId')]"
-                       }
-                   }
-               }
-            ]
+            }
         },
         {
             "type": "Microsoft.Network/publicIPAddresses",
