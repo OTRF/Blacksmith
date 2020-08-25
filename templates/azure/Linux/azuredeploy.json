@@ -184,6 +184,13 @@
                 "description": "Log analytics workspace keys"
             }
         },
+        "enableAuditdPlugin": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to enable an Auditd plugin that forwards audit events to OMS Agent for Linux. https://github.com/microsoft/OMS-Auditd-Plugin/tree/MSTIC-Research "
+            }
+        },
         "virtualNetworkName": {
             "type": "string",
             "metadata": {
@@ -516,6 +523,33 @@
                 "protectedSettings": {
                     "workspaceKey": "[parameters('workspaceKey')]"
                 }
+            }
+        },
+        {
+            "condition": "[parameters('enableAuditdPlugin')]",
+            "name": "[concat(variables('allLinuxVMs')[copyIndex('SetUpLinuxCopy')].vmName, '/SetUpLinuxVM')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-12-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('allLinuxVMs')[copyIndex('SetUpLinuxCopy')].vmName)]"
+            ],
+            "copy": {
+                "name": "SetUpLinuxCopy",
+                "count": "[length(variables('allLinuxVMs'))]"
+            },
+            "properties": {
+                "publisher": "Microsoft.Azure.Extensions",
+                "type": "CustomScript",
+                "typeHandlerVersion": "2.1",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/azure/Linux/scripts/Install-OMS-Auditd-Plugin.sh"
+                    ],
+                    "commandToExecute": "[concat('bash Install-OMS-Auditd-Plugin.sh')]"
+                },
+                "protectedSettings": {}
             }
         }
     ],
