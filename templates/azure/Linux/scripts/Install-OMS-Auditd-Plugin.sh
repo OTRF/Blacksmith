@@ -87,11 +87,11 @@ if [ "$SYSTEM_KERNEL" == "Linux" ]; then
   case "$LSB_DIST" in
   ubuntu | debian | raspbian)
     apt update -y >> $LOGFILE 2>&1
-    apt install -y rapidjson-dev libmsgpack-dev libxml2-dev libboost-all-dev libaudit-dev libauparse-dev build-essential cmake auditd audit-libs-devel >> $LOGFILE 2>&1
+    apt install -y rapidjson-dev libmsgpack-dev libxml2-dev libboost-all-dev libaudit-dev libauparse-dev build-essential cmake auditd >> $LOGFILE 2>&1
     ;;
   centos | rhel)
     rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm >> $LOGFILE 2>&1
-    yum update -y >> $LOGFILE 2>&1
+    yum update -y --exclude=WALinuxAgent >> $LOGFILE 2>&1
     yum install -y git rapidjson-devel msgpack-devel libxml2-devel gcc gcc-c++ make cmake boost-devel audit yum-utils >> $LOGFILE 2>&1
     yum-config-manager --enable rhel-server-rhscl-7-rpms >> $LOGFILE 2>&1
     yum install -y devtoolset-7 >> $LOGFILE 2>&1
