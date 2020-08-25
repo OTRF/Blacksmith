@@ -92,9 +92,11 @@ if [ "$SYSTEM_KERNEL" == "Linux" ]; then
   centos | rhel)
     rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm >> $LOGFILE 2>&1
     yum update -y --exclude=WALinuxAgent >> $LOGFILE 2>&1
-    yum install -y git rapidjson-devel msgpack-devel libxml2-devel gcc gcc-c++ make cmake boost-devel audit yum-utils >> $LOGFILE 2>&1
+    yum install -y git rapidjson-devel msgpack-devel libxml2-devel gcc gcc-c++ make cmake boost-devel audit yum-utils audit-libs-devel centos-release-scl-rh >> $LOGFILE 2>&1
     yum-config-manager --enable rhel-server-rhscl-7-rpms >> $LOGFILE 2>&1
     yum install -y devtoolset-7 >> $LOGFILE 2>&1
+    echo 'source scl_source enable devtoolset-7' >> ~/.bashrc
+    source scl_source enable devtoolset-7 >> $LOGFILE 2>&1
     ;;
   esac
 
