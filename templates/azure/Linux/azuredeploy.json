@@ -532,7 +532,8 @@
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('allLinuxVMs')[copyIndex('SetUpLinuxCopy')].vmName)]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('allLinuxVMs')[copyIndex('SetUpLinuxCopy')].vmName)]",
+                "vmMMASetUpCopy"
             ],
             "copy": {
                 "name": "SetUpLinuxCopy",
