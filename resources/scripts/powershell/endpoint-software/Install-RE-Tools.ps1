@@ -113,7 +113,7 @@ write-host "Installing Wireshark.."
 write-Host "Installing Sysmon.."
 write-Host "Downloading Sysmon config.."
 $SysmonFile = "C:\ProgramData\sysmon.xml"
-$SysmonConfigUrl = "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/resources/configs/sysmon/sysmon.xml"
+$SysmonConfigUrl = "https://raw.githubusercontent.com/OTRF/Blacksmith/master/resources/configs/sysmon/sysmon.xml"
 $wc.DownloadFile($SysmonConfigUrl, $SysmonFile)
 if (!(Test-Path $SysmonFile)){ Write-Error "File $SysmonFile does not exist" -ErrorAction Stop }
 

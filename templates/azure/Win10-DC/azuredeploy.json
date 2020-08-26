@@ -197,7 +197,7 @@
         },
         "_artifactsLocation": {
             "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/",
+            "defaultValue": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/",
             "metadata": {
                 "description": "The location of resources, such as templates and DSC modules, that the template depends on"
             }
@@ -257,7 +257,7 @@
         "prepareBoxScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Prepare-Box.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSecurityAuditingScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1', parameters('_artifactsLocationSasToken')))]",
         "setPowerShellLogging": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Enable-PowerShell-Logging.ps1', parameters('_artifactsLocationSasToken')))]",
-        "saclModule": "https://raw.githubusercontent.com/hunters-forge/Set-AuditRule/master/Set-AuditRule.ps1",
+        "saclModule": "https://raw.githubusercontent.com/OTRF/Set-AuditRule/master/Set-AuditRule.ps1",
         "setSACLScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/auditing/Set-SACLs.ps1')]",
         "setIPAddressScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Set-StaticIP.ps1', parameters('_artifactsLocationSasToken')))]",
         "installAgentScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/endpoint-software/Install-Endpoint-Agent.ps1', parameters('_artifactsLocationSasToken')))]",
@@ -512,7 +512,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/azure/Win10-DC/scripts/Set-Initial-Settings.ps1",
+                        "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Win10-DC/scripts/Set-Initial-Settings.ps1",
                         "[variables('prepareBoxScript')]",
                         "[variables('setSecurityAuditingScript')]",
                         "[variables('setPowerShellLogging')]",
@@ -541,7 +541,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/azure/Win10-DC/scripts/Set-Initial-Settings.ps1",
+                        "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Win10-DC/scripts/Set-Initial-Settings.ps1",
                         "[variables('prepareBoxScript')]",
                         "[variables('setSecurityAuditingScript')]",
                         "[variables('setPowerShellLogging')]",
@@ -785,7 +785,7 @@
                     },
                     "fileUris": {
                         "value": [
-                            "https://raw.githubusercontent.com/hunters-forge/Blacksmith/master/templates/azure/Win10-DC/scripts/Set-AD.ps1",
+                            "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Win10-DC/scripts/Set-AD.ps1",
                             "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/active-directory/Set-OUs.ps1')]",
                             "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/active-directory/Add-DomainUsers.ps1')]",
                             "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/auditing/Set-AuditSAMRemoteCalls.ps1')]"
