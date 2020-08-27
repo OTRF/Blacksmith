@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>AWS Account Creation &mdash; Blacksmith 0.0.1 documentation</title>
+  <title>Shire Azure Resource Manager Deployment &mdash; Blacksmith 0.0.1 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="AWS CLI Installation" href="aws_cli_setup.html" />
-    <link rel="prev" title="Amazon Web Services Setup" href="aws_setup.html" /> 
+    <link rel="next" title="ATT&amp;CK Website" href="attack_website.html" />
+    <link rel="prev" title="Mordor Labs" href="mordor_labs.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -81,27 +81,24 @@
             
             
               <p class="caption"><span class="caption-text">Getting Started:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="aws_setup.html">AWS Setup</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="aws_setup.html#aws-cloudformation">AWS CloudFormation</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="aws_setup.html#aws-free-tier-account">AWS Free Tier Account</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Account Creation</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#add-iam-user">Add IAM User</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="aws_cli_setup.html">AWS CLI Setup</a></li>
-<li class="toctree-l3"><a class="reference internal" href="aws_ec2_keys.html">EC2 Key Pairs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="aws_setup.html#references">References</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p class="caption"><span class="caption-text">Available Templates:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="mordor.html">Mordor Environments</a></li>
-<li class="toctree-l1"><a class="reference internal" href="silketw.html">SilkETW</a></li>
+<li class="toctree-l1"><a class="reference internal" href="aws_setup.html">AWS Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure_setup.html">Azure Setup</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Available Projects:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="mordor_labs.html">Mordor Labs</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="mordor_labs.html#mordor-shire">Mordor Shire</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Azure</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pre-requirements">Pre-Requirements</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="attack_website.html">ATT&amp;CK Website</a></li>
+<li class="toctree-l1"><a class="reference internal" href="azure_sentinel2go.html">Azure Sentinel2Go</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Licenses:</span></p>
 <ul>
@@ -151,15 +148,15 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-          <li><a href="aws_setup.html">Amazon Web Services Setup</a> &raquo;</li>
+          <li><a href="mordor_labs.html">Mordor Labs</a> &raquo;</li>
         
-      <li>AWS Account Creation</li>
+      <li>Shire Azure Resource Manager Deployment</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/aws_account_setup.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/mordor_shire_azure.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -172,18 +169,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="aws-account-creation">
-<h1>AWS Account Creation<a class="headerlink" href="#aws-account-creation" title="Permalink to this headline">¶</a></h1>
-<p>To access and use any service offered by AWS, you must first create an AWS account at <a class="reference external" href="http://aws.amazon.com">http://aws.amazon.com</a>.</p>
+  <div class="section" id="shire-azure-resource-manager-deployment">
+<h1>Shire Azure Resource Manager Deployment<a class="headerlink" href="#shire-azure-resource-manager-deployment" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="pre-requirements">
+<h2>Pre-Requirements<a class="headerlink" href="#pre-requirements" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Follow these instructions: <a class="reference external" href="https://portal.aws.amazon.com/billing/signup">https://portal.aws.amazon.com/billing/signup</a>.</p></li>
-</ul>
-<div class="section" id="add-iam-user">
-<h2>Add IAM User<a class="headerlink" href="#add-iam-user" title="Permalink to this headline">¶</a></h2>
-<p>It is not best practices to use your root AWS account for development.
-Therefore, I highly recommend to add an IAM user to your account and use it whilte testing and using the templates provided by this project.</p>
-<ul class="simple">
-<li><p>Follow these instructions: <a class="reference external" href="https://docs.aws.amazon.com/en_pv/IAM/latest/UserGuide/id_users_create.html">https://docs.aws.amazon.com/en_pv/IAM/latest/UserGuide/id_users_create.html</a></p></li>
+<li><p>An existing Azure subscription (Free tier is recommended)</p></li>
 </ul>
 </div>
 </div>
@@ -196,10 +187,10 @@ Therefore, I highly recommend to add an IAM user to your account and use it whil
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="aws_cli_setup.html" class="btn btn-neutral float-right" title="AWS CLI Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="attack_website.html" class="btn btn-neutral float-right" title="ATT&amp;CK Website" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="aws_setup.html" class="btn btn-neutral float-left" title="Amazon Web Services Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="mordor_labs.html" class="btn btn-neutral float-left" title="Mordor Labs" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

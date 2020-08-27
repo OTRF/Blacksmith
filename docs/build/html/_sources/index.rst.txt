@@ -32,7 +32,6 @@ Goals
    :caption: Available Projects:
 
    Mordor Labs <mordor_labs>
-   SilkETW <silketw>
    ATT&CK Website <attack_website>
    Azure Sentinel2Go <azure_sentinel2go>
 

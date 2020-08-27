@@ -11,4 +11,3 @@ Deployments
    :maxdepth: 2
 
    Docker <attack_website_docker>
-   CloudFormation <attack_website_cfn>
