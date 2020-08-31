@@ -70,7 +70,7 @@ name,url
 "Fermion","$fermionUrl"
 "PowerShell Arsenal", "https://github.com/mattifestation/PowerShellArsenal/archive/master.zip"
 "7z","https://www.7-zip.org/a/7z1900-x64.msi"
-"Wireshark","https://2.na.dl.wireshark.org/win64/Wireshark-win64-3.2.4.exe"
+"Wireshark","https://2.na.dl.wireshark.org/win64/Wireshark-win64-3.2.6.exe"
 "Sysinternals", "https://download.sysinternals.com/files/SysinternalsSuite.zip"
 "Sysmon","https://live.sysinternals.com/Sysmon.exe"
 "SilkETW", "https://github.com/fireeye/SilkETW/releases/download/v0.8/SilkETW_SilkService_v8.zip"
@@ -106,7 +106,7 @@ write-host "Installing 7zip.."
 msiexec.exe /i "C:\ProgramData\7z1900-x64.msi" /qn
 
 write-host "Installing Wireshark.."
-& "C:\ProgramData\Wireshark-win64-3.2.4.exe" /S /q /passive /norestart
+& "C:\ProgramData\Wireshark-win64-3.2.6.exe" /S /q /passive /norestart
 
 # Installing Sysmon
 # Downloading Sysmon Configuration
