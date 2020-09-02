@@ -167,6 +167,22 @@ else
     & sc.exe config WinRM start= auto
 }
 
+# Enable Remote Registry Service 
+$ServiceName = 'remoteregistry'
+$arrService = Get-Service -Name $ServiceName
+
+if ($arrService.Status -eq 'Running')
+{
+    Write-Host "$ServiceName Service is now Running"
+}
+else
+{
+    Write-host 'Enabling Remote Registry..'
+    & sc start remoteregistry
+    write-Host "Setting Remote Registry to start automatically.."
+    & sc.exe config remoteregistry start= auto
+}
+
 # Setting UAC level to Never Notify
 Write-Host "Setting UAC level to Never Notify.."
 Set-ItemProperty -Force -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value 0

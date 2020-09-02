@@ -12,6 +12,23 @@ param (
     [string]$SubscriptionsUrl
 )
 
+# ********* Install Sysmon Manifest ***********
+$URL = "https://live.sysinternals.com/Sysmon.exe"
+Resolve-DnsName live.sysinternals.com
+Resolve-DnsName raw.githubusercontent.com
+
+$OutputFile = Split-Path $URL -leaf
+$File = "C:\ProgramData\$OutputFile"
+
+# Download File
+write-Host "Downloading $OutputFile .."
+$wc = new-object System.Net.WebClient
+$wc.DownloadFile($URL, $File)
+if (!(Test-Path $File)){ Write-Error "File $File does not exist" -ErrorAction Stop }
+
+# Install Manifest
+& $File -m
+
 # ********* Setting WinRM Configs for WEC ***********
 Write-host 'Enabling WinRM..'
 winrm quickconfig -q

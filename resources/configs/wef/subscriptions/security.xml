@@ -27,7 +27,7 @@
     </Query>
     <ReadExistingEvents>true</ReadExistingEvents>
     <TransportName>http</TransportName>
-    <ContentFormat>RenderedText</ContentFormat>
+    <ContentFormat>Events</ContentFormat>
     <Locale Language="en-US"/>
     <LogFile>ForwardedEvents</LogFile>
     <PublisherName>Microsoft-Windows-EventCollector</PublisherName>
