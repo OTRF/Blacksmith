@@ -20,10 +20,12 @@ param (
 if($ShipperAgent -eq "Winlogbeat")
 {
     $URL = "https://artifacts.elastic.co/downloads/beats/winlogbeat/winlogbeat-7.4.0-windows-x86_64.zip"
+    Resolve-DnsName artifacts.elastic.co
 }
 else
 {
     $Url = "https://nxlog.co/system/files/products/files/348/nxlog-ce-2.10.2150.msi"
+    Resolve-DnsName nxlog.co
 }
 
 $OutputFile = Split-Path $URL -leaf
