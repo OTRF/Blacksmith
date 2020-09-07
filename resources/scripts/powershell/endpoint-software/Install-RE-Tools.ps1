@@ -6,30 +6,16 @@
 # https://github.com/corelan/CorelanTraining/blob/master/CorelanVMInstall.ps1
 # https://www.hex-rays.com/products/ida/support/download_freeware/
 # https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/
-
-[CmdletBinding()]
-param (
-    [Parameter()]
-    [bool]$DebuggingHost = $true
-)
+# https://stackoverflow.com/a/25127597
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Resolve-DnsName github.com
 Resolve-DnsName raw.githubusercontent.com
 
-# Setting up target
-switch ($DebuggingHost)
-{
-    $false 
-    { 
-        write-Host "Enabling Kernell debugging"
-        & bcdedit /debug on
-    }
-}
-
 # Setting WinDbg Symbols Env Variable
 [Environment]::SetEnvironmentVariable("_NT_SYMBOL_PATH", "srv*c:\symbols*http://msdl.microsoft.com/download/symbols", "Machine")
 
+write-host "[*] Getting latest versions from a few GitHub projects.."
 # Get Latest Version from dnSpy
 $url = 'https://github.com/0xd4d/dnSpy/releases/latest'
 $request = [System.Net.WebRequest]::Create($url)
@@ -38,6 +24,8 @@ $realTagUrl = $response.ResponseUri.OriginalString
 $version = $realTagUrl.split('/')[-1].Trim('v')
 $dnSpyName = "dnSpy-net472.zip"
 $dnSpyUrl = $realTagUrl.Replace('tag', 'download') + '/' + $dnSpyName
+$response.Close()
+write-host "[+] dnSpy: $version"
 
 # Get Latest Version from PEBear
 $url = 'https://github.com/hasherezade/pe-bear-releases/releases/latest'
@@ -47,6 +35,8 @@ $realTagUrl = $response.ResponseUri.OriginalString
 $version = $realTagUrl.split('/')[-1].Trim('v')
 $peBearName = "PE-bear_" + $version + "_x64_win.zip"
 $peBearUrl = $realTagUrl.Replace('tag', 'download') + '/' + $peBearName
+$response.Close()
+write-host "[+] PEBear: $version"
 
 # Get Latest Version from FRIDA
 $url = 'https://github.com/FuzzySecurity/Fermion/releases/latest'
@@ -57,14 +47,17 @@ $version = $realTagUrl.split('/')[-1].Trim('v')
 $fermionVersion = $version -replace '\.', ''
 $fermionName = "fermion-v" + $fermionVersion + "-win32-x64.zip"
 $fermionUrl = $realTagUrl.Replace('tag', 'download') + '/' + $fermionName
+$response.Close()
+write-host "[+] Fermion: $version"
 
-write-host "Downloading RE Tools.."
+write-host "[*] Downloading RE Tools.."
 # "IDA Freeware", "https://out7.hex-rays.com/files/idafree70_windows.exe"
+# "WinDBG", "https://download.microsoft.com/download/5/C/3/5C3770A3-12B4-4DB4-BAE7-99C624EB32AD/windowssdk/winsdksetup.exe"
 $downloadAll = @"
-name,url
+"name","url"
 "WinDbg","https://go.microsoft.com/fwlink/p/?linkid=2083338&clcid=0x409"
 "DotPeek","https://download.jetbrains.com/resharper/ReSharperUltimate.2020.1.3/dotPeek64.2020.1.3.exe"
-"API Monitor", "http://www.rohitab.com/download/api-monitor-v2r13-x86-x64.zip"
+"API Monitor","http://www.rohitab.com/wp-content/plugins/download-monitor/download.php?id=api-monitor-v2r13-x86-x64.zip"
 "dnSpy","$dnSpyUrl"
 "PE Bear","$peBearUrl"
 "Fermion","$fermionUrl"
@@ -81,17 +74,31 @@ $wc = new-object System.Net.WebClient
 
 # Downloading Debugging Tools
 $downloadAll | ConvertFrom-Csv | ForEach-Object {
-    write-Host "Downloading " $_.name
-    $OutputFile = Split-Path $_.url -leaf
+    write-Host "[+] Downloading" $_.name "From" $_.url
+    $request = [System.Net.WebRequest]::Create($_.url)
+    $response = $request.GetResponse()
+    if ($response.Server –eq 'AmazonS3')
+    {
+        $OutputFile = Split-Path $_.url -leaf
+    }
+    else
+    {
+        $OutputFile = [System.IO.Path]::GetFileName($response.ResponseUri)
+    }
+    $response.Close()
     $File = "C:\ProgramData\$OutputFile"
+    # Check to see if file already exists
+    if (Test-Path $File){ Write-host "  [!] $File already exist"; return }
+    # Download if it does not exists
     $wc.DownloadFile($_.url, $File)
-    if (!(Test-Path $file)){ Write-Error "$File does not exist" -ErrorAction Stop }
+    # If for some reason, a file does not exists, STOP
+    if (!(Test-Path $File)){ Write-Error "$File does not exist" -ErrorAction Stop }
 
-    # Decompress if it is zip
+    # Decompress if it is zip file
     if ($File.ToLower().EndsWith(".zip"))
     {
         # Unzip file
-        write-Host "Decompressing $OutputFile .."
+        write-Host "  [+] Decompressing $OutputFile .."
         $UnpackName = (Get-Item $File).Basename
         expand-archive -path $File -DestinationPath "C:\ProgramData\$UnpackName"
         if (!(Test-Path "C:\ProgramData\$UnpackName")){ Write-Error "$File was not decompressed successfully" -ErrorAction Stop }
@@ -99,32 +106,44 @@ $downloadAll | ConvertFrom-Csv | ForEach-Object {
 }
 
 # Custom Installs
-write-host "Installing Windows Desktop Debuggers.."
+write-host "[*] Installing RE Tools.."
+write-host "[+] Installing Windows Desktop Debuggers.."
 Start-Process "C:\ProgramData\winsdksetup.exe" -Wait -ArgumentList '/features OptionId.WindowsDesktopDebuggers /ceip off /q'
 
-write-host "Installing 7zip.."
+write-host "[+] Installing 7zip.."
 msiexec.exe /i "C:\ProgramData\7z1900-x64.msi" /qn
 
-write-host "Installing Wireshark.."
-& "C:\ProgramData\Wireshark-win64-3.2.6.exe" /S /q /passive /norestart
+write-host "[+] Installing Wireshark.."
+& "C:\ProgramData\Wireshark-win64-3.2.6.exe" /S /desktopicon=yes /q /passive /norestart
+
+# Install NTObject Manager
+write-host "[+] Installing NtObjectManger.."
+if (!(Get-Module -ListAvailable -Name NtObjectManager)) {
+    & Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+    & Install-Module -Name NtObjectManager -Force
+} 
 
 # Installing Sysmon
 # Downloading Sysmon Configuration
-write-Host "Installing Sysmon.."
-write-Host "Downloading Sysmon config.."
-$SysmonFile = "C:\ProgramData\sysmon.xml"
-$SysmonConfigUrl = "https://raw.githubusercontent.com/OTRF/Blacksmith/master/resources/configs/sysmon/sysmon.xml"
-$wc.DownloadFile($SysmonConfigUrl, $SysmonFile)
-if (!(Test-Path $SysmonFile)){ Write-Error "File $SysmonFile does not exist" -ErrorAction Stop }
+write-Host "[+] Installing Sysmon.."
+$service = Get-Service -Name Sysmon -ErrorAction SilentlyContinue
+if($service -eq $null)
+{
+    write-Host "  [+] Downloading Sysmon config.."
+    $SysmonFile = "C:\ProgramData\sysmon.xml"
+    $SysmonConfigUrl = "https://raw.githubusercontent.com/OTRF/Blacksmith/master/resources/configs/sysmon/sysmon.xml"
+    $wc.DownloadFile($SysmonConfigUrl, $SysmonFile)
+    if (!(Test-Path $SysmonFile)){ Write-Error "File $SysmonFile does not exist" -ErrorAction Stop }
 
-write-Host "Setting up Sysmon.."
-& "C:\ProgramData\Sysmon.exe" -i C:\ProgramData\sysmon.xml -accepteula
+    write-Host "  [+] Setting up Sysmon.."
+    & "C:\ProgramData\Sysmon.exe" -i C:\ProgramData\sysmon.xml -accepteula
 
-write-Host "Setting Sysmon to start automatically.."
-& sc.exe config Sysmon start= auto
+    write-Host "  [+] Setting Sysmon to start automatically.."
+    & sc.exe config Sysmon start= auto
+}
 
-# Installing SilkETW
-# Installing Dependencies
+# Installing SilkETW Dependencies
+write-Host "[+] Installing SilkETW Dependencies.."
 # .NET Framework 4.5	All Windows operating systems: 378389
 $DotNetDWORD = 378388
 $DotNet_Check = Get-ChildItem "hklm:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" | Get-ItemPropertyValue -Name Release | % { $_ -ge $DotNetDWORD }
@@ -144,9 +163,12 @@ if (!$MVC_Check)
 
 # Installing Chocolatey
 write-host "Installing Chocolatey.."
-Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-choco feature enable -n allowGlobalConfirmation
+if (!(Test-Path "$($env:ProgramData)\chocolatey\choco.exe"))
+{
+    Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+    choco feature enable -n allowGlobalConfirmation
 
-# Installing Apps via Choco
-choco install ghidra
-choco install ida-free
+    # Installing Apps via Choco
+    choco install ghidra
+    choco install ida-free
+}
