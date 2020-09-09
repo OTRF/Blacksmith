@@ -1,0 +1,110 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "utcValue": {
+      "type": "string",
+      "metadata": {
+        "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
+      },
+      "defaultValue": "[utcNow()]"
+    },
+    "workspaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name for the Log Analytics workspace used to aggregate data."
+      }
+    },
+    "pricingTier": {
+      "type": "string",
+      "metadata": {
+        "description": "Pricing tier: pergb2018 or legacy tiers (Free, Standalone, PerNode, Standard or Premium) which are not available to all customers."
+      },
+      "defaultValue": "PerGB2018",
+      "allowedValues": [
+        "PerGB2018",
+        "Free",
+        "Standalone",
+        "PerNode",
+        "Standard",
+        "Premium"
+      ]
+    },
+    "dataRetention": {
+      "type": "int",
+      "minValue": 7,
+      "maxValue": 30,
+      "metadata": {
+        "description": "Number of days of retention. Workspaces in the legacy Free pricing tier can only have 7 days."
+      },
+      "defaultValue": 30
+    },
+    "immediatePurgeDataOn30Days": {
+      "type": "bool",
+      "metadata": {
+        "description": "If set to true when changing retention to 30 days, older data will be immediately deleted. Use this with extreme caution. This only applies when retention is being set to 30 days."
+      },
+      "defaultValue": true
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location for all resources."
+      },
+      "defaultValue": "[resourceGroup().location]"
+    }
+  },
+  "functions": [],
+  "variables": {
+    "uniqueWorkspace": "[concat('log-', parameters('workspaceName'), uniqueString(resourceGroup().id, parameters('utcValue')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2015-11-01-preview",
+      "name": "[variables('uniqueWorkspace')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "sku": {
+          "name": "[parameters('pricingTier')]"
+        },
+        "retentionInDays": "[parameters('dataRetention')]",
+        "features": {
+          "immediatePurgeDataOn30Days": "[parameters('immediatePurgeDataOn30Days')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.OperationsManagement/solutions",
+      "apiVersion": "2015-11-01-preview",
+      "name": "[concat('SecurityInsights(', variables('uniqueWorkspace'), ')')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('uniqueWorkspace'))]"
+      },
+      "plan": {
+        "name": "[concat('SecurityInsights(', variables('uniqueWorkspace'), ')')]",
+        "product": "OMSGallery/SecurityInsights",
+        "publisher": "Microsoft",
+        "promotionCode": ""
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('uniqueWorkspace'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "workspaceNameOutput": {
+      "type": "string",
+      "value": "[variables('uniqueWorkspace')]"
+    },
+    "workspaceIdOutput": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', variables('uniqueWorkspace')), '2015-11-01-preview').customerId]"
+    },
+    "workspacekeyOutput": {
+      "type": "string",
+      "value": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey]"
+    }
+  }
+}
