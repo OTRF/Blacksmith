@@ -24,8 +24,9 @@ regKey;identityReference;rights;inheritanceFlags;propagationFlags;auditFlags
 "HKLM:\Software\Policies\Microsoft\Windows\EventLog\EventForwarding\SubscriptionManager";"Everyone";"QueryValues";"None";"None";"Success"
 "HKLM:\Software\Microsoft\.NETFramework";"Everyone";"WriteKey";"None";"None";"Success"
 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\webcam";"Everyone";"SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
-"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone";"Everyone"; "SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
-"HKLM:\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\TelemetryController";"Everyone"; "SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone";"Everyone";"SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
+"HKLM:\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\TelemetryController";"Everyone";"SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
+"HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest";"Everyone";"QueryValues,SetValue,WriteKey";"None";"None";"Success"
 "@
 
 write-host "Enabling audit rules.."
