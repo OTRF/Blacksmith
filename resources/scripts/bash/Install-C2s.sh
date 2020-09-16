@@ -63,12 +63,12 @@ esac
 ./Install-Docker.sh
 
 # Create Adversary Directory
-mkdir /opt/attack-platform
+mkdir -p /opt/attack-platform
 chmod -R 755 /opt/attack-platform/
 
 # Downloading Impacker Binaries from https://github.com/ropnop/impacket_static_binaries
 echo "$INFO_TAG Downloading Impacket binaries.."
-mkdir /opt/Impacket
+mkdir -p /opt/Impacket
 cd /opt/Impacket && curl -s https://api.github.com/repos/ropnop/impacket_static_binaries/releases/latest | grep "browser_download_url.*linux_x86_64" | cut -d '"' -f 4 | wget -qi -
 
 # *********** Running default C2 Selected ***********

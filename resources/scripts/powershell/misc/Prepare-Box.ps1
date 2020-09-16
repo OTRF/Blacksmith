@@ -134,11 +134,13 @@ $regConfig | ConvertFrom-Csv | ForEach-Object {
 # References:
 # https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/network-security-lan-manager-authentication-level
 # https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/network-security-restrict-ntlm-outgoing-ntlm-traffic-to-remote-servers
+# https://github.com/eladshamir/Internal-Monologue/blob/85134e4ebe5ea9e7f6b39d4b4ad467e40a0c9eca/InternalMonologue/InternalMonologue.cs
+
 $regConfig = @"
 regKey,name,value,type
-"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa","LmCompatibilityLevel",3,"DWord"
-"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0","NTLMMinClientSec",537395200,"DWord"
-"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0","RestrictSendingNTLMTraffic",2,"DWord"
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa","LmCompatibilityLevel",2,"DWord"
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0","NTLMMinClientSec",536870912,"DWord"
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0","RestrictSendingNTLMTraffic",0,"DWord"
 "@
 
 Write-host "Setting up Registry keys for additional settings.."
