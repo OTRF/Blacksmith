@@ -19,6 +19,12 @@ Write-Host "Allow ICMP Traffic through firewall"
 Write-Host "Enable WMI traffic through firewall"
 & netsh advfirewall firewall set rule group="windows management instrumentation (wmi)" new enable=yes
 
+Write-Host "Enable Inbound RPC Dynamic Ports"
+# Reference:
+# https://serverfault.com/questions/430705/how-do-i-allow-remote-iisreset-through-the-firewall-on-win-server-2008
+# https://stackoverflow.com/questions/21092050/comexception-when-trying-to-get-application-pools-using-servermanager
+& netsh advfirewall firewall add rule name="COM+ Remote Administration (All Programs)" dir=in action=allow description="" program="%windir%\system32\dllhost.exe" enable=yes localport=RPC protocol=tcp
+
 ## Configured firewall to allow SMB
 Write-Host "Enable File and Printer Sharing"
 & netsh advfirewall firewall set rule group="File and Printer Sharing" new enable=Yes
