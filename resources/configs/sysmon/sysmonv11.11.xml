@@ -1,4 +1,4 @@
-<Sysmon schemaversion="4.40">
+<Sysmon schemaversion="4.32">
    <!-- Capture all hashes -->
    <HashAlgorithms>*</HashAlgorithms>
    <DnsLookup>False</DnsLookup>
@@ -190,7 +190,7 @@
 			</RegistryEvent>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
-			<!-- Event ID 15 == FileStream Created. Log when a file stream is created neither the hash of the contents of the stream -->
+			<!-- Event ID 15 == FileStream Created. Do not log when a file stream is created neither the hash of the contents of the stream -->
 			<FileCreateStreamHash onmatch="exclude" />
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -219,10 +219,6 @@
 				<TargetFilename condition="begin with">C:\Windows\Temp\</TargetFilename>
 				<TargetFilename condition="begin with">C:\Program Files\</TargetFilename>
             </FileDelete>
-		</RuleGroup>
-		<RuleGroup name="" groupRelation="or">
-			<!--Event ID 24 == Clipboard -->
-			<ClipboardChange onmatch="exclude" />
 		</RuleGroup>
   </EventFiltering>
 </Sysmon>

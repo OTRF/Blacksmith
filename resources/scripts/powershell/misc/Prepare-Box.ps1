@@ -23,6 +23,11 @@ Write-Host "Enable Inbound RPC Dynamic Ports"
 # Reference:
 # https://serverfault.com/questions/430705/how-do-i-allow-remote-iisreset-through-the-firewall-on-win-server-2008
 # https://stackoverflow.com/questions/21092050/comexception-when-trying-to-get-application-pools-using-servermanager
+# Local port: Dynamic RPC
+# Remote port: ALL
+# Protocol number: 6
+# Executable: %windir%\\system32\\dllhost.exe
+# Remote privilege: Administrator
 & netsh advfirewall firewall add rule name="COM+ Remote Administration (All Programs)" dir=in action=allow description="" program="%windir%\system32\dllhost.exe" enable=yes localport=RPC protocol=tcp
 
 ## Configured firewall to allow SMB
