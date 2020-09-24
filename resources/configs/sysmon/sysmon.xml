@@ -3,6 +3,7 @@
    <HashAlgorithms>*</HashAlgorithms>
    <DnsLookup>False</DnsLookup>
    <ArchiveDirectory>Archive</ArchiveDirectory>
+   <CaptureClipboard/>
    <EventFiltering>
    		<RuleGroup name="" groupRelation="or">
 			<!-- Event ID 1 == Process Creation. Log all newly created processes except -->

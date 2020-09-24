@@ -6,6 +6,7 @@
 
 $regConfig = @"
 regKey,name,value,type
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa","restrictremotesam","O:BAG:BAD:(A;;RC;;;BA)","String"
 "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa","RestrictRemoteSamAuditOnlyMode",1,"DWord"
 "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa","RestrictRemoteSamEventThrottlingWindow",0,"DWord"
 "@

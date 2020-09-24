@@ -27,6 +27,10 @@ regKey;identityReference;rights;inheritanceFlags;propagationFlags;auditFlags
 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone";"Everyone";"SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
 "HKLM:\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\TelemetryController";"Everyone";"SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
 "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest";"Everyone";"QueryValues,SetValue,WriteKey";"None";"None";"Success"
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\JD";"Everyone";"QueryValues";"None";"None";"Success"
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\Skew1";"Everyone";"QueryValues";"None";"None";"Success"
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\GBG";"Everyone";"QueryValues";"None";"None";"Success"
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\Data";"Everyone";"QueryValues";"None";"None";"Success"
 "@
 
 write-host "Enabling audit rules.."
