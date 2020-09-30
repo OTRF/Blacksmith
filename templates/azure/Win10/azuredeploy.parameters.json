@@ -58,15 +58,6 @@
         },
         "subnetName": {
             "value": "snet-win"
-        },
-        "peeringVNET": {
-            "value": false
-        },
-        "peeringVNETName": {
-            "value": ""
-        },
-        "peeringVNETId": {
-            "value": ""
         }
     }
 }

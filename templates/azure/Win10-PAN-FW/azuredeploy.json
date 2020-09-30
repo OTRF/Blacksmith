@@ -329,7 +329,7 @@
         "saclModule": "https://raw.githubusercontent.com/OTRF/Set-AuditRule/master/Set-AuditRule.ps1",
         "setSACLScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/auditing/Set-SACLs.ps1')]",
         "setWallPaperScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Set-WallPaper.ps1', parameters('_artifactsLocationSasToken')))]",
-        "installAgentScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/endpoint-software/Install-Endpoint-Agent.ps1', parameters('_artifactsLocationSasToken')))]",
+        "installAgentScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/endpoint-software/Install-Sysmon.ps1', parameters('_artifactsLocationSasToken')))]",
 
         "windowsVM": [
             {
@@ -991,7 +991,7 @@
                         "value": "SetupWinVM"
                     },
                     "commandToExecute": {
-                        "value": "powershell -ExecutionPolicy Unrestricted -File ./Install-Endpoint-Agent.ps1 -EndpointAgent Sysmon"
+                        "value": "powershell -ExecutionPolicy Unrestricted -File ./Install-Sysmon.ps1"
                     },
                     "fileUris": {
                         "value": [
