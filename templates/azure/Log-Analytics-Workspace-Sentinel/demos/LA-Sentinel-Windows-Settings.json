@@ -153,7 +153,7 @@
                 },
                 "parameters": {
                     "workspaceName": {
-                        "value": "[reference('deployAzureSentinel2Go').outputs.workspaceName.value]"
+                        "value": "[reference('deployAzureSentinel').outputs.workspaceName.value]"
                     },
                     "winEventProviders": {
                         "value": "[parameters('collectWinEventProviders')]"
