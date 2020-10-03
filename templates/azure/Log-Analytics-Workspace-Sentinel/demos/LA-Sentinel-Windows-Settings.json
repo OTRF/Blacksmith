@@ -93,7 +93,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[uri(variables('artifactsBlacksmith'),'templates/azure/Log-Analytics-Workspace-Sentinel/demos/LA-Sentinel-Windows-Settings.json')]",
+                    "uri": "[uri(variables('artifactsBlacksmith'),'templates/azure/Log-Analytics-Workspace-Sentinel/azuredeploy.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
