@@ -87,6 +87,7 @@ elif [[ $RUN_C2 == "empire" ]]; then
 
     # Bash (no Empire server running)
     docker run -d -it -p 80:80 -p 443:443 -p 8443-8500:8443-8500 --name empire --volumes-from data empire /bin/bash >> $LOGFILE 2>&1
+    docker exec -ti empire pip3 install pyparsing >> $LOGFILE 2>&1
     
     # Starting Empire headless on port 8443
     #docker run -d -it -p 80:80 -p 443:443 -p 8443-8500:8443-8500 --name empire --volumes-from data empire ./empire --headless --restport 8443 --username $ADMIN_USER --password $ADMIN_PASSWORD
