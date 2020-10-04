@@ -58,7 +58,8 @@
             "type": "string",
             "metadata": {
                 "description": "The FQDN of the Active Directory Domain to be created"
-            }
+            },
+            "defaultValue": "blacksmith.local"
         },
         "domainJoinOptions": {
             "type": "int",
