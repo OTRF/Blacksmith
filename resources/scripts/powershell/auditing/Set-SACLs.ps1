@@ -15,7 +15,6 @@ regKey;identityReference;rights;inheritanceFlags;propagationFlags;auditFlags
 "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\RunService";"Everyone";"QueryValues";"None";"None";"Success"
 "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\RunOnceService";"Everyone";"QueryValues";"None";"None";"Success"
 "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon";"Everyone";"QueryValues";"None";"None";"Success"
-"HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment";"Everyone";"QueryValues";"None";"None";"Success"
 "HKLM:\Software\Policies\Microsoft Services\AdmPwd";"Everyone";"QueryValues";"None";"None";"Success"
 "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa";"Everyone";"QueryValues";"None";"None";"Success"
 "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU";"Everyone";"QueryValues";"None";"None";"Success"

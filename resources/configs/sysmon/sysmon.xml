@@ -133,6 +133,8 @@
 				<SourceImage condition="end with">onedrivesetup.exe</SourceImage>
 				<TargetImage condition="end with">\StartMenuExperienceHost.exe</TargetImage>
 				<TargetImage condition="end with">\ShellExperienceHost.exe</TargetImage>
+				<TargetImage condition="end with">\mmc.exe</TargetImage>
+				<SourceImage condition="begin with">C:\ProgramData\Microsoft\Windows Defender\platform\</SourceImage>
 				<Rule name="RuntimeBroker" groupRelation="and">
 					<SourceImage condition="is">C:\Windows\System32\RuntimeBroker.exe</SourceImage>
 					<TargetImage condition="is">C:\windows\Explorer.EXE</TargetImage>
@@ -157,6 +159,7 @@
 				<Image condition="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
 				<Image condition="begin with">C:\WindowsAzure\</Image> <!--Azure -->
 				<TargetFilename condition="begin with">C:\Windows\System32\winevt\Logs\</TargetFilename>
+				<Image condition="begin with">C:\Windows\SystemApps\Microsoft.Windows.Cortana</Image>
 			</FileCreate>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -188,6 +191,11 @@
 				<TargetObject condition="contains">\Microsoft.WindowsMaps</TargetObject>
 				<TargetObject condition="contains">\AppModel\Deployment\Package</TargetObject>
 				<TargetObject condition="contains">\AppModel\SystemAppData\Microsoft.Windows.ContentDeliveryManager</TargetObject>
+				<TargetObject condition="contains">\Software\Microsoft\Windows\CurrentVersion\DeliveryOptimization\</TargetObject>
+				<TargetObject condition="is">HKLM\SOFTWARE\Microsoft\SecurityManager\CapAuthz</TargetObject>
+				<TargetObject condition="contains">\CurrentVersion\AppModel\SystemAppData\Microsoft.Windows.Cortana</TargetObject>
+				<TargetObject condition="contains">\DeliveryOptimization\Swarms\</TargetObject>
+				<Image condition="begin with">C:\Windows\SystemApps\Microsoft.Windows.Cortana</Image>
 			</RegistryEvent>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -219,6 +227,9 @@
 				<TargetFilename condition="begin with">C:\ProgramData\</TargetFilename>
 				<TargetFilename condition="begin with">C:\Windows\Temp\</TargetFilename>
 				<TargetFilename condition="begin with">C:\Program Files\</TargetFilename>
+            </FileDelete>
+			<FileDelete onmatch="exclude">
+				<Image condition="is">C:\windows\system32\mmc.exe</Image>
             </FileDelete>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
