@@ -63,8 +63,8 @@ Write-host "Setting Time Zone to Eastern Standard Time"
 Set-TimeZone -Name "Eastern Standard Time"
 
 # Adding Authenticated Users to Remote Desktop Users
-write-Host "Adding Authenticated Users to Remote Desktop Users.."
-Add-LocalGroupMember -Group "Remote Desktop Users" -Member "Authenticated Users"
+#write-Host "Adding Authenticated Users to Remote Desktop Users.."
+#Add-LocalGroupMember -Group "Remote Desktop Users" -Member "Authenticated Users"
 
 # Removing OneDrive
 Write-Host "Removing OneDrive..."
