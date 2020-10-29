@@ -49,6 +49,10 @@ Pam,Beesly,pbeesly,Reception,Receptionist,Fl0nk3rt0n!T0by,Users,DomainUsers
 Dwight,Schrute,dschrute,Sales,Assistant,Schrut3F@rms!B33ts,Users,DomainUsers
 Michael,Scott,mscott,Management,BestBoss,abc123!D@t3M1k3,Domain Admins,DomainUsers 
 Sysmon,MS,sysmonsvc,IT Support,Service Account,Buggy!1122,Users,DomainUsers
+Nxlog,Shipper,nxlogsvc,IT Support,Service Account,S3nData!1122,Users,DomainUsers
+Defense,Shield,defensesvc,IT Support,Service Account,Sh13ld!1122,Users,DomainUsers
+OTR,Community,otrsvc,IT Support,Service Account,L0v30p3nS0urc3!2020,Users,DomainUsers
+Ring,Mordor,mordorsvc,IT Support,Service Account,Th3K1ng!1122,Users,DomainUsers
 "@
 
 write-host "Creating domain users.."
