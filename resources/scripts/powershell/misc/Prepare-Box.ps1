@@ -62,10 +62,6 @@ Set-ItemProperty HKLM:\SYSTEM\CurrentControlSet\Control\Power\ -name HibernateEn
 Write-host "Setting Time Zone to Eastern Standard Time"
 Set-TimeZone -Name "Eastern Standard Time"
 
-# Adding Authenticated Users to Remote Desktop Users
-#write-Host "Adding Authenticated Users to Remote Desktop Users.."
-#Add-LocalGroupMember -Group "Remote Desktop Users" -Member "Authenticated Users"
-
 # Removing OneDrive
 Write-Host "Removing OneDrive..."
 $onedrive = Get-Process onedrive -ErrorAction SilentlyContinue
@@ -209,5 +205,8 @@ Write-Host "Setting WDigest to use logoncredential.."
 Set-ItemProperty -Force -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest" -Name "UseLogonCredential" -Value "1"
 
 # RDP enabled for all Windows hosts
+# Adding Authenticated Users to Remote Desktop Users
+write-Host "Adding Authenticated Users to Remote Desktop Users.."
+Add-LocalGroupMember -Group "Remote Desktop Users" -Member "Authenticated Users" -ErrorAction SilentlyContinue
 Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 0
 Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
