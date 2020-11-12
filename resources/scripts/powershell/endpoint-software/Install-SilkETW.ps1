@@ -45,7 +45,7 @@ if (!$MVC_Check)
 }
 
 # Download SilkServiceConfig.xml
-$SilkServiceConfigUrl = "https://raw.githubusercontent.com/OTRF/Blacksmith/master/configs/SilkETW/SilkServiceConfig.xml"
+$SilkServiceConfigUrl = "https://raw.githubusercontent.com/OTRF/Blacksmith/master/resources/configs/SilkETW/SilkServiceConfig.xml"
 
 $OutputFile = Split-Path $SilkServiceConfigUrl -leaf
 $SilkServiceConfigPath = "C:\ProgramData\$FileName\v8\SilkService\SilkServiceConfig.xml"
