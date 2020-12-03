@@ -77,31 +77,28 @@ $downloadAll | ConvertFrom-Csv | ForEach-Object {
     write-Host "[+] Downloading" $_.name "From" $_.url
     $request = [System.Net.WebRequest]::Create($_.url)
     $response = $request.GetResponse()
-    if ($response.Server –eq 'AmazonS3')
-    {
+    if ($response.Server –eq 'AmazonS3') {
         $OutputFile = Split-Path $_.url -leaf
     }
-    else
-    {
+    else {
         $OutputFile = [System.IO.Path]::GetFileName($response.ResponseUri)
     }
     $response.Close()
     $File = "C:\ProgramData\$OutputFile"
     # Check to see if file already exists
-    if (Test-Path $File){ Write-host "  [!] $File already exist"; return }
+    if (Test-Path $File) { Write-host "  [!] $File already exist"; return }
     # Download if it does not exists
     $wc.DownloadFile($_.url, $File)
     # If for some reason, a file does not exists, STOP
-    if (!(Test-Path $File)){ Write-Error "$File does not exist" -ErrorAction Stop }
+    if (!(Test-Path $File)) { Write-Error "$File does not exist" -ErrorAction Stop }
 
     # Decompress if it is zip file
-    if ($File.ToLower().EndsWith(".zip"))
-    {
+    if ($File.ToLower().EndsWith(".zip")) {
         # Unzip file
         write-Host "  [+] Decompressing $OutputFile .."
         $UnpackName = (Get-Item $File).Basename
         expand-archive -path $File -DestinationPath "C:\ProgramData\$UnpackName"
-        if (!(Test-Path "C:\ProgramData\$UnpackName")){ Write-Error "$File was not decompressed successfully" -ErrorAction Stop }
+        if (!(Test-Path "C:\ProgramData\$UnpackName")) { Write-Error "$File was not decompressed successfully" -ErrorAction Stop }
     }
 }
 
@@ -127,13 +124,12 @@ if (!(Get-Module -ListAvailable -Name NtObjectManager)) {
 # Downloading Sysmon Configuration
 write-Host "[+] Installing Sysmon.."
 $service = Get-Service -Name Sysmon -ErrorAction SilentlyContinue
-if($service -eq $null)
-{
+if ($service -eq $null) {
     write-Host "  [+] Downloading Sysmon config.."
     $SysmonFile = "C:\ProgramData\sysmon.xml"
-    $SysmonConfigUrl = "https://raw.githubusercontent.com/OTRF/Blacksmith/master/resources/configs/sysmon/sysmon.xml"
+    $SysmonConfigUrl = "https://raw.githubusercontent.com/shawnadrockleonard/blacksmith/shawns/dev/resources/configs/sysmon/sysmon.xml"
     $wc.DownloadFile($SysmonConfigUrl, $SysmonFile)
-    if (!(Test-Path $SysmonFile)){ Write-Error "File $SysmonFile does not exist" -ErrorAction Stop }
+    if (!(Test-Path $SysmonFile)) { Write-Error "File $SysmonFile does not exist" -ErrorAction Stop }
 
     write-Host "  [+] Setting up Sysmon.."
     & "C:\ProgramData\Sysmon.exe" -i C:\ProgramData\sysmon.xml -accepteula
@@ -147,15 +143,13 @@ write-Host "[+] Installing SilkETW Dependencies.."
 # .NET Framework 4.5	All Windows operating systems: 378389
 $DotNetDWORD = 378388
 $DotNet_Check = Get-ChildItem "hklm:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" | Get-ItemPropertyValue -Name Release | % { $_ -ge $DotNetDWORD }
-if(!$DotNet_Check)
-{
+if (!$DotNet_Check) {
     write-Host "NET Framework 4.5 or higher not installed.."
     & C:\ProgramData\SilkETW_SilkService_v8\v8\Dependencies\dotNetFx45_Full_setup.exe /q /passive /norestart
     start-sleep -s 5
 }
-$MVC_Check = Get-ItemProperty HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | where {$_.displayname -like "Microsoft Visual C++*"} | Select-Object DisplayName, DisplayVersion
-if (!$MVC_Check)
-{
+$MVC_Check = Get-ItemProperty HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | where { $_.displayname -like "Microsoft Visual C++*" } | Select-Object DisplayName, DisplayVersion
+if (!$MVC_Check) {
     write-Host "Microsoft Visual C++ not installed.."
     & C:\ProgramData\SilkETW_SilkService_v8\v8\Dependencies\vc2015_redist.x86.exe /q /passive /norestart
     start-sleep -s 5
@@ -163,8 +157,7 @@ if (!$MVC_Check)
 
 # Installing Chocolatey
 write-host "Installing Chocolatey.."
-if (!(Test-Path "$($env:ProgramData)\chocolatey\choco.exe"))
-{
+if (!(Test-Path "$($env:ProgramData)\chocolatey\choco.exe")) {
     Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
     choco feature enable -n allowGlobalConfirmation
 

@@ -198,7 +198,7 @@
             },
             "defaultValue": "vnet-linux"
         },
-       "virtualNetworkAddressRange": {
+        "virtualNetworkAddressRange": {
             "type": "string",
             "metadata": {
                 "description": "Address Range of the virtual network"
@@ -243,10 +243,10 @@
         "vmPrivateIPPrefixArray": "[take(split(variables('subnetRange'),'.'),3)]",
         "vmPrivateIPAddresPrefix": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray')[0], variables('vmPrivateIPPrefixArray')[1], variables('vmPrivateIPPrefixArray')[2])]",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
-        
+
         "bastionSubnetName": "AzureBastionSubnet",
 
-        "nsg-id": {"id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-ssh-allow')]"},
+        "nsg-id": { "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-ssh-allow')]" },
         "networkSecurityGroup": "[if(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), variables('nsg-id'), json('null'))]",
 
         "subnets": [
@@ -279,49 +279,49 @@
                 ]
             }
         },
-        
+
         "Copy": [
             {
                 "name": "ubuntuVMs",
                 "count": "[parameters('numberOfUbuntuVMs')]",
                 "input": {
                     "vmName": "[concat(parameters('ubuntuVMNamePrefix'),copyIndex('ubuntuVMs',5))]",
-                    "subnetref": "[variables('subnetRef')]",                   
+                    "subnetref": "[variables('subnetRef')]",
                     "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('ubuntuVMs',5))]",
                     "vmSize": "[parameters('vmSize')]",
                     "publisher": "Canonical",
                     "offer": "UbuntuServer",
                     "sku": "[parameters('ubuntuSKU')]",
                     "version": "latest"
-                } 
+                }
             },
             {
                 "name": "centOSVMs",
                 "count": "[parameters('numberOfCentOSVMs')]",
                 "input": {
                     "vmName": "[concat(parameters('centOSVMNamePrefix'),copyIndex('centOSVMs',10))]",
-                    "subnetref": "[variables('subnetRef')]",                   
+                    "subnetref": "[variables('subnetRef')]",
                     "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('centOSVMs',10))]",
                     "vmSize": "[parameters('vmSize')]",
                     "publisher": "OpenLogic",
                     "offer": "Centos",
                     "sku": "[parameters('centOSSKU')]",
                     "version": "latest"
-                } 
+                }
             },
             {
                 "name": "redhatVMs",
                 "count": "[parameters('numberOfRedHatVMs')]",
                 "input": {
                     "vmName": "[concat(parameters('redhatVMNamePrefix'),copyIndex('redhatVMs',15))]",
-                    "subnetref": "[variables('subnetRef')]",                   
+                    "subnetref": "[variables('subnetRef')]",
                     "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('redhatVMs',15))]",
                     "vmSize": "[parameters('vmSize')]",
                     "publisher": "RedHat",
                     "offer": "RHEL",
                     "sku": "[parameters('redhatSKU')]",
                     "version": "latest"
-                } 
+                }
             }
         ],
 
@@ -455,7 +455,7 @@
                     }
                 ]
             }
-        },   
+        },
         {
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-03-01",
@@ -546,7 +546,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Linux/scripts/Install-OMS-Auditd-Plugin.sh"
+                        "https://raw.githubusercontent.com/shawnadrockleonard/blacksmith/shawns/dev/templates/azure/Linux/scripts/Install-OMS-Auditd-Plugin.sh"
                     ],
                     "commandToExecute": "[concat('bash Install-OMS-Auditd-Plugin.sh')]"
                 },

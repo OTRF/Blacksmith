@@ -261,7 +261,7 @@
             "metadata": {
                 "description": "The location of resources, such as templates and DSC modules, that the template depends on"
             },
-            "defaultValue": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/"
+            "defaultValue": "https://raw.githubusercontent.com/shawnadrockleonard/blacksmith/shawns/dev/"
         },
         "_artifactsLocationSasToken": {
             "type": "securestring",
@@ -289,7 +289,7 @@
         "vmPrivateIPPrefixArray0": "[take(split(variables('subnetRange0'),'.'),3)]",
         "vmPrivateIPAddresPrefix0": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray0')[0], variables('vmPrivateIPPrefixArray0')[1], variables('vmPrivateIPPrefixArray0')[2])]",
         "subnetRef0": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName0'))]",
-        
+
         "subnetName1": "[parameters('subnetName1')]",
         "subnetRange1": "[parameters('subnetRange1')]",
         "vmPrivateIPPrefixArray1": "[take(split(variables('subnetRange1'),'.'),3)]",
@@ -323,7 +323,7 @@
 
         "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-PAN-FW/nestedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]",
         "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-PAN-FW/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
-        
+
         "prepareBoxScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Prepare-Box.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSecurityAuditingScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1', parameters('_artifactsLocationSasToken')))]",
         "saclModule": "https://raw.githubusercontent.com/OTRF/Set-AuditRule/master/Set-AuditRule.ps1",
@@ -336,7 +336,7 @@
                 "tag": "workstation",
                 "vmName": "[concat(parameters('vmNamePrefix'),'4')]",
                 "os": "windows",
-                "subnetref": "[variables('subnetRef4')]",                   
+                "subnetref": "[variables('subnetRef4')]",
                 "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix4'),'4')]",
                 "vmSize": "[parameters('vmSize')]",
                 "publisher": "MicrosoftWindowsDesktop",
@@ -385,7 +385,7 @@
                 "resourceName": "panFW-eth0",
                 "name": "ipconfig-mgmt",
                 "privateIPAddress": "[concat(variables('vmPrivateIPAddresPrefix0'),'4')]",
-                "publicIPAddressID": { "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('panFW')[0].vmName))]"},
+                "publicIPAddressID": { "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('panFW')[0].vmName))]" },
                 "subnetID": "[variables('subnetRef0')]",
                 "enableIPForwarding": "[bool('false')]",
                 "enableAcceleratedNetworking": "[bool('false')]"
@@ -394,7 +394,7 @@
                 "resourceName": "panFW-eth1",
                 "name": "ipconfig-untrust",
                 "privateIPAddress": "[concat(variables('vmPrivateIPAddresPrefix1'),'4')]",
-                "publicIPAddressID": {"id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('windowsVM')[0].vmName))]"},
+                "publicIPAddressID": { "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('windowsVM')[0].vmName))]" },
                 "subnetID": "[variables('subnetRef1')]",
                 "enableIPForwarding": "[bool('true')]",
                 "enableAcceleratedNetworking": "[bool('true')]"
@@ -412,7 +412,7 @@
                 "resourceName": "cef-eth0",
                 "name": "ipconfig1",
                 "privateIPAddress": "[concat(variables('vmPrivateIPAddresPrefix3'),'4')]",
-                "publicIPAddressID": {"id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('cefVM')[0].vmName))]"},
+                "publicIPAddressID": { "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('cefVM')[0].vmName))]" },
                 "subnetID": "[variables('subnetRef3')]",
                 "enableIPForwarding": "[bool('false')]",
                 "enableAcceleratedNetworking": "[bool('false')]"
@@ -427,7 +427,7 @@
                 "enableAcceleratedNetworking": "[bool('false')]"
             }
         ],
-        
+
         "linuxConfiguration": {
             "disablePasswordAuthentication": true,
             "ssh": {
@@ -439,7 +439,7 @@
                 ]
             }
         }
-    }, 
+    },
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
@@ -873,7 +873,7 @@
                     },
                     "fileUris": {
                         "value": [
-                            "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Win10-PAN-FW/scripts/Set-Up-CEF.sh",
+                            "https://raw.githubusercontent.com/shawnadrockleonard/blacksmith/shawns/dev/templates/azure/Win10-PAN-FW/scripts/Set-Up-CEF.sh",
                             "https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/DataConnectors/CEF/cef_installer.py"
                         ]
                     },
@@ -909,8 +909,8 @@
                     },
                     "fileUris": {
                         "value": [
-                            "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Win10-PAN-FW/scripts/Set-Up-FW.sh",
-                            "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Win10-PAN-FW/scripts/azure-sample.xml"
+                            "https://raw.githubusercontent.com/shawnadrockleonard/blacksmith/shawns/dev/templates/azure/Win10-PAN-FW/scripts/Set-Up-FW.sh",
+                            "https://raw.githubusercontent.com/shawnadrockleonard/blacksmith/shawns/dev/templates/azure/Win10-PAN-FW/scripts/azure-sample.xml"
                         ]
                     },
                     "vmName": {
@@ -938,7 +938,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Win10-PAN-FW/scripts/Set-Initial-Settings.ps1",
+                        "https://raw.githubusercontent.com/shawnadrockleonard/blacksmith/shawns/dev/templates/azure/Win10-PAN-FW/scripts/Set-Initial-Settings.ps1",
                         "[variables('prepareBoxScript')]",
                         "[variables('setSecurityAuditingScript')]",
                         "[variables('saclModule')]",

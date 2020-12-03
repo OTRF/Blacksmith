@@ -6,7 +6,7 @@
 
 [CmdletBinding()]
 param (
-    [string]$SysmonConfigUrl = "https://raw.githubusercontent.com/OTRF/Blacksmith/master/resources/configs/sysmon/sysmon.xml"
+    [string]$SysmonConfigUrl = "https://raw.githubusercontent.com/shawnadrockleonard/blacksmith/shawns/dev/resources/configs/sysmon/sysmon.xml"
 )
 
 write-host "[+] Processing Sysmon Installation.."
@@ -23,13 +23,13 @@ $File = "C:\ProgramData\$OutputFile"
 write-Host "[+] Downloading $OutputFile .."
 $wc = new-object System.Net.WebClient
 $wc.DownloadFile($Url, $File)
-if (!(Test-Path $File)){ Write-Error "File $File does not exist" -ErrorAction Stop }
+if (!(Test-Path $File)) { Write-Error "File $File does not exist" -ErrorAction Stop }
 
 # Downloading Sysmon Configuration
 write-Host "[+] Downloading Sysmon config.."
 $SysmonFile = "C:\ProgramData\sysmon.xml"
 $wc.DownloadFile($SysmonConfigUrl, $SysmonFile)
-if (!(Test-Path $SysmonFile)){ Write-Error "File $SysmonFile does not exist" -ErrorAction Stop }
+if (!(Test-Path $SysmonFile)) { Write-Error "File $SysmonFile does not exist" -ErrorAction Stop }
 
 # Installing Sysmon
 write-Host "[+] Installing Sysmon.."
@@ -46,14 +46,13 @@ write-Host "[+] Restarting Log Services .."
 $LogServices = @("Sysmon", "Windows Event Log")
 
 # Restarting Log Services
-foreach($LogService in $LogServices)
-{
+foreach ($LogService in $LogServices) {
     write-Host "[+] Restarting $LogService .."
     Restart-Service -Name $LogService -Force
 
     write-Host "  [*] Verifying if $LogService is running.."
     $s = Get-Service -Name $LogService
-    while ($s.Status -ne 'Running'){Start-Service $LogService; Start-Sleep 3}
+    while ($s.Status -ne 'Running') { Start-Service $LogService; Start-Sleep 3 }
     Start-Sleep 5
     write-Host "  [*] $LogService is running.."
 }
