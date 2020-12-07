@@ -146,7 +146,7 @@
         },
         "_artifactsLocation": {
             "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/",
+            "defaultValue": "https://raw.githubusercontent.com/shawnadrockleonard/blacksmith/shawns/dev/",
             "metadata": {
                 "description": "The location of resources, such as templates and DSC modules, that the template depends on"
             }
@@ -168,21 +168,16 @@
     },
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
-        
         "virtualNetworkName": "[parameters('virtualNetworkName')]",
         "virtualNetworkAddressRange": "[parameters('virtualNetworkAddressRange')]",
-
         "subnetName": "[parameters('subnetName')]",
         "subnetRange": "[parameters('subnetRange')]",
         "vmPrivateIPPrefixArray": "[take(split(variables('subnetRange'),'.'),3)]",
         "vmPrivateIPAddresPrefix": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray')[0], variables('vmPrivateIPPrefixArray')[1], variables('vmPrivateIPPrefixArray')[2])]",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
-        
         "bastionSubnetName": "AzureBastionSubnet",
-
-        "nsg-id": {"id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-ssh-allow')]"},
+        "nsg-id": { "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-ssh-allow')]" },
         "networkSecurityGroup": "[if(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), variables('nsg-id'), json('null'))]",
-
         "subnets": [
             {
                 "name": "[variables('subnetName')]",
@@ -216,7 +211,6 @@
 
         "c2SetupScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/bash/Install-C2s.sh', parameters('_artifactsLocationSasToken')))]",
         "dockerSetupScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/bash/Install-Docker.sh', parameters('_artifactsLocationSasToken')))]",
-        
         "vmName": "[parameters('vmName')]"
     },
     "resources": [

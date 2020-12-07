@@ -18,25 +18,25 @@ $File = "C:\ProgramData\$OutputFile"
 write-Host "[+] Downloading $OutputFile .."
 $wc = new-object System.Net.WebClient
 $wc.DownloadFile($Url, $File)
-if (!(Test-Path $File)){ Write-Error "File $File does not exist" -ErrorAction Stop }
+if (!(Test-Path $File)) { Write-Error "File $File does not exist" -ErrorAction Stop }
 
 # Unzip file
 write-Host "[+] Decompressing $OutputFile .."
 $FileName = (Get-Item $File).Basename
 expand-archive -path $File -DestinationPath "C:\ProgramData\$FileName"
-if (!(Test-Path "C:\ProgramData\$FileName")){ Write-Error "$File was not decompressed successfully" -ErrorAction Stop }
+if (!(Test-Path "C:\ProgramData\$FileName")) { Write-Error "$File was not decompressed successfully" -ErrorAction Stop }
 
 #Installing Dependencies
 #.NET Framework 4.5	All Windows operating systems: 378389
 $DotNetDWORD = 378388
 $DotNet_Check = Get-ChildItem "hklm:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" | Get-ItemPropertyValue -Name Release | % { $_ -ge $DotNetDWORD }
-if(!$DotNet_Check)
+if (!$DotNet_Check)
 {
     write-Host "[!] NET Framework 4.5 or higher not installed.."
     & C:\ProgramData\$FileName\v8\Dependencies\dotNetFx45_Full_setup.exe /q /passive /norestart
     start-sleep -s 5
 }
-$MVC_Check = Get-ItemProperty HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object {$_.displayname -like "Microsoft Visual C++*"} | Select-Object DisplayName, DisplayVersion
+$MVC_Check = Get-ItemProperty HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object { $_.displayname -like "Microsoft Visual C++*" } | Select-Object DisplayName, DisplayVersion
 if (!$MVC_Check)
 {
     write-Host "[!] Microsoft Visual C++ not installed.."
@@ -45,7 +45,7 @@ if (!$MVC_Check)
 }
 
 # Download SilkServiceConfig.xml
-$SilkServiceConfigUrl = "https://raw.githubusercontent.com/OTRF/Blacksmith/master/resources/configs/SilkETW/SilkServiceConfig.xml"
+$SilkServiceConfigUrl = "https://raw.githubusercontent.com/shawnadrockleonard/blacksmith/shawns/dev/resources/configs/SilkETW/SilkServiceConfig.xml"
 
 $OutputFile = Split-Path $SilkServiceConfigUrl -leaf
 $SilkServiceConfigPath = "C:\ProgramData\$FileName\v8\SilkService\SilkServiceConfig.xml"
@@ -54,15 +54,15 @@ $SilkServiceConfigPath = "C:\ProgramData\$FileName\v8\SilkService\SilkServiceCon
 write-Host "[+] Downloading $OutputFile .."
 $wc = new-object System.Net.WebClient
 $wc.DownloadFile($SilkServiceConfigUrl, $SilkServiceConfigPath)
-if (!(Test-Path $SilkServiceConfigPath)){ Write-Error "SilkServiceConfig does not exist" -ErrorAction Stop }
+if (!(Test-Path $SilkServiceConfigPath)) { Write-Error "SilkServiceConfig does not exist" -ErrorAction Stop }
 
 # Installing Service
 write-host "[+] Creating the new SilkETW service.."
 New-Service -name SilkETW `
--displayName SilkETW `
--binaryPathName "C:\ProgramData\$FileName\v8\SilkService\SilkService.exe" `
--StartupType Automatic `
--Description "This is the SilkETW service to consume ETW events."
+    -displayName SilkETW `
+    -binaryPathName "C:\ProgramData\$FileName\v8\SilkService\SilkService.exe" `
+    -StartupType Automatic `
+    -Description "This is the SilkETW service to consume ETW events."
 
 Start-Sleep -s 10
 

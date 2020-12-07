@@ -88,11 +88,11 @@ $downloadAll | ConvertFrom-Csv | ForEach-Object {
     $response.Close()
     $File = "C:\ProgramData\$OutputFile"
     # Check to see if file already exists
-    if (Test-Path $File){ Write-host "  [!] $File already exist"; return }
+    if (Test-Path $File) { Write-host "  [!] $File already exist"; return }
     # Download if it does not exists
     $wc.DownloadFile($_.url, $File)
     # If for some reason, a file does not exists, STOP
-    if (!(Test-Path $File)){ Write-Error "$File does not exist" -ErrorAction Stop }
+    if (!(Test-Path $File)) { Write-Error "$File does not exist" -ErrorAction Stop }
 
     # Decompress if it is zip file
     if ($File.ToLower().EndsWith(".zip"))
@@ -101,7 +101,7 @@ $downloadAll | ConvertFrom-Csv | ForEach-Object {
         write-Host "  [+] Decompressing $OutputFile .."
         $UnpackName = (Get-Item $File).Basename
         expand-archive -path $File -DestinationPath "C:\ProgramData\$UnpackName"
-        if (!(Test-Path "C:\ProgramData\$UnpackName")){ Write-Error "$File was not decompressed successfully" -ErrorAction Stop }
+        if (!(Test-Path "C:\ProgramData\$UnpackName")) { Write-Error "$File was not decompressed successfully" -ErrorAction Stop }
     }
 }
 
@@ -118,7 +118,8 @@ write-host "[+] Installing Wireshark.."
 
 # Install NTObject Manager
 write-host "[+] Installing NtObjectManger.."
-if (!(Get-Module -ListAvailable -Name NtObjectManager)) {
+if (!(Get-Module -ListAvailable -Name NtObjectManager))
+{
     & Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
     & Install-Module -Name NtObjectManager -Force
 } 
@@ -127,13 +128,13 @@ if (!(Get-Module -ListAvailable -Name NtObjectManager)) {
 # Downloading Sysmon Configuration
 write-Host "[+] Installing Sysmon.."
 $service = Get-Service -Name Sysmon -ErrorAction SilentlyContinue
-if($service -eq $null)
+if ($service -eq $null)
 {
     write-Host "  [+] Downloading Sysmon config.."
     $SysmonFile = "C:\ProgramData\sysmon.xml"
-    $SysmonConfigUrl = "https://raw.githubusercontent.com/OTRF/Blacksmith/master/resources/configs/sysmon/sysmon.xml"
+    $SysmonConfigUrl = "https://raw.githubusercontent.com/shawnadrockleonard/blacksmith/shawns/dev/resources/configs/sysmon/sysmon.xml"
     $wc.DownloadFile($SysmonConfigUrl, $SysmonFile)
-    if (!(Test-Path $SysmonFile)){ Write-Error "File $SysmonFile does not exist" -ErrorAction Stop }
+    if (!(Test-Path $SysmonFile)) { Write-Error "File $SysmonFile does not exist" -ErrorAction Stop }
 
     write-Host "  [+] Setting up Sysmon.."
     & "C:\ProgramData\Sysmon.exe" -i C:\ProgramData\sysmon.xml -accepteula
@@ -147,13 +148,13 @@ write-Host "[+] Installing SilkETW Dependencies.."
 # .NET Framework 4.5	All Windows operating systems: 378389
 $DotNetDWORD = 378388
 $DotNet_Check = Get-ChildItem "hklm:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" | Get-ItemPropertyValue -Name Release | % { $_ -ge $DotNetDWORD }
-if(!$DotNet_Check)
+if (!$DotNet_Check)
 {
     write-Host "NET Framework 4.5 or higher not installed.."
     & C:\ProgramData\SilkETW_SilkService_v8\v8\Dependencies\dotNetFx45_Full_setup.exe /q /passive /norestart
     start-sleep -s 5
 }
-$MVC_Check = Get-ItemProperty HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | where {$_.displayname -like "Microsoft Visual C++*"} | Select-Object DisplayName, DisplayVersion
+$MVC_Check = Get-ItemProperty HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | where { $_.displayname -like "Microsoft Visual C++*" } | Select-Object DisplayName, DisplayVersion
 if (!$MVC_Check)
 {
     write-Host "Microsoft Visual C++ not installed.."
