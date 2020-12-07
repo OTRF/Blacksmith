@@ -30,13 +30,15 @@ if (!(Test-Path "C:\ProgramData\$FileName")) { Write-Error "$File was not decomp
 #.NET Framework 4.5	All Windows operating systems: 378389
 $DotNetDWORD = 378388
 $DotNet_Check = Get-ChildItem "hklm:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" | Get-ItemPropertyValue -Name Release | % { $_ -ge $DotNetDWORD }
-if (!$DotNet_Check) {
+if (!$DotNet_Check)
+{
     write-Host "[!] NET Framework 4.5 or higher not installed.."
     & C:\ProgramData\$FileName\v8\Dependencies\dotNetFx45_Full_setup.exe /q /passive /norestart
     start-sleep -s 5
 }
 $MVC_Check = Get-ItemProperty HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object { $_.displayname -like "Microsoft Visual C++*" } | Select-Object DisplayName, DisplayVersion
-if (!$MVC_Check) {
+if (!$MVC_Check)
+{
     write-Host "[!] Microsoft Visual C++ not installed.."
     & C:\ProgramData\$FileName\v8\Dependencies\vc2015_redist.x86.exe /q /passive /norestart
     start-sleep -s 5
@@ -69,13 +71,15 @@ write-host "[+] Starting SilkETW service.."
 $ServiceName = 'SilkETW'
 $arrService = Get-Service -Name $ServiceName
 
-while ($arrService.Status -ne 'Running') {
+while ($arrService.Status -ne 'Running')
+{
     Start-Service $ServiceName
     write-host $arrService.status
     write-host '  [*] Service starting'
     Start-Sleep -seconds 5
     $arrService.Refresh()
-    if ($arrService.Status -eq 'Running') {
+    if ($arrService.Status -eq 'Running')
+    {
         Write-Host '  [*] Service is now Running'
     }
 }

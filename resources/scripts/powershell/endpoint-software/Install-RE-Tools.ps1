@@ -77,10 +77,12 @@ $downloadAll | ConvertFrom-Csv | ForEach-Object {
     write-Host "[+] Downloading" $_.name "From" $_.url
     $request = [System.Net.WebRequest]::Create($_.url)
     $response = $request.GetResponse()
-    if ($response.Server –eq 'AmazonS3') {
+    if ($response.Server –eq 'AmazonS3')
+    {
         $OutputFile = Split-Path $_.url -leaf
     }
-    else {
+    else
+    {
         $OutputFile = [System.IO.Path]::GetFileName($response.ResponseUri)
     }
     $response.Close()
@@ -93,7 +95,8 @@ $downloadAll | ConvertFrom-Csv | ForEach-Object {
     if (!(Test-Path $File)) { Write-Error "$File does not exist" -ErrorAction Stop }
 
     # Decompress if it is zip file
-    if ($File.ToLower().EndsWith(".zip")) {
+    if ($File.ToLower().EndsWith(".zip"))
+    {
         # Unzip file
         write-Host "  [+] Decompressing $OutputFile .."
         $UnpackName = (Get-Item $File).Basename
@@ -115,7 +118,8 @@ write-host "[+] Installing Wireshark.."
 
 # Install NTObject Manager
 write-host "[+] Installing NtObjectManger.."
-if (!(Get-Module -ListAvailable -Name NtObjectManager)) {
+if (!(Get-Module -ListAvailable -Name NtObjectManager))
+{
     & Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
     & Install-Module -Name NtObjectManager -Force
 } 
@@ -124,7 +128,8 @@ if (!(Get-Module -ListAvailable -Name NtObjectManager)) {
 # Downloading Sysmon Configuration
 write-Host "[+] Installing Sysmon.."
 $service = Get-Service -Name Sysmon -ErrorAction SilentlyContinue
-if ($service -eq $null) {
+if ($service -eq $null)
+{
     write-Host "  [+] Downloading Sysmon config.."
     $SysmonFile = "C:\ProgramData\sysmon.xml"
     $SysmonConfigUrl = "https://raw.githubusercontent.com/shawnadrockleonard/blacksmith/shawns/dev/resources/configs/sysmon/sysmon.xml"
@@ -143,13 +148,15 @@ write-Host "[+] Installing SilkETW Dependencies.."
 # .NET Framework 4.5	All Windows operating systems: 378389
 $DotNetDWORD = 378388
 $DotNet_Check = Get-ChildItem "hklm:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" | Get-ItemPropertyValue -Name Release | % { $_ -ge $DotNetDWORD }
-if (!$DotNet_Check) {
+if (!$DotNet_Check)
+{
     write-Host "NET Framework 4.5 or higher not installed.."
     & C:\ProgramData\SilkETW_SilkService_v8\v8\Dependencies\dotNetFx45_Full_setup.exe /q /passive /norestart
     start-sleep -s 5
 }
 $MVC_Check = Get-ItemProperty HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | where { $_.displayname -like "Microsoft Visual C++*" } | Select-Object DisplayName, DisplayVersion
-if (!$MVC_Check) {
+if (!$MVC_Check)
+{
     write-Host "Microsoft Visual C++ not installed.."
     & C:\ProgramData\SilkETW_SilkService_v8\v8\Dependencies\vc2015_redist.x86.exe /q /passive /norestart
     start-sleep -s 5
@@ -157,7 +164,8 @@ if (!$MVC_Check) {
 
 # Installing Chocolatey
 write-host "Installing Chocolatey.."
-if (!(Test-Path "$($env:ProgramData)\chocolatey\choco.exe")) {
+if (!(Test-Path "$($env:ProgramData)\chocolatey\choco.exe"))
+{
     Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
     choco feature enable -n allowGlobalConfirmation
 

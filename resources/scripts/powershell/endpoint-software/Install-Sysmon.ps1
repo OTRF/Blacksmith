@@ -46,7 +46,8 @@ write-Host "[+] Restarting Log Services .."
 $LogServices = @("Sysmon", "Windows Event Log")
 
 # Restarting Log Services
-foreach ($LogService in $LogServices) {
+foreach ($LogService in $LogServices)
+{
     write-Host "[+] Restarting $LogService .."
     Restart-Service -Name $LogService -Force
 
