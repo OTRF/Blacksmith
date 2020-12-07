@@ -261,7 +261,7 @@
             "metadata": {
                 "description": "The location of resources, such as templates and DSC modules, that the template depends on"
             },
-            "defaultValue": "https://raw.githubusercontent.com/shawnadrockleonard/blacksmith/shawns/dev/"
+            "defaultValue": "https://raw.githubusercontent.com/OTRF/blacksmith/master/"
         },
         "_artifactsLocationSasToken": {
             "type": "securestring",
@@ -280,57 +280,46 @@
     },
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
-
         "virtualNetworkName": "[parameters('virtualNetworkName')]",
         "virtualNetworkAddressRange": "[parameters('virtualNetworkAddressRange')]",
-
         "subnetName0": "[parameters('subnetName0')]",
         "subnetRange0": "[parameters('subnetRange0')]",
         "vmPrivateIPPrefixArray0": "[take(split(variables('subnetRange0'),'.'),3)]",
         "vmPrivateIPAddresPrefix0": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray0')[0], variables('vmPrivateIPPrefixArray0')[1], variables('vmPrivateIPPrefixArray0')[2])]",
         "subnetRef0": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName0'))]",
-
         "subnetName1": "[parameters('subnetName1')]",
         "subnetRange1": "[parameters('subnetRange1')]",
         "vmPrivateIPPrefixArray1": "[take(split(variables('subnetRange1'),'.'),3)]",
         "vmPrivateIPAddresPrefix1": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray1')[0], variables('vmPrivateIPPrefixArray1')[1], variables('vmPrivateIPPrefixArray1')[2])]",
         "subnetRef1": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName1'))]",
-
         "subnetName2": "[parameters('subnetName2')]",
         "subnetRange2": "[parameters('subnetRange2')]",
         "vmPrivateIPPrefixArray2": "[take(split(variables('subnetRange2'),'.'),3)]",
         "vmPrivateIPAddresPrefix2": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray2')[0], variables('vmPrivateIPPrefixArray2')[1], variables('vmPrivateIPPrefixArray2')[2])]",
         "subnetRef2": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName2'))]",
-
         "subnetName3": "[parameters('subnetName3')]",
         "subnetRange3": "[parameters('subnetRange3')]",
         "vmPrivateIPPrefixArray3": "[take(split(variables('subnetRange3'),'.'),3)]",
         "vmPrivateIPAddresPrefix3": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray3')[0], variables('vmPrivateIPPrefixArray3')[1], variables('vmPrivateIPPrefixArray3')[2])]",
         "subnetRef3": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName3'))]",
-
         "subnetName4": "[parameters('subnetName4')]",
         "subnetRange4": "[parameters('subnetRange4')]",
         "vmPrivateIPPrefixArray4": "[take(split(variables('subnetRange4'),'.'),3)]",
         "vmPrivateIPAddresPrefix4": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray4')[0], variables('vmPrivateIPPrefixArray4')[1], variables('vmPrivateIPPrefixArray4')[2])]",
         "subnetRef4": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName4'))]",
-
         "routeTables_Victim_to_FW": "Victim-to-FW",
         "routeTables_Trust_to_Intranetwork": "Trust-to-Intranetwork",
-
         "allSubnets": "[concat(parameters('subnetRange2'),',',parameters('subnetRange3'),',',parameters('subnetRange4'))]",
         "allHopsIPs": "[concat(concat(variables('vmPrivateIPAddresPrefix1'),'1'),',',concat(variables('vmPrivateIPAddresPrefix2'),'1'))]",
         "allPrivateIPs": "[concat(concat(variables('vmPrivateIPAddresPrefix1'),'4'),',',concat(variables('vmPrivateIPAddresPrefix3'),'4'),',',concat(variables('vmPrivateIPAddresPrefix4'),'4'))]",
-
         "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-PAN-FW/nestedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]",
         "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-PAN-FW/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
-
         "prepareBoxScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Prepare-Box.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSecurityAuditingScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1', parameters('_artifactsLocationSasToken')))]",
         "saclModule": "https://raw.githubusercontent.com/OTRF/Set-AuditRule/master/Set-AuditRule.ps1",
         "setSACLScript": "[uri(parameters('_artifactsLocation'), 'resources/scripts/powershell/auditing/Set-SACLs.ps1')]",
         "setWallPaperScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Set-WallPaper.ps1', parameters('_artifactsLocationSasToken')))]",
         "installAgentScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/endpoint-software/Install-Sysmon.ps1', parameters('_artifactsLocationSasToken')))]",
-
         "windowsVM": [
             {
                 "tag": "workstation",
@@ -345,7 +334,6 @@
                 "version": "[parameters('windowsDesktopVersion')]"
             }
         ],
-
         "panFW": [
             {
                 "tag": "panFW",
@@ -361,7 +349,6 @@
                 "extensionName": "SetUpPAN"
             }
         ],
-
         "cefVM": [
             {
                 "tag": "cef",
@@ -377,15 +364,15 @@
                 "extensionName": "SetUpCEF"
             }
         ],
-
         "allEndpoints": "[concat(variables('windowsVM'), variables('panFW'), variables('cefVM'))]",
-
         "networkInterfaces": [
             {
                 "resourceName": "panFW-eth0",
                 "name": "ipconfig-mgmt",
                 "privateIPAddress": "[concat(variables('vmPrivateIPAddresPrefix0'),'4')]",
-                "publicIPAddressID": { "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('panFW')[0].vmName))]" },
+                "publicIPAddressID": {
+                    "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('panFW')[0].vmName))]"
+                },
                 "subnetID": "[variables('subnetRef0')]",
                 "enableIPForwarding": "[bool('false')]",
                 "enableAcceleratedNetworking": "[bool('false')]"
@@ -394,7 +381,9 @@
                 "resourceName": "panFW-eth1",
                 "name": "ipconfig-untrust",
                 "privateIPAddress": "[concat(variables('vmPrivateIPAddresPrefix1'),'4')]",
-                "publicIPAddressID": { "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('windowsVM')[0].vmName))]" },
+                "publicIPAddressID": {
+                    "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('windowsVM')[0].vmName))]"
+                },
                 "subnetID": "[variables('subnetRef1')]",
                 "enableIPForwarding": "[bool('true')]",
                 "enableAcceleratedNetworking": "[bool('true')]"
@@ -412,7 +401,9 @@
                 "resourceName": "cef-eth0",
                 "name": "ipconfig1",
                 "privateIPAddress": "[concat(variables('vmPrivateIPAddresPrefix3'),'4')]",
-                "publicIPAddressID": { "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('cefVM')[0].vmName))]" },
+                "publicIPAddressID": {
+                    "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('cefVM')[0].vmName))]"
+                },
                 "subnetID": "[variables('subnetRef3')]",
                 "enableIPForwarding": "[bool('false')]",
                 "enableAcceleratedNetworking": "[bool('false')]"
@@ -427,7 +418,6 @@
                 "enableAcceleratedNetworking": "[bool('false')]"
             }
         ],
-
         "linuxConfiguration": {
             "disablePasswordAuthentication": true,
             "ssh": {
@@ -450,8 +440,7 @@
                 "name": "Standard_LRS"
             },
             "kind": "Storage",
-            "properties": {
-            }
+            "properties": {}
         },
         {
             "comments": "Default Network Security Group for all endpoints",
@@ -873,7 +862,7 @@
                     },
                     "fileUris": {
                         "value": [
-                            "https://raw.githubusercontent.com/shawnadrockleonard/blacksmith/shawns/dev/templates/azure/Win10-PAN-FW/scripts/Set-Up-CEF.sh",
+                            "https://raw.githubusercontent.com/OTRF/blacksmith/master/templates/azure/Win10-PAN-FW/scripts/Set-Up-CEF.sh",
                             "https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/DataConnectors/CEF/cef_installer.py"
                         ]
                     },
@@ -909,8 +898,8 @@
                     },
                     "fileUris": {
                         "value": [
-                            "https://raw.githubusercontent.com/shawnadrockleonard/blacksmith/shawns/dev/templates/azure/Win10-PAN-FW/scripts/Set-Up-FW.sh",
-                            "https://raw.githubusercontent.com/shawnadrockleonard/blacksmith/shawns/dev/templates/azure/Win10-PAN-FW/scripts/azure-sample.xml"
+                            "https://raw.githubusercontent.com/OTRF/blacksmith/master/templates/azure/Win10-PAN-FW/scripts/Set-Up-FW.sh",
+                            "https://raw.githubusercontent.com/OTRF/blacksmith/master/templates/azure/Win10-PAN-FW/scripts/azure-sample.xml"
                         ]
                     },
                     "vmName": {
@@ -938,7 +927,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/shawnadrockleonard/blacksmith/shawns/dev/templates/azure/Win10-PAN-FW/scripts/Set-Initial-Settings.ps1",
+                        "https://raw.githubusercontent.com/OTRF/blacksmith/master/templates/azure/Win10-PAN-FW/scripts/Set-Initial-Settings.ps1",
                         "[variables('prepareBoxScript')]",
                         "[variables('setSecurityAuditingScript')]",
                         "[variables('saclModule')]",
