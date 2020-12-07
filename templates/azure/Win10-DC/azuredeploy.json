@@ -589,7 +589,6 @@
                         "[variables('setPowerShellLogging')]",
                         "[variables('saclModule')]",
                         "[variables('setSACLScript')]",
-                        shawnadrockleonard/blacksmith/shawns/dev
                         "[variables('setIPAddressScript')]",
                         "[variables('setWallPaperScript')]"
                     ],
