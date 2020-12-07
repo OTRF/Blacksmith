@@ -146,7 +146,7 @@
         },
         "_artifactsLocation": {
             "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/OTRF/blacksmith/master/",
+            "defaultValue": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/",
             "metadata": {
                 "description": "The location of resources, such as templates and DSC modules, that the template depends on"
             }

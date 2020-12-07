@@ -6,7 +6,7 @@
 
 [CmdletBinding()]
 param (
-    [string]$SysmonConfigUrl = "https://raw.githubusercontent.com/OTRF/blacksmith/master/resources/configs/sysmon/sysmon.xml"
+    [string]$SysmonConfigUrl = "https://raw.githubusercontent.com/OTRF/Blacksmith/master/resources/configs/sysmon/sysmon.xml"
 )
 
 write-host "[+] Processing Sysmon Installation.."

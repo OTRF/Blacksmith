@@ -545,7 +545,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/blacksmith/master/templates/azure/Linux/scripts/Install-OMS-Auditd-Plugin.sh"
+                        "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Linux/scripts/Install-OMS-Auditd-Plugin.sh"
                     ],
                     "commandToExecute": "[concat('bash Install-OMS-Auditd-Plugin.sh')]"
                 },

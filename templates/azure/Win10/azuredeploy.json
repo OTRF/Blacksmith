@@ -170,7 +170,7 @@
             "metadata": {
                 "description": "The location of resources, such as templates and DSC modules, that the template depends on"
             },
-            "defaultValue": "https://raw.githubusercontent.com/OTRF/blacksmith/master/"
+            "defaultValue": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/"
         },
         "_artifactsLocationSasToken": {
             "type": "securestring",
@@ -526,7 +526,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/blacksmith/master/templates/azure/Win10/scripts/Set-Initial-Settings.ps1",
+                        "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Win10/scripts/Set-Initial-Settings.ps1",
                         "[variables('prepareBoxScript')]",
                         "[variables('setSecurityAuditingScript')]",
                         "[variables('saclModule')]",

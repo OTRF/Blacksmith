@@ -23,4 +23,4 @@ We would love to hear your feedback after using the templates in this project. L
 
 # License: GPL-3.0
 
-[ Blacksmith's GNU General Public License](https://github.com/OTRF/blacksmith/blob/master/LICENSE)
+[ Blacksmith's GNU General Public License](https://github.com/OTRF/Blacksmith/blob/master/LICENSE)

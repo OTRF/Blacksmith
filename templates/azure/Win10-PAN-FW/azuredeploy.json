@@ -261,7 +261,7 @@
             "metadata": {
                 "description": "The location of resources, such as templates and DSC modules, that the template depends on"
             },
-            "defaultValue": "https://raw.githubusercontent.com/OTRF/blacksmith/master/"
+            "defaultValue": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/"
         },
         "_artifactsLocationSasToken": {
             "type": "securestring",
@@ -862,7 +862,7 @@
                     },
                     "fileUris": {
                         "value": [
-                            "https://raw.githubusercontent.com/OTRF/blacksmith/master/templates/azure/Win10-PAN-FW/scripts/Set-Up-CEF.sh",
+                            "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Win10-PAN-FW/scripts/Set-Up-CEF.sh",
                             "https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/DataConnectors/CEF/cef_installer.py"
                         ]
                     },
@@ -898,8 +898,8 @@
                     },
                     "fileUris": {
                         "value": [
-                            "https://raw.githubusercontent.com/OTRF/blacksmith/master/templates/azure/Win10-PAN-FW/scripts/Set-Up-FW.sh",
-                            "https://raw.githubusercontent.com/OTRF/blacksmith/master/templates/azure/Win10-PAN-FW/scripts/azure-sample.xml"
+                            "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Win10-PAN-FW/scripts/Set-Up-FW.sh",
+                            "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Win10-PAN-FW/scripts/azure-sample.xml"
                         ]
                     },
                     "vmName": {
@@ -927,7 +927,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/blacksmith/master/templates/azure/Win10-PAN-FW/scripts/Set-Initial-Settings.ps1",
+                        "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Win10-PAN-FW/scripts/Set-Initial-Settings.ps1",
                         "[variables('prepareBoxScript')]",
                         "[variables('setSecurityAuditingScript')]",
                         "[variables('saclModule')]",

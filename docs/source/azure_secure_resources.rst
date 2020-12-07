@@ -36,7 +36,7 @@ Deploying an Azure Account Storage and a Private container
 
 The project comes with an ARM template to create everything for you
 
-* Download the following template: https://github.com/OTRF/blacksmith/blob/azure/templates/azure/Storage-Account-Private-Container/azuredeploy.json
+* Download the following template: https://github.com/OTRF/Blacksmith/blob/azure/templates/azure/Storage-Account-Private-Container/azuredeploy.json
 * `Install Azure CLI <https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest>`_.
 * Run the following command to create an Azure Storage Account and an Azure Private Container in it. Make sure you define your **Resource Group** , **Azure Storage Account Name** and **Azure Private Container Name**
 
