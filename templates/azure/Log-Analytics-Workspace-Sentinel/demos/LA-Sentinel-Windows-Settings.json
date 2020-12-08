@@ -79,7 +79,7 @@
             "metadata": {
                 "description": "Location for all resources."
             }
-        } 
+        }
     },
     "variables": {
         "artifactsBlacksmith": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/",
@@ -129,7 +129,7 @@
                     "workspaceName": {
                         "value": "[reference('deployAzureSentinel').outputs.workspaceName.value]"
                     },
-                     "securityCollectionTier": {
+                    "securityCollectionTier": {
                         "value": "[parameters('setSecurityCollectionTier')]"
                     },
                     "location": {
@@ -148,7 +148,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri":  "[uri(variables('artifactsAzureSentinel2Go'),'azure-sentinel/linkedtemplates/log-analytics/winDataSources.json')]",
+                    "uri": "[uri(variables('artifactsAzureSentinel2Go'),'azure-sentinel/linkedtemplates/log-analytics/winDataSources.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -165,6 +165,5 @@
             }
         }
     ],
-    "outputs": {
-    }
+    "outputs": {}
 }
