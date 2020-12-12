@@ -67,6 +67,7 @@ $downloadAll = @"
 "Sysinternals", "https://download.sysinternals.com/files/SysinternalsSuite.zip"
 "Sysmon","https://live.sysinternals.com/Sysmon.exe"
 "SilkETW", "https://github.com/fireeye/SilkETW/releases/download/v0.8/SilkETW_SilkService_v8.zip"
+"Microsoft Visual C++", "https://aka.ms/vs/16/release/vc_redist.x64.exe"
 "@
 
 # Initializing Web Client

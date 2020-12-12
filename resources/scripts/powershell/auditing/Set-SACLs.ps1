@@ -5,33 +5,33 @@
 Import-Module .\Set-AuditRule.ps1
 
 $AuditRules = @"
-regKey;identityReference;rights;inheritanceFlags;propagationFlags;auditFlags
-"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Run";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\RunOnce";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunService";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnceService";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\RunService";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\RunOnceService";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SOFTWARE\Policies\Microsoft Services\AdmPwd";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SYSTEM\CurrentControlSet\Services\SysmonDrv\Parameters";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SOFTWARE\Policies\Microsoft\Windows\EventLog\EventForwarding\SubscriptionManager";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SOFTWARE\Microsoft\.NETFramework";"Authenticated Users";"WriteKey";"None";"None";"Success"
-"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\webcam";"Authenticated Users";"SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
-"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone";"Authenticated Users";"SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
-"HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\TelemetryController";"Authenticated Users";"SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
-"HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest";"Authenticated Users";"QueryValues,SetValue,WriteKey";"None";"None";"Success"
-"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\JD";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\Skew1";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\GBG";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\Data";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SOFTWARE\Microsoft\Internet Explorer";"Authenticated Users";"QueryValues";"None";"None";"Success"
-"HKLM:\SYSTEM\ControlSet001\Control\Session Manager\Environment";"Authenticated Users";"QueryValues,SetValue,WriteKey";"None";"None";"Success"
+regKey;wellKnownSidType;rights;inheritanceFlags;propagationFlags;auditFlags
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Run";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\RunOnce";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunService";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnceService";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\RunService";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\RunOnceService";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SOFTWARE\Policies\Microsoft Services\AdmPwd";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SYSTEM\CurrentControlSet\Services\SysmonDrv\Parameters";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SOFTWARE\Policies\Microsoft\Windows\EventLog\EventForwarding\SubscriptionManager";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SOFTWARE\Microsoft\.NETFramework";"AuthenticatedUserSid";"WriteKey";"None";"None";"Success"
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\webcam";"AuthenticatedUserSid";"SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
+"HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone";"AuthenticatedUserSid";"SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
+"HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\TelemetryController";"AuthenticatedUserSid";"SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
+"HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest";"AuthenticatedUserSid";"QueryValues,SetValue,WriteKey";"None";"None";"Success"
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\JD";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\Skew1";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\GBG";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\Data";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SOFTWARE\Microsoft\Internet Explorer";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
+"HKLM:\SYSTEM\ControlSet001\Control\Session Manager\Environment";"AuthenticatedUserSid";"QueryValues,SetValue,WriteKey";"None";"None";"Success"
 "@
 
 write-host "Enabling audit rules.."
@@ -41,7 +41,7 @@ $AuditRules | ConvertFrom-Csv -Delimiter ';' | ForEach-Object {
     }
     else {
         Write-Host "Updating SACL of " $_.regKey
-        Set-AuditRule -RegistryPath $_.regKey -IdentityReference $_.identityReference  -Rights $_.rights.split(",") -InheritanceFlags $_.inheritanceFlags -PropagationFlags $_.propagationFlags -AuditFlags $_.auditFlags -ErrorAction SilentlyContinue
+        Set-AuditRule -RegistryPath $_.regKey -WellKnownSidType $_.wellKnownSidType -Rights $_.rights.split(",") -InheritanceFlags $_.inheritanceFlags -PropagationFlags $_.propagationFlags -AuditFlags $_.auditFlags -ErrorAction SilentlyContinue
     }
 }
 
