@@ -16,7 +16,7 @@ configuration Create-AD {
     Import-DscResource -ModuleName ActiveDirectoryDsc, NetworkingDsc, xPSDesiredStateConfiguration, ActiveDirectoryCSDsc, CertificateDsc, xDnsServer, ComputerManagementDsc
     
     [String] $DomainNetbiosName = (Get-NetBIOSName -DomainFQDN $DomainFQDN)
-    [System.Management.Automation.PSCredential ]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainNetbiosName}\$($Admincreds.UserName)", $Admincreds.Password)
+    [System.Management.Automation.PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainNetbiosName}\$($Admincreds.UserName)", $Admincreds.Password)
 
     $Interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
     $InterfaceAlias = $($Interface.Name)
@@ -211,7 +211,7 @@ configuration Create-AD {
             DependsOn                 = '[WaitForCertificateServices]WaitAfterADCSProvisioning'
         }
 
-        # ***** Export Certificate *****
+        # ***** Export ADFS Certificates (.cer) *****
         xScript ExportCertificates
         {
             SetScript = 
@@ -239,7 +239,7 @@ configuration Create-AD {
             DependsOn = "[CertReq]GenerateADFSSiteCertificate", "[CertReq]GenerateADFSSigningCertificate", "[CertReq]GenerateADFSDecryptionCertificate"
         }
 
-        # ***** Create ADUser *****
+        # ***** Create ADFS SvcUser *****
         ADUser CreateAdfsSvcAccount
         {
             DomainName              = $DomainFQDN
@@ -251,6 +251,7 @@ configuration Create-AD {
             DependsOn               = "[CertReq]GenerateADFSSiteCertificate", "[CertReq]GenerateADFSSigningCertificate", "[CertReq]GenerateADFSDecryptionCertificate"
         }
 
+        # ***** Export PFX Certificate Format *****
         xScript ExportPFX
         {
             SetScript = 

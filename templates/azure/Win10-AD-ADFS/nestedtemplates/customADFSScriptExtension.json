@@ -15,7 +15,13 @@
         "fileUris": {
             "type": "array"
         },
-        "commandToExecute": {
+        "AdminCreds": {
+            "type": "object"
+        },
+        "AdfsSvcCreds": {
+            "type": "object"
+        },
+        "DomainFQDN": {
             "type": "string"
         },
         "location": {
@@ -37,8 +43,10 @@
                 "typeHandlerVersion": "1.8",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
-                    "fileUris": "[parameters('fileUris')]",
-                    "commandToExecute": "[parameters('commandToExecute')]"
+                    "fileUris": "[parameters('fileUris')]"
+                },
+                "protectedSettings": {
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Install-ADFSFarm.ps1',' ', '-domainFQDN',' ',parameters('domainFQDN'),' ','-AdminCreds',' ',parameters('AdminCreds'),' ','-AdfsSvcCreds',' ',parameters('AdfsSvcCreds'))]"
                 }
             }
         }
