@@ -95,7 +95,7 @@ configuration Create-AD {
             DatabasePath                    = "C:\NTDS"
             LogPath                         = "C:\NTDS"
             SysvolPath                      = "C:\SYSVOL"
-            DependsOn                       = "[DnsServerAddress]SetDNS", "[WindowsFeature]AddADDS"
+            DependsOn                       = "[DnsServerAddress]SetDNS", "[WindowsFeature]ADDSInstall"
         }
 
         PendingReboot RebootOnSignalFromCreateADForest
@@ -122,7 +122,7 @@ configuration Create-AD {
             Ensure          = "Present"
         }
 
-        xSmbShare SrcShare
+        SmbShare SrcShare
         {
             Ensure      = "Present"
             Name        = "Setup"
@@ -137,7 +137,7 @@ configuration Create-AD {
         { 
             Name        = "ADCS-Cert-Authority"
             Ensure      = "Present"
-            DependsOn   = "[WaitForADDomain]DscForestWait"
+            DependsOn   = "[WaitForADDomain]WaitForDCReady"
         }
 
         ADCSCertificationAuthority CreateADCSAuthority
