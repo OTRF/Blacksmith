@@ -21,6 +21,7 @@ configuration Create-AD {
     $Interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
     $InterfaceAlias = $($Interface.Name)
     $ComputerName = Get-Content env:computername
+    $AdminAccountName = $Admincreds.UserName
     $ADFSSiteName = "ADFS"
     $ADFSAccountName = $AdfsSvcCreds.UserName
 
@@ -257,8 +258,8 @@ configuration Create-AD {
                 $destinationPath = "C:\Setup"
                 $adfsPfxCertName = "ADFS.pfx"
                 $signingCert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$using:ADFSSiteName.Signing"
-                $cert = Get-ChildItem -Path "cert:\LocalMachine\Root\" | Where-Object { $_.Subject -eq $signingCert.Issuer }
-                Export-PfxCertificate -FilePath ([System.IO.Path]::Combine($destinationPath, $adfsPfxCertName)) -Cert $cert -ProtectTo "$using:DomainNetbiosName\$using:ADFSAccountName"
+                $cert = Get-ChildItem -Path "cert:\LocalMachine\Root\" | Where-Object { $_.Subject -eq $signingCert.Issuer } Select-Object -First 1
+                Export-PfxCertificate -FilePath ([System.IO.Path]::Combine($destinationPath, $adfsPfxCertName)) -Cert $cert -ProtectTo "$using:DomainNetbiosName\$using:ADFSAccountName", "$using:DomainNetbiosName\$using:AdminAccountName"
                                  
             }
             GetScript =  
