@@ -257,8 +257,7 @@ configuration Create-AD {
             {
                 $destinationPath = "C:\Setup"
                 $adfsPfxCertName = "ADFS.pfx"
-                $signingCert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$using:ADFSSiteName.Signing"
-                $cert = Get-ChildItem -Path "cert:\LocalMachine\Root\" | Where-Object { $_.Subject -eq $signingCert.Issuer } | Select-Object -First 1
+                $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$using:ADFSSiteName.$using:DomainFQDN"
                 Export-PfxCertificate -FilePath ([System.IO.Path]::Combine($destinationPath, $adfsPfxCertName)) -Cert $cert -ProtectTo "$using:DomainNetbiosName\$using:ADFSAccountName", "$using:DomainNetbiosName\$using:AdminAccountName"
                                  
             }
