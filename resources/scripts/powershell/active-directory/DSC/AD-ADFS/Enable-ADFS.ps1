@@ -85,6 +85,7 @@ configuration Enable-ADFS
         {
             # reference: https://github.com/pthoor/AzureARMTemplates/blob/ddd09734a3817e459d3dbfb41fc96c9b011e0205/ADFS%20Lab/DSC/adDSC/adDSCConfiguration.ps1
             SetScript = {
+                Resolve-DnsName download.microsoft.com
                 $AADConnectDLUrl="https://download.microsoft.com/download/B/0/0/B00291D0-5A83-4DE7-86F5-980BC00DE05A/AzureADConnect.msi"
                 $exe="$env:SystemRoot\system32\msiexec.exe"
 
