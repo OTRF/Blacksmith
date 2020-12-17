@@ -24,9 +24,8 @@ configuration Create-AD {
     $Interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
     $InterfaceAlias = $($Interface.Name)
     $ComputerName = Get-Content env:computername
-    $AdminAccountName = $Admincreds.UserName
+    $AdminPassword = $DomainCreds.Password
     $ADFSSiteName = "ADFS"
-    $ADFSAccountName = $AdfsSvcCreds.UserName
 
     Node localhost
     {
@@ -271,8 +270,7 @@ configuration Create-AD {
                 $destinationPath = "C:\Setup"
                 $adfsPfxCertName = "ADFS.pfx"
                 $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$using:ADFSSiteName.$using:DomainFQDN"
-                Export-PfxCertificate -FilePath ([System.IO.Path]::Combine($destinationPath, $adfsPfxCertName)) -Cert $cert -ProtectTo "$using:DomainNetbiosName\$using:ADFSAccountName", "$using:DomainNetbiosName\$using:AdminAccountName", "builtin\administrators"
-                                 
+                Export-PfxCertificate -FilePath ([System.IO.Path]::Combine($destinationPath, $adfsPfxCertName)) -Cert $cert -Password "$using:AdminPassword"
             }
             GetScript =  
             {
@@ -285,6 +283,39 @@ configuration Create-AD {
                 return $false
             }
             DependsOn = "[xScript]ExportCertificates", "[ADUser]CreateAdfsSvcAccount"
+        }
+
+        # ***** Install AD Connect *****
+        xScript InstallAADConnect
+        {
+            # reference: https://github.com/pthoor/AzureARMTemplates/blob/ddd09734a3817e459d3dbfb41fc96c9b011e0205/ADFS%20Lab/DSC/adDSC/adDSCConfiguration.ps1
+            SetScript = {
+                $AADConnectDLUrl="https://download.microsoft.com/download/B/0/0/B00291D0-5A83-4DE7-86F5-980BC00DE05A/AzureADConnect.msi"
+                $exe="$env:SystemRoot\system32\msiexec.exe"
+
+                $tempfile = [System.IO.Path]::GetTempFileName()
+                $folder = [System.IO.Path]::GetDirectoryName($tempfile)
+
+                $webclient = New-Object System.Net.WebClient
+                $webclient.DownloadFile($AADConnectDLUrl, $tempfile)
+
+                Rename-Item -Path $tempfile -NewName "AzureADConnect.msi"
+                $MSIPath = $folder + "\AzureADConnect.msi"
+
+                Invoke-Expression "& `"$exe`" /i $MSIPath /qn /passive /forcerestart"
+            }
+
+            GetScript =  
+            {
+                # This block must return a hashtable. The hashtable must only contain one key Result and the value must be of type String.
+                return @{ "Result" = "false" }
+            }
+            TestScript = 
+            {
+                # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
+                return $false
+            }
+            DependsOn = "[xScript]ExportPFX"
         }
     }
 }
