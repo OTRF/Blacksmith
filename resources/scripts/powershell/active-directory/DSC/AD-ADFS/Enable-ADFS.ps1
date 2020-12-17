@@ -75,7 +75,7 @@ configuration Enable-ADFS
                 # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
                 return $false
             }
-            DependsOn = "[xScript]ExportCertificates", "[WindowsFeature]installADFS"
+            DependsOn = "[WindowsFeature]installADFS"
         }
     }
 }
