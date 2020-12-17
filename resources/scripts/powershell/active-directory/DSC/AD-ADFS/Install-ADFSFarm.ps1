@@ -20,6 +20,11 @@ Install-AdfsFarm -CertificateThumbprint $cert.Thumbprint -FederationServiceName 
 # ***** Idp-Initiated Sign On page (Disabled by default)*****
 set-AdfsProperties -EnableIdPInitiatedSignonPage $true
 
+# ***** Customize Landing Page *****
+Set-AdfsGlobalWebContent -CompanyName "Open Threat Research"
+Set-AdfsWebTheme -TargetName default -Illustration @{path="C:\ProgramData\otr.jpg"}
+Set-AdfsGlobalWebContent -SignInPageDescriptionTextt "<p>Sign-in to the Open Threat Research Community and collaborate!</p>"
+
 function Get-NetBIOSName {
     [OutputType([string])]
     param(

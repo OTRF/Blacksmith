@@ -64,7 +64,7 @@ configuration Enable-ADFS
             {
                 $pathtocert = "\\$using:DCName\Setup\*.pfx"
                 $certfile = Get-ChildItem -Path $pathtocert
-                Import-PfxCertificate -Exportable -CertStoreLocation "cert:\LocalMachine\My" -FilePath $certfile.FullName -Password "$using:AdminPassword"
+                Import-PfxCertificate -Exportable -CertStoreLocation "cert:\LocalMachine\My" -FilePath $certfile.FullName -Password (ConvertTo-SecureString "$using:AdminPassword" -AsPlainText -Force)
             }
             GetScript =  
             {
