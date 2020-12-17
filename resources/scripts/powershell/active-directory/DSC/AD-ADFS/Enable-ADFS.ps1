@@ -16,7 +16,7 @@ configuration Enable-ADFS
 
     [String] $DomainNetbiosName = (Get-NetBIOSName -DomainFQDN $DomainFQDN)
     [System.Management.Automation.PSCredential ]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainNetbiosName}\$($Admincreds.UserName)", $Admincreds.Password)
-    $AdminPassword = $DomainCreds.Password
+    $AdminPassword = ConvertFrom-SecureString -SecureString $AdminCreds.Password -AsPlainText
     $ComputerName = Get-Content env:computername
 
     Node localhost
