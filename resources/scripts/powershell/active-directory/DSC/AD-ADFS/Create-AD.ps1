@@ -271,7 +271,7 @@ configuration Create-AD {
                 $destinationPath = "C:\Setup"
                 $adfsPfxCertName = "ADFS.pfx"
                 $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$using:ADFSSiteName.$using:DomainFQDN"
-                Export-PfxCertificate -FilePath ([System.IO.Path]::Combine($destinationPath, $adfsPfxCertName)) -Cert $cert -ProtectTo "$using:DomainNetbiosName\$using:ADFSAccountName", "$using:DomainNetbiosName\$using:AdminAccountName"
+                Export-PfxCertificate -FilePath ([System.IO.Path]::Combine($destinationPath, $adfsPfxCertName)) -Cert $cert -ProtectTo "$using:DomainNetbiosName\$using:ADFSAccountName", "$using:DomainNetbiosName\$using:AdminAccountName", "builtin\administrators"
                                  
             }
             GetScript =  
