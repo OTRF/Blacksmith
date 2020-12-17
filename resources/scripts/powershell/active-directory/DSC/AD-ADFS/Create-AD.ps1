@@ -24,7 +24,8 @@ configuration Create-AD {
     $Interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
     $InterfaceAlias = $($Interface.Name)
     $ComputerName = Get-Content env:computername
-    $AdminPassword = ConvertFrom-SecureString -SecureString $AdminCreds.Password -AsPlainText
+    $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($AdminCreds.Password)
+    $AdminPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
     $ADFSSiteName = "ADFS"
 
     Node localhost
