@@ -46,7 +46,7 @@
                     "fileUris": "[parameters('fileUris')]"
                 },
                 "protectedSettings": {
-                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Install-ADFSFarm.ps1',' ', '-domainFQDN',' ',parameters('domainFQDN'),' ','-AdminCreds',' ',parameters('AdminCreds'),' ','-AdfsSvcCreds',' ',parameters('AdfsSvcCreds'))]"
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Install-ADFSFarm.ps1',' ', '-DomainFQDN',' ',parameters('DomainFQDN'),' ','-AdminCreds',' ',parameters('AdminCreds'),' ','-AdfsSvcCreds',' ',parameters('AdfsSvcCreds'))]"
                 }
             }
         }
