@@ -3,18 +3,28 @@ param (
     [String]$DomainFQDN,
 
     [Parameter(Mandatory)]
-    [System.Management.Automation.PSCredential]$AdminCreds,
+    [String]$AdminUserName,
 
     [Parameter(Mandatory)]
-    [System.Management.Automation.PSCredential]$AdfsSvcCreds
+    [String]$AdminPassword,
+
+    [Parameter(Mandatory)]
+    [String]$AdfsUserName,
+
+    [Parameter(Mandatory)]
+    [String]$AdfsPassword
 )
 
 $ADFSSiteName = "ADFS"
 [String] $DomainNetbiosName = (Get-NetBIOSName -DomainFQDN $DomainFQDN)
-[System.Management.Automation.PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainNetbiosName}\$($Admincreds.UserName)", $Admincreds.Password)
-[System.Management.Automation.PSCredential] $AdfsSvcCredsQualified = New-Object System.Management.Automation.PSCredential ("${DomainNetbiosName}\$($AdfsSvcCreds.UserName)", $AdfsSvcCreds.Password)
+$AdminSecPW = ConvertTo-SecureString $AdminPassword -AsPlainText -Force
+[System.Management.Automation.PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainNetbiosName}\$AsminUserName", $AdminSecPW)
+$AdfsSecPW = ConvertTo-SecureString $AdfsPassword -AsPlainText -Force
+[System.Management.Automation.PSCredential]$AdfsSvcCredsQualified = New-Object System.Management.Automation.PSCredential ("${DomainNetbiosName}\$AdfsUserName", $AdfsSecPW)
 
 $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$ADFSSiteName.$DomainFQDN"
+
+Import-Module ADFS
 Install-AdfsFarm -CertificateThumbprint $cert.Thumbprint -FederationServiceName "$ADFSSiteName.$DomainFQDN" -FederationServiceDisplayName "Active Directory Federation Service" -ServiceAccountCredential $AdfsSvcCredsQualified -OverwriteConfiguration -Credential $DomainCreds
 
 # ***** Idp-Initiated Sign On page (Disabled by default)*****

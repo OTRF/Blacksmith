@@ -302,7 +302,7 @@ configuration Create-AD {
                 Rename-Item -Path $tempfile -NewName "AzureADConnect.msi"
                 $MSIPath = $folder + "\AzureADConnect.msi"
 
-                Invoke-Expression "& `"$exe`" /i $MSIPath /qn /passive /forcerestart"
+                Invoke-Expression "& `"$exe`" /i $MSIPath /qn /passive /norestart"
             }
 
             GetScript =  
