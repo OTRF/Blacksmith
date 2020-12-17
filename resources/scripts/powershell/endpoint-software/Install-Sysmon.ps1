@@ -11,7 +11,7 @@ param (
 
 write-host "[+] Processing Sysmon Installation.."
 
-$URL = "https://live.sysinternals.com/Sysmon.exe"
+$URL = "https://download.sysinternals.com/files/Sysmon.zip"
 Resolve-DnsName live.sysinternals.com
 Resolve-DnsName github.com
 Resolve-DnsName raw.githubusercontent.com
@@ -25,6 +25,18 @@ $wc = new-object System.Net.WebClient
 $wc.DownloadFile($Url, $File)
 if (!(Test-Path $File)) { Write-Error "File $File does not exist" -ErrorAction Stop }
 
+# Decompress if it is zip file
+if ($File.ToLower().EndsWith(".zip"))
+{
+    # Unzip file
+    write-Host "  [+] Decompressing $OutputFile .."
+    $UnpackName = (Get-Item $File).Basename
+    $SysmonFolder = "C:\ProgramData\$UnpackName"
+    $SysmonBinary = "$SysmonFolder\Sysmon.exe"
+    expand-archive -path $File -DestinationPath $SysmonFolder
+    if (!(Test-Path $SysmonFolder)) { Write-Error "$File was not decompressed successfully" -ErrorAction Stop }
+}
+
 # Downloading Sysmon Configuration
 write-Host "[+] Downloading Sysmon config.."
 $SysmonFile = "C:\ProgramData\sysmon.xml"
@@ -33,7 +45,7 @@ if (!(Test-Path $SysmonFile)) { Write-Error "File $SysmonFile does not exist" -E
 
 # Installing Sysmon
 write-Host "[+] Installing Sysmon.."
-& $File -i C:\ProgramData\sysmon.xml -accepteula
+& $SysmonBinary -i C:\ProgramData\sysmon.xml -accepteula
 
 write-Host "[+] Setting Sysmon to start automatically.."
 & sc.exe config Sysmon start= auto
