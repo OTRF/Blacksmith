@@ -10,7 +10,10 @@ configuration Create-AD {
         [System.Management.Automation.PSCredential]$AdminCreds,
 
         [Parameter(Mandatory)]
-        [System.Management.Automation.PSCredential]$AdfsSvcCreds
+        [System.Management.Automation.PSCredential]$AdfsSvcCreds,
+
+        [Parameter(Mandatory)]
+        [String]$AdfsIPAddress
     ) 
     
     Import-DscResource -ModuleName ActiveDirectoryDsc, NetworkingDsc, xPSDesiredStateConfiguration, ActiveDirectoryCSDsc, CertificateDsc, xDnsServer, ComputerManagementDsc
@@ -249,6 +252,15 @@ configuration Create-AD {
             PasswordNeverExpires    = $true
             Ensure                  = "Present"
             DependsOn               = "[CertReq]GenerateADFSSiteCertificate", "[CertReq]GenerateADFSSigningCertificate", "[CertReq]GenerateADFSDecryptionCertificate"
+        }
+
+        xDnsRecord AddADFSHostDNS {
+            Name        = $ADFSSiteName
+            Zone        = $DomainFQDN
+            Target      = $AdfsIPAddress
+            Type        = "ARecord"
+            Ensure      = "Present"
+            DependsOn   = "[WaitForADDomain]WaitForDCReady"
         }
 
         # ***** Export PFX Certificate Format *****

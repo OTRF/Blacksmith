@@ -17,6 +17,9 @@ $ADFSSiteName = "ADFS"
 $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$ADFSSiteName.$DomainFQDN"
 Install-AdfsFarm -CertificateThumbprint $cert.Thumbprint -FederationServiceName "$ADFSSiteName.$DomainFQDN" -FederationServiceDisplayName "Active Directory Federation Service" -ServiceAccountCredential $AdfsSvcCredsQualified -OverwriteConfiguration -Credential $DomainCreds
 
+# ***** Idp-Initiated Sign On page (Disabled by default)*****
+set-AdfsProperties -EnableIdPInitiatedSignonPage $true
+
 function Get-NetBIOSName {
     [OutputType([string])]
     param(
