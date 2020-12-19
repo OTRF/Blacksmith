@@ -10,16 +10,16 @@ function Update-RemoteTask {
         [string]$ComputerName,
 
         [Parameter(Mandatory=$false)]
-        [switch]$FolderName,
+        [string]$FolderName,
 
         [Parameter(Mandatory=$false)]
-        [switch]$TaskName,
+        [string]$TaskName,
 
         [Parameter(Mandatory=$false)]
-        [switch]$Executable,
+        [string]$Executable,
 
         [Parameter(Mandatory=$false)]
-        [switch]$Arguments
+        [string]$Arguments
     )
 
     # connect to Task Scheduler:
