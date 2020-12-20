@@ -10,6 +10,23 @@ param (
     [string]$domainFQDN
 )
 
+# Verifying ADWS service is running
+$ServiceName = 'ADWS'
+$arrService = Get-Service -Name $ServiceName
+
+while ($arrService.Status -ne 'Running')
+{
+    Start-Service $ServiceName
+    write-host $arrService.status
+    write-host 'Service starting'
+    Start-Sleep -seconds 5
+    $arrService.Refresh()
+    if ($arrService.Status -eq 'Running')
+    {
+        Write-Host 'Service is now Running'
+    }
+}
+
 $DomainName1,$DomainName2 = $domainFQDN.split('.')
 
 $ParentPath = "DC=$DomainName1,DC=$DomainName2"

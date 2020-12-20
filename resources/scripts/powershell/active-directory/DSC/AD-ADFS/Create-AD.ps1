@@ -320,20 +320,10 @@ configuration Create-AD {
             DependsOn = "[xScript]ExportPFX"
         }
 
-        PendingReboot RebootOnSignalFromAADConnect
-        {
-            Name        = 'RebootOnSignalFromAADConnect'
-            DependsOn   = "[xScript]InstallAADConnect"
-        }
-
-        WaitForADDomain WaitForAADConnect
+        WaitForADDomain WaitForDomain
         {
             DomainName              = $DomainFQDN
-            WaitTimeout             = 300
-            RestartCount            = 3
-            Credential              = $DomainCreds
-            WaitForValidCredentials = $true
-            DependsOn               = "[PendingReboot]RebootOnSignalFromAADConnect"
+            DependsOn               = "[xScript]InstallAADConnect"
         }
     }
 }
