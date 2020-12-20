@@ -319,6 +319,16 @@ configuration Create-AD {
             }
             DependsOn = "[xScript]ExportPFX"
         }
+
+        WaitForADDomain WaitForDCReady
+        {
+            DomainName              = $DomainFQDN
+            WaitTimeout             = 300
+            RestartCount            = 3
+            Credential              = $DomainCreds
+            WaitForValidCredentials = $true
+            DependsOn               = "[xScript]InstallAADConnect"
+        }
     }
 }
 

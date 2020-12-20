@@ -788,6 +788,41 @@
             }
         },
         {
+            "condition": "[parameters('enableSysmon')]",
+            "name": "[concat(variables('adfsServer')[0].vmName, '-Sysmon')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('adfsServer')[0].vmName, variables('adfsServer')[0].extensionName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptExTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "extensionName": {
+                        "value": "[variables('adfsServer')[0].extensionName]"
+                    },
+                    "commandToExecute": {
+                        "value": "powershell -ExecutionPolicy Unrestricted -File ./Install-Sysmon.ps1"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "[variables('installAgentScript')]"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[variables('adfsServer')[0].vmName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
             "condition": "[parameters('enableAntimalware')]",
             "name": "[concat(variables('allEndpoints')[copyIndex('vmAntiMalwareSetupCopy')].vmName, '/AntiMalware')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
