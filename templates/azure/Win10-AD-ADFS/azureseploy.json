@@ -871,6 +871,7 @@
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('adfsServer')[0].vmName, variables('adfsServer')[0].extensionName)]",
+                "[concat(variables('adfsServer')[0].vmName, '-Sysmon')]",
                 "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('adfsServer')[0].vmName, 'AntiMalware')]",
                 "UpdateVNetDNS"
             ],
