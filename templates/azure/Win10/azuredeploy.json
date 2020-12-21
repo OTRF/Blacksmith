@@ -539,32 +539,6 @@
             }
         },
         {
-            "condition": "[parameters('enableMonitoringAgent')]",
-            "name": "[concat(variables('allWinVMs')[copyIndex('vmMMASetUpCopy')].vmName, '/OMSExtension')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('allWinVMs')[copyIndex('vmMMASetUpCopy')].vmName)]"
-            ],
-            "copy": {
-                "name": "vmMMASetUpCopy",
-                "count": "[length(variables('allWinVMs'))]"
-            },
-            "properties": {
-                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                "type": "MicrosoftMonitoringAgent",
-                "typeHandlerVersion": "1.0",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "workspaceId": "[parameters('workspaceId')]"
-                },
-                "protectedSettings": {
-                    "workspaceKey": "[parameters('workspaceKey')]"
-                }
-            }
-        },
-        {
             "condition": "[parameters('enableSysmon')]",
             "name": "[concat(variables('allWinVMs')[copyIndex('vmSysmonSetUpCopy')].vmName, '-Sysmon')]",
             "type": "Microsoft.Resources/deployments",
@@ -637,6 +611,32 @@
                     }
                 },
                 "protectedSettings": null
+            }
+        },
+        {
+            "condition": "[parameters('enableMonitoringAgent')]",
+            "name": "[concat(variables('allWinVMs')[copyIndex('vmMMASetUpCopy')].vmName, '/OMSExtension')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-12-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('allWinVMs')[copyIndex('vmMMASetUpCopy')].vmName)]"
+            ],
+            "copy": {
+                "name": "vmMMASetUpCopy",
+                "count": "[length(variables('allWinVMs'))]"
+            },
+            "properties": {
+                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                "type": "MicrosoftMonitoringAgent",
+                "typeHandlerVersion": "1.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "workspaceId": "[parameters('workspaceId')]"
+                },
+                "protectedSettings": {
+                    "workspaceKey": "[parameters('workspaceKey')]"
+                }
             }
         }
     ],

@@ -626,32 +626,6 @@
             }
         },
         {
-            "condition": "[parameters('enableMonitoringAgent')]",
-            "name": "[concat(variables('allEndpoints')[copyIndex('vmMMASetUpCopy')].vmName, '/OMSExtension')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('allEndpoints')[copyIndex('vmMMASetUpCopy')].vmName)]"
-            ],
-            "copy": {
-                "name": "vmMMASetUpCopy",
-                "count": "[length(variables('allEndpoints'))]"
-            },
-            "properties": {
-                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                "type": "MicrosoftMonitoringAgent",
-                "typeHandlerVersion": "1.0",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "workspaceId": "[parameters('workspaceId')]"
-                },
-                "protectedSettings": {
-                    "workspaceKey": "[parameters('workspaceKey')]"
-                }
-            }
-        },
-        {
             "condition": "[parameters('enableSysmon')]",
             "name": "[concat(variables('allWinWKS')[copyIndex('vmSysmonSetUpCopy')].vmName, '-Sysmon')]",
             "type": "Microsoft.Resources/deployments",
@@ -879,7 +853,6 @@
             "dependsOn": [
                 "InitialSetUpWKSCopy",
                 "vmSysmonSetupCopy",
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('allWinWKS')[copyIndex('vmDomainJoinCopy')].vmName, 'OMSExtension')]",
                 "ADSetup",
                 "UpdateVNetDNS"
             ],
@@ -901,6 +874,32 @@
                 },
                 "protectedSettings": {
                     "Password": "[parameters('adminPassword')]"
+                }
+            }
+        },
+                {
+            "condition": "[parameters('enableMonitoringAgent')]",
+            "name": "[concat(variables('allEndpoints')[copyIndex('vmMMASetUpCopy')].vmName, '/OMSExtension')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-12-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "vmDomainJoinCopy"
+            ],
+            "copy": {
+                "name": "vmMMASetUpCopy",
+                "count": "[length(variables('allEndpoints'))]"
+            },
+            "properties": {
+                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                "type": "MicrosoftMonitoringAgent",
+                "typeHandlerVersion": "1.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "workspaceId": "[parameters('workspaceId')]"
+                },
+                "protectedSettings": {
+                    "workspaceKey": "[parameters('workspaceKey')]"
                 }
             }
         }

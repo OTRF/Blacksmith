@@ -1072,7 +1072,8 @@
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "vmDomainJoinCopy"
+                "vmDomainJoinCopy",
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('adfsServer')[0].vmName, 'EnableADFS')]"
             ],
             "copy": {
                 "name": "vmMMASetUpCopy",
