@@ -12,7 +12,7 @@ param (
 write-host "[+] Processing Sysmon Installation.."
 
 $URL = "https://download.sysinternals.com/files/Sysmon.zip"
-Resolve-DnsName live.sysinternals.com
+Resolve-DnsName download.sysinternals.com
 Resolve-DnsName github.com
 Resolve-DnsName raw.githubusercontent.com
 
