@@ -83,6 +83,7 @@ MachineKeySet = True
 ProviderName = $PKProviderName
 RequestType = PKCS10
 KeyUsage = 0xa0; Digital Signature, Key Encipherment
+FriendlyName = $FriendlyName
 
 [EnhancedKeyUsageExtension]
 OID=1.3.6.1.5.5.7.3.1
