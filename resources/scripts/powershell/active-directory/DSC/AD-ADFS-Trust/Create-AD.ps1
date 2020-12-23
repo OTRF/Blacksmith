@@ -176,7 +176,7 @@ configuration Create-AD {
                 # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
                 return $false
             }
-            DependsOn = "[SmbShare]SrcShare"
+            DependsOn = "[WaitForADDomain]WaitForDCReady"
         }
 
         # ***** Install AD Connect *****
