@@ -79,6 +79,7 @@ Subject = `"$SubjectString`"
 KeySpec = 1 ; AT_KEYEXCHANGE
 KeyLength = $PKKeySize
 Exportable = $PKMakeExportable
+ExportableEncrypted = $PKMakeExportable
 MachineKeySet = True
 ProviderName = $PKProviderName
 RequestType = PKCS10
