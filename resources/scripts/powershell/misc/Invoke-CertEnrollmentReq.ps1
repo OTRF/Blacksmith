@@ -66,7 +66,7 @@ if ($SubjectState)
 }
 if ($SubjectCountry)
 {
-    $SubjectString += "S=$SubjectCountry"
+    $SubjectString += "C=$SubjectCountry"
 }
 $SubjectString = $SubjectString -join ","
 
@@ -83,9 +83,6 @@ MachineKeySet = True
 ProviderName = $PKProviderName
 RequestType = PKCS10
 KeyUsage = 0xa0; Digital Signature, Key Encipherment
-
-[RequestAttributes]
-CertificateTemplate=WebServer
 
 [EnhancedKeyUsageExtension]
 OID=1.3.6.1.5.5.7.3.1
