@@ -13,6 +13,7 @@ fi
 apt-get clean
 
 # Installing latest Docker
+echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 echo "Installing docker via convenience script.."
 curl -fsSL https://get.docker.com -o get-docker.sh
 chmod +x get-docker.sh
