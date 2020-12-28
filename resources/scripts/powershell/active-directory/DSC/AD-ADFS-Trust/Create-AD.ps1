@@ -34,6 +34,7 @@ configuration Create-AD {
     $ADFSSiteName = "ADFS"
     $ComputerName = Get-Content env:computername
 
+    $DomainUsers.GetType() | Add-Content -Path C:\ProgramData\PSLOGS.txt
     Add-Content -Value $DomainUsers -Path C:\ProgramData\PSLOGS.txt
 
     Node localhost
@@ -284,6 +285,7 @@ configuration Create-AD {
 
                 $NewDomainUsers = $using:DomainUsers
                 Add-Content -Value $NewDomainUsers -Path C:\ProgramData\PSLOGS.txt
+                
                 foreach ($User in $NewDomainUsers)
                 {
                     write-host $User
