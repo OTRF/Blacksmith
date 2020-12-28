@@ -9,18 +9,22 @@ configuration Enable-ADFS
         [System.Management.Automation.PSCredential]$AdminCreds,
 
         [Parameter(Mandatory)]
-        [String]$DCName,
+        [String]$DCIPAddress,
 
         [Parameter(Mandatory)]
         [String]$CertificateName
     ) 
     
-    Import-DscResource -ModuleName ActiveDirectoryDsc, ComputerManagementDsc, xPSDesiredStateConfiguration
+    Import-DscResource -ModuleName NetworkingDsc, ActiveDirectoryDsc, ComputerManagementDsc, xPSDesiredStateConfiguration
 
     [String] $DomainNetbiosName = (Get-NetBIOSName -DomainFQDN $DomainFQDN)
     [System.Management.Automation.PSCredential ]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainNetbiosName}\$($Admincreds.UserName)", $Admincreds.Password)
     $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($AdminCreds.Password)
     $AdminPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
+
+    $Interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
+    $InterfaceAlias = $($Interface.Name)
+
     $ComputerName = Get-Content env:computername
 
     Node localhost
@@ -32,6 +36,14 @@ configuration Enable-ADFS
             RebootNodeIfNeeded  = $true
         }
 
+        DnsServerAddress SetDNS 
+        { 
+            Address         = $DCIPAddress
+            InterfaceAlias  = $InterfaceAlias
+            AddressFamily   = 'IPv4'
+        }
+
+        # ***** Join Domain *****
         WaitForADDomain WaitForDCReady
         {
             DomainName              = $DomainFQDN
@@ -39,6 +51,7 @@ configuration Enable-ADFS
             RestartCount            = 3
             Credential              = $DomainCreds
             WaitForValidCredentials = $true
+            DependsOn = "[DnsServerAddress]SetDNS"
         }
 
         Computer JoinDomain

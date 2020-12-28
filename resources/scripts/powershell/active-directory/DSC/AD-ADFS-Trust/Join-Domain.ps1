@@ -14,7 +14,7 @@ configuration Join-Domain {
         [String]$JoinOU
     ) 
     
-    Import-DscResource -ModuleName NetworkingDsc, xPSDesiredStateConfiguration, ComputerManagementDsc
+    Import-DscResource -ModuleName NetworkingDsc, ActiveDirectoryDsc, xPSDesiredStateConfiguration, ComputerManagementDsc
     
     [String] $DomainNetbiosName = (Get-NetBIOSName -DomainFQDN $DomainFQDN)
     [System.Management.Automation.PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainNetbiosName}\$($Admincreds.UserName)", $Admincreds.Password)
