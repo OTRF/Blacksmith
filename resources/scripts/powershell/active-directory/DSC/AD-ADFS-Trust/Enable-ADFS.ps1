@@ -12,7 +12,10 @@ configuration Enable-ADFS
         [String]$DCIPAddress,
 
         [Parameter(Mandatory)]
-        [String]$CertificateName
+        [String]$CertificateName,
+
+        [Parameter(Mandatory)]
+        [String]$JoinOU
     ) 
     
     Import-DscResource -ModuleName NetworkingDsc, ActiveDirectoryDsc, ComputerManagementDsc, xPSDesiredStateConfiguration
@@ -59,6 +62,7 @@ configuration Enable-ADFS
             Name          = $ComputerName 
             DomainName    = $DomainFQDN
             Credential    = $DomainCreds
+            JoinOU        = $JoinOU
             DependsOn = "[WaitForADDomain]WaitForDCReady"
         }
 
