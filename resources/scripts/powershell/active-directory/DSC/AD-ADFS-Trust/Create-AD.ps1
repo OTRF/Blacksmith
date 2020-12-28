@@ -14,9 +14,12 @@ configuration Create-AD {
 
         [Parameter(Mandatory)]
         [String]$AdfsIPAddress,
+        
+        [Parameter(Mandatory)]
+        [String]$CertificateName,
 
         [Parameter(Mandatory)]
-        [String]$CertificateName
+        [Object]$DomainUsers
     ) 
     
     Import-DscResource -ModuleName ActiveDirectoryDsc, NetworkingDsc, xPSDesiredStateConfiguration, xDnsServer, ComputerManagementDsc
@@ -29,6 +32,7 @@ configuration Create-AD {
     $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($AdminCreds.Password)
     $AdminPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
     $ADFSSiteName = "ADFS"
+    $ComputerName = Get-Content env:computername
 
     Node localhost
     {
@@ -199,7 +203,6 @@ configuration Create-AD {
 
                 Invoke-Expression "& `"$exe`" /i $MSIPath /qn /passive /norestart"
             }
-
             GetScript =  
             {
                 # This block must return a hashtable. The hashtable must only contain one key Result and the value must be of type String.
@@ -211,6 +214,133 @@ configuration Create-AD {
                 return $false
             }
             DependsOn = "[xScript]ImportPFX"
+        }
+
+        # ***** Create OUs *****
+        xScript CreateOUs
+        {
+            SetScript = {
+                # Verifying ADWS service is running
+                $ServiceName = 'ADWS'
+                $arrService = Get-Service -Name $ServiceName
+
+                while ($arrService.Status -ne 'Running')
+                {
+                    Start-Service $ServiceName
+                    Start-Sleep -seconds 5
+                    $arrService.Refresh()
+                }
+
+                $DomainName1,$DomainName2 = ($using:domainFQDN).split('.')
+
+                $ParentPath = "DC=$DomainName1,DC=$DomainName2"
+                $OUS = @(("Workstations","Workstations in the domain"),("Servers","Servers in the domain"),("LogCollectors","Servers collecting event logs"),("DomainUsers","Users in the domain"))
+
+                foreach($OU in $OUS)
+                {
+                    #Check if exists, if it does skip
+                    [string] $Path = "OU=$($OU[0]),$ParentPath"
+                    if(![adsi]::Exists("LDAP://$Path"))
+                    {
+                        New-ADOrganizationalUnit -Name $OU[0] -Path $ParentPath `
+                            -Description $OU[1] `
+                            -ProtectedFromAccidentalDeletion $false -PassThru
+                    }
+                }
+            }
+            GetScript =  
+            {
+                # This block must return a hashtable. The hashtable must only contain one key Result and the value must be of type String.
+                return @{ "Result" = "false" }
+            }
+            TestScript = 
+            {
+                # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
+                return $false
+            }
+            DependsOn = "[WaitForADDomain]WaitForDCReady"
+        }
+
+        # ***** Create Domain Users *****
+        xScript CreateDomainUsers
+        {
+            SetScript = {
+                # Verifying ADWS service is running
+                $ServiceName = 'ADWS'
+                $arrService = Get-Service -Name $ServiceName
+
+                while ($arrService.Status -ne 'Running')
+                {
+                    Start-Service $ServiceName
+                    Start-Sleep -seconds 5
+                    $arrService.Refresh()
+                }
+
+                $DomainName = $using:domainFQDN
+                $DomainName1,$DomainName2 = $DomainName.split('.')
+                $ADServer = $using:ComputerName+"."+$DomainName
+
+                $NewDomainUsers = $using:DomainUsers
+                foreach ($User in $NewDomainUsers)
+                {
+                    $UserPrincipalName = $User.SamAccountName + "@" + $DomainName
+                    $DisplayName = $User.LastName + " " + $User.FirstName
+                    $OUPath = "OU="+$User.UserContainer+",DC=$DomainName1,DC=$DomainName2"
+                    $SamAccountName = $User.SamAccountName
+                    $ServiceName = $User.FirstName
+
+                    $User = Get-ADUser -LDAPFilter "(sAMAccountName=$SamAccountName)"
+
+                    if ($User -eq $Null)
+                    {
+                        write-host "Creating user $UserPrincipalName .."
+                        New-ADUser -Name $DisplayName `
+                        -DisplayName $DisplayName `
+                        -GivenName $User.FirstName `
+                        -Surname $User.LastName `
+                        -Department $User.Department `
+                        -Title $User.JobTitle `
+                        -UserPrincipalName $UserPrincipalName `
+                        -SamAccountName $User.SamAccountName `
+                        -Path $OUPath `
+                        -AccountPassword (ConvertTo-SecureString $User.Password -AsPlainText -force) `
+                        -Enabled $true `
+                        -PasswordNeverExpires $true `
+                        -Server $ADServer
+
+                        if($User.Identity -Like "Domain Admins")
+                        {
+                            $DomainAdminUser = $User.SamAccountName
+                            $Groups = @('domain admins','schema admins','enterprise admins')
+                            $Groups | ForEach-Object{
+                                $members = Get-ADGroupMember -Identity $_ -Recursive | Select-Object -ExpandProperty Name
+                                if ($members -contains $DomainAdminUser)
+                                {
+                                    Write-Host "$DomainAdminUser exists in $_ "
+                                }
+                                else {
+                                    Add-ADGroupMember -Identity $_ -Members $DomainAdminUser
+                                }
+                            }
+                        }
+                        if($User.JobTitle -Like "Service Account")
+                        {
+                            setspn -a $ServiceName/$DomainName $DomainName1\$SamAccountName
+                        }
+                    }
+                }
+            }
+            GetScript =  
+            {
+                # This block must return a hashtable. The hashtable must only contain one key Result and the value must be of type String.
+                return @{ "Result" = "false" }
+            }
+            TestScript = 
+            {
+                # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
+                return $false
+            }
+            DependsOn = "[xScript]CreateOUs"
         }
     }
 }
