@@ -15,20 +15,8 @@
         "fileUris": {
             "type": "array"
         },
-        "AdminUserName": {
-            "type": "string"
-        },
-        "AdminPassword": {
+        "commandToExecute": {
             "type": "securestring"
-        },
-        "AdfsUserName": {
-            "type": "string"
-        },
-        "AdfsPassword": {
-            "type": "securestring"
-        },
-        "DomainFQDN": {
-            "type": "string"
         },
         "location": {
             "type": "string",
@@ -52,7 +40,7 @@
                     "fileUris": "[parameters('fileUris')]"
                 },
                 "protectedSettings": {
-                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-ADFSFarm.ps1',' ', '-DomainFQDN',' ',parameters('DomainFQDN'),' ','-AdminUserName',' ',parameters('AdminUserName'),' ','-AdminPassword',' ',parameters('AdminPassword'),' ','-AdfsUserName',' ',parameters('AdfsUserName'),' ','-AdfsPassword',' ',parameters('AdfsPassword'))]"
+                    "commandToExecute": "[parameters('commandToExecute')]"
                 }
             }
         }
