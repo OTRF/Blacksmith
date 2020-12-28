@@ -281,39 +281,37 @@ configuration Create-AD {
                 $ADServer = $using:ComputerName+"."+$DomainName
 
                 $NewDomainUsers = $using:DomainUsers
-                $NewDomainUsers | Out-String | Add-Content -Path C:\ProgramData\PSLOGS.txt
                 
-                foreach ($User in $NewDomainUsers)
+                foreach ($DomainUser in $NewDomainUsers)
                 {
-                    $user | out-string | Add-Content -Path C:\ProgramData\PSLOGS.txt
-                    $UserPrincipalName = $User.SamAccountName + "@" + $DomainName
-                    $DisplayName = $User.LastName + " " + $User.FirstName
-                    $OUPath = "OU="+$User.UserContainer+",DC=$DomainName1,DC=$DomainName2"
-                    $SamAccountName = $User.SamAccountName
-                    $ServiceName = $User.FirstName
+                    $UserPrincipalName = $DomainUser.SamAccountName + "@" + $DomainName
+                    $DisplayName = $DomainUser.LastName + " " + $DomainUser.FirstName
+                    $OUPath = "OU="+$DomainUser.UserContainer+",DC=$DomainName1,DC=$DomainName2"
+                    $SamAccountName = $DomainUser.SamAccountName
+                    $ServiceName = $DomainUser.FirstName
 
-                    $User = Get-ADUser -LDAPFilter "(sAMAccountName=$SamAccountName)"
+                    $UserExists = Get-ADUser -LDAPFilter "(sAMAccountName=$SamAccountName)"
 
-                    if ($User -eq $Null)
+                    if ($UserExists -eq $Null)
                     {
                         write-host "Creating user $UserPrincipalName .."
                         New-ADUser -Name $DisplayName `
                         -DisplayName $DisplayName `
-                        -GivenName $User.FirstName `
-                        -Surname $User.LastName `
-                        -Department $User.Department `
-                        -Title $User.JobTitle `
+                        -GivenName $DomainUser.FirstName `
+                        -Surname $DomainUser.LastName `
+                        -Department $DomainUser.Department `
+                        -Title $DomainUser.JobTitle `
                         -UserPrincipalName $UserPrincipalName `
-                        -SamAccountName $User.SamAccountName `
+                        -SamAccountName $DomainUser.SamAccountName `
                         -Path $OUPath `
-                        -AccountPassword (ConvertTo-SecureString $User.Password -AsPlainText -force) `
+                        -AccountPassword (ConvertTo-SecureString $DomainUser.Password -AsPlainText -force) `
                         -Enabled $true `
                         -PasswordNeverExpires $true `
                         -Server $ADServer
 
-                        if($User.Identity -Like "Domain Admins")
+                        if($DomainUser.Identity -Like "Domain Admins")
                         {
-                            $DomainAdminUser = $User.SamAccountName
+                            $DomainAdminUser = $DomainUser.SamAccountName
                             $Groups = @('domain admins','schema admins','enterprise admins')
                             $Groups | ForEach-Object{
                                 $members = Get-ADGroupMember -Identity $_ -Recursive | Select-Object -ExpandProperty Name
@@ -326,7 +324,7 @@ configuration Create-AD {
                                 }
                             }
                         }
-                        if($User.JobTitle -Like "Service Account")
+                        if($DomainUser.JobTitle -Like "Service Account")
                         {
                             setspn -a $ServiceName/$DomainName $DomainName1\$SamAccountName
                         }
