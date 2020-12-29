@@ -4,11 +4,7 @@
 param (
     [Parameter(Mandatory)]
     [ValidateSet("DC","ADFS",'Endpoint')]
-    [string]$SetupType,
-
-    [Parameter(Mandatory=$false)]
-    [ValidateSet('TrustedSigned','SelfSigned')]
-    [string]$CertificateType
+    [string]$SetupType
 
 )
 Set-ExecutionPolicy Unrestricted -Force
@@ -23,14 +19,14 @@ Install-Module -Name NetworkingDsc -RequiredVersion 8.2.0
 Install-Module -Name xPSDesiredStateConfiguration -RequiredVersion 9.1.0
 Install-Module -Name ComputerManagementDsc -RequiredVersion 8.4.0
 
-if ($SetupType -eq 'DC')
+if ($SetupType -ne 'Endpoint')
 {
     Install-Module -Name xDnsServer -RequiredVersion 1.16.0.0
     Install-Module -Name xSmbShare -Force
     Install-Module -Name MSOnline -Force
     Install-Module -Name AzureAD -Force
 
-    if ($CertificateType -eq 'SelfSigned')
+    if ($SetupType -eq 'DC')
     {
         Install-Module -Name ActiveDirectoryCSDsc -RequiredVersion 5.0.0
         Install-Module -Name CertificateDsc -RequiredVersion 5.0.0
