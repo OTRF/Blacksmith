@@ -6,30 +6,40 @@ param (
     [Parameter(Mandatory=$false)]
     [string]$ServerAddresses,
 
-    [Parameter(Mandatory=$false)]
-    [switch]$SetDC,
+    [Parameter(Mandatory)]
+    [ValidateSet("DC","ADFS",'Endpoint')]
+    [string]$SetupType,
 
     [Parameter(Mandatory=$false)]
-    [switch]$SetADFS
+    [ValidateSet('TrustedSigned','SelfSigned')]
+    [string]$CertificateType,
+
+    [Parameter(Mandatory=$false)]
+    [string]$CertificateName
 )
 
 # Install DSC Modules
-if ($SetDC){
-    & .\Install-AD-DSC-Modules.ps1
-}
+& .\Install-DSC-Modules.ps1 -SetupType $SetupType
 
-if ($SetADFS){
-    & .\Install-ADFS-DSC-Modules.ps1
+if (($SetupType -eq 'DC') -or ($SetupType -eq 'ADFS'))
+{
+    if ($CertificateType -eq 'TrustedSigned')
+    {
+        # Move trusted CA signed SSL certificate
+        Move-Item $CertificateName C:\ProgramData\
+    }
 }
 
 # Custom Settings applied
 & .\Prepare-Box.ps1
 
 # Windows Security Audit Categories
-if ($SetDC){
+if ($SetupType -eq 'DC')
+{
     & .\Enable-WinAuditCategories.ps1 -SetDC
 }
-else{
+else
+{
     & .\Enable-WinAuditCategories.ps1
 }
 
@@ -42,8 +52,14 @@ else{
 # Set Wallpaper
 & .\Set-WallPaper.ps1
 
-# Setting static IP and DNS server IP
-if ($ServerAddresses)
+# Add domain solorigatelabs.com to intranet
+<#
+$IntranetDomainSite = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\Domains\solorigatelabs.com'
+if (-not (Test-Path -Path $IntranetDomainSite))
 {
-    & .\Set-StaticIP.ps1 -ServerAddresses $ServerAddresses
+    $null = New-Item -Path $IntranetDomainSite -Force
 }
+
+Set-ItemProperty -Path $IntranetDomainSite -Name http -Value 1 -Type DWord
+Set-ItemProperty -Path $IntranetDomainSite -Name https -Value 1 -Type DWord
+#>
