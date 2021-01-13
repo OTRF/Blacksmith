@@ -15,7 +15,10 @@
             }
         },
         "monitoredEndpoints": {
-            "type": "array"
+            "type": "array",
+            "metadata": {
+                "description": "If you are running this via Azure CLI, you need to run it with '(\"value1\", \"value2\")'. If you using PowerShell, you can set this parameter with \"['value1','value2']\""
+            }
         },
         "location": {
             "type": "string",
