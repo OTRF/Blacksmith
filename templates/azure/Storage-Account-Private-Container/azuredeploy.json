@@ -12,7 +12,7 @@
         "storageAccountName": {
             "type": "string",
             "metadata": {
-            "description": "Specifies a project name that is used to generate the Event Hub name and the Namespace name."
+            "description": "The name of the storage account. Storage account name must be between 3 and 24 characters in length and use numbers and lower-case letters only. This variable then is used to generate a uniquestring"
             }
         },
         "storageSKUName": {
@@ -45,6 +45,33 @@
             "description": "The name of the blob container within the specified storage account."
             }
         },
+        "enableAzureDefender": {
+            "type": "bool",
+            "metadata": {
+                "description": "Do you want to enable the Azure Defender for Storage (advancedThreatProtectionSettings)? "
+            },
+            "defaultValue": false
+        },
+        "enableDiagnosticLogging": {
+            "type": "bool",
+            "metadata": {
+                "description": "Do you want to enable StorageRead,StorageWrite and StorageDelete onb Blog and File Diagnostic Logging?"
+            },
+            "defaultValue": false
+        },
+        "diagnosticSettingName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the diagnostic setting"
+            },
+            "defaultValue": ""
+        },
+        "workspaceName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the globally unique name of the Log Analytics workspace."
+            }
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -62,7 +89,8 @@
             "keyToSign": "key2",
             "signedExpiry": "2021-10-30T00:00:00Z",
             "signedResourceTypes": "sco"
-        }
+        },
+        "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
     },
     "resources": [
         {
@@ -89,6 +117,85 @@
                     }
                 }
             ]
+        },
+        {
+            "condition": "[parameters('enableAzureDefender')]",
+            "name": "[concat(variables('uniqueStorageAccountName'), '/Microsoft.Security/current')]",
+            "type": "Microsoft.Storage/storageAccounts/providers/advancedThreatProtectionSettings",
+            "apiVersion": "2019-01-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/', variables('uniqueStorageAccountName'))]"
+            ],
+            "properties": {
+                "isEnabled": true
+            }
+        },
+        {
+            "condition": "[parameters('enableDiagnosticLogging')]",
+            "name": "[concat(variables('uniqueStorageAccountName'),'/default/Microsoft.Insights/', parameters('diagnosticSettingName'))]",
+            "type": "Microsoft.Storage/storageAccounts/fileServices/providers/diagnosticsettings",
+            "apiVersion": "2017-05-01-preview",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/', variables('uniqueStorageAccountName'))]"
+            ],
+            "properties": {
+                "logs": [
+                    {
+                        "category": "StorageRead",
+                        "enabled": true
+                    },
+                    {
+                        "category": "StorageWrite",
+                        "enabled": true
+                    },
+                    {
+                        "category": "StorageDelete",
+                        "enabled": true
+                    }
+                ],
+                "metrics": [
+                    {
+                        "enabled": false,
+                        "category": "Transaction"
+                    }
+                ],
+                "workspaceId": "[variables('workspaceId')]"
+            }
+        },
+        {
+            "condition": "[parameters('enableDiagnosticLogging')]",
+            "name": "[concat(variables('uniqueStorageAccountName'),'/default/Microsoft.Insights/', parameters('diagnosticSettingName'))]",
+            "type": "Microsoft.Storage/storageAccounts/blobServices/providers/diagnosticsettings",
+            "apiVersion": "2017-05-01-preview",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/', variables('uniqueStorageAccountName'))]"
+            ],
+            "properties": {
+                "logs": [
+                    {
+                        "category": "StorageRead",
+                        "enabled": true
+                    },
+                    {
+                        "category": "StorageWrite",
+                        "enabled": true
+                    },
+                    {
+                        "category": "StorageDelete",
+                        "enabled": true
+                    }
+                ],
+                "metrics": [
+                    {
+                        "enabled": false,
+                        "category": "Transaction"
+                    }
+                ],
+                "workspaceId": "[variables('workspaceId')]"
+            }
         }
     ],
     "outputs": {
