@@ -9,15 +9,29 @@ configuration Enable-ADFS
         [System.Management.Automation.PSCredential]$AdminCreds,
 
         [Parameter(Mandatory)]
-        [String]$DCName
+        [String]$DCIPAddress,
+
+        [Parameter(Mandatory)]
+        [ValidateSet('TrustedSigned','SelfSigned')]
+        [string]$CertificateType,
+
+        [Parameter(Mandatory)]
+        [String]$CertificateName,
+
+        [Parameter(Mandatory)]
+        [String]$JoinOU
     ) 
     
-    Import-DscResource -ModuleName ActiveDirectoryDsc, ComputerManagementDsc, xPSDesiredStateConfiguration
+    Import-DscResource -ModuleName NetworkingDsc, ActiveDirectoryDsc, ComputerManagementDsc, xPSDesiredStateConfiguration
 
     [String] $DomainNetbiosName = (Get-NetBIOSName -DomainFQDN $DomainFQDN)
     [System.Management.Automation.PSCredential ]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainNetbiosName}\$($Admincreds.UserName)", $Admincreds.Password)
     $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($AdminCreds.Password)
     $AdminPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
+
+    $Interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
+    $InterfaceAlias = $($Interface.Name)
+
     $ComputerName = Get-Content env:computername
 
     Node localhost
@@ -29,6 +43,14 @@ configuration Enable-ADFS
             RebootNodeIfNeeded  = $true
         }
 
+        DnsServerAddress SetDNS 
+        { 
+            Address         = $DCIPAddress
+            InterfaceAlias  = $InterfaceAlias
+            AddressFamily   = 'IPv4'
+        }
+
+        # ***** Join Domain *****
         WaitForADDomain WaitForDCReady
         {
             DomainName              = $DomainFQDN
@@ -36,6 +58,7 @@ configuration Enable-ADFS
             RestartCount            = 3
             Credential              = $DomainCreds
             WaitForValidCredentials = $true
+            DependsOn = "[DnsServerAddress]SetDNS"
         }
 
         Computer JoinDomain
@@ -43,6 +66,7 @@ configuration Enable-ADFS
             Name          = $ComputerName 
             DomainName    = $DomainFQDN
             Credential    = $DomainCreds
+            JoinOU        = $JoinOU
             DependsOn = "[WaitForADDomain]WaitForDCReady"
         }
 
@@ -59,25 +83,50 @@ configuration Enable-ADFS
             DependsOn = "[PendingReboot]RebootAfterJoiningDomain"
         }
 
-        xScript ImportPFX
+        if ($CertificateType -eq 'TrustedSigned')
         {
-            SetScript = 
+            xScript ImportPFX
             {
-                $pathtocert = "\\$using:DCName\Setup\*.pfx"
-                $certfile = Get-ChildItem -Path $pathtocert
-                Import-PfxCertificate -Exportable -CertStoreLocation "cert:\LocalMachine\My" -FilePath $certfile.FullName -Password (ConvertTo-SecureString "$using:AdminPassword" -AsPlainText -Force)
+                SetScript = 
+                {
+                    # ***** Import .PFX File *****
+                    Import-PfxCertificate -Exportable -CertStoreLocation "cert:\LocalMachine\My" -FilePath "C:\ProgramData\$using:CertificateName" -Password (ConvertTo-SecureString "$using:AdminPassword" -AsPlainText -Force)
+                }
+                GetScript =  
+                {
+                    # This block must return a hashtable. The hashtable must only contain one key Result and the value must be of type String.
+                    return @{ "Result" = "false" }
+                }
+                TestScript = 
+                {
+                    # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
+                    return $false
+                }
+                DependsOn = "[WindowsFeature]installADFS"
             }
-            GetScript =  
+        }
+        elseif ($CertificateType -eq 'SelfSigned')
+        {
+            xScript ImportPFX
             {
-                # This block must return a hashtable. The hashtable must only contain one key Result and the value must be of type String.
-                return @{ "Result" = "false" }
+                SetScript = 
+                {
+                    $pathtocert = "\\$using:DCName\Setup\$using:CertificateName"
+                    $certfile = Get-ChildItem -Path $pathtocert
+                    Import-PfxCertificate -Exportable -CertStoreLocation "cert:\LocalMachine\My" -FilePath $certfile.FullName -Password (ConvertTo-SecureString "$using:AdminPassword" -AsPlainText -Force)
+                }
+                GetScript =  
+                {
+                    # This block must return a hashtable. The hashtable must only contain one key Result and the value must be of type String.
+                    return @{ "Result" = "false" }
+                }
+                TestScript = 
+                {
+                    # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
+                    return $false
+                }
+                DependsOn = "[WindowsFeature]installADFS"
             }
-            TestScript = 
-            {
-                # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
-                return $false
-            }
-            DependsOn = "[WindowsFeature]installADFS"
         }
 
         # ***** Install AD Connect *****

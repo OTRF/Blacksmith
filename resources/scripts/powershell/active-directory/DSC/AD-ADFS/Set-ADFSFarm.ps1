@@ -45,7 +45,7 @@ $AdminSecPW = ConvertTo-SecureString $AdminPassword -AsPlainText -Force
 $AdfsSecPW = ConvertTo-SecureString $AdfsPassword -AsPlainText -Force
 [System.Management.Automation.PSCredential]$AdfsSvcCredsQualified = New-Object System.Management.Automation.PSCredential ("${DomainNetbiosName}\$AdfsUserName", $AdfsSecPW)
 
-$cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$ADFSSiteName.$DomainFQDN"
+$cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$DomainFQDN"
 
 Import-Module ADFS
 Install-AdfsFarm -CertificateThumbprint $cert.Thumbprint -FederationServiceName "$ADFSSiteName.$DomainFQDN" -FederationServiceDisplayName "Active Directory Federation Service" -ServiceAccountCredential $AdfsSvcCredsQualified -OverwriteConfiguration -Credential $DomainCreds

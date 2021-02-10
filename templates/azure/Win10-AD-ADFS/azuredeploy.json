@@ -318,13 +318,13 @@
         "setSACLScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Set-SACLs.ps1', parameters('_artifactsLocationSasToken')))]",
         "installAgentScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/endpoint-software/Install-Sysmon.ps1', parameters('_artifactsLocationSasToken')))]",
         "setWallPaperScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Set-WallPaper.ps1', parameters('_artifactsLocationSasToken')))]",
-        "dscModules": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/DSC/AD-ADFS-Trust/Install-DSC-Modules.ps1', parameters('_artifactsLocationSasToken')))]",
         
-        "createADForestScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/DSC/AD-ADFS-Trust/Create-AD.zip', parameters('_artifactsLocationSasToken')))]",
+        "dscModules": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/DSC/AD-ADFS/Install-DSC-Modules.ps1', parameters('_artifactsLocationSasToken')))]",
+        "createADForestScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/DSC/AD-ADFS/Create-AD.zip', parameters('_artifactsLocationSasToken')))]",
         "updateDNSServerScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/vnet-dns-server.json', parameters('_artifactsLocationSasToken')))]",
-        "enableADFSScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/DSC/AD-ADFS-Trust/Enable-ADFS.zip', parameters('_artifactsLocationSasToken')))]",
-        "installADFSScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/DSC/AD-ADFS-Trust/Set-ADFSFarm.ps1', parameters('_artifactsLocationSasToken')))]",
-        "joinDomainScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/DSC/AD-ADFS-Trust/Join-Domain.zip', parameters('_artifactsLocationSasToken')))]",
+        "enableADFSScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/DSC/AD-ADFS/Enable-ADFS.zip', parameters('_artifactsLocationSasToken')))]",
+        "installADFSScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/DSC/AD-ADFS/Set-ADFSFarm.ps1', parameters('_artifactsLocationSasToken')))]",
+        "joinDomainScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/DSC/AD-ADFS/Join-Domain.zip', parameters('_artifactsLocationSasToken')))]",
         
         "copy": [
             {
