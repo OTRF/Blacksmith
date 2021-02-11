@@ -41,7 +41,7 @@ function Download-MSExchangeISO
     $OutputFile = [System.IO.Path]::GetFileName($response.ResponseUri)
     $response.Close()
 
-    $OutputFilePath = Join-Path $MSXISODirectory $OutputFile
+    $OutputFilePath = Join-Path $MXSISODirectory $OutputFile
     if (Test-Path $OutputFilePath)
     { 
         Write-host "[!] $OutputFilePath already exist"
