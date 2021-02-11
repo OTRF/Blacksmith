@@ -14,7 +14,6 @@ function Download-MSExchangeISO
             return $true
         })]
         [System.IO.FileInfo]$MXSISODirectory
-        
     )
 
     # Reference: https://docs.microsoft.com/en-us/exchange/new-features/build-numbers-and-release-dates?view=exchserver-2019&WT.mc_id=M365-MVP-5003086
