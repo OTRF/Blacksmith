@@ -14,8 +14,8 @@ configuration Install-MSExchange
         [Parameter(Mandatory)]
         [String]$JoinOU,
 
-        [Parameter(Mandatory)]
-        [String]$MXSISODirectory,
+        [Parameter(Mandatory=$false)]
+        [String]$MXSISODirectory = "C:\ProgramData\",
 
         [Parameter(Mandatory)]
         [ValidateSet('MXS2016-x64-CU19-KB4588884','MXS2016-x64-CU18-KB4571788','MXS2016-x64-CU17-KB4556414','MXS2016-x64-CU16-KB4537678','MXS2016-x64-CU15-KB4522150','MXS2016-x64-CU14-KB4514140','MXS2016-x64-CU13-KB4488406')]
