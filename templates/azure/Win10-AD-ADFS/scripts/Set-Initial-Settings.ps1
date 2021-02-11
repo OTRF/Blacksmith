@@ -54,7 +54,7 @@ else
 
 # Add domain solorigatelabs.com to intranet
 <#
-$IntranetDomainSite = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\Domains\solorigatelabs.com'
+$IntranetDomainSite = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\Domains\blacksmith.local'
 if (-not (Test-Path -Path $IntranetDomainSite))
 {
     $null = New-Item -Path $IntranetDomainSite -Force

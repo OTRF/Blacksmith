@@ -88,7 +88,7 @@
             "metadata": {
                 "description": "The FQDN of the Active Directory Domain to be created"
             },
-            "defaultValue": "solorigatelabs.com"
+            "defaultValue": "blacksmith.local"
         },
         "numberOfWorkstations": {
             "type": "int",
