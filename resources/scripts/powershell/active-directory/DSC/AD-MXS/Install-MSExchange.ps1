@@ -348,7 +348,7 @@ configuration Install-MSExchange
                 "[WindowsFeature]WASProcessModel",
                 "[WindowsFeature]WebAspNet45",
                 "[WindowsFeature]WebBasicAuth",
-                "[WindowsFeature}WebClientAuth",
+                "[WindowsFeature]WebClientAuth",
                 "[WindowsFeature]WebDigestAuth",
                 "[WindowsFeature]WebDirBrowsing",
                 "[WindowsFeature]WebDynCompression",
