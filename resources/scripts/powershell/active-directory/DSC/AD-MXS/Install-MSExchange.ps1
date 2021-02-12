@@ -378,13 +378,51 @@ configuration Install-MSExchange
             DependsOn = "[Computer]JoinDomain"
         }
 
+        # ***** Download Pre-Requirements *****
+
+        # ***** Unified Communications Managed API 4.0 Runtime *****
+        xRemoteFile DownloadUcma
+        {
+            DestinationPath = "C:\ProgramData\UcmaRuntimeSetup.exe"
+            Uri = "https://download.microsoft.com/download/2/C/4/2C47A5C1-A1F3-4843-B9FE-84C0032C61EC/UcmaRuntimeSetup.exe"
+            DependsOn = "[PendingReboot]RebootAfterJoiningDomain"
+        }
+
+        # ***** Download VC++ redist 2013 (x64) *****
+        xRemoteFile Downloadvcredist
+        {
+            DestinationPath = "C:\ProgramData\vcredist_x64.exe"
+            Uri = "https://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe"
+            DependsOn = "[PendingReboot]RebootAfterJoiningDomain"
+        }
+
+        # ***** Install Requirements *****
+        xScript InstallingReqs
+        {
+            SetScript = {
+                Start-Process -FilePath "C:\ProgramData\UcmaRuntimeSetup.exe" -ArgumentList "/q" -NoNewWindow -Wait
+                Start-Process -FilePath "C:\ProgramData\vcredist_x64.exe" -ArgumentList "/q" -NoNewWindow -Wait
+            }
+            GetScript =  
+            {
+                # This block must return a hashtable. The hashtable must only contain one key Result and the value must be of type String.
+                return @{ "Result" = "false" }
+            }
+            TestScript = 
+            {
+                # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
+                return $false
+            }
+            DependsOn = @("[xRemoteFile]Downloadvcredist","[xRemoteFile]Downloadvcredist")
+        }
+
         # ***** Mount Image *****
         MountImage MountMXSISO
         {
             Ensure = 'Present'
             ImagePath = $MXSISOFilePath
             DriveLetter = 'F'
-            DependsOn = "[PendingReboot]RebootAfterJoiningDomain"
+            DependsOn = "[xScript]InstallingReqs"
         }
 
         WaitForVolume WaitForISO

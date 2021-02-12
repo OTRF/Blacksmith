@@ -11,13 +11,6 @@ param (
     [string]$SetupType
 )
 
-# Move UcmaRuntimeSetup.exe
-# Unified Communications Managed API 4.0 Runtime 
-if ($SetupType -eq 'MXS')
-{
-    Move-Item UcmaRuntimeSetup.exe C:\ProgramData\
-}
-
 # Install DSC Modules
 & .\Install-DSC-Modules.ps1 -SetupType $SetupType
 
