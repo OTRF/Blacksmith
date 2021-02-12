@@ -242,23 +242,20 @@ configuration Create-AD {
             DependsOn = "[xScript]CreateOUs"
         }
 
-        # ***** Install AD Connect *****
+        # ***** Download AADConnect *****
+        xRemoteFile DownloadAADConnect {
+            DestinationPath = "C:\ProgramData\AzureADConnect.msi"
+            Uri = "https://download.microsoft.com/download/B/0/0/B00291D0-5A83-4DE7-86F5-980BC00DE05A/AzureADConnect.msi"
+            DependsOn = "[xScript]CreateDomainUsers"
+        }
+
+        # ***** Install AADConnect *****
         xScript InstallAADConnect
         {
             # reference: https://github.com/pthoor/AzureARMTemplates/blob/ddd09734a3817e459d3dbfb41fc96c9b011e0205/ADFS%20Lab/DSC/adDSC/adDSCConfiguration.ps1
             SetScript = {
-                Resolve-DnsName download.microsoft.com
-                $AADConnectDLUrl="https://download.microsoft.com/download/B/0/0/B00291D0-5A83-4DE7-86F5-980BC00DE05A/AzureADConnect.msi"
                 $exe="$env:SystemRoot\system32\msiexec.exe"
-
-                $tempfile = [System.IO.Path]::GetTempFileName()
-                $folder = [System.IO.Path]::GetDirectoryName($tempfile)
-
-                $webclient = New-Object System.Net.WebClient
-                $webclient.DownloadFile($AADConnectDLUrl, $tempfile)
-
-                Rename-Item -Path $tempfile -NewName "AzureADConnect.msi"
-                $MSIPath = $folder + "\AzureADConnect.msi"
+                $MSIPath = "C:\ProgramData\AzureADConnect.msi"
 
                 Invoke-Expression "& `"$exe`" /i $MSIPath /qn /passive /norestart"
             }
@@ -272,7 +269,7 @@ configuration Create-AD {
                 # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
                 return $false
             }
-            DependsOn = "[xScript]CreateDomainUsers"
+            DependsOn = "[xRemoteFile]DownloadAADConnect"
         }
     }
 }
