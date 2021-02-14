@@ -17,7 +17,7 @@
     },
     "resources": [
         {
-            "name": "[concat(parameters('vmName'), '/sysmonInstall')]",
+            "name": "[concat(parameters('vmName'), '/PowerShellDSC')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",

@@ -5,16 +5,10 @@
         "vmName": {
             "type": "string"
         },
-        "installMXScript": {
+        "joinDomainScript": {
             "type": "string"
         },
         "domainFQDN": {
-            "type": "string"
-        },
-        "mxsRelease": {
-            "type": "string"
-        },
-        "mxsISODirectory": {
             "type": "string"
         },
         "adminUsername": {
@@ -22,6 +16,12 @@
         },
         "adminPassword": {
             "type": "securestring"
+        },
+        "dcIpAddress": {
+            "type": "string"
+        },
+        "joinOU": {
+            "type": "string"
         },
         "location": {
             "type": "string",
@@ -44,14 +44,14 @@
                 "settings": {
                     "wmfVersion": "latest",
                     "configuration": {
-                        "url": "[parameters('installMXScript')]",
-                        "script": "Install-MSExchange.ps1",
-                        "function": "Install-MSExchange"
+                        "url": "[parameters('joinDomainScript')]",
+                        "script": "Join-Domain.ps1",
+                        "function": "Join-Domain"
                     },
                     "configurationArguments": {
-                        "DomainFQDN": "[parameters('domainFQDN')]",
-                        "MXSRelease": "[parameters('mxsRelease')]",
-                        "MXSISODirectory": "[parameters('mxsISODirectory')]"
+                        "DomainFQDN": "[parameters('DomainFQDN')]",
+                        "DCIPAddress": "[parameters('dcIpAddress')]",
+                        "JoinOU": "[parameters('joinOU')]"
                     }
                 },
                 "protectedSettings": {

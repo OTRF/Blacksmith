@@ -5,16 +5,10 @@
         "vmName": {
             "type": "string"
         },
-        "installMXScript": {
+        "createADForestScript": {
             "type": "string"
         },
         "domainFQDN": {
-            "type": "string"
-        },
-        "mxsRelease": {
-            "type": "string"
-        },
-        "mxsISODirectory": {
             "type": "string"
         },
         "adminUsername": {
@@ -22,6 +16,9 @@
         },
         "adminPassword": {
             "type": "securestring"
+        },
+        "domainUsers": {
+            "type": "secureObject"
         },
         "location": {
             "type": "string",
@@ -44,14 +41,12 @@
                 "settings": {
                     "wmfVersion": "latest",
                     "configuration": {
-                        "url": "[parameters('installMXScript')]",
-                        "script": "Install-MSExchange.ps1",
-                        "function": "Install-MSExchange"
+                        "url": "[parameters('createADForestScript')]",
+                        "script": "Create-AD.ps1",
+                        "function": "Create-AD"
                     },
                     "configurationArguments": {
-                        "DomainFQDN": "[parameters('domainFQDN')]",
-                        "MXSRelease": "[parameters('mxsRelease')]",
-                        "MXSISODirectory": "[parameters('mxsISODirectory')]"
+                        "DomainFQDN": "[parameters('DomainFQDN')]"
                     }
                 },
                 "protectedSettings": {
@@ -59,7 +54,8 @@
                         "AdminCreds": {
                             "UserName": "[parameters('adminUsername')]",
                             "Password": "[parameters('adminPassword')]"
-                        }
+                        },
+                        "DomainUsers": "[parameters('domainUsers').array]"
                     }
                 }
             }
