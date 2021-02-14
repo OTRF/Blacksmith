@@ -345,7 +345,7 @@ configuration Install-MSExchange
         xExchInstall InstallExchange
         {
             Path       = 'F:\Setup.exe'
-            Arguments  = "/mode:Install /role:Mailbox /OrganizationName:$using:DomainNetbiosName /Iacceptexchangeserverlicenseterms"
+            Arguments  = "/mode:Install /role:Mailbox /OrganizationName:$DomainNetbiosName /Iacceptexchangeserverlicenseterms"
             Credential = $DomainCreds
             DependsOn  = '[WaitForVolume]WaitForISO'
         }
