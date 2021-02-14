@@ -877,7 +877,7 @@
                 }
             }
         },
-                {
+        {
             "condition": "[parameters('enableMonitoringAgent')]",
             "name": "[concat(variables('allEndpoints')[copyIndex('vmMMASetUpCopy')].vmName, '/OMSExtension')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
