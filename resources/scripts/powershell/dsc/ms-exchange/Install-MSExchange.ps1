@@ -60,14 +60,18 @@ configuration Install-MSExchange
             RebootNodeIfNeeded  = $true
         }
 
-        xScript disableHybridDetectionRegKey {
-            GetScript = { }
-            SetScript = {
+        xScript disableHybridDetectionRegKey
+        {
+            SetScript =
+            {
 				$registryPath = 'HKLM:SOFTWARE\Microsoft\ExchangeServer\v15\Setup\'
 				$name = 'RunHybridDetection'
 				$value = '1'
                 New-Item -Path $registryPath -Force | Out-Null
 				New-ItemProperty -Path $registryPath -Name $name -Value $value -PropertyType String -Force | Out-Null
+            }
+            GetScript = {
+                return @{ "Result" = "false" }
             }
             TestScript = {
                 Test-Path 'HKLM:SOFTWARE\Microsoft\ExchangeServer\v15\Setup\'
@@ -83,7 +87,8 @@ configuration Install-MSExchange
         xWindowsFeatureSet InstallWinFeatures
         {
             Ensure = 'Present'
-            Name = @('NET-Framework-45-Features', # .NET Framework 4.6 Features
+            Name = @(
+                'NET-Framework-45-Features', # .NET Framework 4.6 Features
                 'NET-WCF-HTTP-Activation45', # HTTP Activation
                 'Server-Media-Foundation', # Media Foundation
                 'RPC-over-HTTP-proxy', # RPC over HTTP Proxy
@@ -116,8 +121,7 @@ configuration Install-MSExchange
                 'Web-Windows-Auth', # Windows Authentication
                 'Web-WMI', # IIS 6 WMI Compatibility
                 'Windows-Identity-Foundation', # Windows Identity Foundation
-                'RSAT-ADDS' # AD DS Tools
-            )
+                'RSAT-ADDS') # AD DS Tools
             DependsOn = "[xScript]disableHybridDetectionRegKey"
         }
 
@@ -130,7 +134,7 @@ configuration Install-MSExchange
         {
             DestinationPath = "C:\ProgramData\UcmaRuntimeSetup.exe"
             Uri = "https://download.microsoft.com/download/2/C/4/2C47A5C1-A1F3-4843-B9FE-84C0032C61EC/UcmaRuntimeSetup.exe"
-            DependsOn = '[xWindowsFeatureSet]InstallWinFeatures'
+            DependsOn = "[xWindowsFeatureSet]InstallWinFeatures"
         }
 
         Package InstallUCMA4
@@ -168,7 +172,8 @@ configuration Install-MSExchange
 
         xScript InstallAdditionalReqs
         {
-            SetScript = {
+            SetScript =
+            {
                 Start-Process -FilePath "C:\ProgramData\vcredist_x64.exe" -ArgumentList @('/install','/passive','/norestart') -NoNewWindow -Wait
                 Start-Process -FilePath "C:\ProgramData\ndp48-x86-x64-allos-enu.exe" -ArgumentList @("/quiet /norestart") -NoNewWindow -Wait
             }
