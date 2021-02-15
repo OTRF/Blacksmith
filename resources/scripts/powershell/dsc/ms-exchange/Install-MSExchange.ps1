@@ -298,7 +298,6 @@ configuration Install-MSExchange
         # Check if there is a need to reboot before continuing
         PendingReboot BeforeNETWCF45
         {
-            Ensure = "Present"
             Name   = "BeforeNETWCF45"
             DependsOn = '[WindowsFeature]RSATADDS'
         }
