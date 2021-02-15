@@ -87,8 +87,8 @@ configuration Install-MSExchange
         xWindowsFeatureSet InstallWinFeatures
         {
             Ensure = 'Present'
-            DependsOn = "[xScript]disableHybridDetectionRegKey"
-            Name = @('NET-Framework-45-Features', # .NET Framework 4.6 Features
+            Name = @(
+                'NET-Framework-45-Features', # .NET Framework 4.6 Features
                 'NET-WCF-HTTP-Activation45', # HTTP Activation
                 'Server-Media-Foundation', # Media Foundation
                 'RPC-over-HTTP-proxy', # RPC over HTTP Proxy
@@ -134,7 +134,7 @@ configuration Install-MSExchange
         {
             DestinationPath = "C:\ProgramData\UcmaRuntimeSetup.exe"
             Uri = "https://download.microsoft.com/download/2/C/4/2C47A5C1-A1F3-4843-B9FE-84C0032C61EC/UcmaRuntimeSetup.exe"
-            DependsOn = "[xWindowsFeatureSet]InstallWinFeatures"
+            DependsOn = @("[xScript]disableHybridDetectionRegKey","[xWindowsFeatureSet]InstallWinFeatures")
         }
 
         Package InstallUCMA4
