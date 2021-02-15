@@ -339,7 +339,7 @@ configuration Install-MSExchange
             SetScript = {
                 Start-Process -FilePath "C:\ProgramData\UcmaRuntimeSetup.exe" -ArgumentList @('/quiet','/norestart') -NoNewWindow -Wait
                 Start-Process -FilePath "C:\ProgramData\vcredist_x64.exe" -ArgumentList @('/install','/passive','/norestart') -NoNewWindow -Wait
-                Start-Process -FilePath "C:\ProgramData\UcmaRuntimeSetup.exe" -ArgumentList "/q" -NoNewWindow -Wait
+                Start-Process -FilePath "C:\ProgramData\ndp48-x86-x64-allos-enu.exe" -ArgumentList "/q" -NoNewWindow -Wait
             }
             GetScript =  
             {
