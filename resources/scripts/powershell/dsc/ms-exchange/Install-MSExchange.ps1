@@ -66,7 +66,7 @@ configuration Install-MSExchange
 
         # References: https://docs.microsoft.com/en-us/windows-server/administration/server-core/server-core-roles-and-services
         
-        WindowsFeatureSet InstallWinFeatures
+        xWindowsFeatureSet InstallWinFeatures
         {
             Ensure = 'Present'
             Name = @('NET-Framework-45-Features', # .NET Framework 4.6 Features
@@ -113,7 +113,7 @@ configuration Install-MSExchange
         {
             DestinationPath = "C:\ProgramData\ndp48-x86-x64-allos-enu.exe"
             Uri             = "https://go.microsoft.com/fwlink/?linkid=2088631"
-            DependsOn = '[WindowsFeatureSet]InstallWinFeatures'
+            DependsOn = '[xWindowsFeatureSet]InstallWinFeatures'
         }
 
         # ***** Unified Communications Managed API 4.0 Runtime *****
@@ -121,7 +121,7 @@ configuration Install-MSExchange
         {
             DestinationPath = "C:\ProgramData\UcmaRuntimeSetup.exe"
             Uri = "https://download.microsoft.com/download/2/C/4/2C47A5C1-A1F3-4843-B9FE-84C0032C61EC/UcmaRuntimeSetup.exe"
-            DependsOn = '[WindowsFeatureSet]InstallWinFeatures'
+            DependsOn = '[xWindowsFeatureSet]InstallWinFeatures'
         }
 
         # ***** Download VC++ redist 2013 (x64) *****
@@ -129,7 +129,7 @@ configuration Install-MSExchange
         {
             DestinationPath = "C:\ProgramData\vcredist_x64.exe"
             Uri = "https://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe"
-            DependsOn = '[WindowsFeatureSet]InstallWinFeatures'
+            DependsOn = '[xWindowsFeatureSet]InstallWinFeatures'
         }
 
         # ***** Install Requirements *****
