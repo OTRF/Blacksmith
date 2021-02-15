@@ -296,7 +296,7 @@ configuration Install-MSExchange
         }
 
         # Check if there is a need to reboot before continuing
-        xPendingReboot BeforeNETWCF45
+        PendingReboot BeforeNETWCF45
         {
             Ensure = "Present"
             Name   = "BeforeNETWCF45"
@@ -308,6 +308,7 @@ configuration Install-MSExchange
         {
             Ensure = 'Present'
             Name = 'NET-WCF-HTTP-Activation45'
+            DependsOn = '[PendingReboot]BeforeNETWCF45'
         }
 
         # ***** Download Pre-Requirements *****
@@ -317,6 +318,7 @@ configuration Install-MSExchange
         {
             DestinationPath = "C:\ProgramData\ndp48-x86-x64-allos-enu.exe"
             Uri             = "https://go.microsoft.com/fwlink/?linkid=2088631"
+            DependsOn = '[PendingReboot]BeforeNETWCF45'
         }
 
         # ***** Unified Communications Managed API 4.0 Runtime *****
@@ -324,6 +326,7 @@ configuration Install-MSExchange
         {
             DestinationPath = "C:\ProgramData\UcmaRuntimeSetup.exe"
             Uri = "https://download.microsoft.com/download/2/C/4/2C47A5C1-A1F3-4843-B9FE-84C0032C61EC/UcmaRuntimeSetup.exe"
+            DependsOn = '[PendingReboot]BeforeNETWCF45'
         }
 
         # ***** Download VC++ redist 2013 (x64) *****
@@ -331,6 +334,7 @@ configuration Install-MSExchange
         {
             DestinationPath = "C:\ProgramData\vcredist_x64.exe"
             Uri = "https://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe"
+            DependsOn = '[PendingReboot]BeforeNETWCF45'
         }
 
         # ***** Install Requirements *****
