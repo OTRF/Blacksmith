@@ -295,29 +295,22 @@ configuration Install-MSExchange
             Name   = "RSAT-ADDS"
         }
 
-        # Check if there is a need to reboot before continuing
-        PendingReboot BeforeNETWCF45
-        {
-            Name   = "BeforeNETWCF45"
-            DependsOn = '[WindowsFeature]RSATADDS'
-        }
-
         # HTTP Activation
         WindowsFeature NETWCFHTTPActivation45
         {
             Ensure = 'Present'
             Name = 'NET-WCF-HTTP-Activation45'
-            DependsOn = '[PendingReboot]BeforeNETWCF45'
+            DependsOn = '[WindowsFeature]RSATADDS'
         }
 
         # ***** Download Pre-Requirements *****
 
         # .NET Framework 4.8 (https://support.microsoft.com/kb/4503548)
-        xRemoteFile dotNet48
+        xRemoteFile DownloadDotNet48
         {
             DestinationPath = "C:\ProgramData\ndp48-x86-x64-allos-enu.exe"
             Uri             = "https://go.microsoft.com/fwlink/?linkid=2088631"
-            DependsOn = '[PendingReboot]BeforeNETWCF45'
+            DependsOn = '[WindowsFeature]RSATADDS'
         }
 
         # ***** Unified Communications Managed API 4.0 Runtime *****
@@ -325,7 +318,7 @@ configuration Install-MSExchange
         {
             DestinationPath = "C:\ProgramData\UcmaRuntimeSetup.exe"
             Uri = "https://download.microsoft.com/download/2/C/4/2C47A5C1-A1F3-4843-B9FE-84C0032C61EC/UcmaRuntimeSetup.exe"
-            DependsOn = '[PendingReboot]BeforeNETWCF45'
+            DependsOn = '[WindowsFeature]RSATADDS'
         }
 
         # ***** Download VC++ redist 2013 (x64) *****
@@ -333,7 +326,7 @@ configuration Install-MSExchange
         {
             DestinationPath = "C:\ProgramData\vcredist_x64.exe"
             Uri = "https://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe"
-            DependsOn = '[PendingReboot]BeforeNETWCF45'
+            DependsOn = '[WindowsFeature]RSATADDS'
         }
 
         # ***** Install Requirements *****
@@ -354,7 +347,7 @@ configuration Install-MSExchange
                 # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
                 return $false
             }
-            DependsOn = @("[xRemoteFile]dotNet48","[xRemoteFile]DownloadUcma","[xRemoteFile]Downloadvcredist")
+            DependsOn = @("[xRemoteFile]DownloadDotNet48","[xRemoteFile]DownloadUcma","[xRemoteFile]Downloadvcredist")
         }
 
         # ***** Mount Image *****
