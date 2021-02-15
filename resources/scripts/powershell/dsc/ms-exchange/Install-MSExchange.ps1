@@ -6,6 +6,9 @@ configuration Install-MSExchange
         [String]$DomainFQDN,
 
         [Parameter(Mandatory)]
+        [String]$DomainController,
+
+        [Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]$AdminCreds,
 
         [Parameter(Mandatory)]
@@ -33,6 +36,17 @@ configuration Install-MSExchange
         'MXS2016-x64-CU13-KB4488406' { 'ExchangeServer2016-x64-cu13.iso' }
     }
 
+    #https://docs.microsoft.com/en-us/Exchange/plan-and-deploy/prepare-ad-and-domains?view=exchserver-2016#exchange-2016-active-directory-versions
+    $MXDirVersions = Switch ($MXSRelease) {
+        'MXS2016-x64-CU19-KB4588884' { @{SchemaVersion = 15333; OrganizationVersion = 16219; DomainVersion = 13239} }
+        'MXS2016-x64-CU18-KB4571788' { @{SchemaVersion = 15332; OrganizationVersion = 16218; DomainVersion = 13238} }
+        'MXS2016-x64-CU17-KB4556414' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
+        'MXS2016-x64-CU16-KB4537678' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
+        'MXS2016-x64-CU15-KB4522150' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
+        'MXS2016-x64-CU14-KB4514140' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
+        'MXS2016-x64-CU13-KB4488406' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
+    }
+
     $MXSISOFilePath = Join-Path $MXSISODirectory $MXSISOFile
 
     Node localhost
@@ -49,13 +63,6 @@ configuration Install-MSExchange
         # ##################
 
         # References: https://docs.microsoft.com/en-us/windows-server/administration/server-core/server-core-roles-and-services
-
-        # HTTP Activation
-        WindowsFeature NETWCFHTTPActivation45
-        {
-            Ensure = 'Present'
-            Name = 'NET-WCF-HTTP-Activation45'
-        }
 
         # .NET Framework 4.6 Features
         WindowsFeature NETFramework45Features
@@ -288,7 +295,29 @@ configuration Install-MSExchange
             Name   = "RSAT-ADDS"
         }
 
+        # Check if there is a need to reboot before continuing
+        xPendingReboot BeforeNETWCF45
+        {
+            Ensure = "Present"
+            Name   = "BeforeNETWCF45"
+            DependsOn = '[WindowsFeature]RSATADDS'
+        }
+
+        # HTTP Activation
+        WindowsFeature NETWCFHTTPActivation45
+        {
+            Ensure = 'Present'
+            Name = 'NET-WCF-HTTP-Activation45'
+        }
+
         # ***** Download Pre-Requirements *****
+
+        # .NET Framework 4.8 (https://support.microsoft.com/kb/4503548)
+        xRemoteFile dotNet48
+        {
+            DestinationPath = "C:\ProgramData\ndp48-x86-x64-allos-enu.exe"
+            Uri             = "https://go.microsoft.com/fwlink/?linkid=2088631"
+        }
 
         # ***** Unified Communications Managed API 4.0 Runtime *****
         xRemoteFile DownloadUcma
@@ -310,6 +339,7 @@ configuration Install-MSExchange
             SetScript = {
                 Start-Process -FilePath "C:\ProgramData\UcmaRuntimeSetup.exe" -ArgumentList @('/quiet','/norestart') -NoNewWindow -Wait
                 Start-Process -FilePath "C:\ProgramData\vcredist_x64.exe" -ArgumentList @('/install','/passive','/norestart') -NoNewWindow -Wait
+                Start-Process -FilePath "C:\ProgramData\UcmaRuntimeSetup.exe" -ArgumentList "/q" -NoNewWindow -Wait
             }
             GetScript =  
             {
@@ -321,7 +351,7 @@ configuration Install-MSExchange
                 # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
                 return $false
             }
-            DependsOn = @("[xRemoteFile]DownloadUcma","[xRemoteFile]Downloadvcredist")
+            DependsOn = @("[xRemoteFile]dotNet48","[xRemoteFile]DownloadUcma","[xRemoteFile]Downloadvcredist")
         }
 
         # ***** Mount Image *****
@@ -340,14 +370,35 @@ configuration Install-MSExchange
             RetryCount       = 10
             DependsOn = "[MountImage]MountMXSISO"
         }
+        
+        # Prepare AD
+        xExchInstall PrepAD
+		{
+			Path = 'F:\Setup.exe'
+            Arguments = "/PrepareAD /OrganizationName:$DomainNetbiosName /DomainController:$DomainController.$DomainFQDN /IAcceptExchangeServerLicenseTerms"
+            Credential = $DomainCreds
+            DependsOn  = @('[WaitForVolume]WaitForISO','[WindowsFeature]NETWCFHTTPActivation45')
 
+		}
+
+        # https://docs.microsoft.com/en-us/Exchange/plan-and-deploy/prepare-ad-and-domains?view=exchserver-2016#step-2-prepare-active-directory
+		xExchWaitForADPrep WaitPrepAD
+		{
+			Identity            = "not used"
+			Credential          = $DomainCreds
+			SchemaVersion       = $MXDirVersions.SchemaVersion
+            OrganizationVersion = $MXDirVersions.OrganizationVersion
+            DomainVersion       = $MXDirVersions.DomainVersion
+            DependsOn           = '[xExchInstall]PrepAD'
+        }
+        
         # Install Exchange
         xExchInstall InstallExchange
         {
             Path       = 'F:\Setup.exe'
-            Arguments  = "/mode:Install /role:Mailbox /OrganizationName:$DomainNetbiosName /Iacceptexchangeserverlicenseterms"
+            Arguments  = "/mode:Install /role:Mailbox /OrganizationName:$DomainNetbiosName /Iacceptexchangeserverlicenseterms /InstallWindowsComponents"
             Credential = $DomainCreds
-            DependsOn  = '[WaitForVolume]WaitForISO'
+            DependsOn  = '[xExchWaitForADPrep]WaitPrepAD'
         }
 
         # See if a reboot is required after installing Exchange
