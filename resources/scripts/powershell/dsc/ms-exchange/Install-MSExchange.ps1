@@ -87,8 +87,8 @@ configuration Install-MSExchange
         xWindowsFeatureSet InstallWinFeatures
         {
             Ensure = 'Present'
-            Name = @(
-                'NET-Framework-45-Features', # .NET Framework 4.6 Features
+            DependsOn = "[xScript]disableHybridDetectionRegKey"
+            Name = @('NET-Framework-45-Features', # .NET Framework 4.6 Features
                 'NET-WCF-HTTP-Activation45', # HTTP Activation
                 'Server-Media-Foundation', # Media Foundation
                 'RPC-over-HTTP-proxy', # RPC over HTTP Proxy
@@ -121,8 +121,8 @@ configuration Install-MSExchange
                 'Web-Windows-Auth', # Windows Authentication
                 'Web-WMI', # IIS 6 WMI Compatibility
                 'Windows-Identity-Foundation', # Windows Identity Foundation
-                'RSAT-ADDS') # AD DS Tools
-            DependsOn = "[xScript]disableHybridDetectionRegKey"
+                'RSAT-ADDS' # AD DS Tools
+            )
         }
 
         # ###############################
