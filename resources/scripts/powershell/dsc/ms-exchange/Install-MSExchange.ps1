@@ -380,7 +380,7 @@ configuration Install-MSExchange
 			Path = 'F:\Setup.exe'
             Arguments = "/PrepareAD /OrganizationName:$DomainNetbiosName /DomainController:$DomainController.$DomainFQDN /IAcceptExchangeServerLicenseTerms"
             Credential = $DomainCreds
-            DependsOn  = @('[WaitForVolume]WaitForISO','[WindowsFeature]NETWCFHTTPActivation45')
+            DependsOn  = '[WaitForVolume]WaitForISO'
 
 		}
 
