@@ -1,3 +1,5 @@
+# Author: Roberto Rodriguez @Cyb3rWard0g
+# License: GPLv3
 configuration Join-Domain {
     param 
     ( 

@@ -1,3 +1,5 @@
+# Author: Roberto Rodriguez @Cyb3rWard0g
+# License: GPLv3
 # References:
 # https://github.com/Azure/azure-quickstart-templates/blob/master/sharepoint-adfs/dsc/ConfigureDCVM.ps1
 configuration Create-AD {

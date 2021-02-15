@@ -1,3 +1,5 @@
+# Author: Roberto Rodriguez @Cyb3rWard0g
+# License: GPLv3
 configuration Install-MSExchange
 { 
    param 
@@ -63,244 +65,45 @@ configuration Install-MSExchange
         # ##################
 
         # References: https://docs.microsoft.com/en-us/windows-server/administration/server-core/server-core-roles-and-services
-
-        # .NET Framework 4.6 Features
-        WindowsFeature NETFramework45Features
-        {
-            Ensure = "Present"
-            Name   = "NET-Framework-45-Features"
-        }
-
-        # Media Foundation
-        WindowsFeature ServerMediaFoundation
+        
+        WindowsFeatureSet InstallWinFeatures
         {
             Ensure = 'Present'
-            Name = 'Server-Media-Foundation'
-        }
-
-        # RPC over HTTP Proxy
-        WindowsFeature RPCOverHTTPProxy
-        {
-            Ensure = "Present"
-            Name   = "RPC-over-HTTP-proxy"
-        }
-
-        # Failover Clustering Tools
-        WindowsFeature RSATClustering
-        {
-            Ensure = "Present"
-            Name   = "RSAT-Clustering"
-        }
-
-        # Failover Cluster Command Interface
-        WindowsFeature RSATClusteringCmdInterface
-        {
-            Ensure = "Present"
-            Name   = "RSAT-Clustering-CmdInterface"
-        }
-
-        # Failover Failover Cluster Mgmt
-        WindowsFeature RSATClusteringMgmt
-        {
-            Ensure = "Present"
-            Name   = "RSAT-Clustering-Mgmt"
-        }
-
-        # Failover Cluster Module for Windows PowerShell
-        WindowsFeature RSATClusteringPowerShell
-        {
-            Ensure = "Present"
-            Name   = "RSAT-Clustering-PowerShell"
-        }
-
-        # Web Mgmt Console
-        WindowsFeature WebMgmtConsole
-        {
-            Ensure = "Present"
-            Name   = "Web-Mgmt-Console"
-        }
-
-        # Process Model
-        WindowsFeature WASProcessModel
-        {
-            Ensure = "Present"
-            Name   = "WAS-Process-Model"
-        }
-
-        # ASP.NET 4.6
-        WindowsFeature WebAspNet45
-        {
-            Ensure = "Present"
-            Name   = "Web-Asp-Net45"
-        }
-
-        # Basic Authentication
-        WindowsFeature WebBasicAuth
-        {
-            Ensure = "Present"
-            Name   = "Web-Basic-Auth"
-        }
-
-        # Client Certificate Mapping Authentication
-        WindowsFeature WebClientAuth
-        {
-            Ensure = "Present"
-            Name   = "Web-Client-Auth"
-        }
-
-        # Digest Authentication
-        WindowsFeature WebDigestAuth
-        {
-            Ensure = "Present"
-            Name   = "Web-Digest-Auth"
-        }
-
-        # Directory Browsing
-        WindowsFeature WebDirBrowsing
-        {
-            Ensure = "Present"
-            Name   = "Web-Dir-Browsing"
-        }
-
-        # Dynamic Content Compression
-        WindowsFeature WebDynCompression
-        {
-            Ensure = "Present"
-            Name   = "Web-Dyn-Compression"
-        }
-
-        # HTTP Errors
-        WindowsFeature WebHttpErrors
-        {
-            Ensure = "Present"
-            Name   = "Web-Http-Errors"
-        }
-
-        # HTTP Logging
-        WindowsFeature WebHttpLogging
-        {
-            Ensure = 'Present'
-            Name = 'Web-Http-Logging'
-        }
-
-        # HTTP Redirection
-        WindowsFeature HTTPRedirection
-        {
-            Ensure = "Present"
-            Name   = "Web-Http-Redirect"
-        }
-
-        # Tracing
-        WindowsFeature HTTPTracing
-        {
-            Ensure = "Present"
-            Name   = "Web-Http-Tracing"
-        }
-
-        # ISAPI Extensions
-        WindowsFeature WebISAPIExt
-        {
-            Ensure = "Present"
-            Name   = "Web-ISAPI-Ext"
-        }
-
-        # ISAPI Filters
-        WindowsFeature WebISAPIFilter
-        {
-            Ensure = "Present"
-            Name   = "Web-ISAPI-Filter"
-        }
-
-        # Web Legacy Mgmt Console
-        WindowsFeature WebLgcyMgmtConsole
-        {
-            Ensure = "Present"
-            Name   = "Web-Lgcy-Mgmt-Console"
-        }
-
-        # IIS 6 Metabase Compatibility
-        WindowsFeature WebMetabase
-        {
-            Ensure = "Present"
-            Name   = "Web-Metabase"
-        }
-
-        # Management Service
-        WindowsFeature WebMgmtService
-        {
-            Ensure = "Present"
-            Name   = "Web-Mgmt-Service"
-        }
-
-        # .NET Extensibility 4.6
-        WindowsFeature WebNetExt45
-        {
-            Ensure = "Present"
-            Name   = "Web-Net-Ext45"
-        }
-
-        # Request Monitor
-        WindowsFeature RequestMonitor
-        {
-            Ensure = "Present"
-            Name   = "Web-Request-Monitor"
-        }
-
-        # Web Server IIS
-        WindowsFeature WebServer
-        {
-            Ensure = "Present"
-            Name   = "Web-Server"
-        }
-
-        # Static Content Compression
-        WindowsFeature WebStatCompression
-        {
-            Ensure = "Present"
-            Name   = "Web-Stat-Compression"
-        }
-
-        # Static Content
-        WindowsFeature StaticContent
-        {
-            Ensure = "Present"
-            Name   = "Web-Static-Content"
-        }
-
-        # Windows Authentication
-        WindowsFeature WebWindowsAuth
-        {
-            Ensure = "Present"
-            Name   = "Web-Windows-Auth"
-        }
-
-        # IIS 6 WMI Compatibility
-        WindowsFeature WebWMI
-        {
-            Ensure = "Present"
-            Name   = "Web-WMI"
-        }
-
-        # Windows Identity Foundation
-        WindowsFeature WindowsIdentityFoundation
-        {
-            Ensure = "Present"
-            Name   = "Windows-Identity-Foundation"
-        }
-
-        # AD DS Tools
-        WindowsFeature RSATADDS
-        {
-            Ensure = "Present"
-            Name   = "RSAT-ADDS"
-        }
-
-        # HTTP Activation
-        WindowsFeature NETWCFHTTPActivation45
-        {
-            Ensure = 'Present'
-            Name = 'NET-WCF-HTTP-Activation45'
-            DependsOn = '[WindowsFeature]RSATADDS'
+            Name = @('NET-Framework-45-Features', # .NET Framework 4.6 Features
+                'NET-WCF-HTTP-Activation45', # HTTP Activation
+                'Server-Media-Foundation', # Media Foundation
+                'RPC-over-HTTP-proxy', # RPC over HTTP Proxy
+                'RSAT-Clustering', # Failover Clustering Tools
+                'RSAT-Clustering-CmdInterface', # Failover Cluster Command Interface
+                'RSAT-Clustering-Mgmt', # Failover Failover Cluster Mgmt
+                'RSAT-Clustering-PowerShell', # Failover Cluster Module for Windows PowerShell
+                'Web-Mgmt-Console', # Web Mgmt Console
+                'WAS-Process-Model', # Process Model
+                'Web-Asp-Net45', # ASP.NET 4.6
+                'Web-Basic-Auth', # Basic Authentication
+                'Web-Client-Auth', # Client Certificate Mapping Authentication
+                'Web-Digest-Auth', # Digest Authentication
+                'Web-Dir-Browsing', # Directory Browsing
+                'Web-Dyn-Compression', # Dynamic Content Compression
+                'Web-Http-Errors', # HTTP Errors
+                'Web-Http-Logging', # HTTP Logging
+                'Web-Http-Redirect', # HTTP Redirection
+                'Web-Http-Tracing', # Tracing
+                'Web-ISAPI-Ext', # ISAPI Extensions
+                'Web-ISAPI-Filter', # ISAPI Filters
+                'Web-Lgcy-Mgmt-Console', # Web Legacy Mgmt Console
+                'Web-Metabase', # IIS 6 Metabase Compatibility
+                'Web-Mgmt-Service', # Management Service
+                'Web-Net-Ext45', # .NET Extensibility 4.6
+                'Web-Request-Monitor', # Request Monitor
+                'Web-Server', # Web Server IIS
+                'Web-Stat-Compression', # Static Content Compression
+                'Web-Static-Content', # Static Content
+                'Web-Windows-Auth', # Windows Authentication
+                'Web-WMI', # IIS 6 WMI Compatibility
+                'Windows-Identity-Foundation', # Windows Identity Foundation
+                'RSAT-ADDS' # AD DS Tools
+            )
         }
 
         # ***** Download Pre-Requirements *****
@@ -310,7 +113,7 @@ configuration Install-MSExchange
         {
             DestinationPath = "C:\ProgramData\ndp48-x86-x64-allos-enu.exe"
             Uri             = "https://go.microsoft.com/fwlink/?linkid=2088631"
-            DependsOn = '[WindowsFeature]RSATADDS'
+            DependsOn = '[WindowsFeatureSet]InstallWinFeatures'
         }
 
         # ***** Unified Communications Managed API 4.0 Runtime *****
@@ -318,7 +121,7 @@ configuration Install-MSExchange
         {
             DestinationPath = "C:\ProgramData\UcmaRuntimeSetup.exe"
             Uri = "https://download.microsoft.com/download/2/C/4/2C47A5C1-A1F3-4843-B9FE-84C0032C61EC/UcmaRuntimeSetup.exe"
-            DependsOn = '[WindowsFeature]RSATADDS'
+            DependsOn = '[WindowsFeatureSet]InstallWinFeatures'
         }
 
         # ***** Download VC++ redist 2013 (x64) *****
@@ -326,7 +129,7 @@ configuration Install-MSExchange
         {
             DestinationPath = "C:\ProgramData\vcredist_x64.exe"
             Uri = "https://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe"
-            DependsOn = '[WindowsFeature]RSATADDS'
+            DependsOn = '[WindowsFeatureSet]InstallWinFeatures'
         }
 
         # ***** Install Requirements *****
@@ -335,7 +138,7 @@ configuration Install-MSExchange
             SetScript = {
                 Start-Process -FilePath "C:\ProgramData\UcmaRuntimeSetup.exe" -ArgumentList @('/quiet','/norestart') -NoNewWindow -Wait
                 Start-Process -FilePath "C:\ProgramData\vcredist_x64.exe" -ArgumentList @('/install','/passive','/norestart') -NoNewWindow -Wait
-                Start-Process -FilePath "C:\ProgramData\ndp48-x86-x64-allos-enu.exe" -ArgumentList "/q" -NoNewWindow -Wait
+                Start-Process -FilePath "C:\ProgramData\ndp48-x86-x64-allos-enu.exe" -ArgumentList @("/quiet /norestart") -NoNewWindow -Wait
             }
             GetScript =  
             {
@@ -350,13 +153,19 @@ configuration Install-MSExchange
             DependsOn = @("[xRemoteFile]DownloadDotNet48","[xRemoteFile]DownloadUcma","[xRemoteFile]Downloadvcredist")
         }
 
+        # Reboot Before installing MX
+        PendingReboot RebootBeforeMXInstall
+        { 
+            Name = "RebootBeforeMXInstall"
+            DependsOn = '[xScript]InstallingReqs'
+        }
         # ***** Mount Image *****
         MountImage MountMXSISO
         {
             Ensure = 'Present'
             ImagePath = $MXSISOFilePath
             DriveLetter = 'F'
-            DependsOn = "[xScript]InstallingReqs"
+            DependsOn = "[PendingReboot]RebootBeforeMXInstall"
         }
 
         WaitForVolume WaitForISO
@@ -392,7 +201,7 @@ configuration Install-MSExchange
         xExchInstall InstallExchange
         {
             Path       = 'F:\Setup.exe'
-            Arguments  = "/mode:Install /role:Mailbox /OrganizationName:$DomainNetbiosName /Iacceptexchangeserverlicenseterms /InstallWindowsComponents"
+            Arguments  = "/mode:Install /role:Mailbox /OrganizationName:$DomainNetbiosName /Iacceptexchangeserverlicenseterms"
             Credential = $DomainCreds
             DependsOn  = '[xExchWaitForADPrep]WaitPrepAD'
         }
