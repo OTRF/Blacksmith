@@ -60,6 +60,20 @@ configuration Install-MSExchange
             RebootNodeIfNeeded  = $true
         }
 
+        xScript disableHybridDetectionRegKey {
+            GetScript = { }
+            SetScript = {
+				$registryPath = 'HKLM:SOFTWARE\Microsoft\ExchangeServer\v15\Setup\'
+				$name = 'RunHybridDetection'
+				$value = '1'
+                New-Item -Path $registryPath -Force | Out-Null
+				New-ItemProperty -Path $registryPath -Name $name -Value $value -PropertyType String -Force | Out-Null
+            }
+            TestScript = {
+                Test-Path 'HKLM:SOFTWARE\Microsoft\ExchangeServer\v15\Setup\'
+            }
+        }
+
         # ##################
         # Install Features #
         # ##################
@@ -104,17 +118,12 @@ configuration Install-MSExchange
                 'Windows-Identity-Foundation', # Windows Identity Foundation
                 'RSAT-ADDS' # AD DS Tools
             )
+            DependsOn = "[xScript]disableHybridDetectionRegKey"
         }
 
-        # ***** Download Pre-Requirements *****
-
-        # .NET Framework 4.8 (https://support.microsoft.com/kb/4503548)
-        xRemoteFile DownloadDotNet48
-        {
-            DestinationPath = "C:\ProgramData\ndp48-x86-x64-allos-enu.exe"
-            Uri             = "https://go.microsoft.com/fwlink/?linkid=2088631"
-            DependsOn = '[xWindowsFeatureSet]InstallWinFeatures'
-        }
+        # ###############################
+        # Install Requirements Features #
+        # ###############################
 
         # ***** Unified Communications Managed API 4.0 Runtime *****
         xRemoteFile DownloadUcma
@@ -124,19 +133,42 @@ configuration Install-MSExchange
             DependsOn = '[xWindowsFeatureSet]InstallWinFeatures'
         }
 
+        Package InstallUCMA4
+		{
+			Ensure = "Present"
+			Name = "Microsoft Unified Communications Managed API 4.0, Runtime"
+			Path = "C:\ProgramData\UcmaRuntimeSetup.exe"
+			ProductId = '41D635FE-4F9D-47F7-8230-9B29D6D42D31'
+			Arguments = '-q' # args for silent mode
+			DependsOn = "[xRemoteFile]DownloadUcma"
+		}
+		
+		# Reboot node if necessary
+		PendingReboot RebootPostInstallUCMA4
+        {
+            Name      = "AfterUCMA4"
+            DependsOn = "[Package]InstallUCMA4"
+        }
+
+        # .NET Framework 4.8 (https://support.microsoft.com/kb/4503548)
+        xRemoteFile DownloadDotNet48
+        {
+            DestinationPath = "C:\ProgramData\ndp48-x86-x64-allos-enu.exe"
+            Uri             = "https://go.microsoft.com/fwlink/?linkid=2088631"
+            DependsOn = '[PendingReboot]RebootPostInstallUCMA4'
+        }
+
         # ***** Download VC++ redist 2013 (x64) *****
         xRemoteFile Downloadvcredist
         {
             DestinationPath = "C:\ProgramData\vcredist_x64.exe"
             Uri = "https://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe"
-            DependsOn = '[xWindowsFeatureSet]InstallWinFeatures'
+            DependsOn = '[PendingReboot]RebootPostInstallUCMA4'
         }
 
-        # ***** Install Requirements *****
-        xScript InstallingReqs
+        xScript InstallAdditionalReqs
         {
             SetScript = {
-                Start-Process -FilePath "C:\ProgramData\UcmaRuntimeSetup.exe" -ArgumentList @('/quiet','/norestart') -NoNewWindow -Wait
                 Start-Process -FilePath "C:\ProgramData\vcredist_x64.exe" -ArgumentList @('/install','/passive','/norestart') -NoNewWindow -Wait
                 Start-Process -FilePath "C:\ProgramData\ndp48-x86-x64-allos-enu.exe" -ArgumentList @("/quiet /norestart") -NoNewWindow -Wait
             }
@@ -150,15 +182,16 @@ configuration Install-MSExchange
                 # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
                 return $false
             }
-            DependsOn = @("[xRemoteFile]DownloadDotNet48","[xRemoteFile]DownloadUcma","[xRemoteFile]Downloadvcredist")
+            DependsOn = @("[xRemoteFile]DownloadDotNet48","[xRemoteFile]Downloadvcredist")
         }
 
         # Reboot Before installing MX
         PendingReboot RebootBeforeMXInstall
         { 
             Name = "RebootBeforeMXInstall"
-            DependsOn = '[xScript]InstallingReqs'
+            DependsOn = '[xScript]InstallAdditionalReqs'
         }
+
         # ***** Mount Image *****
         MountImage MountMXSISO
         {
@@ -176,6 +209,10 @@ configuration Install-MSExchange
             DependsOn = "[MountImage]MountMXSISO"
         }
         
+        # ##################
+        # Install Exchange #
+        # ##################
+
         # Prepare AD
         xExchInstall PrepAD
 		{
