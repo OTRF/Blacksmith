@@ -124,7 +124,7 @@ configuration Prepare-MSExchange
         }
 
         # ***** Download VC++ redist 2012 (x64) *****
-        xRemoteFile Downloadvsredist2012
+        xRemoteFile Downloadvcredist2012
         {
             DestinationPath = "C:\ProgramData\vcredist_x64_2012.exe"
             Uri = "https://download.microsoft.com/download/1/6/B/16B06F60-3B20-4FF2-B699-5E9B7962F9AE/VSU_4/vcredist_x64.exe"
