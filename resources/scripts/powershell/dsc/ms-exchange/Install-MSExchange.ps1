@@ -219,13 +219,13 @@ configuration Install-MSExchange
         # ##################
 
         # Prepare AD
+        <#
         xExchInstall PrepAD
 		{
 			Path = 'F:\Setup.exe'
             Arguments = "/PrepareAD /OrganizationName:$DomainNetbiosName /DomainController:$DomainController.$DomainFQDN /IAcceptExchangeServerLicenseTerms"
             Credential = $DomainCreds
             DependsOn  = '[WaitForVolume]WaitForISO'
-
 		}
 
         # https://docs.microsoft.com/en-us/Exchange/plan-and-deploy/prepare-ad-and-domains?view=exchserver-2016#step-2-prepare-active-directory
@@ -238,14 +238,14 @@ configuration Install-MSExchange
             DomainVersion       = $MXDirVersions.DomainVersion
             DependsOn           = '[xExchInstall]PrepAD'
         }
-        
+        #>
         # Install Exchange
         xExchInstall InstallExchange
         {
             Path       = 'F:\Setup.exe'
             Arguments  = "/mode:Install /role:Mailbox /OrganizationName:$DomainNetbiosName /Iacceptexchangeserverlicenseterms"
             Credential = $DomainCreds
-            DependsOn  = '[xExchWaitForADPrep]WaitPrepAD'
+            DependsOn  = '[WaitForVolume]WaitForISO'
         }
 
         # See if a reboot is required after installing Exchange
