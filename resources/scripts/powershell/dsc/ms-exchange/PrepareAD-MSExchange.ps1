@@ -80,35 +80,23 @@ configuration PrepareAD-MSExchange
         # Prepare Exchange AD #
         # #####################
 
-        # Prepare AD
-        xScript PrepAD
-        {
-            SetScript =
-            {
-                F:\Setup.exe /PrepareSchema /DomainController:$using:DomainController.$using:DomainFQDN /IAcceptExchangeServerLicenseTerms
-                F:\Setup.exe /PrepareAD /OrganizationName:$using:DomainNetbiosName /DomainController:$using:DomainController.$using:DomainFQDN /IAcceptExchangeServerLicenseTerms
-            }
-            GetScript =  
-            {
-                # This block must return a hashtable. The hashtable must only contain one key Result and the value must be of type String.
-                return @{ "Result" = "false" }
-            }
-            TestScript = 
-            {
-                # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
-                return $false
-            }
+        # Prepare Schema
+        xExchInstall PrepSchema
+		{
+			Path = 'F:\Setup.exe'
+            Arguments = "/PrepareSchema /DomainController:$DomainController.$DomainFQDN /IAcceptExchangeServerLicenseTerms"
             Credential = $DomainCreds
             DependsOn  = '[WaitForVolume]WaitForISO'
         }
-
-        #xExchInstall PrepAD
-		#{
-		#	Path = 'F:\Setup.exe'
-        #    Arguments = "/PrepareAD /OrganizationName:$DomainNetbiosName /DomainController:$DomainController.$DomainFQDN /IAcceptExchangeServerLicenseTerms"
-        #    Credential = $DomainCreds
-        #    DependsOn  = '[WaitForVolume]WaitForISO'
-		#}
+        
+        # Prepare AD
+        xExchInstall PrepAD
+		{
+			Path = 'F:\Setup.exe'
+            Arguments = "/PrepareAD /OrganizationName:$DomainNetbiosName /DomainController:$DomainController.$DomainFQDN /IAcceptExchangeServerLicenseTerms"
+            Credential = $DomainCreds
+            DependsOn  = '[xExchInstall]PrepSchema'
+		}
 
         # https://docs.microsoft.com/en-us/Exchange/plan-and-deploy/prepare-ad-and-domains?view=exchserver-2016#step-2-prepare-active-directory
 		xExchWaitForADPrep WaitPrepAD
@@ -118,7 +106,7 @@ configuration PrepareAD-MSExchange
 			SchemaVersion       = $MXDirVersions.SchemaVersion
             OrganizationVersion = $MXDirVersions.OrganizationVersion
             DomainVersion       = $MXDirVersions.DomainVersion
-            DependsOn           = '[xScript]PrepAD'
+            DependsOn           = '[xExchInstall]PrepAD'
         }
 
         # See if a reboot is required after Exchange PrepAD
