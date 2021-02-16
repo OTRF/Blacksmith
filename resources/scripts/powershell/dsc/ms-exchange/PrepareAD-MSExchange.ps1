@@ -1,6 +1,6 @@
 # Author: Roberto Rodriguez @Cyb3rWard0g
 # License: GPLv3
-configuration Install-MSExchange
+configuration PrepareAD-MSExchange
 { 
    param 
    ( 
@@ -38,6 +38,17 @@ configuration Install-MSExchange
         'MXS2016-x64-CU13-KB4488406' { 'ExchangeServer2016-x64-cu13.iso' }
     }
 
+    #https://docs.microsoft.com/en-us/Exchange/plan-and-deploy/prepare-ad-and-domains?view=exchserver-2016#exchange-2016-active-directory-versions
+    $MXDirVersions = Switch ($MXSRelease) {
+        'MXS2016-x64-CU19-KB4588884' { @{SchemaVersion = 15333; OrganizationVersion = 16219; DomainVersion = 13239} }
+        'MXS2016-x64-CU18-KB4571788' { @{SchemaVersion = 15332; OrganizationVersion = 16218; DomainVersion = 13238} }
+        'MXS2016-x64-CU17-KB4556414' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
+        'MXS2016-x64-CU16-KB4537678' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
+        'MXS2016-x64-CU15-KB4522150' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
+        'MXS2016-x64-CU14-KB4514140' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
+        'MXS2016-x64-CU13-KB4488406' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
+    }
+
     $MXSISOFilePath = Join-Path $MXSISODirectory $MXSISOFile
 
     Node localhost
@@ -65,24 +76,35 @@ configuration Install-MSExchange
             DependsOn = "[MountImage]MountMXSISO"
         }
         
-        # ##################
-        # Install Exchange #
-        # ##################
+        # #####################
+        # Prepare Exchange AD #
+        # #####################
 
-        # Install Exchange
-        xExchInstall InstallExchange
-        {
-            Path       = 'F:\Setup.exe'
-            Arguments  = "/mode:Install /role:Mailbox /OrganizationName:$DomainNetbiosName /DomainController:$DomainController.$DomainFQDN /Iacceptexchangeserverlicenseterms"
+        # Prepare AD
+        xExchInstall PrepAD
+		{
+			Path = 'F:\Setup.exe'
+            Arguments = "/PrepareAD /OrganizationName:$DomainNetbiosName /DomainController:$DomainController.$DomainFQDN /IAcceptExchangeServerLicenseTerms"
             Credential = $DomainCreds
             DependsOn  = '[WaitForVolume]WaitForISO'
+		}
+
+        # https://docs.microsoft.com/en-us/Exchange/plan-and-deploy/prepare-ad-and-domains?view=exchserver-2016#step-2-prepare-active-directory
+		xExchWaitForADPrep WaitPrepAD
+		{
+			Identity            = "not used"
+			Credential          = $DomainCreds
+			SchemaVersion       = $MXDirVersions.SchemaVersion
+            OrganizationVersion = $MXDirVersions.OrganizationVersion
+            DomainVersion       = $MXDirVersions.DomainVersion
+            DependsOn           = '[xExchInstall]PrepAD'
         }
 
-        # See if a reboot is required after installing Exchange
-        PendingReboot RebootAfterMXInstall
+        # See if a reboot is required after Exchange PrepAD
+        PendingReboot RebootAfterMXPrepAD
         { 
             Name = "RebootAfterMXInstall"
-            DependsOn = '[xExchInstall]InstallExchange'
+            DependsOn = '[xExchWaitForADPrep]WaitPrepAD'
         }     
     }
 }
