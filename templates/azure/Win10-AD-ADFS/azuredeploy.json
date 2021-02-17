@@ -272,6 +272,8 @@
     },
     "variables": {
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
+        
+        // Virtual Network Setup
         "virtualNetworkName": "[parameters('virtualNetworkName')]",
         "virtualNetworkAddressRange": "[parameters('virtualNetworkAddressRange')]",
         "subnetName": "[parameters('subnetName')]",
@@ -293,6 +295,7 @@
                 }
             }
         ],
+        //Bastion Host Network
         "bastionSubnetName": "AzureBastionSubnet",
         "nsg-bastion-host-name": "nsg-bastion-host",
         "azureBastionSubnet": [
@@ -308,24 +311,42 @@
         ],
         "allSubnets": "[if(equals(parameters('remoteAccessMode'),'AzureBastionHost'), concat(variables('subnets'), variables('azureBastionSubnet')), variables('subnets'))]",
 
+        // Nested Templates
+        "updateDNSServerScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/vnet-dns-server.json', parameters('_artifactsLocationSasToken')))]",
+        "sysmonInstallTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/sysmonInstall.json', parameters('_artifactsLocationSasToken')))]",
+        "createADTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/createADForest.json', parameters('_artifactsLocationSasToken')))]",
+        "joinDomainTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/joinDomain.json', parameters('_artifactsLocationSasToken')))]",
+        "installADFSTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/installADFS.json', parameters('_artifactsLocationSasToken')))]",
+        
+        // Custom Scripts
         "initialSettingsScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/scripts/Set-Initial-Settings.ps1', parameters('_artifactsLocationSasToken')))]",
-        "customScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/customScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
-        "customProtectedScriptExTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/customProtectedScriptExtension.json', parameters('_artifactsLocationSasToken')))]",
         "prepareBoxScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Prepare-Box.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSecurityAuditingScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1', parameters('_artifactsLocationSasToken')))]",
         "setPowerShellLogging": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Enable-PowerShell-Logging.ps1', parameters('_artifactsLocationSasToken')))]",
         "saclModule": "https://raw.githubusercontent.com/OTRF/Set-AuditRule/master/Set-AuditRule.ps1",
         "setSACLScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Set-SACLs.ps1', parameters('_artifactsLocationSasToken')))]",
-        "installAgentScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/endpoint-software/Install-Sysmon.ps1', parameters('_artifactsLocationSasToken')))]",
         "setWallPaperScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Set-WallPaper.ps1', parameters('_artifactsLocationSasToken')))]",
         
-        "dscModules": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/DSC/AD-ADFS/Install-DSC-Modules.ps1', parameters('_artifactsLocationSasToken')))]",
-        "createADForestScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/DSC/AD-ADFS/Create-AD.zip', parameters('_artifactsLocationSasToken')))]",
-        "updateDNSServerScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/vnet-dns-server.json', parameters('_artifactsLocationSasToken')))]",
-        "enableADFSScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/DSC/AD-ADFS/Enable-ADFS.zip', parameters('_artifactsLocationSasToken')))]",
-        "installADFSScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/DSC/AD-ADFS/Set-ADFSFarm.ps1', parameters('_artifactsLocationSasToken')))]",
-        "joinDomainScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/active-directory/DSC/AD-ADFS/Join-Domain.zip', parameters('_artifactsLocationSasToken')))]",
-        
+        // Powershell DSC Scripts
+        "dscModules": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/scripts/Install-DSC-Modules.ps1', parameters('_artifactsLocationSasToken')))]",
+        "createADForestScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/active-directory/Create-AD-ADFS.zip', parameters('_artifactsLocationSasToken')))]",
+        "joinDomainScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/active-directory/Join-Domain.zip', parameters('_artifactsLocationSasToken')))]",
+        "installADFSScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/active-directory/Install-ADFS.zip', parameters('_artifactsLocationSasToken')))]",
+        "installSysmonScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/software/Install-Sysmon.zip', parameters('_artifactsLocationSasToken')))]",
+
+        // Initial Setup Scripts
+        "initialSetUpScripts": [
+            "[variables('initialSettingsScript')]",
+            "[variables('dscModules')]",
+            "[variables('prepareBoxScript')]",
+            "[variables('setSecurityAuditingScript')]",
+            "[variables('setPowerShellLogging')]",
+            "[variables('saclModule')]",
+            "[variables('setSACLScript')]",
+            "[variables('setWallPaperScript')]"
+        ],
+
+        // Virtual Machine Properties
         "copy": [
             {
                 "name": "allWinWKS",
@@ -375,22 +396,13 @@
                 "extensionName": "SetUpADFS"
             }
         ],
+
+        // Additional Variables
         "allEndpoints": "[concat(variables('allWinWKS'), variables('domainController'), variables('adfsServer'))]",
         "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
         "workstationsOUPath": "[concat('OU=Workstations; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
         "serversOUPath": "[concat('OU=Servers; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
-
         "trustedSSLCertificate": "[if(equals(parameters('certificateType'),'TrustedSigned'), array(uri(parameters('_certificateContainerLocation'), concat(parameters('certificateName'), parameters('_certificateContainerSasToken')))), json('null'))]",
-        "initialSetUpScripts": [
-            "[variables('initialSettingsScript')]",
-            "[variables('dscModules')]",
-            "[variables('prepareBoxScript')]",
-            "[variables('setSecurityAuditingScript')]",
-            "[variables('setPowerShellLogging')]",
-            "[variables('saclModule')]",
-            "[variables('setSACLScript')]",
-            "[variables('setWallPaperScript')]"
-        ],
         "initialDCADFSScripts": "[if(equals(parameters('certificateType'),'TrustedSigned'), concat(variables('initialSetUpScripts'), variables('trustedSSLCertificate')), variables('initialSetUpScripts'))]"
     },
     "resources": [
@@ -715,43 +727,54 @@
             }
         },
         {
-            "name": "[concat(variables('domainController')[0].vmName, '/CreateADForest')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
+            "name": "CreateADForest",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('domainController')[0].vmName, variables('domainController')[0].extensionName)]"
             ],
             "properties": {
-                "publisher": "Microsoft.Powershell",
-                "type": "DSC",
-                "typeHandlerVersion": "2.77",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "wmfVersion": "latest",
-                    "configuration": {
-                        "url": "[variables('createADForestScript')]",
-                        "script": "Create-AD.ps1",
-                        "function": "Create-AD"
-                    },
-                    "configurationArguments": {
-                        "DomainFQDN": "[parameters('DomainFQDN')]",
-                        "AdfsIPAddress": "[variables('adfsServer')[0].ipAddress]",
-                        "CertificateType": "[parameters('certificateType')]",
-                        "CertificateName": "[parameters('certificateName')]"
-                    }
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('createADTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
                 },
-                "protectedSettings": {
-                    "configurationArguments": {
-                        "AdminCreds": {
-                            "UserName": "[parameters('adminUsername')]",
-                            "Password": "[parameters('adminPassword')]"
-                        },
-                        "AdfsSvcCreds": {
-                            "UserName": "[parameters('adfsUserName')]",
-                            "Password": "[parameters('adfsPassword')]"
-                        },
-                        "DomainUsers": "[parameters('domainUsers').array]"
+                "parameters": {
+                    "vmName":   {
+                        "value": "[variables('domainController')[0].vmName]"
+                    },
+                    "createADForestScript": {
+                        "value": "[variables('createADForestScript')]"
+                    },
+                    "domainFQDN": {
+                        "value": "[parameters('domainFQDN')]"
+                    },
+                    "adfsIPAddress": {
+                        "value": "[variables('adfsServer')[0].ipAddress]"
+                    },
+                    "certificateType": {
+                        "value": "[parameters('certificateType')]"
+                    },
+                    "certificateName": {
+                        "value": "[parameters('certificateName')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "adfsUsername": {
+                        "value": "[parameters('adfsUsername')]"
+                    },
+                    "adfsPassword": {
+                        "value": "[parameters('adfsPassword')]"
+                    },
+                    "domainUsers": {
+                        "value": "[parameters('domainUsers')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
                     }
                 }
             }
@@ -761,7 +784,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('domainController')[0].vmName, 'CreateADForest')]"
+                "CreateADForest"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -797,83 +820,9 @@
             }
         },
         {
-            "name": "[concat(variables('adfsServer')[0].vmName, '/EnableADFS')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('adfsServer')[0].vmName, variables('adfsServer')[0].extensionName)]",
-                "UpdateVNetDNS"
-            ],
-            "properties": {
-                "publisher": "Microsoft.Powershell",
-                "type": "DSC",
-                "typeHandlerVersion": "2.77",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "wmfVersion": "latest",
-                    "configuration": {
-                        "url": "[variables('enableADFSScript')]",
-                        "script": "Enable-ADFS.ps1",
-                        "function": "Enable-ADFS"
-                    },
-                    "configurationArguments": {
-                        "DomainFQDN": "[parameters('domainFQDN')]",
-                        "DCIPAddress": "[variables('domainController')[0].ipAddress]",
-                        "CertificateType": "[parameters('certificateType')]",
-                        "CertificateName": "[parameters('certificateName')]",
-                        "JoinOU": "[variables('serversOUPath')]"
-                    }
-                },
-                "protectedSettings": {
-                    "configurationArguments": {
-                        "AdminCreds": {
-                            "UserName": "[parameters('adminUsername')]",
-                            "Password": "[parameters('adminPassword')]"
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "name": "InstallADFS",
+            "name": "[concat(variables('allWinWKS')[copyIndex('vmDomainJoinCopy')].vmName, '-joinDomain')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
-            "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('adfsServer')[0].vmName, 'EnableADFS')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('customProtectedScriptExTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "extensionName": {
-                        "value": "[variables('adfsServer')[0].extensionName]"
-                    },
-                    "commandToExecute": {
-                        "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-ADFSFarm.ps1',' ', '-DomainFQDN',' ',parameters('DomainFQDN'),' ','-AdminUserName',' ',parameters('AdminUserName'),' ','-AdminPassword',' ',parameters('AdminPassword'),' ','-AdfsUserName',' ',parameters('AdfsUserName'),' ','-AdfsPassword',' ',parameters('AdfsPassword'))]"
-                    },
-                    "fileUris": {
-                        "value": [
-                            "[variables('installADFSScript')]"
-                        ]
-                    },
-                    "vmName": {
-                        "value": "[variables('adfsServer')[0].vmName]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            }
-        },
-        {
-           "name": "[concat(variables('allWinWKS')[copyIndex('vmDomainJoinCopy')].vmName,'/joindomain')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
             "dependsOn": [
                 "InitialSetUpWKSCopy",
                 "UpdateVNetDNS"
@@ -883,36 +832,131 @@
                 "count": "[length(variables('allWinWKS'))]"
             },
             "properties": {
-                "publisher": "Microsoft.Powershell",
-                "type": "DSC",
-                "typeHandlerVersion": "2.77",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "wmfVersion": "latest",
-                    "configuration": {
-                        "url": "[variables('joinDomainScript')]",
-                        "script": "Join-Domain.ps1",
-                        "function": "Join-Domain"
-                    },
-                    "configurationArguments": {
-                        "DomainFQDN": "[parameters('DomainFQDN')]",
-                        "DCIPAddress": "[variables('domainController')[0].ipAddress]",
-                        "JoinOU": "[variables('workstationsOUPath')]"
-                    }
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('joinDomainTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
                 },
-                "protectedSettings": {
-                    "configurationArguments": {
-                        "AdminCreds": {
-                            "UserName": "[parameters('adminUsername')]",
-                            "Password": "[parameters('adminPassword')]"
-                        }
+                "parameters": {
+                    "vmName":   {
+                        "value": "[variables('allWinWKS')[copyIndex('vmDomainJoinCopy')].vmName]"
+                    },
+                    "joinDomainScript": {
+                        "value": "[variables('joinDomainScript')]"
+                    },
+                    "domainFQDN": {
+                        "value": "[parameters('domainFQDN')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "dcIpAddress": {
+                        "value": "[variables('domainController')[0].ipAddress]"
+                    },
+                    "joinOU": {
+                        "value": "[variables('workstationsOUPath')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "[concat(variables('adfsServer')[0].vmName, '-joinDomain')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('adfsServer')[0].vmName, variables('adfsServer')[0].extensionName)]",
+                "UpdateVNetDNS"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('joinDomainTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmName":   {
+                        "value": "[variables('adfsServer')[0].vmName]"
+                    },
+                    "joinDomainScript": {
+                        "value": "[variables('joinDomainScript')]"
+                    },
+                    "domainFQDN": {
+                        "value": "[parameters('domainFQDN')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "dcIpAddress": {
+                        "value": "[variables('domainController')[0].ipAddress]"
+                    },
+                    "joinOU": {
+                        "value": "[variables('serversOUPath')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "InstallADFS",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "[concat(variables('adfsServer')[0].vmName, '-joinDomain')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('installADFSTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmName":   {
+                        "value": "[variables('adfsServer')[0].vmName]"
+                    },
+                    "installADFSScript": {
+                        "value": "[variables('installADFSScript')]"
+                    },
+                    "domainFQDN": {
+                        "value": "[parameters('domainFQDN')]"
+                    },
+                    "certificateType": {
+                        "value": "[parameters('certificateType')]"
+                    },
+                    "certificateName": {
+                        "value": "[parameters('certificateName')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "adfsUsername": {
+                        "value": "[parameters('adfsUsername')]"
+                    },
+                    "adfsPassword": {
+                        "value": "[parameters('adfsPassword')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
                     }
                 }
             }
         },
         {
             "condition": "[parameters('enableSysmon')]",
-            "name": "[concat(variables('allWinWKS')[copyIndex('vmSysmonSetUpCopy')].vmName, '-Sysmon')]",
+            "name": "[concat(variables('allWinWKS')[copyIndex('vmSysmonSetUpCopy')].vmName, '-installSysmon')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
@@ -925,23 +969,15 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[variables('customScriptExTemplateUri')]",
+                    "uri": "[variables('sysmonInstallTemplateUri')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "extensionName": {
-                        "value": "[variables('allWinWKS')[copyIndex('vmSysmonSetupCopy')].extensionName]"
-                    },
-                    "commandToExecute": {
-                        "value": "powershell -ExecutionPolicy Unrestricted -File ./Install-Sysmon.ps1"
-                    },
-                    "fileUris": {
-                        "value": [
-                            "[variables('installAgentScript')]"
-                        ]
-                    },
-                    "vmName": {
+                    "vmName":   {
                         "value": "[variables('allWinWKS')[copyIndex('vmSysmonSetupCopy')].vmName]"
+                    },
+                    "installSysmonScript": {
+                        "value": "[variables('installSysmonScript')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -951,7 +987,7 @@
         },
         {
             "condition": "[parameters('enableSysmon')]",
-            "name": "[concat(variables('domainController')[0].vmName, '-Sysmon')]",
+            "name": "[concat(variables('domainController')[0].vmName, '-installSysmon')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
@@ -960,23 +996,15 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[variables('customScriptExTemplateUri')]",
+                    "uri": "[variables('sysmonInstallTemplateUri')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "extensionName": {
-                        "value": "[variables('domainController')[0].extensionName]"
-                    },
-                    "commandToExecute": {
-                        "value": "powershell -ExecutionPolicy Unrestricted -File ./Install-Sysmon.ps1"
-                    },
-                    "fileUris": {
-                        "value": [
-                            "[variables('installAgentScript')]"
-                        ]
-                    },
-                    "vmName": {
+                    "vmName":   {
                         "value": "[variables('domainController')[0].vmName]"
+                    },
+                    "installSysmonScript": {
+                        "value": "[variables('installSysmonScript')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -986,7 +1014,7 @@
         },
         {
             "condition": "[parameters('enableSysmon')]",
-            "name": "[concat(variables('adfsServer')[0].vmName, '-Sysmon')]",
+            "name": "[concat(variables('adfsServer')[0].vmName, '-installSysmon')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
@@ -995,23 +1023,15 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[variables('customProtectedScriptExTemplateUri')]",
+                    "uri": "[variables('sysmonInstallTemplateUri')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "extensionName": {
-                        "value": "[variables('adfsServer')[0].extensionName]"
-                    },
-                    "commandToExecute": {
-                        "value": "powershell -ExecutionPolicy Unrestricted -File ./Install-Sysmon.ps1"
-                    },
-                    "fileUris": {
-                        "value": [
-                            "[variables('installAgentScript')]"
-                        ]
-                    },
-                    "vmName": {
+                    "vmName":   {
                         "value": "[variables('adfsServer')[0].vmName]"
+                    },
+                    "installSysmonScript": {
+                        "value": "[variables('installSysmonScript')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"

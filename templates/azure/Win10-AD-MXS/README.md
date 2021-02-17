@@ -16,8 +16,10 @@
     * `MXS2016-x64-CU14-KB4514140` -> `ExchangeServer2016-x64-cu14.iso`
     * `MXS2016-x64-CU13-KB4488406` -> `ExchangeServer2016-x64-cu13.iso`
 * Windows 10 Workstations (Max. 10)
-* Windows [Microsoft Monitoring Agent](https://docs.microsoft.com/en-us/services-hub/health/mma-setup) installed [OPTIONAL]
+* [OPTIONAL] Windows [Microsoft Monitoring Agent](https://docs.microsoft.com/en-us/services-hub/health/mma-setup) installed
     * It connects to the Log Analytics workspace defined in the template.
+* [OPTIONAL] Sysmon
+    * [Sysmon Config](https://github.com/OTRF/Blacksmith/blob/master/resources/configs/sysmon/sysmon.xml)
 
 ## Access Exchange Admin Center
 
