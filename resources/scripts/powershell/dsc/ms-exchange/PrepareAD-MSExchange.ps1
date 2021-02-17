@@ -85,7 +85,7 @@ configuration PrepareAD-MSExchange
         {
             SetScript =
             {
-                F:\Setup.exe /PrepareSchema /DomainController:$using:DomainController.$using:DomainFQDN /IAcceptExchangeServerLicenseTerms
+                Start-Process -FilePath "F:\Setup.exe" -ArgumentList @("/PrepareSchema","/DomainController:$using:DomainController.$using:DomainFQDN","/IAcceptExchangeServerLicenseTerms") -redirectStandardOutput "C:\ProgramData\MSXPrepareSchema.txt" -Credential $using:DomainCreds -NoNewWindow -Wait
             }
             GetScript =  
             {
@@ -97,7 +97,6 @@ configuration PrepareAD-MSExchange
                 # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
                 return $false
             }
-            Credential = $DomainCreds
             DependsOn  = '[WaitForVolume]WaitForISO'
         }
         <#
@@ -122,7 +121,7 @@ configuration PrepareAD-MSExchange
         {
             SetScript =
             {
-                F:\Setup.exe /PrepareAD /OrganizationName:$using:DomainNetbiosName /DomainController:$using:DomainController.$using:DomainFQDN /IAcceptExchangeServerLicenseTerms
+                Start-Process -FilePath "F:\Setup.exe" -ArcumentList @("/PrepareAD","/OrganizationName:$using:DomainNetbiosName","/DomainController:$using:DomainController.$using:DomainFQDN","/IAcceptExchangeServerLicenseTerms") -redirectStandardOutput "C:\ProgramData\MSXPrepareAD.txt" -Credential $using:DomainCreds -NoNewWindow -Wait
             }
             GetScript =  
             {
@@ -134,7 +133,6 @@ configuration PrepareAD-MSExchange
                 # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
                 return $false
             }
-            Credential = $DomainCreds
             DependsOn  = '[xScript]PrepSchema'
         }
 
