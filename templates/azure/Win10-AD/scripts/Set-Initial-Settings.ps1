@@ -4,20 +4,22 @@
 [CmdletBinding()]
 param (
     [Parameter(Mandatory=$false)]
-    [string]$ServerAddresses,
-
-    [Parameter(Mandatory=$false)]
-    [switch]$SetDC
+    [string]$SetupType
 )
+
+# Install DSC Modules
+& .\Install-DSC-Modules.ps1 -SetupType $SetupType
 
 # Custom Settings applied
 & .\Prepare-Box.ps1
 
 # Windows Security Audit Categories
-if ($SetDC){
+if ($SetupType -eq 'DC')
+{
     & .\Enable-WinAuditCategories.ps1 -SetDC
 }
-else{
+else
+{
     & .\Enable-WinAuditCategories.ps1
 }
 
@@ -29,9 +31,3 @@ else{
 
 # Set Wallpaper
 & .\Set-WallPaper.ps1
-
-# Setting static IP and DNS server IP
-if ($ServerAddresses)
-{
-    & .\Set-StaticIP.ps1 -ServerAddresses $ServerAddresses
-}

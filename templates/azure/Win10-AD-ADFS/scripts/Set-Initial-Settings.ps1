@@ -3,9 +3,6 @@
 
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory=$false)]
-    [string]$ServerAddresses,
-
     [Parameter(Mandatory)]
     [ValidateSet("DC","ADFS",'Endpoint')]
     [string]$SetupType,

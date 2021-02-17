@@ -1,0 +1,64 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmName": {
+            "type": "string"
+        },
+        "createADForestScript": {
+            "type": "string"
+        },
+        "domainFQDN": {
+            "type": "string"
+        },
+        "adminUsername": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "securestring"
+        },
+        "domainUsers": {
+            "type": "secureObject"
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('vmName'), '/PowerShellDSC')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-12-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publisher": "Microsoft.Powershell",
+                "type": "DSC",
+                "typeHandlerVersion": "2.77",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "wmfVersion": "latest",
+                    "configuration": {
+                        "url": "[parameters('createADForestScript')]",
+                        "script": "Create-AD.ps1",
+                        "function": "Create-AD"
+                    },
+                    "configurationArguments": {
+                        "DomainFQDN": "[parameters('DomainFQDN')]"
+                    }
+                },
+                "protectedSettings": {
+                    "configurationArguments": {
+                        "AdminCreds": {
+                            "UserName": "[parameters('adminUsername')]",
+                            "Password": "[parameters('adminPassword')]"
+                        },
+                        "DomainUsers": "[parameters('domainUsers').array]"
+                    }
+                }
+            }
+        }
+    ]
+}
