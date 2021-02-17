@@ -121,7 +121,7 @@ configuration PrepareAD-MSExchange
         {
             SetScript =
             {
-                Start-Process -FilePath "F:\Setup.exe" -ArcumentList @("/PrepareAD","/OrganizationName:$using:DomainNetbiosName","/DomainController:$using:DomainController.$using:DomainFQDN","/IAcceptExchangeServerLicenseTerms") -redirectStandardOutput "C:\ProgramData\MSXPrepareAD.txt" -Credential $using:DomainCreds -NoNewWindow -Wait
+                Start-Process -FilePath "F:\Setup.exe" -ArgumentList @("/PrepareAD","/OrganizationName:$using:DomainNetbiosName","/DomainController:$using:DomainController.$using:DomainFQDN","/IAcceptExchangeServerLicenseTerms") -redirectStandardOutput "C:\ProgramData\MSXPrepareAD.txt" -Credential $using:DomainCreds -NoNewWindow -Wait
             }
             GetScript =  
             {
