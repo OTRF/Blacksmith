@@ -1,6 +1,0 @@
-[submodule "projects/mordor-labs"]
-	path = projects/mordor-labs
-	url = https://github.com/OTRF/mordor-labs
-[submodule "projects/Azure-Sentinel2Go"]
-	path = projects/Azure-Sentinel2Go
-	url = https://github.com/OTRF/Azure-Sentinel2Go
