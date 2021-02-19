@@ -177,6 +177,7 @@
         }
     },
     "variables": {
+        "uniqueWorkspace": "[concat('log-', parameters('workspaceName'), uniquestring(resourceGroup().id, parameters('utcValue')))]",
         "artifactsAzureSentinel2Go": "https://raw.githubusercontent.com/OTRF/Azure-Sentinel2Go/master/",
         "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
         "virtualNetworkName": "[parameters('virtualNetworkName')]",
@@ -227,28 +228,17 @@
     },
     "resources": [
         {
-            "name": "deployAzureSentinel2Go",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2020-06-01",
+            "apiVersion": "2015-11-01-preview",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "name": "[variables('uniqueWorkspace')]",
+            "location": "[parameters('location')]",
             "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[uri(variables('artifactsAzureSentinel2Go'),'azure-sentinel/azuredeploy.json')]",
-                    "contentVersion": "1.0.0.0"
+                "retentionInDays": "[parameters('dataRetention')]",
+                "features": {
+                    "immediatePurgeDataOn30Days": "[parameters('immediatePurgeDataOn30Days')]"
                 },
-                "parameters": {
-                    "workspaceName": {
-                        "value": "[parameters('workspaceName')]"
-                    },
-                    "pricingTier": {
-                        "value": "[parameters('pricingTier')]"
-                    },
-                    "dataRetention": {
-                        "value": "[parameters('dataRetention')]"
-                    },
-                    "immediatePurgeDataOn30Days": {
-                        "value": "[parameters('immediatePurgeDataOn30Days')]"
-                    }
+                "sku": {
+                    "name": "[parameters('pricingTier')]"
                 }
             }
         },
@@ -257,7 +247,7 @@
             "type": "Microsoft.Insights/dataCollectionRules",
             "apiVersion": "2019-11-01-preview",
             "dependsOn": [
-                "deployAzureSentinel2Go"
+                "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('uniqueWorkspace'))]"
             ],
             "location": "[parameters('location')]",
             "properties": {
@@ -289,7 +279,7 @@
                 "destinations": {
                     "logAnalytics": [
                         {
-                            "workspaceResourceId": "[reference('deployAzureSentinel2Go').outputs.workspaceResourceIdOutput.value]",
+                            "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('uniqueWorkspace'))]",
                             "name": "centralWorkspace"
                         }
                     ]
