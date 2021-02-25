@@ -4,10 +4,10 @@
   "parameters": {
     "utcValue": {
       "type": "string",
-      "defaultValue": "[utcNow()]",
       "metadata": {
-          "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
-      }
+        "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
+      },
+      "defaultValue": "[utcNow()]"
     },
     "projectName": {
       "type": "string",
@@ -17,34 +17,35 @@
     },
     "location": {
       "type": "string",
-      "defaultValue": "[resourceGroup().location]",
       "metadata": {
         "description": "Specifies the Azure location for all resources."
-      }
+      },
+      "defaultValue": "[resourceGroup().location]"
     },
     "eventHubSku": {
       "type": "string",
+      "metadata": {
+        "description": "Specifies the messaging tier for service Bus namespace."
+      },
+      "defaultValue": "Standard",
       "allowedValues": [
         "Basic",
         "Standard"
-      ],
-      "defaultValue": "Standard",
-      "metadata": {
-        "description": "Specifies the messaging tier for service Bus namespace."
-      }
+      ]
     }
   },
+  "functions": [],
   "variables": {
-    "uniqueNamespace": "[concat(parameters('projectName'), uniquestring(resourceGroup().id, parameters('utcValue')))]",
-    "eventHubName": "[concat('evh-', parameters('projectName'))]",
-    "eventHubNamespaceName": "[concat('evhns-', variables('uniqueNamespace'))]",
+    "uniqueNamespace": "[concat(parameters('projectName'), uniqueString(resourceGroup().id, parameters('utcValue')))]",
+    "eventHubName": "[format('evh-{0}', parameters('projectName'))]",
+    "eventHubNamespaceName": "[format('evhns-{0}', variables('uniqueNamespace'))]",
     "defaultSASKeyName": "RootManageSharedAccessKey",
     "authRuleResourceId": "[resourceId('Microsoft.EventHub/namespaces/authorizationRules', variables('eventHubNamespaceName'), variables('defaultSASKeyName'))]"
   },
   "resources": [
     {
-      "apiVersion": "2017-04-01",
       "type": "Microsoft.EventHub/namespaces",
+      "apiVersion": "2017-04-01",
       "name": "[variables('eventHubNamespaceName')]",
       "location": "[parameters('location')]",
       "sku": {
@@ -58,17 +59,16 @@
       }
     },
     {
-      "apiVersion": "2017-04-01",
       "type": "Microsoft.EventHub/namespaces/eventhubs",
-      "name": "[concat(variables('eventHubNamespaceName'), '/', variables('eventHubName'))]",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.EventHub/namespaces', variables('eventHubNamespaceName'))]"
-      ],
+      "apiVersion": "2017-04-01",
+      "name": "[format('{0}/{1}', variables('eventHubNamespaceName'), variables('eventHubName'))]",
       "properties": {
         "messageRetentionInDays": 7,
         "partitionCount": 1
-      }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.EventHub/namespaces', variables('eventHubNamespaceName'))]"
+      ]
     }
   ],
   "outputs": {

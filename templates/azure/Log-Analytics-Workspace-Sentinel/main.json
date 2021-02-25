@@ -12,7 +12,7 @@
     "workspaceName": {
       "type": "string",
       "metadata": {
-        "description": "Name for the Log Analytics workspace used to aggregate data."
+        "description": "Name for the Log Analytics workspace used to aggregate data"
       }
     },
     "pricingTier": {
@@ -33,7 +33,7 @@
     "dataRetention": {
       "type": "int",
       "minValue": 7,
-      "maxValue": 30,
+      "maxValue": 730,
       "metadata": {
         "description": "Number of days of retention. Workspaces in the legacy Free pricing tier can only have 7 days."
       },
@@ -56,55 +56,55 @@
   },
   "functions": [],
   "variables": {
-    "uniqueWorkspace": "[concat('log-', parameters('workspaceName'), uniqueString(resourceGroup().id, parameters('utcValue')))]"
+    "uniqueWorkspace_var": "[format('log-{0}{1}', parameters('workspaceName'), uniqueString(resourceGroup().id, parameters('utcValue')))]"
   },
   "resources": [
     {
       "type": "Microsoft.OperationalInsights/workspaces",
-      "apiVersion": "2015-11-01-preview",
-      "name": "[variables('uniqueWorkspace')]",
+      "apiVersion": "2020-08-01",
+      "name": "[variables('uniqueWorkspace_var')]",
       "location": "[parameters('location')]",
       "properties": {
-        "sku": {
-          "name": "[parameters('pricingTier')]"
-        },
         "retentionInDays": "[parameters('dataRetention')]",
         "features": {
           "immediatePurgeDataOn30Days": "[parameters('immediatePurgeDataOn30Days')]"
+        },
+        "sku": {
+          "name": "[parameters('pricingTier')]"
         }
       }
     },
     {
       "type": "Microsoft.OperationsManagement/solutions",
       "apiVersion": "2015-11-01-preview",
-      "name": "[concat('SecurityInsights(', variables('uniqueWorkspace'), ')')]",
+      "name": "[format('SecurityInsights({0})', variables('uniqueWorkspace_var'))]",
       "location": "[parameters('location')]",
       "properties": {
-        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('uniqueWorkspace'))]"
+        "workspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('uniqueWorkspace_var'))]"
       },
       "plan": {
-        "name": "[concat('SecurityInsights(', variables('uniqueWorkspace'), ')')]",
+        "name": "[format('SecurityInsights({0})', variables('uniqueWorkspace_var'))]",
         "product": "OMSGallery/SecurityInsights",
         "publisher": "Microsoft",
         "promotionCode": ""
       },
       "dependsOn": [
-        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('uniqueWorkspace'))]"
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('uniqueWorkspace_var'))]"
       ]
     }
   ],
   "outputs": {
-    "workspaceNameOutput": {
+    "workspaceName_output": {
       "type": "string",
-      "value": "[variables('uniqueWorkspace')]"
+      "value": "[variables('uniqueWorkspace_var')]"
     },
     "workspaceIdOutput": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', variables('uniqueWorkspace')), '2015-11-01-preview').customerId]"
+      "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', variables('uniqueWorkspace_var')), '2015-11-01-preview').customerId]"
     },
-    "workspacekeyOutput": {
+    "workspaceKeyOutput": {
       "type": "string",
-      "value": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', variables('uniqueWorkspace')), '2015-11-01-preview').primarySharedKey]"
+      "value": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', variables('uniqueWorkspace_var')), '2015-11-01-preview').primarySharedKey]"
     }
   }
 }
