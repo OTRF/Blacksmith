@@ -48,23 +48,18 @@ configuration Install-Sysmon {
                 & sc.exe config Sysmon start= auto
 
                 # Setting Sysmon Channel Access permissions
-                New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WINEVT\Channels\Microsoft-Windows-Sysmon/Operational" -Name "ChannelAccess" -PropertyType String -Value "O:BAG:SYD:(A;;0xf0005;;;SY)(A;;0x5;;;BA)(A;;0x1;;;S-1-5-32-573)(A;;0x1;;;NS)" -Force
+                write-Host "Granting the Network Service account READ access to the Security event log.."
+                wevtutil set-log Microsoft-Windows-Sysmon/Operational /ca:'O:BAG:SYD:(A;;0xf0005;;;SY)(A;;0x5;;;BA)(A;;0x1;;;S-1-5-32-573)(A;;0x1;;;NS)'
+                #New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WINEVT\Channels\Microsoft-Windows-Sysmon/Operational" -Name "ChannelAccess" -PropertyType String -Value "O:BAG:SYD:(A;;0xf0005;;;SY)(A;;0x5;;;BA)(A;;0x1;;;S-1-5-32-573)(A;;0x1;;;NS)" -Force
 
-                write-Host "[+] Restarting Log Services .."
-                $LogServices = @("Sysmon", "Windows Event Log")
+                write-Host "[+] Restarting Sysmon .."
+                Restart-Service -Name Sysmon -Force
 
-                # Restarting Log Services
-                foreach ($LogService in $LogServices)
-                {
-                    write-Host "[+] Restarting $LogService .."
-                    Restart-Service -Name $LogService -Force -ErrorAction SilentlyContinue
-
-                    write-Host "  [*] Verifying if $LogService is running.."
-                    $s = Get-Service -Name $LogService
-                    while ($s.Status -ne 'Running') { Start-Service $LogService -ErrorAction SilentlyContinue; Start-Sleep 3 }
-                    Start-Sleep 5
-                    write-Host "  [*] $LogService is running.."
-                }
+                write-Host "  [*] Verifying if Sysmon is running.."
+                $s = Get-Service -Name Sysmon
+                while ($s.Status -ne 'Running') { Start-Service Sysmon; Start-Sleep 3 }
+                Start-Sleep 5
+                write-Host "  [*] Sysmon is running.."
             }
             GetScript =  
             {
