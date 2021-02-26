@@ -160,14 +160,14 @@ configuration Install-ADFS
                 # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
                 return $false
             }
-            DependsOn = "[xScript]CreateADFSFarm"
+            DependsOn = "[AdfsFarm]CreateADFSFarm"
         }
 
         # ***** Download AADConnect *****
         xRemoteFile DownloadAADConnect {
             DestinationPath = "C:\ProgramData\AzureADConnect.msi"
             Uri = "https://download.microsoft.com/download/B/0/0/B00291D0-5A83-4DE7-86F5-980BC00DE05A/AzureADConnect.msi"
-            DependsOn = "[AdfsFarm]CreateADFSFarm"
+            DependsOn = "[xScript]CreateADFSFarm"
         }
 
         # ***** Install AADConnect *****
