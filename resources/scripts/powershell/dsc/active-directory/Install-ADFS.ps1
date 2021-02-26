@@ -101,7 +101,7 @@ configuration Install-ADFS
         xScript CreateADFSFarm
         {
             SetScript = {
-                $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$using:DomainFQDN"
+                $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$using:ADFSSiteName.$using:DomainFQDN"
 
                 Import-Module ADFS
                 Install-AdfsFarm -CertificateThumbprint $cert.Thumbprint -FederationServiceName "$using:ADFSSiteName.$using:DomainFQDN" -FederationServiceDisplayName "Active Directory Federation Service" -ServiceAccountCredential $using:DomainAdfsAdminCreds -OverwriteConfiguration -Credential $using:DomainAdminCreds
