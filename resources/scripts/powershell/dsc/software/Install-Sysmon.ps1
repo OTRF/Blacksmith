@@ -61,7 +61,7 @@ configuration Install-Sysmon {
 
                     write-Host "  [*] Verifying if $LogService is running.."
                     $s = Get-Service -Name $LogService
-                    while ($s.Status -ne 'Running') { Start-Service $LogService; Start-Sleep 3 }
+                    while ($s.Status -ne 'Running') { Start-Service $LogService -ErrorAction SilentlyContinue; Start-Sleep 3 }
                     Start-Sleep 5
                     write-Host "  [*] $LogService is running.."
                 }

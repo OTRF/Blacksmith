@@ -29,6 +29,9 @@
         "adfsPassword": {
             "type": "securestring"
         },
+        "dcName": {
+            "type": "string"
+        },
         "location": {
             "type": "string",
             "metadata": {
@@ -56,6 +59,7 @@
                     },
                     "configurationArguments": {
                         "DomainFQDN": "[parameters('domainFQDN')]",
+                        "DCName": "[parameters('dcName')]",
                         "CertificateType": "[parameters('certificateType')]",
                         "CertificateName": "[parameters('certificateName')]"
                     }

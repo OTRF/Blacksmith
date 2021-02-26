@@ -18,7 +18,10 @@ configuration Install-ADFS
         [string]$CertificateType,
 
         [Parameter(Mandatory)]
-        [String]$CertificateName
+        [String]$CertificateName,
+        
+        [Parameter(Mandatory)]
+        [String]$DCName
     ) 
     
     Import-DscResource -ModuleName ComputerManagementDsc, xPSDesiredStateConfiguration

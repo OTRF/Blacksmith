@@ -942,6 +942,9 @@
                     "adfsPassword": {
                         "value": "[parameters('adfsPassword')]"
                     },
+                    "dcName": {
+                        "value": "[variables('domainController')[0].vmName]"
+                    },
                     "location": {
                         "value": "[parameters('location')]"
                     }
