@@ -24,7 +24,7 @@ configuration Install-ADFS
         [String]$DCName
     ) 
     
-    Import-DscResource -ModuleName ComputerManagementDsc, xPSDesiredStateConfiguration
+    Import-DscResource -ModuleName ComputerManagementDsc, xPSDesiredStateConfiguration, AdfsDsc
 
     [String] $DomainNetbiosName = (Get-NetBIOSName -DomainFQDN $DomainFQDN)
     # Domain Admin Creds
@@ -98,26 +98,15 @@ configuration Install-ADFS
         }
 
         # ***** Create ADFS Farm *****
-        xScript CreateADFSFarm
+        $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$ADFSSiteName.$DomainFQDN"
+        AdfsFarm CreateADFSFarm
         {
-            SetScript = {
-                $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$using:ADFSSiteName.$using:DomainFQDN"
-
-                Import-Module ADFS
-                Install-AdfsFarm -CertificateThumbprint $cert.Thumbprint -FederationServiceName "$using:ADFSSiteName.$using:DomainFQDN" -FederationServiceDisplayName "Active Directory Federation Service" -ServiceAccountCredential $using:DomainAdfsAdminCreds -OverwriteConfiguration -Credential $using:DomainAdminCreds
-            }
-
-            GetScript =  
-            {
-                # This block must return a hashtable. The hashtable must only contain one key Result and the value must be of type String.
-                return @{ "Result" = "false" }
-            }
-            TestScript = 
-            {
-                # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
-                return $false
-            }
-            DependsOn = "[xScript]ImportPFX"
+            FederationServiceName        = "$ADFSSiteName.$DomainFQDN"
+            FederationServiceDisplayName = 'Active Directory Federation Service'
+            CertificateThumbprint        = $cert.Thumbprint
+            ServiceAccountCredential     = $DomainAdfsAdminCreds
+            Credential                   = $DomainAdminCreds
+            DependsOn                    = "[xScript]ImportPFX"
         }
 
         # ***** Configure ADFS *****
@@ -178,7 +167,7 @@ configuration Install-ADFS
         xRemoteFile DownloadAADConnect {
             DestinationPath = "C:\ProgramData\AzureADConnect.msi"
             Uri = "https://download.microsoft.com/download/B/0/0/B00291D0-5A83-4DE7-86F5-980BC00DE05A/AzureADConnect.msi"
-            DependsOn = "[xScript]CreateADFSFarm"
+            DependsOn = "[AdfsFarm]CreateADFSFarm"
         }
 
         # ***** Install AADConnect *****

@@ -19,16 +19,16 @@ Install-Module -Name NetworkingDsc -RequiredVersion 8.2.0
 Install-Module -Name xPSDesiredStateConfiguration -RequiredVersion 9.1.0
 Install-Module -Name ComputerManagementDsc -RequiredVersion 8.4.0
 
-if ($SetupType -ne 'Endpoint')
+if ($SetupType -eq 'DC')
 {
     Install-Module -Name xDnsServer -RequiredVersion 1.16.0.0
     Install-Module -Name xSmbShare -Force
     Install-Module -Name MSOnline -Force
     Install-Module -Name AzureAD -Force
-
-    if ($SetupType -eq 'DC')
-    {
-        Install-Module -Name ActiveDirectoryCSDsc -RequiredVersion 5.0.0
-        Install-Module -Name CertificateDsc -RequiredVersion 5.0.0
-    }
+    Install-Module -Name ActiveDirectoryCSDsc -RequiredVersion 5.0.0
+    Install-Module -Name CertificateDsc -RequiredVersion 5.0.0
+}
+elseif ($SetupType -eq 'ADFS')
+{
+    Install-Module -Name AdfsDsc -RequiredVersion 1.1.0
 }
