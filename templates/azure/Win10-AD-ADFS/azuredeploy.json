@@ -799,14 +799,8 @@
                     "virtualNetworkAddressRange": {
                         "value": "[variables('virtualNetworkAddressRange')]"
                     },
-                    "subnetName": {
-                        "value": "[variables('subnetName')]"
-                    },
-                    "subnetRange": {
-                        "value": "[variables('subnetRange')]"
-                    },
-                    "networkSecurityGroupId": {
-                        "value": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-default-name'))]"
+                    "subnets": {
+                        "value": "[variables('allSubnets')]"
                     },
                     "DNSServerAddress": {
                         "value": [
