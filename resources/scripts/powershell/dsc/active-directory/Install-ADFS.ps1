@@ -98,15 +98,30 @@ configuration Install-ADFS
         }
 
         # ***** Create ADFS Farm *****
-        $certThumbprint = (Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$ADFSSiteName.$DomainFQDN").Thumbprint
-        AdfsFarm CreateADFSFarm
+        xScript CreateADFSFarm
         {
-            FederationServiceName        = "$ADFSSiteName.$DomainFQDN"
-            FederationServiceDisplayName = 'Active Directory Federation Service'
-            CertificateThumbprint        = $certThumbprint
-            ServiceAccountCredential     = $DomainAdfsAdminCreds
-            Credential                   = $DomainAdminCreds
-            DependsOn                    = "[xScript]ImportPFX"
+            SetScript = 
+            {
+                $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$using:ADFSSiteName.$using:DomainFQDN"
+
+                # ADFS Service is running
+                $s = Get-Service -Name adfssrv
+                while ($s.Status -ne 'Running') { Start-Service adfssrv; Start-Sleep 3 }
+
+                Import-Module ADFS
+                Install-AdfsFarm -CertificateThumbprint $cert.Thumbprint -FederationServiceName "$using:ADFSSiteName.$using:DomainFQDN" -FederationServiceDisplayName "Active Directory Federation Service" -ServiceAccountCredential $using:DomainAdfsAdminCreds -OverwriteConfiguration -Credential $using:DomainAdminCreds
+            }
+            GetScript =  
+            {
+                # This block must return a hashtable. The hashtable must only contain one key Result and the value must be of type String.
+                return @{ "Result" = "false" }
+            }
+            TestScript = 
+            {
+                # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
+                return $false
+            }
+            DependsOn = "[xScript]ImportPFX"
         }
 
         # ***** Configure ADFS *****
@@ -160,7 +175,7 @@ configuration Install-ADFS
                 # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
                 return $false
             }
-            DependsOn = "[AdfsFarm]CreateADFSFarm"
+            DependsOn = "[xScript]CreateADFSFarm"
         }
 
         # ***** Download AADConnect *****
