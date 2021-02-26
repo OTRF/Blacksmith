@@ -73,7 +73,7 @@
                             "UserName": "[parameters('adminUsername')]",
                             "Password": "[parameters('adminPassword')]"
                         },
-                        "AdfsSvcCreds": {
+                        "AdfsAdminCreds": {
                             "UserName": "[parameters('adfsUsername')]",
                             "Password": "[parameters('adfsPassword')]"
                         },

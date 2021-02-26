@@ -12,7 +12,7 @@ configuration Create-AD-ADFS {
         [System.Management.Automation.PSCredential]$AdminCreds,
 
         [Parameter(Mandatory)]
-        [System.Management.Automation.PSCredential]$AdfsSvcCreds,
+        [System.Management.Automation.PSCredential]$AdfsAdminCreds,
 
         [Parameter(Mandatory)]
         [String]$AdfsIPAddress,
@@ -134,8 +134,8 @@ configuration Create-AD-ADFS {
         ADUser CreateAdfsSvcAccount
         {
             DomainName              = $DomainFQDN
-            UserName                = $AdfsSvcCreds.UserName
-            Password                = $AdfsSvcCreds
+            UserName                = $AdfsAdminCreds.UserName
+            Password                = $AdfsAdminCreds
             PasswordAuthentication  = 'Negotiate'
             PasswordNeverExpires    = $true
             Ensure                  = "Present"
