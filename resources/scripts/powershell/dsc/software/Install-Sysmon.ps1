@@ -57,7 +57,7 @@ configuration Install-Sysmon {
                 foreach ($LogService in $LogServices)
                 {
                     write-Host "[+] Restarting $LogService .."
-                    Restart-Service -Name $LogService -Force
+                    Restart-Service -Name $LogService -Force -ErrorAction SilentlyContinue
 
                     write-Host "  [*] Verifying if $LogService is running.."
                     $s = Get-Service -Name $LogService
