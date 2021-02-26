@@ -98,12 +98,12 @@ configuration Install-ADFS
         }
 
         # ***** Create ADFS Farm *****
-        $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$ADFSSiteName.$DomainFQDN"
+        $certThumbprint = (Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$ADFSSiteName.$DomainFQDN").Thumbprint
         AdfsFarm CreateADFSFarm
         {
             FederationServiceName        = "$ADFSSiteName.$DomainFQDN"
             FederationServiceDisplayName = 'Active Directory Federation Service'
-            CertificateThumbprint        = $cert.Thumbprint
+            CertificateThumbprint        = $certThumbprint
             ServiceAccountCredential     = $DomainAdfsAdminCreds
             Credential                   = $DomainAdminCreds
             DependsOn                    = "[xScript]ImportPFX"
