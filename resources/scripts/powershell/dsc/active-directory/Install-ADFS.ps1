@@ -24,7 +24,7 @@ configuration Install-ADFS
         [String]$DCName
     ) 
     
-    Import-DscResource -ModuleName ComputerManagementDsc, xPSDesiredStateConfiguration, AdfsDsc
+    Import-DscResource -ModuleName ComputerManagementDsc, xPSDesiredStateConfiguration
 
     [String] $DomainNetbiosName = (Get-NetBIOSName -DomainFQDN $DomainFQDN)
     # Domain Admin Creds
