@@ -104,10 +104,6 @@ configuration Install-ADFS
             {
                 $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$using:ADFSSiteName.$using:DomainFQDN"
 
-                # ADFS Service is running
-                $s = Get-Service -Name adfssrv
-                while ($s.Status -ne 'Running') { Start-Sleep 3 }
-
                 Import-Module ADFS
                 Install-AdfsFarm -CertificateThumbprint $cert.Thumbprint -FederationServiceName "$using:ADFSSiteName.$using:DomainFQDN" -FederationServiceDisplayName "Active Directory Federation Service" -ServiceAccountCredential $using:DomainAdfsAdminCreds -OverwriteConfiguration -Credential $using:DomainAdminCreds
             }
