@@ -7,7 +7,7 @@ configuration Import-PfxCertificate
         [Parameter()]
         [System.String]$CertPath,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateSet('CurrentUser', 'LocalMachine')]
         [System.String]$Location = 'LocalMachine',
 
