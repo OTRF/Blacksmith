@@ -959,6 +959,9 @@
                     "installADFSScript": {
                         "value": "[variables('installADFSScript')]"
                     },
+                    "domainFQDN": {
+                        "value": "[parameters('domainFQDN')]"
+                    },
                     "federationServiceName": {
                         "value": "[variables('federationServiceName')]"
                     },

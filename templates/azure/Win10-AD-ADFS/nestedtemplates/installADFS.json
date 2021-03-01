@@ -8,6 +8,9 @@
         "installADFSScript": {
             "type": "string"
         },
+        "domainFQDN": {
+            "type": "string"
+        },
         "federationServiceName": {
             "type": "string"
         },
@@ -49,6 +52,7 @@
                         "function": "Install-ADFS"
                     },
                     "configurationArguments": {
+                        "DomainFQDN": "[parameters('DomainFQDN')]",
                         "FederationServiceName": "[parameters('federationServiceName')]"
                     }
                 },

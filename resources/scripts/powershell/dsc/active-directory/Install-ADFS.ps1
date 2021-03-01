@@ -4,17 +4,20 @@ configuration Install-ADFS
 { 
    param 
    (
-       [Parameter(Mandatory)]
-       [System.Management.Automation.PSCredential]$AdminCreds,
-       
-       [Parameter(Mandatory)]
-       [System.Management.Automation.PSCredential]$AdfsAdminCreds,
-       
-       [Parameter(Mandatory)]
-       [String]$FederationServiceName,
-       
-       [Parameter()]
-       [String]$FederationServiceDisplayName = 'Active Directory Federation Service'
+        [Parameter(Mandatory)]
+        [String]$DomainFQDN,
+
+        [Parameter(Mandatory)]
+        [System.Management.Automation.PSCredential]$AdminCreds,
+        
+        [Parameter(Mandatory)]
+        [System.Management.Automation.PSCredential]$AdfsAdminCreds,
+        
+        [Parameter(Mandatory)]
+        [String]$FederationServiceName,
+        
+        [Parameter()]
+        [String]$FederationServiceDisplayName = 'Active Directory Federation Service'
     ) 
     
     Import-DscResource -ModuleName xPSDesiredStateConfiguration, AdfsDsc
