@@ -3,38 +3,29 @@
 configuration Install-ADFS 
 { 
    param 
-   ( 
-        [Parameter(Mandatory)]
-        [String]$DomainFQDN,
-
-        [Parameter(Mandatory)]
-        [System.Management.Automation.PSCredential]$AdminCreds,
-
-        [Parameter(Mandatory)]
-        [System.Management.Automation.PSCredential]$AdfsAdminCreds,
-
-        [Parameter(Mandatory)]
-        [ValidateSet('TrustedSigned','SelfSigned')]
-        [string]$CertificateType,
-
-        [Parameter(Mandatory)]
-        [String]$CertificateName,
-        
-        [Parameter(Mandatory)]
-        [String]$DCName
+   (
+       [Parameter(Mandatory)]
+       [System.Management.Automation.PSCredential]$AdminCreds,
+       
+       [Parameter(Mandatory)]
+       [System.Management.Automation.PSCredential]$AdfsAdminCreds,
+       
+       [Parameter(Mandatory)]
+       [String]$FederationServiceName,
+       
+       [Parameter()]
+       [String]$FederationServiceDisplayName = 'Active Directory Federation Service'
     ) 
     
-    Import-DscResource -ModuleName ComputerManagementDsc, xPSDesiredStateConfiguration
+    Import-DscResource -ModuleName xPSDesiredStateConfiguration, AdfsDsc
 
     [String] $DomainNetbiosName = (Get-NetBIOSName -DomainFQDN $DomainFQDN)
     # Domain Admin Creds
     [System.Management.Automation.PSCredential]$DomainAdminCreds = New-Object System.Management.Automation.PSCredential ("${DomainNetbiosName}\$($Admincreds.UserName)", $Admincreds.Password)
-    $Adminbstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($DomainAdminCreds.Password)
-    $AdminPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($Adminbstr)
     # Domain ADFS Admin Creds
     [System.Management.Automation.PSCredential]$DomainAdfsAdminCreds = New-Object System.Management.Automation.PSCredential ("${DomainNetbiosName}\$($AdfsAdminCreds.UserName)", $AdfsAdminCreds.Password)
 
-    $ADFSSiteName = "ADFS"
+    $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName $FederationServiceName
 
     Node localhost
     {
@@ -51,79 +42,24 @@ configuration Install-ADFS
             Name   = "ADFS-Federation"
         }
 
-        if ($CertificateType -eq 'TrustedSigned')
-        {
-            xScript ImportPFX
-            {
-                SetScript = 
-                {
-                    # ***** Import .PFX File *****
-                    Import-PfxCertificate -Exportable -CertStoreLocation "cert:\LocalMachine\My" -FilePath "C:\ProgramData\$using:CertificateName" -Password (ConvertTo-SecureString "$using:AdminPassword" -AsPlainText -Force)
-                }
-                GetScript =  
-                {
-                    # This block must return a hashtable. The hashtable must only contain one key Result and the value must be of type String.
-                    return @{ "Result" = "false" }
-                }
-                TestScript = 
-                {
-                    # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
-                    return $false
-                }
-                DependsOn = "[WindowsFeature]installADFS"
-            }
-        }
-        elseif ($CertificateType -eq 'SelfSigned')
-        {
-            xScript ImportPFX
-            {
-                SetScript = 
-                {
-                    $pathtocert = "\\$using:DCName\Setup\$using:CertificateName"
-                    $certfile = Get-ChildItem -Path $pathtocert
-                    Import-PfxCertificate -Exportable -CertStoreLocation "cert:\LocalMachine\My" -FilePath $certfile.FullName -Password (ConvertTo-SecureString "$using:AdminPassword" -AsPlainText -Force)
-                }
-                GetScript =  
-                {
-                    # This block must return a hashtable. The hashtable must only contain one key Result and the value must be of type String.
-                    return @{ "Result" = "false" }
-                }
-                TestScript = 
-                {
-                    # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
-                    return $false
-                }
-                DependsOn = "[WindowsFeature]installADFS"
-            }
-        }
-
         # ***** Create ADFS Farm *****
-        xScript CreateADFSFarm
+        AdfsFarm CreateADFSFarm
         {
-            SetScript = 
-            {
-                $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$using:ADFSSiteName.$using:DomainFQDN"
-
-                Import-Module ADFS -verbose *> C:\ProgramData\ADFSModule.txt
-                Install-AdfsFarm -CertificateThumbprint $cert.Thumbprint -FederationServiceName "$using:ADFSSiteName.$using:DomainFQDN" -FederationServiceDisplayName "Active Directory Federation Service" -ServiceAccountCredential $using:DomainAdfsAdminCreds -OverwriteConfiguration -Credential $using:DomainAdminCreds -verbose *> C:\ProgramData\ADFSFarm.txt
-            }
-            GetScript =  
-            {
-                # This block must return a hashtable. The hashtable must only contain one key Result and the value must be of type String.
-                return @{ "Result" = "false" }
-            }
-            TestScript = 
-            {
-                # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
-                return $false
-            }
-            DependsOn = "[xScript]ImportPFX"
+            FederationServiceName        = $FederationServiceName
+            FederationServiceDisplayName = $FederationServiceDisplayName
+            OverwriteConfiguration       = $true
+            CertificateThumbprint        = $cert.Thumbprint
+            ServiceAccountCredential     = $DomainAdfsAdminCreds
+            Credential                   = $DomainAdminCreds
+            DependsOn                    = "[WindowsFeature]installADFS"
         }
 
         # ***** Configure ADFS *****
         xScript ConfigureADFS
         {
             SetScript = {
+                Import-Module ADFS
+
                 # ***** Idp-Initiated Sign On page (Disabled by default)*****
                 set-AdfsProperties -EnableIdPInitiatedSignonPage $true
 
@@ -171,7 +107,7 @@ configuration Install-ADFS
                 # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
                 return $false
             }
-            DependsOn = "[xScript]CreateADFSFarm"
+            DependsOn = "[AdfsFarm]CreateADFSFarm"
         }
 
         # ***** Download AADConnect *****

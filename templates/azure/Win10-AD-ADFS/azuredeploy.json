@@ -317,6 +317,7 @@
         "createADTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/createADForest.json', parameters('_artifactsLocationSasToken')))]",
         "joinDomainTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/joinDomain.json', parameters('_artifactsLocationSasToken')))]",
         "installADFSTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/installADFS.json', parameters('_artifactsLocationSasToken')))]",
+        "importPfxCertTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/importPfxCert.json', parameters('_artifactsLocationSasToken')))]",
         
         // Custom Scripts
         "initialSettingsScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/scripts/Set-Initial-Settings.ps1', parameters('_artifactsLocationSasToken')))]",
@@ -331,6 +332,7 @@
         "dscModules": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/scripts/Install-DSC-Modules.ps1', parameters('_artifactsLocationSasToken')))]",
         "createADForestScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/active-directory/Create-AD-ADFS.zip', parameters('_artifactsLocationSasToken')))]",
         "joinDomainScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/active-directory/Join-Domain.zip', parameters('_artifactsLocationSasToken')))]",
+        "importPfxCertScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/misc/Import-PfxCertificate.zip', parameters('_artifactsLocationSasToken')))]",
         "installADFSScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/active-directory/Install-ADFS.zip', parameters('_artifactsLocationSasToken')))]",
         "installSysmonScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/software/Install-Sysmon.zip', parameters('_artifactsLocationSasToken')))]",
 
@@ -402,6 +404,10 @@
         "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
         "workstationsOUPath": "[concat('OU=Workstations; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
         "serversOUPath": "[concat('OU=Servers; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
+        "pfxPassword": "[parameters('adminPassword')]",
+        "dcSmbSharedFolder": "Setup",
+        "smbSharedCertPath": "[concat('\\\\',variables('domainController')[0].vmName,'\\',variables('dcSmbSharedFolder'),'\\',parameters('certificateName'))]",
+        "federationServiceName": "[concat('ADFS.',parameters('domainFQDN'))]",
         "trustedSSLCertificate": "[if(equals(parameters('certificateType'),'TrustedSigned'), array(uri(parameters('_certificateContainerLocation'), concat(parameters('certificateName'), parameters('_certificateContainerSasToken')))), json('null'))]",
         "initialDCADFSScripts": "[if(equals(parameters('certificateType'),'TrustedSigned'), concat(variables('initialSetUpScripts'), variables('trustedSSLCertificate')), variables('initialSetUpScripts'))]"
     },
@@ -902,11 +908,43 @@
             }
         },
         {
-            "name": "InstallADFS",
+            "name": "ImportPfxCetificate",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
                 "[concat(variables('adfsServer')[0].vmName, '-joinDomain')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('importPfxCertTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmName":   {
+                        "value": "[variables('adfsServer')[0].vmName]"
+                    },
+                    "importPfxCertScript": {
+                        "value": "[variables('importPfxCertScript')]"
+                    },
+                    "pfxPassword": {
+                        "value": "[variables('pfxPassword')]"
+                    },
+                    "certPath": {
+                        "value": "[variables('smbSharedCertPath')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "InstallADFS",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "ImportPfxCetificate"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -921,14 +959,8 @@
                     "installADFSScript": {
                         "value": "[variables('installADFSScript')]"
                     },
-                    "domainFQDN": {
-                        "value": "[parameters('domainFQDN')]"
-                    },
-                    "certificateType": {
-                        "value": "[parameters('certificateType')]"
-                    },
-                    "certificateName": {
-                        "value": "[parameters('certificateName')]"
+                    "federationServiceName": {
+                        "value": "[variables('federationServiceName')]"
                     },
                     "adminUsername": {
                         "value": "[parameters('adminUsername')]"
@@ -941,9 +973,6 @@
                     },
                     "adfsPassword": {
                         "value": "[parameters('adfsPassword')]"
-                    },
-                    "dcName": {
-                        "value": "[variables('domainController')[0].vmName]"
                     },
                     "location": {
                         "value": "[parameters('location')]"

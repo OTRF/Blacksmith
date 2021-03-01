@@ -26,5 +26,9 @@ if ($SetupType -eq 'DC')
     Install-Module -Name MSOnline -Force
     Install-Module -Name AzureAD -Force
     Install-Module -Name ActiveDirectoryCSDsc -RequiredVersion 5.0.0
-    Install-Module -Name CertificateDsc -RequiredVersion 5.0.0
+    Install-Module -Name CertificateDsc -RequiredVersion 5.1.0
+}
+elseif ($SetupType -eq 'ADFS')
+{
+    Install-Module -Name AdfsDsc -RequiredVersion 1.1.0
 }

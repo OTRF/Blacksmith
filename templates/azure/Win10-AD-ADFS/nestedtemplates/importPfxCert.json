@@ -5,22 +5,13 @@
         "vmName": {
             "type": "string"
         },
-        "installADFSScript": {
+        "importPfxCertScript": {
             "type": "string"
         },
-        "federationServiceName": {
+        "certPath": {
             "type": "string"
         },
-        "adminUsername": {
-            "type": "string"
-        },
-        "adminPassword": {
-            "type": "securestring"
-        },
-        "adfsUsername": {
-            "type": "string"
-        },
-        "adfsPassword": {
+        "pfxPassword": {
             "type": "securestring"
         },
         "location": {
@@ -44,23 +35,19 @@
                 "settings": {
                     "wmfVersion": "latest",
                     "configuration": {
-                        "url": "[parameters('installADFSScript')]",
-                        "script": "Install-ADFS.ps1",
-                        "function": "Install-ADFS"
+                        "url": "[parameters('importPfxCertScript')]",
+                        "script": "Import-PfxCertificate.ps1",
+                        "function": "Import-PfxCertificate"
                     },
                     "configurationArguments": {
-                        "FederationServiceName": "[parameters('federationServiceName')]"
+                        "CertPath": "[parameters('certPath')]"
                     }
                 },
                 "protectedSettings": {
                     "configurationArguments": {
-                        "AdminCreds": {
-                            "UserName": "[parameters('adminUsername')]",
-                            "Password": "[parameters('adminPassword')]"
-                        },
-                        "AdfsAdminCreds": {
-                            "UserName": "[parameters('adfsUsername')]",
-                            "Password": "[parameters('adfsPassword')]"
+                        "PfxCreds": {
+                            "UserName": "admin",
+                            "Password": "[parameters('pfxPassword')]"
                         }
                     }
                 }
