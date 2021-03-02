@@ -97,16 +97,4 @@ OID=1.3.6.1.5.5.7.3.1
             $CertReqINF = $CertReqINF + "`n_continue_ = `"dns=$altName&`""
         }
     }
-
-    # **** Request INF *****
-    Write-Host "[+] Request INF String:"
-    $CertReqINF
-
-    $tmpFile = [System.IO.Path]::GetTempFileName()
-    $CertReqINF | Out-File $tmpFile
-    
-    & certreq.exe -new $tmpFile $CertFilePath
-
-    #***** Remove Temp File *****
-    Remove-Item $tmpFile -ErrorAction SilentlyContinue
 }
