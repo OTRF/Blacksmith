@@ -1,6 +1,9 @@
 # Author: Roberto Rodriguez (@Cyb3rWard0g)
 # License: GPL-3.0
 
+# Install DSC Modules
+& .\Install-DSC-Modules.ps1
+
 # Custom Settings applied
 & .\Prepare-Box.ps1
 
