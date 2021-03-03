@@ -64,13 +64,14 @@
             "metadata": {
                 "description": "Name of the diagnostic setting"
             },
-            "defaultValue": ""
+            "defaultValue": "blacksmith"
         },
         "workspaceName": {
             "type": "string",
             "metadata": {
                 "description": "Specifies the globally unique name of the Log Analytics workspace."
-            }
+            },
+            "defaultValue": ""
         },
         "location": {
             "type": "string",
