@@ -12,7 +12,7 @@ param (
     [string]$CertificateType,
 
     [Parameter(Mandatory=$false)]
-    [string]$CertificateName
+    [string]$PfxCertName
 )
 
 # Install DSC Modules
@@ -23,7 +23,7 @@ if (($SetupType -eq 'DC') -or ($SetupType -eq 'ADFS'))
     if ($CertificateType -eq 'TrustedSigned')
     {
         # Move trusted CA signed SSL certificate
-        Move-Item $CertificateName C:\ProgramData\
+        Move-Item $PfxCertName C:\ProgramData\
     }
 }
 

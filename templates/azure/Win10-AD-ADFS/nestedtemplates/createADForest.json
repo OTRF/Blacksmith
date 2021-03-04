@@ -11,13 +11,10 @@
         "domainFQDN": {
             "type": "string"
         },
+        "federationServiceName": {
+            "type": "string"
+        },
         "adfsIPAddress": {
-            "type": "string"
-        },
-        "certificateType": {
-            "type": "string"
-        },
-        "certificateName": {
             "type": "string"
         },
         "adminUsername": {
@@ -31,6 +28,18 @@
         },
         "adfsPassword": {
             "type": "securestring"
+        },
+        "certificateType": {
+            "type": "string"
+        },
+        "pfxCertName": {
+            "type": "string"
+        },
+        "pfxCertPassword": {
+            "type": "securestring"
+        },
+        "smbSharedFolder": {
+            "type": "string"
         },
         "domainUsers": {
             "type": "secureObject"
@@ -62,9 +71,11 @@
                     },
                     "configurationArguments": {
                         "DomainFQDN": "[parameters('DomainFQDN')]",
+                        "FederationServiceName": "[parameters('federationServiceName')]",
+                        "SmbSharedFolder": "[parameters('smbSharedFolder')]",
                         "AdfsIPAddress": "[parameters('adfsIPAddress')]",
                         "CertificateType": "[parameters('certificateType')]",
-                        "CertificateName": "[parameters('certificateName')]"
+                        "PfxCertName": "[parameters('pfxCertName')]"
                     }
                 },
                 "protectedSettings": {
@@ -76,6 +87,10 @@
                         "AdfsAdminCreds": {
                             "UserName": "[parameters('adfsUsername')]",
                             "Password": "[parameters('adfsPassword')]"
+                        },
+                        "PfxCertCreds": {
+                            "UserName": "admin",
+                            "Password": "[parameters('pfxCertPassword')]"
                         },
                         "DomainUsers": "[parameters('domainUsers').array]"
                     }

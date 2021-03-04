@@ -9,6 +9,9 @@ configuration Create-AD-ADFS {
         [String]$DomainFQDN,
 
         [Parameter(Mandatory)]
+        [String]$FederationServiceName,
+
+        [Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]$AdminCreds,
 
         [Parameter(Mandatory)]
@@ -16,16 +19,22 @@ configuration Create-AD-ADFS {
 
         [Parameter(Mandatory)]
         [String]$AdfsIPAddress,
-        
+
+        [Parameter(Mandatory)]
+        [Object]$DomainUsers,
+
+        [Parameter(Mandatory)]
+        [String]$PfxCertName,
+
         [Parameter(Mandatory)]
         [ValidateSet('TrustedSigned','SelfSigned')]
         [string]$CertificateType,
 
         [Parameter(Mandatory)]
-        [String]$CertificateName,
+        [System.Management.Automation.PSCredential]$PfxCertCreds,
 
-        [Parameter(Mandatory)]
-        [Object]$DomainUsers
+        [Parameter()]
+        [String]$SmbSharedFolder
     ) 
     
     Import-DscResource -ModuleName ActiveDirectoryDsc, NetworkingDsc, xPSDesiredStateConfiguration, xDnsServer, ComputerManagementDsc, ActiveDirectoryCSDsc, CertificateDsc
@@ -37,7 +46,8 @@ configuration Create-AD-ADFS {
     $InterfaceAlias = $($Interface.Name)
     $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($AdminCreds.Password)
     $AdminPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
-    $ADFSSiteName = "ADFS"
+    
+    $ADFSSiteName = $FederationServiceName.split(".")[0]
     $ComputerName = Get-Content env:computername
 
     Node localhost
@@ -151,47 +161,25 @@ configuration Create-AD-ADFS {
             DependsOn   = "[WaitForADDomain]WaitForDCReady"
         }
 
-        # ******* Configure SMB Share **********
-        File SrcFolder
-        {
-            DestinationPath = "C:\Setup"
-            Type            = "Directory"
-            Ensure          = "Present"
-        }
-
-        SmbShare SrcShare
-        {
-            Ensure      = "Present"
-            Name        = "Setup"
-            Path        = "C:\Setup"
-            FullAccess  = @("Domain Admins", "Domain Computers")
-            ReadAccess  = "Authenticated Users"
-            DependsOn   = "[File]SrcFolder"
-        }
-
-        if ($CertificateType -eq 'TrustedSigned')
-        {
-            xScript ImportPFX
+        if ($CertificateType -eq 'SelfSigned') {
+            # ******* Configure SMB Share **********
+            File SrcFolder
             {
-                SetScript = 
-                {
-                    # ***** Import .PFX File *****
-                    Import-PfxCertificate -Exportable -CertStoreLocation "cert:\LocalMachine\My" -FilePath "C:\ProgramData\$using:CertificateName" -Password (ConvertTo-SecureString "$using:AdminPassword" -AsPlainText -Force)
-                }
-                GetScript =  
-                {
-                    # This block must return a hashtable. The hashtable must only contain one key Result and the value must be of type String.
-                    return @{ "Result" = "false" }
-                }
-                TestScript = 
-                {
-                    # If it returns $false, the SetScript block will run. If it returns $true, the SetScript block will not run.
-                    return $false
-                }
-                DependsOn = "[WaitForADDomain]WaitForDCReady"
-            }   
-        }
-        elseif ($CertificateType -eq 'SelfSigned') {
+                DestinationPath = "C:\Setup"
+                Type            = "Directory"
+                Ensure          = "Present"
+            }
+
+            SmbShare SrcShare
+            {
+                Ensure      = "Present"
+                Name        = $SmbSharedFolder
+                Path        = "C:\$SmbSharedFolder"
+                FullAccess  = @("Domain Admins", "Domain Computers")
+                ReadAccess  = "Authenticated Users"
+                DependsOn   = "[File]SrcFolder"
+            }
+
             # ******* Configure AD CS **********
             WindowsFeature AddADCSFeature
             { 
@@ -222,8 +210,8 @@ configuration Create-AD-ADFS {
             {
                 CARootName                = "$DomainNetbiosName-$ComputerName-CA"
                 CAServerFQDN              = "$ComputerName.$DomainFQDN"
-                Subject                   = "$ADFSSiteName.$DomainFQDN"
-                FriendlyName              = "$ADFSSiteName.$DomainFQDN site certificate"
+                Subject                   = "$FederationServiceName"
+                FriendlyName              = "$FederationServiceName site certificate"
                 KeyLength                 = '2048'
                 Exportable                = $true
                 ProviderName              = '"Microsoft RSA SChannel Cryptographic Provider"'
@@ -231,7 +219,7 @@ configuration Create-AD-ADFS {
                 KeyUsage                  = '0xa0'
                 CertificateTemplate       = 'WebServer'
                 AutoRenew                 = $true
-                SubjectAltName            = "dns=certauth.$ADFSSiteName.$DomainFQDN&dns=$ADFSSiteName.$DomainFQDN&dns=enterpriseregistration.$DomainFQDN"
+                SubjectAltName            = "dns=certauth.$FederationServiceName&dns=$FederationServiceName&dns=enterpriseregistration.$DomainFQDN"
                 Credential                = $DomainCreds
                 DependsOn                 = '[WaitForCertificateServices]WaitAfterADCSProvisioning'
             }
@@ -303,10 +291,10 @@ configuration Create-AD-ADFS {
             {
                 SetScript = 
                 {
-                    $destinationPath = "C:\Setup"
-                    $adfsPfxCertName = "$using:CertificateName"
-                    $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$using:ADFSSiteName.$using:DomainFQDN"
-                    Export-PfxCertificate -FilePath ([System.IO.Path]::Combine($destinationPath, $adfsPfxCertName)) -Cert $cert -Password (ConvertTo-SecureString "$using:AdminPassword" -AsPlainText -Force)
+                    $destinationPath = "C:\$using:SmbSharedFolder"
+                    $adfsPfxCertName = "$using:PfxCertName"
+                    $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "$using:FederationServiceName"
+                    Export-PfxCertificate -FilePath ([System.IO.Path]::Combine($destinationPath, $adfsPfxCertName)) -Cert $cert -Password $using:PfxCertCreds.Password
                 }
                 GetScript =  
                 {

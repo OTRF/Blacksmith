@@ -1,11 +1,11 @@
 # Author: Roberto Rodriguez @Cyb3rWard0g
 # License: GPLv3
-configuration Import-PfxCertificate 
+configuration Import-PfxCert 
 { 
    param 
    (
         [Parameter()]
-        [System.String]$CertPath,
+        [System.String]$PfxCertPath,
 
         [Parameter()]
         [ValidateSet('CurrentUser', 'LocalMachine')]
@@ -19,7 +19,7 @@ configuration Import-PfxCertificate
         [System.Boolean]$Exportable = $true,
 
         [Parameter()]
-        [System.Management.Automation.PSCredential]$PfxCreds
+        [System.Management.Automation.PSCredential]$PfxCertCreds
     ) 
     
     Import-DscResource -ModuleName xPSDesiredStateConfiguration
@@ -37,16 +37,16 @@ configuration Import-PfxCertificate
         {
             SetScript = 
             {
-                $certFilepath = Get-ChildItem -Path $using:CertPath
+                $certFilepath = Get-ChildItem -Path $using:pfxCertPath
                 $certStore =  'Cert:' | Join-Path -ChildPath $using:Location | Join-Path -ChildPath $using:Store
 
                 if ($using:Exportable -eq $True)
                 {
-                    Import-PfxCertificate -Exportable -CertStoreLocation $certStore -FilePath $certFilepath.FullName -Password $using:PfxCreds.Password
+                    Import-PfxCertificate -Exportable -CertStoreLocation $certStore -FilePath $certFilepath.FullName -Password $using:PfxCertCreds.Password
                 }
                 else
                 {
-                    Import-PfxCertificate -CertStoreLocation $certStore -FilePath $certFilepath.FullName -Password $using:PfxCreds.Password
+                    Import-PfxCertificate -CertStoreLocation $certStore -FilePath $certFilepath.FullName -Password $using:PfxCertCreds.Password
                 }
             }
             GetScript =  

@@ -230,11 +230,17 @@
                 "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
             }
         },
-        "certificateName": {
+        "pfxCertName": {
             "type": "string",
             "defaultValue": "ADFS.pfx",
             "metadata": {
                 "description": "Name of the SSL certificate .pfx file to set an ADFS farm with. Example: ADFS.pfx"
+            }
+        },
+        "pfxCertPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Password to export and import PFX certificate. If it is a trusted CA signed certificate, the password will be used to import the certificate."
             }
         },
         "certificateType": {
@@ -248,18 +254,18 @@
                 "description": "Are we going to set up ADFS with a trusted CA signed SSL certificate or a self-signed SSL certificate. If trusted, make sure you set the certificate container location and SAS token parameters "
             }
         },
-        "_certificateContainerLocation": {
+        "_pfxCertContainerLocation": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
-                "description": "The location of the trusted CA signed SSL certificate. Only if the "
+                "description": "The location of the trusted CA signed SSL certificate (.PFX format). Example: https://STORAGE-ACCOUNT-NAME.blob.core.windows.net//CONTAINER-NAME//"
             }
         },
-        "_certificateContainerSasToken": {
+        "_pfxCertContainerSasToken": {
             "type": "securestring",
             "defaultValue": "",
             "metadata": {
-                "description": "SAS token to access the private container where the trusted CA signed SSL certificate resides"
+                "description": "SAS token to access the private container where the trusted CA signed SSL certificate (.PFX format) resides"
             }
         },
         "location": {
@@ -332,21 +338,9 @@
         "dscModules": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/scripts/Install-DSC-Modules.ps1', parameters('_artifactsLocationSasToken')))]",
         "createADForestScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/active-directory/Create-AD-ADFS.zip', parameters('_artifactsLocationSasToken')))]",
         "joinDomainScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/active-directory/Join-Domain.zip', parameters('_artifactsLocationSasToken')))]",
-        "importPfxCertScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/misc/Import-PfxCertificate.zip', parameters('_artifactsLocationSasToken')))]",
+        "importPfxCertScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/misc/Import-PfxCert.zip', parameters('_artifactsLocationSasToken')))]",
         "installADFSScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/active-directory/Install-ADFS.zip', parameters('_artifactsLocationSasToken')))]",
         "installSysmonScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/software/Install-Sysmon.zip', parameters('_artifactsLocationSasToken')))]",
-
-        // Initial Setup Scripts
-        "initialSetUpScripts": [
-            "[variables('initialSettingsScript')]",
-            "[variables('dscModules')]",
-            "[variables('prepareBoxScript')]",
-            "[variables('setSecurityAuditingScript')]",
-            "[variables('setPowerShellLogging')]",
-            "[variables('saclModule')]",
-            "[variables('setSACLScript')]",
-            "[variables('setWallPaperScript')]"
-        ],
 
         // Virtual Machine Properties
         "copy": [
@@ -404,12 +398,30 @@
         "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
         "workstationsOUPath": "[concat('OU=Workstations; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
         "serversOUPath": "[concat('OU=Servers; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
-        "pfxPassword": "[parameters('adminPassword')]",
-        "dcSmbSharedFolder": "Setup",
-        "smbSharedCertPath": "[concat('\\\\',variables('domainController')[0].vmName,'\\',variables('dcSmbSharedFolder'),'\\',parameters('certificateName'))]",
-        "federationServiceName": "[concat('ADFS.',parameters('domainFQDN'))]",
-        "trustedSSLCertificate": "[if(equals(parameters('certificateType'),'TrustedSigned'), array(uri(parameters('_certificateContainerLocation'), concat(parameters('certificateName'), parameters('_certificateContainerSasToken')))), json('null'))]",
-        "initialDCADFSScripts": "[if(equals(parameters('certificateType'),'TrustedSigned'), concat(variables('initialSetUpScripts'), variables('trustedSSLCertificate')), variables('initialSetUpScripts'))]"
+        
+        //Certificates
+        "smbSharedFolder": "Setup",
+        "selfsignedPfxCertPath": "[concat('\\\\',variables('domainController')[0].vmName,'\\',variables('smbSharedFolder'),'\\',parameters('pfxCertName'))]",
+        "signedPfxCertPath": "[concat('C:\\ProgramData\\',parameters('pfxCertName'))]",
+        "pfxCertPath": "[if(equals(parameters('certificateType'),'TrustedSigned'),variables('signedPfxCertPath'),variables('selfsignedPfxCertPath'))]",
+        "pfxCertUri": "[array(uri(parameters('_pfxCertContainerLocation'), concat(parameters('pfxCertName'), parameters('_pfxCertContainerSasToken'))))]",
+
+        //ADFS Service
+        "adfsSiteName": "ADFS",
+        "federationServiceName": "[concat(variables('adfsSiteName'),'.',parameters('domainFQDN'))]",
+
+        // Initial Setup Scripts
+        "initialSetUpScripts": [
+            "[variables('initialSettingsScript')]",
+            "[variables('dscModules')]",
+            "[variables('prepareBoxScript')]",
+            "[variables('setSecurityAuditingScript')]",
+            "[variables('setPowerShellLogging')]",
+            "[variables('saclModule')]",
+            "[variables('setSACLScript')]",
+            "[variables('setWallPaperScript')]"
+        ],
+        "initialDCADFSScripts": "[if(equals(parameters('certificateType'),'TrustedSigned'), concat(variables('initialSetUpScripts'), variables('pfxCertUri')), variables('initialSetUpScripts'))]"
     },
     "resources": [
         {
@@ -707,7 +719,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": "[variables('initialDCADFSScripts')]",
-                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1',' ', '-SetupType DC',' ','-CertificateName',' ',parameters('certificateName'),' ','-CertificateType',' ',parameters('certificateType'))]"
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1',' ', '-SetupType DC',' ','-PfxCertName',' ',parameters('pfxCertName'),' ','-CertificateType',' ',parameters('certificateType'))]"
                 },
                 "protectedSettings": {}
             }
@@ -727,7 +739,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": "[variables('initialDCADFSScripts')]",
-                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1',' ','-SetupType ADFS',' ','-CertificateName',' ',parameters('certificateName'),' ','-CertificateType',' ',parameters('certificateType'))]"
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1',' ','-SetupType ADFS',' ','-PfxCertName',' ',parameters('pfxCertName'),' ','-CertificateType',' ',parameters('certificateType'))]"
                 },
                 "protectedSettings": {}
             }
@@ -755,14 +767,11 @@
                     "domainFQDN": {
                         "value": "[parameters('domainFQDN')]"
                     },
+                    "federationServiceName": {
+                        "value": "[variables('federationServiceName')]"
+                    },
                     "adfsIPAddress": {
                         "value": "[variables('adfsServer')[0].ipAddress]"
-                    },
-                    "certificateType": {
-                        "value": "[parameters('certificateType')]"
-                    },
-                    "certificateName": {
-                        "value": "[parameters('certificateName')]"
                     },
                     "adminUsername": {
                         "value": "[parameters('adminUsername')]"
@@ -778,6 +787,18 @@
                     },
                     "domainUsers": {
                         "value": "[parameters('domainUsers')]"
+                    },
+                    "pfxCertName": {
+                        "value": "[parameters('pfxCertName')]"
+                    },
+                    "certificateType": {
+                        "value": "[parameters('certificateType')]"
+                    },
+                    "pfxCertPassword": {
+                        "value": "[parameters('pfxCertPassword')]"
+                    },
+                    "smbSharedFolder": {
+                        "value": "[variables('smbSharedFolder')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -812,6 +833,39 @@
                         "value": [
                             "[variables('domainController')[0].ipAddress]"
                         ]
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('certificateType'),'TrustedSigned')]",
+            "name": "DCImportPfxCert",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "UpdateVNetDNS"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('importPfxCertTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmName":   {
+                        "value": "[variables('domainController')[0].vmName]"
+                    },
+                    "importPfxCertScript": {
+                        "value": "[variables('importPfxCertScript')]"
+                    },
+                    "pfxCertPassword": {
+                        "value": "[parameters('pfxCertPassword')]"
+                    },
+                    "pfxCertPath": {
+                        "value": "[variables('pfxCertPath')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -908,7 +962,7 @@
             }
         },
         {
-            "name": "ImportPfxCetificate",
+            "name": "ADFSImportPfxCert",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
@@ -927,11 +981,11 @@
                     "importPfxCertScript": {
                         "value": "[variables('importPfxCertScript')]"
                     },
-                    "pfxPassword": {
-                        "value": "[variables('pfxPassword')]"
+                    "pfxCertPassword": {
+                        "value": "[parameters('pfxCertPassword')]"
                     },
-                    "certPath": {
-                        "value": "[variables('smbSharedCertPath')]"
+                    "pfxCertPath": {
+                        "value": "[variables('pfxCertPath')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -944,7 +998,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "ImportPfxCetificate"
+                "ADFSImportPfxCert"
             ],
             "properties": {
                 "mode": "Incremental",

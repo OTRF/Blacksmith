@@ -8,10 +8,10 @@
         "importPfxCertScript": {
             "type": "string"
         },
-        "certPath": {
+        "PfxCertPath": {
             "type": "string"
         },
-        "pfxPassword": {
+        "pfxCertPassword": {
             "type": "securestring"
         },
         "location": {
@@ -36,18 +36,18 @@
                     "wmfVersion": "latest",
                     "configuration": {
                         "url": "[parameters('importPfxCertScript')]",
-                        "script": "Import-PfxCertificate.ps1",
-                        "function": "Import-PfxCertificate"
+                        "script": "Import-PfxCert.ps1",
+                        "function": "Import-PfxCert"
                     },
                     "configurationArguments": {
-                        "CertPath": "[parameters('certPath')]"
+                        "PfxCertPath": "[parameters('PfxCertPath')]"
                     }
                 },
                 "protectedSettings": {
                     "configurationArguments": {
-                        "PfxCreds": {
+                        "PfxCertCreds": {
                             "UserName": "admin",
-                            "Password": "[parameters('pfxPassword')]"
+                            "Password": "[parameters('pfxCertPassword')]"
                         }
                     }
                 }
