@@ -270,7 +270,8 @@
                     "publisher": "MicrosoftWindowsDesktop",
                     "offer": "Windows-10",
                     "sku": "[parameters('windowsDesktopSKU')]",
-                    "version": "[parameters('windowsDesktopVersion')]"
+                    "version": "[parameters('windowsDesktopVersion')]",
+                    "extensionName": "SetupWinVM"
                 }
             }
         ]
@@ -533,7 +534,7 @@
             }
         },
         {
-            "name": "[concat(variables('allWinWKS')[copyIndex('InitialSetUpWKSCopy')].vmName, '/SetupWinVM')]",
+            "name": "[concat(variables('allWinWKS')[copyIndex('InitialSetUpWKSCopy')].vmName, '/', variables('allWinWKS')[copyIndex('InitialSetUpWKSCopy')].extensionName)]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
@@ -562,7 +563,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "vmDomainJoinCopy"
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('allWinWKS')[copyIndex('vmSysmonSetupCopy')].vmName, variables('allWinWKS')[copyIndex('vmSysmonSetupCopy')].extensionName)]"
             ],
             "copy": {
                 "name": "vmSysmonSetupCopy",
