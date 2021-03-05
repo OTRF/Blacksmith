@@ -28,7 +28,7 @@ configuration Install-ADFS
     # Domain ADFS Admin Creds
     [System.Management.Automation.PSCredential]$DomainAdfsAdminCreds = New-Object System.Management.Automation.PSCredential ("${DomainNetbiosName}\$($AdfsAdminCreds.UserName)", $AdfsAdminCreds.Password)
 
-    $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName $FederationServiceName
+    $cert = Get-ChildItem -Path "cert:\LocalMachine\My\" -DnsName "*.$DomainFQDN"
 
     Node localhost
     {
