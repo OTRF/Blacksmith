@@ -259,7 +259,7 @@ configuration Create-AD {
                 $exe="$env:SystemRoot\system32\msiexec.exe"
                 $MSIPath = "C:\ProgramData\AzureADConnect.msi"
 
-                Invoke-Expression "& `"$exe`" /i $MSIPath /qn /passive /norestart"
+                Invoke-Expression "& `"$exe`" /i $MSIPath /qn /passive /forcerestart"
             }
             GetScript =  
             {
