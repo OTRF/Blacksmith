@@ -1074,7 +1074,8 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "UpdateVNetDNS"
+                "UpdateVNetDNS",
+                "DCImportPfxCert"
             ],
             "properties": {
                 "mode": "Incremental",
