@@ -472,16 +472,6 @@ configuration Create-AD-ADFS {
             Name        = 'RebootOnSignalFromAADConnect'
             DependsOn   = "[xScript]InstallAADConnect"
         }
-
-        WaitForADDomain WaitForDCReady2
-        {
-            DomainName              = $DomainFQDN
-            WaitTimeout             = 300
-            RestartCount            = 3
-            Credential              = $DomainCreds
-            WaitForValidCredentials = $true
-            DependsOn               = "[PendingReboot]RebootOnSignalFromAADConnect"
-        }
     }
 }
 
