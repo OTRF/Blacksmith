@@ -56,7 +56,7 @@ configuration Join-Domain {
             DomainName    = $DomainFQDN
             Credential    = $DomainCreds
             JoinOU        = $JoinOU
-            DependsOn  = "[PendingReboot]RebootOnSignalFromWaitForDCReady"
+            DependsOn  = "[WaitForADDomain]WaitForDCReady"
         }
 
         PendingReboot RebootAfterJoiningDomain
