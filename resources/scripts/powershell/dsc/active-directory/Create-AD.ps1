@@ -273,6 +273,12 @@ configuration Create-AD {
             }
             DependsOn = "[xRemoteFile]DownloadAADConnect"
         }
+
+        PendingReboot RebootOnSignalFromAADConnect
+        {
+            Name        = 'RebootOnSignalFromAADConnect'
+            DependsOn   = "[xScript]InstallAADConnect"
+        }
     }
 }
 

@@ -467,6 +467,7 @@ configuration Create-AD-ADFS {
             }
             DependsOn = "[xRemoteFile]DownloadAADConnect"
         }
+        
         PendingReboot RebootOnSignalFromAADConnect
         {
             Name        = 'RebootOnSignalFromAADConnect'
