@@ -47,15 +47,7 @@ configuration Join-Domain {
             WaitTimeout             = 300
             RestartCount            = 3
             Credential              = $DomainCreds
-            WaitForValidCredentials = $true
             DependsOn               = "[DnsServerAddress]SetDNS"
-        }
-
-        PendingReboot RebootOnSignalFromWaitForDCReady
-        {
-            Name             = "RebootOnSignalFromWaitForDCReady"
-            SkipCcmClientSDK = $true
-            DependsOn        = "[WaitForADDomain]WaitForDCReady"
         }
 
         Computer JoinDomain
