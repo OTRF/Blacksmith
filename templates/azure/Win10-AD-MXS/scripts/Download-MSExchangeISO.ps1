@@ -3,7 +3,7 @@
 [CmdletBinding()]
 Param(
     [Parameter(Mandatory=$true)]
-    [ValidateSet('MXS2016-x64-CU19-KB4588884','MXS2016-x64-CU18-KB4571788','MXS2016-x64-CU17-KB4556414','MXS2016-x64-CU16-KB4537678','MXS2016-x64-CU15-KB4522150','MXS2016-x64-CU14-KB4514140','MXS2016-x64-CU13-KB4488406')]
+    [ValidateSet('MXS2016-x64-CU19-KB4588884','MXS2016-x64-CU18-KB4571788','MXS2016-x64-CU17-KB4556414','MXS2016-x64-CU16-KB4537678','MXS2016-x64-CU15-KB4522150','MXS2016-x64-CU14-KB4514140','MXS2016-x64-CU13-KB4488406','MXA2016-x64-CU12-KB4471392')]
     [string] $MXSRelease = 'MXS2016-x64-CU19-KB4588884',
 
     [Parameter(Mandatory=$true)]
@@ -25,6 +25,7 @@ $MXSReleaseDownloadUri = Switch ($MXSRelease) {
     'MXS2016-x64-CU15-KB4522150' { 'https://download.microsoft.com/download/5/6/6/566de1bf-336a-4662-841c-98ef4e2c30bf/ExchangeServer2016-x64-CU15.ISO' }
     'MXS2016-x64-CU14-KB4514140' { 'https://download.microsoft.com/download/f/4/e/f4e4b3a0-925b-4eff-8cc7-8b5932d75b49/ExchangeServer2016-x64-cu14.iso' }
     'MXS2016-x64-CU13-KB4488406' { 'https://download.microsoft.com/download/5/9/6/59681DAE-AB62-4854-8DEC-CA25FFEFE3B3/ExchangeServer2016-x64-cu13.iso' }
+    'MXA2016-x64-CU12-KB4471392' { 'https://download.microsoft.com/download/2/5/8/258D30CF-CA4C-433A-A618-FB7E6BCC4EEE/ExchangeServer2016-x64-cu12.iso' }
 }
 
 ################

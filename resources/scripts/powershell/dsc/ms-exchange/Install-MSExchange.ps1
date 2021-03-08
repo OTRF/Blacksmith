@@ -17,7 +17,7 @@ configuration Install-MSExchange
         [String]$MXSISODirectory,
 
         [Parameter(Mandatory)]
-        [ValidateSet('MXS2016-x64-CU19-KB4588884','MXS2016-x64-CU18-KB4571788','MXS2016-x64-CU17-KB4556414','MXS2016-x64-CU16-KB4537678','MXS2016-x64-CU15-KB4522150','MXS2016-x64-CU14-KB4514140','MXS2016-x64-CU13-KB4488406')]
+        [ValidateSet('MXS2016-x64-CU19-KB4588884','MXS2016-x64-CU18-KB4571788','MXS2016-x64-CU17-KB4556414','MXS2016-x64-CU16-KB4537678','MXS2016-x64-CU15-KB4522150','MXS2016-x64-CU14-KB4514140','MXS2016-x64-CU13-KB4488406','MXA2016-x64-CU12-KB4471392')]
         [string]$MXSRelease
     ) 
     
@@ -36,6 +36,7 @@ configuration Install-MSExchange
         'MXS2016-x64-CU15-KB4522150' { 'ExchangeServer2016-x64-CU15.ISO' }
         'MXS2016-x64-CU14-KB4514140' { 'ExchangeServer2016-x64-cu14.iso' }
         'MXS2016-x64-CU13-KB4488406' { 'ExchangeServer2016-x64-cu13.iso' }
+        'MXA2016-x64-CU12-KB4471392' { 'ExchangeServer2016-x64-cu12.iso' }
     }
 
     $MXSISOFilePath = Join-Path $MXSISODirectory $MXSISOFile
