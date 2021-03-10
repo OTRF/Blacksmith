@@ -48,7 +48,7 @@ configuration PrepareAD-MSExchange
         'MXS2016-x64-CU15-KB4522150' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
         'MXS2016-x64-CU14-KB4514140' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
         'MXS2016-x64-CU13-KB4488406' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
-        'MXS2016-x64-CU13-KB4488406' { @{SchemaVersion = 15332; OrganizationVersion = 16215; DomainVersion = 13236} }
+        'MXA2016-x64-CU12-KB4471392' { @{SchemaVersion = 15332; OrganizationVersion = 16215; DomainVersion = 13236} }
     }
 
     $MXSISOFilePath = Join-Path $MXSISODirectory $MXSISOFile
