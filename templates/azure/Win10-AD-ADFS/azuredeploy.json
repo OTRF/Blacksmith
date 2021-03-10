@@ -254,18 +254,11 @@
                 "description": "Are we going to set up ADFS with a trusted CA signed SSL certificate or a self-signed SSL certificate. If trusted, make sure you set the certificate container location and SAS token parameters "
             }
         },
-        "_pfxCertContainerLocation": {
+        "_pfxCertBlobSasUrl": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
-                "description": "The location of the trusted CA signed SSL certificate (.PFX format). Example: https://STORAGE-ACCOUNT-NAME.blob.core.windows.net//CONTAINER-NAME//"
-            }
-        },
-        "_pfxCertContainerSasToken": {
-            "type": "securestring",
-            "defaultValue": "",
-            "metadata": {
-                "description": "SAS token to access the private container where the trusted CA signed SSL certificate (.PFX format) resides"
+                "description": "Blob SAS Url to access a trusted CA signed SSL certificate hosted in an Azure account storage private container. .PFX File. Example: https://STORAGE-ACCOUNT-NAME.blob.core.windows.net/CONTAINER-NAME/PFX-CERTIFICATE.PFX?SAS-TOKEN"
             }
         },
         "location": {
@@ -404,7 +397,7 @@
         "selfsignedPfxCertPath": "[concat('\\\\',variables('domainController')[0].vmName,'\\',variables('smbSharedFolder'),'\\',parameters('pfxCertName'))]",
         "signedPfxCertPath": "[concat('C:\\ProgramData\\',parameters('pfxCertName'))]",
         "pfxCertPath": "[if(equals(parameters('certificateType'),'TrustedSigned'),variables('signedPfxCertPath'),variables('selfsignedPfxCertPath'))]",
-        "pfxCertUri": "[array(uri(parameters('_pfxCertContainerLocation'), concat(parameters('pfxCertName'), parameters('_pfxCertContainerSasToken'))))]",
+        "pfxCertUri": "[array(parameters('_pfxCertBlobSasUrl'))]",
 
         //ADFS Service
         "adfsSiteName": "ADFS",
