@@ -279,6 +279,13 @@ configuration Create-AD {
             Name        = 'RebootOnSignalFromAADConnect'
             DependsOn   = "[xScript]InstallAADConnect"
         }
+
+        xService AWDS
+        {
+            Name = "ADWS"
+            State = "Running"
+            DependsOn = '[PendingReboot]RebootOnSignalFromAADConnect'
+        }
     }
 }
 
