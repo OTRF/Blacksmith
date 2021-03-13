@@ -308,6 +308,7 @@
         "prepareMSExchangeTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-MXS/nestedtemplates/prepareMSExchange.json', parameters('_artifactsLocationSasToken')))]",
         "prepareADMSExchangeTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-MXS/nestedtemplates/prepareADMSExchange.json', parameters('_artifactsLocationSasToken')))]",
         "postInstallMSExchangeTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-MXS/nestedtemplates/postInstallMSExchange.json', parameters('_artifactsLocationSasToken')))]",
+        "installAADConnectTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD/nestedtemplates/installAADConnect.json', parameters('_artifactsLocationSasToken')))]",
         
         // Custom Scripts
         "initialSettingsScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-MXS/scripts/Set-Initial-Settings.ps1', parameters('_artifactsLocationSasToken')))]",
@@ -328,6 +329,7 @@
         "prepareADMXScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/ms-exchange/PrepareAD-MSExchange.zip', parameters('_artifactsLocationSasToken')))]",
         "postInstallMXScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/ms-exchange/PostInstall-MSExchange.zip', parameters('_artifactsLocationSasToken')))]",
         "installSysmonScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/software/Install-Sysmon.zip', parameters('_artifactsLocationSasToken')))]",
+        "installAADConnectScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/misc/Install-AADConnect.zip', parameters('_artifactsLocationSasToken')))]",
 
         // Initial Setup Scripts
         "initialSetUpScripts": [
@@ -1172,6 +1174,35 @@
                 },
                 "protectedSettings": {
                     "workspaceKey": "[parameters('workspaceKey')]"
+                }
+            }
+        },
+        {
+            "name": "[concat(variables('domainController')[0].vmName, '-installAADConnect')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "vmDomainJoinCopy",
+                "PostInstallMSExchange",
+                "[concat(variables('domainController')[0].vmName, '-installSysmon')]",
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('domainController')[0].vmName, 'OMSExtension')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('installAADConnectTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmName":   {
+                        "value": "[variables('domainController')[0].vmName]"
+                    },
+                    "installAADConnectScript": {
+                        "value": "[variables('installAADConnectScript')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
                 }
             }
         }
