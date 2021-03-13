@@ -1,5 +1,6 @@
 # Author: Roberto Rodriguez @Cyb3rWard0g
 # License: GPLv3
+
 configuration PostInstall-MSExchange
 { 
    param 
@@ -40,10 +41,10 @@ configuration PostInstall-MSExchange
             {
                 # Connect to MXS Powershell Exchange
                 $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "http://$using:ComputerName.$using:DomainFQDN/PowerShell/"
-                Import-PSSession $Session
+                $M = Import-PSSession $Session
 
                 # Enable Audit on all user mailboxes
-                Get-Mailbox -ResultSize Unlimited -Filter "RecipientTypeDetails -eq 'UserMailbox'" | Select PrimarySmtpAddress | ForEach {Set-Mailbox -Identity $_.PrimarySmtpAddress -AuditEnabled $true}
+                Get-Mailbox -ResultSize Unlimited -Filter "RecipientTypeDetails -eq 'UserMailbox'" | Select-Object PrimarySmtpAddress | ForEach-object {Set-Mailbox -Identity $_.PrimarySmtpAddress -AuditEnabled $true}
 
                 # Verify Mailbox Auditing
                 # Get-Mailbox -ResultSize Unlimited -Filter "RecipientTypeDetails -eq 'UserMailbox'" | Format-List Name,Audit*
