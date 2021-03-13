@@ -15,11 +15,30 @@
             RebootNodeIfNeeded  = $true
         }
 
+        xRegistry SchUseStrongCrypto
+        {
+            Key = 'HKLM:\SOFTWARE\Microsoft\.NETFramework\v4.0.30319'
+            ValueName = 'SchUseStrongCrypto'
+            ValueType = 'Dword'
+            ValueData =  '1'
+            Ensure = 'Present'
+        }
+
+        xRegistry SchUseStrongCrypto64
+        {
+            Key = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\.NETFramework\v4.0.30319'
+            ValueName = 'SchUseStrongCrypto'
+            ValueType = 'Dword'
+            ValueData =  '1'
+            Ensure = 'Present'
+        }
+
         # ***** Download Sysmon Installer *****
         xRemoteFile DownloadSysmonInstaller
         {
             DestinationPath = "C:\ProgramData\Sysmon.zip"
             Uri = "https://download.sysinternals.com/files/Sysmon.zip"
+            DependsOn = @("[xRegistry]SchUseStrongCrypto","[xRegistry]SchUseStrongCrypto64")
         }
 
         # ***** Unzip Sysmon Installer *****
