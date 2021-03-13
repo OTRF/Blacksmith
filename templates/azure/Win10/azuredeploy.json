@@ -95,13 +95,6 @@
                 "Standard_A4_v2"
             ]
         },
-        "enableMonitoringAgent": {
-            "type": "bool",
-            "metadata": {
-                "description": "Do you want to enable the Microsoft Log Analytics Monitoring agent on your Linux VMs? "
-            },
-            "defaultValue": false
-        },
         "workspaceId": {
             "type": "string",
             "metadata": {
@@ -115,20 +108,6 @@
                 "description": "Log analytics workspace keys"
             },
             "defaultValue": ""
-        },
-        "enableSysmon": {
-            "type": "bool",
-            "metadata": {
-                "description": "Do you want to install Sysmon on the endpoint?"
-            },
-            "defaultValue": false
-        },
-        "enableAntimalware": {
-            "type": "bool",
-            "metadata": {
-                "description": "Enable Antimalware extension to filter out some folders and file extensions from the Windows Defender service"
-            },
-            "defaultValue": false
         },
         "virtualNetworkName": {
             "type": "string",
@@ -164,6 +143,27 @@
                 "description": "Address Range of the Azure Bastion service"
             },
             "defaultValue": "192.168.3.0/27"
+        },
+        "enableSysmon": {
+            "type": "bool",
+            "metadata": {
+                "description": "Do you want to install Sysmon on the endpoint?"
+            },
+            "defaultValue": false
+        },
+        "enableMonitoringAgent": {
+            "type": "bool",
+            "metadata": {
+                "description": "Do you want to enable the Microsoft Log Analytics Monitoring agent on your Linux VMs? "
+            },
+            "defaultValue": false
+        },
+        "enableAntimalware": {
+            "type": "bool",
+            "metadata": {
+                "description": "Enable Antimalware extension to filter out some folders and file extensions from the Windows Defender service"
+            },
+            "defaultValue": false
         },
         "_artifactsLocation": {
             "type": "string",

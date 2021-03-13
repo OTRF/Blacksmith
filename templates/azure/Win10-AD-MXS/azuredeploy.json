@@ -179,13 +179,6 @@
                 "MXA2016-x64-CU12-KB4471392"
             ]
         },
-        "enableMonitoringAgent": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to enable the Microsoft Log Analytics Monitoring agent? "
-            }
-        },
         "workspaceId": {
             "type": "string",
             "defaultValue": "",
@@ -198,13 +191,6 @@
             "defaultValue": "",
             "metadata": {
                 "description": "Log analytics workspace keys"
-            }
-        },
-        "enableSysmon": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to install Sysmon on the endpoint?"
             }
         },
         "virtualNetworkName": {
@@ -234,6 +220,27 @@
                 "description": "Name of the subnet"
             },
             "defaultValue": "snet-win"
+        },
+        "enableSysmon": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to install Sysmon on the endpoint?"
+            }
+        },
+        "enableMonitoringAgent": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to enable the Microsoft Log Analytics Monitoring agent? "
+            }
+        },
+        "enableAADConnect": {
+            "type": "bool",
+            "metadata": {
+                "description": "Do you want to want download the AADConnect installer and get it ready to set up after the deployment?"
+            },
+            "defaultValue": false
         },
         "_artifactsLocation": {
             "type": "string",
@@ -1178,6 +1185,7 @@
             }
         },
         {
+            "condition": "[parameters('enableAADConnect')]",
             "name": "[concat(variables('domainController')[0].vmName, '-installAADConnect')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
