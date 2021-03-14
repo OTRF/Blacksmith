@@ -6,7 +6,8 @@
     )
 
     Import-DscResource -ModuleName xPSDesiredStateConfiguration
-
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    
     Node localhost
     {
         LocalConfigurationManager
