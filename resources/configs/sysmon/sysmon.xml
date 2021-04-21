@@ -4,7 +4,7 @@
 	Sysmon version: 13.10
 	Modified: 2021/04/21
 -->
-<Sysmon schemaversion="4.50">
+<Sysmon schemaversion="4.60">
    <!-- Capture all hashes -->
    <HashAlgorithms>*</HashAlgorithms>
    <DnsLookup>False</DnsLookup>
