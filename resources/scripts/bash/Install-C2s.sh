@@ -18,7 +18,7 @@ usage(){
     echo " "
     echo "Usage: $0 [option...]" >&2
     echo
-    echo "   -r         run a specific C2 server (empire or covenant or caldera)"
+    echo "   -r         run a specific C2 server (empire or covenant or caldera or shadow or poshc2)"
     echo "   -h         help menu"
     echo
     echo "Examples:"
@@ -53,6 +53,7 @@ case $RUN_C2 in
     caldera);;
     metasploit);;
     shad0w);;
+    poshc2;;
     *)
         echo "$ERROR_TAG Not a valid C2 option. Valid Options: empire or covenant or caldera"
         usage
@@ -122,4 +123,19 @@ elif [[ $RUN_C2 == "shad0w" ]]; then
 
     # shad0w beacon -p x64/windows/secure/static -H 192.168.1.1 -f psh -o beacon.ps1
     # shad0w listen
+elif [[ $RUN_C2 == "poshc2" ]]; then
+    mkdir /opt/PoshC2
+    # Pull docker image
+    docker image pull cyb3rward0g/docker-poshc2:20210315
+    # tag image to be compatible with official PoshC2 scripts
+    docker tag cyb3rward0g/docker-poshc2:20210315 poshc2
+
+    # Run Server Manually to create a few One-Liners!
+    # sudo docker run -ti --rm -p 443:443 -v /opt/PoshC2:/opt/PoshC2 -e PAYLOAD_COMMS_HOST=https://192.168.0.4 poshc2 /usr/bin/posh-server
+
+    # Make sure you update the scripts following ATT&CK evals Red Team Setup steps for day 2 in the /opt/PoshC2/resources/modules/ folder. 
+    # https://github.com/mitre-attack/attack-arsenal/tree/master/adversary_emulation/APT29/Emulation_Plan/Day%202#red-team-setup
+
+    # Run Client Manually
+    # sudo docker run -ti --rm -v /opt/PoshC2:/opt/PoshC2 poshc2 /usr/bin/posh
 fi

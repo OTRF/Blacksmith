@@ -396,6 +396,7 @@
         ],
 
         // Additional Variables
+        "allServers": "[concat(variables('domainController'), variables('adfsServer'))]",
         "allEndpoints": "[concat(variables('allWinWKS'), variables('domainController'), variables('adfsServer'))]",
         "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
         "workstationsOUPath": "[concat('OU=Workstations; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
@@ -1196,6 +1197,10 @@
         "allWinVMsDeployed": {
             "type": "array",
             "value": "[variables('allEndpoints')]"
+        },
+        "allWinServersDeployed": {
+            "type": "array",
+            "value": "[variables('allServers')]"
         }
     }
 }
