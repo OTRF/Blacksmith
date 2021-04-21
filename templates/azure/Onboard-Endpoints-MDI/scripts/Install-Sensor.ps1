@@ -7,4 +7,4 @@ Param(
 )
 
 Expand-Archive -path "Azure ATP Sensor Setup.zip" -DestinationPath "Azure ATP Sensor Setup"
-Start-Process -FilePath "Azure ATP Sensor Setup\Azure ATP Sensor Setup.exe" -ArgumentList @("/quiet","NetFrameworkCommandLineArguments=/q","AccessKey=$AccessKey") -NoNewWindow -Wait
+Start-Process -FilePath "Azure ATP Sensor Setup\Azure ATP Sensor Setup.exe" -ArgumentList @("/quiet","NetFrameworkCommandLineArguments=/q","AccessKey=$AccessKey") -RedirectStandardOutput "MDIStandardOutput.txt" -RedirectStandardError "MDIStandardError.txt" -NoNewWindow -Wait
