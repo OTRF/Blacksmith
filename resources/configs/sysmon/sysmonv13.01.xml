@@ -1,8 +1,8 @@
 <!--
 	Author: Roberto Rodriguez (@Cyb3rWard0g)
 	License: GPL-3.0
-	Sysmon version: 13.10
-	Modified: 2021/04/21
+	Sysmon version: 13.01
+	Modified: 2021/01/20
 -->
 <Sysmon schemaversion="4.50">
    <!-- Capture all hashes -->
@@ -264,10 +264,6 @@
 		<RuleGroup name="" groupRelation="or">
 			<!--Event ID 25 == ProcessTampering -->
 			<ProcessTampering onmatch="exclude" />
-		</RuleGroup>
-		<RuleGroup name="" groupRelation="or">
-			<!--Event ID 26 == FileDeleteDetected -->
-			<FileDeleteDetected onmatch="exclude" />
 		</RuleGroup>
   </EventFiltering>
 </Sysmon>
