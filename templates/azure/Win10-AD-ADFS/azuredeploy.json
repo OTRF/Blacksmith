@@ -1201,6 +1201,10 @@
         "allWinServersDeployed": {
             "type": "array",
             "value": "[variables('allServers')]"
+        },
+        "dcWinServerDeployed": {
+            "type": "array",
+            "value": "[variables('domainController')]"
         }
     }
 }
