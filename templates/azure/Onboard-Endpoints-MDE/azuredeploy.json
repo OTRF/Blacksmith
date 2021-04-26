@@ -1,0 +1,50 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines": {
+            "type": "array",
+            "metadata": {
+                "description": "List of endpoints to onboard to Microsoft Defender for Endpoint. Array must have \"vmName\" and \"extensionName\""
+            }
+        },
+        "_mdePackageBlobSasUrl": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Blog SAS Url for Microsoft Defender for Endpoint onboarding package. Zip File."
+            }
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location for all resources."
+            },
+            "defaultValue": "[resourceGroup().location]"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "name": "[concat(parameters('virtualMachines')[copyIndex('MDEOnboardCopy')].vmName, '/', parameters('virtualMachines')[copyIndex('MDEOnboardCopy')].extensionName)]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-12-01",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "MDEOnboardCopy",
+                "count": "[length(parameters('virtualMachines'))]"
+            },
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.10",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": ["[parameters('_mdePackageBlobSasUrl')]"],
+                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -command \"Expand-Archive -path WindowsDefenderATPOnboardingPackage.zip -DestinationPath WindowsDefenderATPOnboardingPackage; echo Y| cmd.exe /c 'WindowsDefenderATPOnboardingPackage\\WindowsDefenderATPLocalOnboardingScript.cmd'\""
+                },
+                "protectedSettings": {}
+            }
+        }
+    ],
+    "outputs": {}
+}

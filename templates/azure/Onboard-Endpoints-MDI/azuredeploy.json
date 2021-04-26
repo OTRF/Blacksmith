@@ -1,0 +1,76 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines": {
+            "type": "array",
+            "metadata": {
+                "description": "List of endpoints to onboard to Microsoft Defender for Endpoint. Array must have \"vmName\" and \"extensionName\" for each endpoint"
+            }
+        },
+        "_mdiAccessKey": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Microsoft Defender for Identity Access Key. This value is in your MDI portal under the sensors section."
+            }
+        },
+        "_mdiPackageBlobSasUrl": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Blog SAS Url for Microsoft Defender for Identity onboarding package. Zip File."
+            }
+        },
+        "_artifactsLocation": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/",
+            "metadata": {
+                "description": "The location of resources, such as templates and DSC modules, that the template depends on"
+            }
+        },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
+            }
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location for all resources."
+            },
+            "defaultValue": "[resourceGroup().location]"
+        }
+    },
+    "variables": {
+        "installSensorScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Onboard-Endpoints-MDI/scripts/Install-Sensor.ps1', parameters('_artifactsLocationSasToken')))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('virtualMachines')[copyIndex('MDIOnboardCopy')].vmName, '/', parameters('virtualMachines')[copyIndex('MDIOnboardCopy')].extensionName)]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-12-01",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "MDIOnboardCopy",
+                "count": "[length(parameters('virtualMachines'))]"
+            },
+            "properties": {
+                "publisher": "Microsoft.Compute",
+                "type": "CustomScriptExtension",
+                "typeHandlerVersion": "1.10",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "fileUris": [
+                        "[parameters('_mdiPackageBlobSasUrl')]",
+                        "[variables('installSensorScript')]"
+                    ]
+                },
+                "protectedSettings": {
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Install-Sensor.ps1',' ','-AccessKey',' ',parameters('_mdiAccessKey'))]"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
