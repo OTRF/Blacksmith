@@ -191,9 +191,9 @@
         ],
         "allSubnets": "[if(equals(parameters('remoteAccessMode'),'AzureBastionHost'), concat(variables('subnets'), variables('azureBastionSubnet')), variables('subnets'))]",
         //Nested Templates
-        "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/CEF-Log-Analytics-Agent-Linux/nestedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]",
+        "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/CEF-Log-Analytics-Agent/nestedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]",
         //Custom Scripts
-        "setUpCEFScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/CEF-Log-Analytics-Agent-Linux/scripts/Set-Up-CEF.sh', parameters('_artifactsLocationSasToken')))]",
+        "setUpCEFScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/CEF-Log-Analytics-Agent/scripts/Set-Up-CEF.sh', parameters('_artifactsLocationSasToken')))]",
         "cefInstaller": "https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/DataConnectors/CEF/cef_installer.py",
         //Linux VM Configurations
         "linuxConfiguration": {
