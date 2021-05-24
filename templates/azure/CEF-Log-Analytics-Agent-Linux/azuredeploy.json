@@ -1,0 +1,436 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "utcValue": {
+            "type": "string",
+            "defaultValue": "[utcNow()]",
+            "metadata": {
+                "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
+            }
+        },
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Username for the Virtual Machine."
+            }
+        },
+        "authenticationType": {
+            "type": "string",
+            "defaultValue": "password",
+            "allowedValues": [
+                "sshPublicKey",
+                "password"
+            ],
+            "metadata": {
+                "description": "Type of authentication to use on the Virtual Machine. SSH key is recommended."
+            }
+        },
+        "adminPasswordOrKey": {
+            "type": "securestring",
+            "metadata": {
+                "description": "SSH Key or password for the Virtual Machine. SSH key is recommended. The password must be at least 8 characters in length and must contain at least one digit, one non-alphanumeric character, and one upper or lower case letter."
+            }
+        },
+        "remoteAccessMode": {
+            "type": "string",
+            "defaultValue": "AllowPublicIP",
+            "allowedValues": [
+                "AllowPublicIP",
+                "AzureBastionHost"
+            ],
+            "metadata": {
+                "description": "Do you want to restrict access to your environment by a Public IP or set up an Azure Bastion Host. If the former, make sure you add your public IP address to the variable 'allowedIPAddresses'"
+            }
+        },
+        "allowedIPAddresses": {
+            "type": "string",
+            "metadata": {
+                "description": "The sourceAddressPrefixes allowed to connect to this deployment"
+            },
+            "defaultValue": "*"
+        },
+        "azureBastionHostName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of Azure Bastion Host assigned to the Virtual network in this template"
+            },
+            "defaultValue": "LinuxBastionHost"
+        },
+        "ubuntuSKU": {
+            "type": "string",
+            "defaultValue": "18.04-LTS",
+            "allowedValues": [
+                "12.04.5-LTS",
+                "14.04.5-LTS",
+                "16.04.0-LTS",
+                "18.04-LTS",
+                "19.04"
+            ],
+            "metadata": {
+                "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version."
+            }
+        },
+        "vmSize": {
+            "type": "string",
+            "defaultValue": "Standard_B2s",
+            "allowedValues": [
+                "Standard_A2",
+                "Standard_A3",
+                "Standard_B2s",
+                "Standard_B2ms",
+                "Standard_B4ms",
+                "Standard_A2_v2",
+                "Standard_A4_v2"
+            ],
+            "metadata": {
+                "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
+            }
+        },
+        "workspaceId": {
+            "type": "string",
+            "metadata": {
+                "description": "Log analytics workspace ID"
+            }
+        },
+        "workspaceKey": {
+            "type": "string",
+            "metadata": {
+                "description": "Log analytics workspace keys"
+            }
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Virtual Network"
+            },
+            "defaultValue": "vnet-linux"
+        },
+        "virtualNetworkAddressRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the virtual network"
+            },
+            "defaultValue": "192.168.0.0/16"
+        },
+        "subnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the subnet"
+            },
+            "defaultValue": "snet-linux"
+        },
+        "subnetRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the subnet"
+            },
+            "defaultValue": "192.168.2.0/24"
+        },
+        "azureBastionSubnetRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the Azure Bastion service"
+            },
+            "defaultValue": "192.168.3.0/27"
+        },
+        "_artifactsLocation": {
+            "type": "string",
+            "metadata": {
+                "description": "The location of resources, such as templates and DSC modules, that the template depends on"
+            },
+            "defaultValue": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/"
+        },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
+            },
+            "defaultValue": ""
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    },
+    "variables": {
+         // Virtual Network Setup
+        "virtualNetworkName": "[parameters('virtualNetworkName')]",
+        "virtualNetworkAddressRange": "[parameters('virtualNetworkAddressRange')]",
+        "subnetName": "[parameters('subnetName')]",
+        "subnetRange": "[parameters('subnetRange')]",
+        "vmPrivateIPPrefixArray": "[take(split(variables('subnetRange'),'.'),3)]",
+        "vmPrivateIPAddresPrefix": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray')[0], variables('vmPrivateIPPrefixArray')[1], variables('vmPrivateIPPrefixArray')[2])]",
+        "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
+        "nsg-default-name": "nsg-ssh-allow",
+        "nsg-id": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-default-name'))]"
+        },
+        "networkSecurityGroup": "[if(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), variables('nsg-id'), json('null'))]",
+        "subnets": [
+            {
+                "name": "[variables('subnetName')]",
+                "properties": {
+                    "addressPrefix": "[variables('subnetRange')]",
+                    "networkSecurityGroup": "[variables('networkSecurityGroup')]"
+                }
+            }
+        ],
+        //Bastion Host Network
+        "bastionSubnetName": "AzureBastionSubnet",
+        "azureBastionSubnet": [
+            {
+                "name": "[variables('bastionSubnetName')]",
+                "properties": {
+                    "addressPrefix": "[parameters('azureBastionSubnetRange')]"
+                }
+            }
+        ],
+        "allSubnets": "[if(equals(parameters('remoteAccessMode'),'AzureBastionHost'), concat(variables('subnets'), variables('azureBastionSubnet')), variables('subnets'))]",
+        //Nested Templates
+        "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/CEF-Log-Analytics-Agent-Linux/nestedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]",
+        //Custom Scripts
+        "setUpCEFScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/CEF-Log-Analytics-Agent-Linux/scripts/Set-Up-CEF.sh', parameters('_artifactsLocationSasToken')))]",
+        "cefInstaller": "https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/DataConnectors/CEF/cef_installer.py",
+        //Linux VM Configurations
+        "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+                "publicKeys": [
+                    {
+                        "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                        "keyData": "[parameters('adminPasswordOrKey')]"
+                    }
+                ]
+            }
+        },
+        "cefVM": [
+            {
+                "tag": "cef",
+                "vmName": "CEF-SYSLOG",
+                "os": "linux",
+                "subnetref": "[variables('subnetRef')]",
+                "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),'5')]",
+                "vmSize": "[parameters('vmSize')]",
+                "publisher": "Canonical",
+                "offer": "UbuntuServer",
+                "sku": "[parameters('ubuntuSKU')]",
+                "version": "latest",
+                "extensionName": "SetUpCEF"
+            }
+        ]
+    },
+    "resources": [
+        {
+            "condition": "[equals(parameters('remoteAccessMode'), 'AllowPublicIP')]",
+            "comments": "Default Network Security Group for Linux endpoints",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-08-01",
+            "name": "[variables('nsg-default-name')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-22",
+                        "properties": {
+                            "priority": 100,
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "destinationPortRange": "22",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
+                            "destinationAddressPrefix": "*"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-02-01",
+            "name": "[variables('virtualNetworkName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-default-name'))]"
+            ],
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('virtualNetworkAddressRange')]"
+                    ]
+                },
+                "subnets": "[variables('allSubnets')]"
+            }
+        },
+        {
+            "condition": "[equals(parameters('remoteAccessMode'),'AzureBastionHost')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2018-11-01",
+            "name": "[concat('pip-', parameters('azureBastionHostName'))]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Static"
+            }
+        },
+        {
+            "condition": "[equals(parameters('remoteAccessMode'),'AzureBastionHost')]",
+            "type": "Microsoft.Network/bastionHosts",
+            "apiVersion": "2020-05-01",
+            "name": "[parameters('azureBastionHostName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', parameters('azureBastionHostName')))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "IpConf",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', parameters('azureBastionHostName')))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), variables('bastionSubnetName'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "condition": "[equals(parameters('remoteAccessMode'),'AllowPublicIP')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2018-11-01",
+            "name": "[concat('pip-', variables('cefVM')[0].vmName)]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[toLower(concat(variables('cefVM')[0].vmName, '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-11-01",
+            "name": "[concat('nic-', variables('cefVM')[0].vmName)]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('cefVM')[0].vmName))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[variables('cefVM')[0].ipAddress]",
+                            "publicIPAddress": "[if(equals(parameters('remoteAccessMode'),'AllowPublicIP'), json(concat('{\"id\":', '\"', resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('cefVM')[0].vmName)),'\"}')),json('null'))]",
+                            "subnet": {
+                                "id": "[variables('cefVM')[0].subnetref]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-03-01",
+            "name": "[variables('cefVM')[0].vmName]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('cefVM')[0].vmName))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('cefVM')[0].vmSize]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('cefVM')[0].publisher]",
+                        "offer": "[variables('cefVM')[0].offer]",
+                        "sku": "[variables('cefVM')[0].sku]",
+                        "version": "[variables('cefVM')[0].version]"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": []
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('cefVM')[0].vmName))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[variables('cefVM')[0].vmName]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPasswordOrKey')]",
+                    "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), json('null'), variables('linuxConfiguration'))]"
+                }
+            }
+        },
+        {
+            "name": "[concat(variables('cefVM')[0].vmName, '-CEF-SETUP')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('cefVM')[0].vmName)]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "extensionName": {
+                        "value": "[variables('cefVM')[0].extensionName]"
+                    },
+                    "commandToExecute": {
+                        "value": "[concat('bash Set-Up-CEF.sh',' ','-w',' ',parameters('workspaceId'),' ','-k',' ',parameters('workspaceKey'))]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "[variables('setUpCEFScript')]",
+                            "[variables('cefInstaller')]"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[variables('cefVM')[0].vmName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "linuxVMsDeployed": {
+            "type": "array",
+            "value": "[variables('cefVM')]"
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "value": "[variables('virtualNetworkName')]"
+        },
+        "virtualNetworkId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+        }
+    }
+}
