@@ -1,10 +1,10 @@
 <!--
 	Author: Roberto Rodriguez (@Cyb3rWard0g)
 	License: GPL-3.0
-	Sysmon version: 14.1
-	Modified: 2021/05/25
+	Sysmon version: 13.10
+	Modified: 2021/04/21
 -->
-<Sysmon schemaversion="4.70">
+<Sysmon schemaversion="4.60">
    <!-- Capture all hashes -->
    <HashAlgorithms>*</HashAlgorithms>
    <DnsLookup>False</DnsLookup>
