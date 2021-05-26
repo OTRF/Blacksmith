@@ -80,7 +80,7 @@ if args.event_sample:
     log.debug(f'Parsing a custom sample event..')
     EVENTSAMPLE = os.path.abspath(args.event_sample)
     if (os.path.isdir(EVENTSAMPLE)):
-        EVENTSAMPLE =  glob.glob("{}\*.yml".format(EVENTSAMPLE))
+        EVENTSAMPLE =  glob.glob("{}\*.yaml".format(EVENTSAMPLE))
     else:
         EVENTSAMPLE =  glob.glob(EVENTSAMPLE)
     # Read Yaml Files
