@@ -59,7 +59,7 @@ parser.add_argument("-d", "--debug", help="Print lots of debugging statements", 
 
 args = parser.parse_args()
 
-logging.basicConfig(level=args.loglevel, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', filename="cef-simulator.log")
+logging.basicConfig(level=args.loglevel, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', filename="cef_simulator_debug.log")
 log = logging.getLogger(__name__)
 
 # Log all exceptions
