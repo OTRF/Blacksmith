@@ -47,7 +47,13 @@ then
     usage
 fi
 
-######################
-# SYSLOG SERVER SETUP
-######################
-python cef_installer.py $WORKSPACE_ID $WORKSPACE_KEY
+#######################
+# SYSLOG SERVER SETUP #
+#######################
+python3 cef_installer.py $WORKSPACE_ID $WORKSPACE_KEY
+sleep 15
+
+###########################
+# SEND SAMPLE CEF MESSAGE #
+###########################
+python3 cef_simulator.py --debug

@@ -194,6 +194,7 @@
         "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/CEF-Log-Analytics-Agent/nestedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]",
         //Custom Scripts
         "setUpCEFScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/CEF-Log-Analytics-Agent/scripts/Set-Up-CEF.sh', parameters('_artifactsLocationSasToken')))]",
+        "cefSimulatorScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/CEF-Log-Analytics-Agent/scripts/cef_simulator.py', parameters('_artifactsLocationSasToken')))]",
         "cefInstaller": "https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/DataConnectors/CEF/cef_installer.py",
         //Linux VM Configurations
         "linuxConfiguration": {
@@ -406,6 +407,7 @@
                     "fileUris": {
                         "value": [
                             "[variables('setUpCEFScript')]",
+                            "[variables('cefSimulatorScript')]",
                             "[variables('cefInstaller')]"
                         ]
                     },
@@ -420,7 +422,7 @@
         }
     ],
     "outputs": {
-        "linuxVMsDeployed": {
+        "cefVMDeployed": {
             "type": "array",
             "value": "[variables('cefVM')]"
         },
