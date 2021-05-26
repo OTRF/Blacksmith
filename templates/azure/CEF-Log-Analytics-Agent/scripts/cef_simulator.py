@@ -14,7 +14,7 @@ import logging
 import glob
 import yaml
 from datetime import datetime
-from dateutil import tz
+#from dateutil import tz
 
 # Bannner
 print(r"""
@@ -118,7 +118,8 @@ for sl in samples_loaded:
     # Replace values
     if args.replace_values:
         # Update datetime
-        current_time = datetime.now().astimezone(tz=tz.UTC).strftime("%b %d %Y %H:%M:%S %Z")
+        #current_time = datetime.now().astimezone(tz=tz.UTC).strftime("%b %d %Y %H:%M:%S %Z")
+        current_time = datetime.now().strftime("%b %d %Y %H:%M:%S %Z")
         log.debug(f"Setting current datetime: {current_time}..")
         message_to_send = message_to_send.replace('DATETIME', current_time)
         for k, v in REPLACEVALUES.items():

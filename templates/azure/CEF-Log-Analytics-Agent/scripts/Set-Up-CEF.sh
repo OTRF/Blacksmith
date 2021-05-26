@@ -56,4 +56,7 @@ sleep 15
 ###########################
 # SEND SAMPLE CEF MESSAGE #
 ###########################
+#apt-get update -qq
+#apt-get install -qqy python3-pip
+#python3 -m pip install python-dateutil
 python3 cef_simulator.py --debug
