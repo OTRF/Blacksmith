@@ -433,6 +433,10 @@
         "virtualNetworkId": {
             "type": "string",
             "value": "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+        },
+        "subnetId": {
+            "type": "string",
+            "value": "[variables('cefVM')[0].subnetref]"
         }
     }
 }
