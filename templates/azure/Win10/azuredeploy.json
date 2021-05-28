@@ -45,7 +45,7 @@
             "metadata": {
                 "description": "Name of Azure Bastion Host assigned to the Virtual network in this template"
             },
-            "defaultValue": "WindowsBastionHost"
+            "defaultValue": "AzureBastionHost"
         },
         "numberOfWorkstations": {
             "type": "int",
