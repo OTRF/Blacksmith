@@ -157,7 +157,7 @@
         }
     },
     "variables": {
-         //Virtual Network Setup
+        //Virtual Network Setup
         "virtualNetworkName": "[parameters('virtualNetworkName')]",
         "virtualNetworkAddressRange": "[parameters('virtualNetworkAddressRange')]",
         "subnetName": "[parameters('subnetName')]",
@@ -169,7 +169,7 @@
         "nsg-id": {
             "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-default-name'))]"
         },
-        "networkSecurityGroup": "[if(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), variables('nsg-id'), json('null'))]",
+        //"networkSecurityGroup": "[if(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), variables('nsg-id'), json('null'))]",
         "subnets": [
             {
                 "name": "[variables('subnetName')]",
@@ -416,7 +416,7 @@
                         }
                     }
                 ],
-                "networkSecurityGroup": "[variables('networkSecurityGroup')]"
+                "networkSecurityGroup": "[if(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), variables('nsg-id'), json('null'))]"
             }
         },
         {
