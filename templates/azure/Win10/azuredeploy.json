@@ -58,9 +58,16 @@
         "vmNamePrefix": {
             "type": "string",
             "metadata": {
-                "description": "Prefix for the name of your virtual machine. Template will add a number starting from 5."
+                "description": "Prefix for the name of your virtual machine. You can set a Suffix with the vmNameSuffix parameter which only allows numbers."
             },
             "defaultValue": "WORKSTATION"
+        },
+        "vmNameSuffix": {
+            "type": "int",
+            "metadata": {
+                "description": "Suffix number for the name of your virtual machine. This parameter only allows numbers and is aligned with the IP address."
+            },
+            "defaultValue": 5
         },
         "windowsDesktopSKU": {
             "type": "string",
@@ -109,6 +116,13 @@
             },
             "defaultValue": ""
         },
+        "newVirtualNetwork": {
+            "type": "bool",
+            "metadata": {
+                "description": "Is this a new virtual network? If so, set this to true."
+            },
+            "defaultValue": true
+        },
         "virtualNetworkName": {
             "type": "string",
             "metadata": {
@@ -122,6 +136,13 @@
                 "description": "Address Range of the virtual network"
             },
             "defaultValue": "192.168.0.0/16"
+        },
+        "existingSubnetId": {
+            "type": "string",
+            "metadata": {
+                "description": "Id of existing subnet used while setting up the network settings for the virtual VM."
+            },
+            "defaultValue": ""
         },
         "subnetName": {
             "type": "string",
@@ -207,8 +228,7 @@
             {
                 "name": "[variables('subnetName')]",
                 "properties": {
-                    "addressPrefix": "[variables('subnetRange')]",
-                    "networkSecurityGroup": "[variables('networkSecurityGroup')]"
+                    "addressPrefix": "[variables('subnetRange')]"
                 }
             }
         ],
@@ -262,10 +282,10 @@
                 "count": "[parameters('numberOfWorkstations')]",
                 "input": {
                     "tag": "workstation",
-                    "vmName": "[concat(parameters('vmNamePrefix'),copyIndex('allWinWKS',5))]",
+                    "vmName": "[concat(parameters('vmNamePrefix'),copyIndex('allWinWKS',parameters('vmNameSuffix')))]",
                     "os": "windows",
                     "subnetref": "[variables('subnetRef')]",
-                    "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('allWinWKS',5))]",
+                    "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('allWinWKS',parameters('vmNameSuffix')))]",
                     "vmSize": "[parameters('vmSize')]",
                     "publisher": "MicrosoftWindowsDesktop",
                     "offer": "Windows-10",
@@ -314,7 +334,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('remoteAccessMode'), 'AzureBastionHost')]",
+            "condition": "[and(equals(parameters('remoteAccessMode'), 'AzureBastionHost'),parameters('newVirtualNetwork'))]",
             "comments": "Default Network Security Group for Windows endpoints",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-08-01",
@@ -381,12 +401,12 @@
             }
         },
         {
+             "condition": "[parameters('newVirtualNetwork')]",
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2019-02-01",
             "name": "[variables('virtualNetworkName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-default-name'))]",
                 "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-bastion-host-name'))]"
             ],
             "properties": {
@@ -399,7 +419,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('remoteAccessMode'),'AzureBastionHost')]",
+            "condition": "[and(equals(parameters('remoteAccessMode'),'AzureBastionHost'),parameters('newVirtualNetwork'))]",
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2018-11-01",
             "name": "[concat('pip-', parameters('azureBastionHostName'))]",
@@ -412,7 +432,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('remoteAccessMode'),'AzureBastionHost')]",
+            "condition": "[and(equals(parameters('remoteAccessMode'),'AzureBastionHost'),parameters('newVirtualNetwork'))]",
             "type": "Microsoft.Network/bastionHosts",
             "apiVersion": "2020-05-01",
             "name": "[parameters('azureBastionHostName')]",
@@ -462,6 +482,7 @@
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('allWinWKS')[copyIndex('vmNetworkInterfaceCopy')].vmName))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-default-name'))]",
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
             ],
             "copy": {
@@ -477,11 +498,12 @@
                             "privateIPAddress": "[variables('allWinWKS')[copyIndex('vmNetworkInterfaceCopy')].ipAddress]",
                             "publicIPAddress": "[if(equals(parameters('remoteAccessMode'),'AllowPublicIP'), json(concat('{\"id\":', '\"', resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('allWinWKS')[copyIndex('vmNetworkInterfaceCopy')].vmName)),'\"}')),json('null'))]",
                             "subnet": {
-                                "id": "[variables('allWinWKS')[copyIndex('vmNetworkInterfaceCopy')].subnetref]"
+                                "id": "[if(parameters('newVirtualNetwork'), variables('allWinWKS')[copyIndex('vmNetworkInterfaceCopy')].subnetref, parameters('existingSubnetId'))]"
                             }
                         }
                     }
-                ]
+                ],
+                "networkSecurityGroup": "[variables('networkSecurityGroup')]"
             }
         },
         {
