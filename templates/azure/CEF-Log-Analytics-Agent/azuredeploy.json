@@ -169,7 +169,6 @@
         "nsg-id": {
             "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-default-name'))]"
         },
-        //"networkSecurityGroup": "[if(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), variables('nsg-id'), json('null'))]",
         "subnets": [
             {
                 "name": "[variables('subnetName')]",
@@ -201,6 +200,7 @@
         "setUpCEFScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/CEF-Log-Analytics-Agent/scripts/Set-Up-CEF.sh', parameters('_artifactsLocationSasToken')))]",
         "cefSimulatorScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/CEF-Log-Analytics-Agent/scripts/cef_simulator.py', parameters('_artifactsLocationSasToken')))]",
         "cefInstaller": "https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/DataConnectors/CEF/cef_installer.py",
+        
         //Linux VM Configurations
         "linuxConfiguration": {
             "disablePasswordAuthentication": true,

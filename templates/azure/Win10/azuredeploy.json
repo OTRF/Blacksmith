@@ -223,7 +223,6 @@
         "nsg-id": {
             "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-default-name'))]"
         },
-        "networkSecurityGroup": "[if(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), variables('nsg-id'), json('null'))]",
         "subnets": [
             {
                 "name": "[variables('subnetName')]",
@@ -503,7 +502,7 @@
                         }
                     }
                 ],
-                "networkSecurityGroup": "[variables('networkSecurityGroup')]"
+                "networkSecurityGroup": "[if(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), variables('nsg-id'), json('null'))]"
             }
         },
         {
