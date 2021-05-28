@@ -174,8 +174,7 @@
             {
                 "name": "[variables('subnetName')]",
                 "properties": {
-                    "addressPrefix": "[variables('subnetRange')]",
-                    "networkSecurityGroup": "[variables('networkSecurityGroup')]"
+                    "addressPrefix": "[variables('subnetRange')]"
                 }
             }
         ],
@@ -342,7 +341,8 @@
                             }
                         }
                     }
-                ]
+                ],
+                "networkSecurityGroup": "[variables('networkSecurityGroup')]"
             }
         },
         {
