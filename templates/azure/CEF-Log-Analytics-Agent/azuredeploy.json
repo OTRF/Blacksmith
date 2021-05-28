@@ -157,7 +157,7 @@
         }
     },
     "variables": {
-         // Virtual Network Setup
+         //Virtual Network Setup
         "virtualNetworkName": "[parameters('virtualNetworkName')]",
         "virtualNetworkAddressRange": "[parameters('virtualNetworkAddressRange')]",
         "subnetName": "[parameters('subnetName')]",
@@ -180,17 +180,23 @@
         ],
         //Bastion Host Network
         "bastionSubnetName": "AzureBastionSubnet",
+        "nsg-bastion-host-name": "nsg-bastion-host",
         "azureBastionSubnet": [
             {
                 "name": "[variables('bastionSubnetName')]",
                 "properties": {
-                    "addressPrefix": "[parameters('azureBastionSubnetRange')]"
+                    "addressPrefix": "[parameters('azureBastionSubnetRange')]",
+                    "networkSecurityGroup": {
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-bastion-host-name'))]"
+                    }
                 }
             }
         ],
         "allSubnets": "[if(equals(parameters('remoteAccessMode'),'AzureBastionHost'), concat(variables('subnets'), variables('azureBastionSubnet')), variables('subnets'))]",
+        
         //Nested Templates
         "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/CEF-Log-Analytics-Agent/nestedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]",
+        
         //Custom Scripts
         "setUpCEFScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/CEF-Log-Analytics-Agent/scripts/Set-Up-CEF.sh', parameters('_artifactsLocationSasToken')))]",
         "cefSimulatorScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/CEF-Log-Analytics-Agent/scripts/cef_simulator.py', parameters('_artifactsLocationSasToken')))]",
@@ -250,12 +256,79 @@
             }
         },
         {
+            "condition": "[equals(parameters('remoteAccessMode'), 'AzureBastionHost')]",
+            "comments": "Default Network Security Group for Azure Bastion Host",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-08-01",
+            "name": "[variables('nsg-bastion-host-name')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "AllowHTTPsInbound",
+                        "properties": {
+                            "priority": 100,
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "destinationPortRange": "443",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "sourceAddressPrefix": "Internet",
+                            "destinationAddressPrefix": "*"
+                        }
+                    },
+                    {
+                        "name": "AllowGatewayManagerInbound",
+                        "properties": {
+                            "priority": 110,
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "destinationPortRange": "443",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "sourceAddressPrefix": "GatewayManager",
+                            "destinationAddressPrefix": "*"
+                        }
+                    },
+                    {
+                        "name": "AllowSshRdpOutbound",
+                        "properties": {
+                            "priority": 100,
+                            "access": "Allow",
+                            "direction": "Outbound",
+                            "destinationPortRanges": [
+                                "22",
+                                "3389"
+                            ],
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "VirtualNetwork"
+                        }
+                    },
+                    {
+                        "name": "AllowAzureCloudOutbound",
+                        "properties": {
+                            "priority": 110,
+                            "access": "Allow",
+                            "direction": "Outbound",
+                            "destinationPortRange": "443",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "AzureCloud"
+                        }
+                    }
+                ]
+            }
+        },
+        {
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2019-02-01",
             "name": "[variables('virtualNetworkName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-default-name'))]"
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-bastion-host-name'))]"
             ],
             "properties": {
                 "addressSpace": {
@@ -326,6 +399,7 @@
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('cefVM')[0].vmName))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-default-name'))]",
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
             ],
             "properties": {
