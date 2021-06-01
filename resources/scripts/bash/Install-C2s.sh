@@ -53,7 +53,7 @@ case $RUN_C2 in
     caldera);;
     metasploit);;
     shad0w);;
-    poshc2;;
+    poshc2);;
     *)
         echo "$ERROR_TAG Not a valid C2 option. Valid Options: empire or covenant or caldera"
         usage
