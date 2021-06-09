@@ -148,6 +148,13 @@
             },
             "defaultValue": ""
         },
+        "cefFiles": {
+            "type": "array",
+            "metadata": {
+                "descriptions": "Additional CEF files to download at deployment time."
+            },
+            "defaultValue": []
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -201,6 +208,9 @@
         "cefSimulatorScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/CEF-Log-Analytics-Agent/scripts/cef_simulator.py', parameters('_artifactsLocationSasToken')))]",
         "cefInstaller": "https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/DataConnectors/CEF/cef_installer.py",
         
+        "customScripts":"[createArray(variables('setUpCEFScript'),variables('cefSimulatorScript'),variables('cefInstaller'))]",
+        "allScripts": "[concat(variables('customScripts'), parameters('cefFiles'))]",
+
         //Linux VM Configurations
         "linuxConfiguration": {
             "disablePasswordAuthentication": true,
@@ -479,11 +489,7 @@
                         "value": "[concat('bash Set-Up-CEF.sh',' ','-w',' ',parameters('workspaceId'),' ','-k',' ',parameters('workspaceKey'))]"
                     },
                     "fileUris": {
-                        "value": [
-                            "[variables('setUpCEFScript')]",
-                            "[variables('cefSimulatorScript')]",
-                            "[variables('cefInstaller')]"
-                        ]
+                        "value": "[variables('allScripts')]"
                     },
                     "vmName": {
                         "value": "[variables('cefVM')[0].vmName]"
