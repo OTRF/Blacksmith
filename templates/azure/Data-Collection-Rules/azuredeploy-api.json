@@ -26,6 +26,13 @@
                 "description": "XPathQueries: [\"Security!\"]. Reference: https://docs.microsoft.com/en-us/azure/templates/microsoft.insights/datacollectionrules?tabs=json#windowseventlogdatasource-object"
             }
         },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the location in which to create the data collection rule."
+            },
+            "defaultValue": "[resourceGroup().location]"
+        },
         "roleGuid": {
             "type": "string",
             "defaultValue": "[newGuid()]"
@@ -35,7 +42,7 @@
     "variables": {
         "identityName": "[concat('userIdentity',uniqueString(resourceGroup().id))]",
         "XPathQueries": "[replace(replace(string(parameters('XPathQueries')), '[', ''), ']', '')]",
-        "scriptArguments": "[concat('-WorkspaceId ', parameters('WorkspaceId'), '-WorkspaceResourceId ', parameters('WorkspaceResourceId'),' -ResourceGroup ', resourceGroup().name, ' -DataCollectionRuleName ', parameters('DataCollectionRuleName'), ' -XPathQueries ', variables('xPathQueries'))]"
+        "scriptArguments": "[concat('-WorkspaceId ', parameters('WorkspaceId'), '-WorkspaceResourceId ', parameters('WorkspaceResourceId'),' -ResourceGroup ', resourceGroup().name, ' -DataCollectionRuleName ', parameters('DataCollectionRuleName'), ' -XPathQueries ', variables('xPathQueries'), ' -Location ', parameters('location'))]"
     },
     "resources": [
         {
@@ -105,7 +112,7 @@
         }
     ],
     "outputs": {
-        "result": {
+        "dataCollectionRuleId": {
             "value": "[reference('runPowerShellInlineWithOutput').outputs.text]",
             "type": "string"
         }

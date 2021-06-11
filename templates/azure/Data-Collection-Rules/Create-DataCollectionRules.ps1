@@ -9,7 +9,9 @@ param(
     [Parameter(Mandatory=$true)][string]$WorkspaceResourceId,
     [Parameter(Mandatory=$true)][string]$ResourceGroup,
     [Parameter(Mandatory=$true)][string]$DataCollectionRuleName,
-    [Parameter(Mandatory=$false)][string[]]$XPathQueries
+    [Parameter(Mandatory=$true)][string[]]$XPathQueries,
+    [Parameter(Mandatory=$true)][string]$Location
+
 )
 
 $context = Get-AzContext
@@ -32,48 +34,50 @@ $RuleBody = @{
     }
     properties = @{
         datasources = @{
-            windowsEventLogs = [
+            windowsEventLogs = @(
                 @{
                     name = "eventLogsDataSource"
                     scheduledTransferPeriod = "PT1M"
-                    streams = [
+                    streams = @(
                         "Microsoft-SecurityEvent"
-                    ]
-                    xPathQueries = [
+                    )
+                    xPathQueries = @(
                         $XPathQueries
-                    ]
+                    )
                 }
-            ]
+            )
         }
         destinations = @{
-            logAnalytics = [
+            logAnalytics = @(
                 @{
                     name = "SecurityEvent"
                     workspaceId = $WorkspaceId
                     workspaceResourceId = $WorkspaceResourceId
                 }
-            ]
+            )
         }
-        dataFlows = [
+        dataFlows = @(
             @{
-                streams = [
+                streams = @(
                     "Microsoft-SecurityEvent"
-                ]
-                destinations = [
+                )
+                destinations = @(
                     "SecurityEvent"
-                ]
+                )
             }
-        ]
+        )
     }
-} | ConvertTo-Json
+} | ConvertTo-Json -Depth 10
 
 Write-host "[+] Creating Data Collection Rule: $DataCollectionRuleName"
 $stopLoop = $false
 [int]$retryCount = 0
 do {
     try{
-        $response = Invoke-AzRestMethod -Path $ApiUri -Method PUT -Payload ($RuleBody | ConvertTo-Json -Depth 3)
+        Write-Verbose $RuleBody
+        $response = Invoke-AzRestMethod -Path $ApiUri -Method PUT -Payload $RuleBody
         $responseObject = $response | ConvertTo-Json | ConvertFrom-Json
+        Write-Verbose $responseObject
         $responseCode = $response.StatusCode
         if ($responseCode -eq 201 -or $responseCode -eq 200) {
             $responseDescription = Switch ($responseCode) {
@@ -81,8 +85,7 @@ do {
                 201 { 'Rule: Created' }
             }
             write-host " [+] $DataCollectionRuleName $responseDescription"
-            write-verbose $responseObject
-            $output = $responseObject
+            $output = $responseObject.Content | ConvertFrom-Json | Select-Object -ExpandProperty id
             Write-Output $output
             $DeploymentScriptOutputs = @{}
             $DeploymentScriptOutputs['text'] = $output
