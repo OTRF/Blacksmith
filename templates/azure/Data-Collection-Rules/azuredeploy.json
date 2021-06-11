@@ -9,10 +9,11 @@
             }
         },
         "location": {
-            "type": "String",
+            "type": "string",
             "metadata": {
                 "description": "Specifies the location in which to create the data collection rule."
-            }
+            },
+            "defaultValue": "[resourceGroup().location]"
         },
         "dataSources": {
             "type": "Object",
