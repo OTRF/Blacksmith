@@ -1,0 +1,89 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines": {
+            "type": "array",
+            "metadata": {
+                "description": "List of endpoints to install the Azure Monitor Agent. The format is an array of endpoints with a property/attribute named 'vmName'"
+            }
+        },
+        "monitorAgent": {
+            "type": "string",
+            "metadata": {
+                "description": "What Azure Monitoring agent you would like to install? Log Analytics Agent (Legacy - known as MMA or OMS) or Azure Monitoring Agent"
+            },
+            "allowedValues": [
+                "Log Analytics Agent",
+                "Azure Monitor Agent"
+            ]
+        },
+        "workspaceId": {
+            "type": "string",
+            "metadata": {
+                "description": "Log analytics workspace ID"
+            },
+            "defaultValue": ""
+        },
+        "workspaceKey": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Log analytics workspace keys"
+            },
+            "defaultValue": ""
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "condition": "[equals(parameters('monitorAgent'), 'Log Analytics Agent')]",
+            "name": "[concat(parameters('virtualMachines')[copyIndex('LAACopy')].vmName,'/LogAnalyticsAgent')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2020-06-01",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "LAACopy",
+                "count": "[length(parameters('virtualMachines'))]"
+            },
+            "properties": {
+                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                "type": "MicrosoftMonitoringAgent",
+                "typeHandlerVersion": "1.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {
+                    "workspaceId": "[parameters('workspaceId')]"
+                },
+                "protectedSettings": {
+                    "workspaceKey": "[parameters('workspaceKey')]"
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('monitorAgent'), 'Azure Monitor Agent')]",
+            "name": "[concat(parameters('virtualMachines')[copyIndex('AMACopy')].vmName,'/AzureMonitorAgent')]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+             "apiVersion": "2020-06-01",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "AMACopy",
+                "count": "[length(parameters('virtualMachines'))]"
+            },
+            "properties": {
+                "publisher": "Microsoft.Azure.Monitor",
+                "type": "AzureMonitorWindowsAgent",
+                "typeHandlerVersion": "1.0",
+                "autoUpgradeMinorVersion": true,
+                "settings": {},
+                "protectedSettings": {}
+            }
+        }
+    ],
+    "outputs": {}
+}
