@@ -103,6 +103,18 @@
                 "Standard_A4_v2"
             ]
         },
+        "managedIdentity": {
+            "type": "string",
+            "metadata": {
+                "description": "The type of identity used for the virtual machine. The type 'SystemAssigned, UserAssigned' includes both an implicitly created identity and a set of user assigned identities. The type 'None' will remove any identities from the virtual machine. - SystemAssigned, UserAssigned, None. Reference: https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?tabs=json#virtualmachineidentity-object"
+            },
+            "defaultValue": "None",
+            "allowedValues": [
+                "SystemAssigned",
+                "UserAssigned",
+                "None"
+            ]
+        },
         "newVirtualNetwork": {
             "type": "bool",
             "metadata": {
@@ -485,7 +497,7 @@
             "name": "[variables('allWinVMs')[copyIndex('vmVMCopy')].vmName]",
             "location": "[parameters('location')]",
             "identity": {
-                "type": "SystemAssigned"
+                "type": "[parameters('managedIdentity')]"
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
