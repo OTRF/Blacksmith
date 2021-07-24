@@ -1,8 +1,8 @@
 <!--
 	Author: Roberto Rodriguez (@Cyb3rWard0g)
 	License: GPL-3.0
-	Sysmon version: 13.22
-	Modified: 2021/07/24
+	Sysmon version: 13.21
+	Modified: 2021/05/25
 -->
 <Sysmon schemaversion="4.70">
    <!-- Capture all hashes -->
@@ -14,7 +14,6 @@
    		<RuleGroup name="" groupRelation="or">
 			<!-- Event ID 1 == Process Creation. Log all newly created processes except -->
 			<ProcessCreate onmatch="exclude">
-				<Image condition="image">Sysmon.exe</Image>
 				<Image condition="contains">splunk</Image>
 				<Image condition="contains">btool.exe</Image>
 				<Image condition="contains">SnareCore</Image>
@@ -29,6 +28,7 @@
 				<Image condition="is">C:\Windows\System32\audiodg.exe</Image>
 				<Image condition="is">C:\Windows\SysWOW64\Macromed\Flash\FlashPlayerUpdateService.exe</Image>
 				<Image condition="is">C:\Program Files (x86)\Google\Update\GoogleUpdate.exe</Image>
+				<Image condition="end with">Sysmon.exe</Image>
 				<Image condition="end with">ec2config.exe</Image>
 				<CommandLine condition="begin with">C:\WIndows\System32\poqexec.exe /noreboot /transaction</CommandLine>
 			</ProcessCreate>
@@ -109,9 +109,9 @@
 		<RuleGroup name="" groupRelation="or">
 			<!-- Event ID 9 == RawAccessRead. Log everything except -->
 			<RawAccessRead onmatch="exclude">
-				<Image condition="image">Sysmon.exe</Image>
 				<Image condition="is">C:\Program Files\VMware\VMware Tools\vmtoolsd.exe</Image>
 				<Image condition="is">C:\Program Files (x86)\Google\Update\GoogleUpdate.exe</Image>
+				<Image condition="end with">\Sysmon.exe</Image>
 			</RawAccessRead>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -127,7 +127,6 @@
 				<SourceImage condition="is">C:\WindowsAzure\Packages\CollectGuestLogs.exe</SourceImage>
 				<SourceImage condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\HealthService.exe</SourceImage>
 				<SourceImage condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\MonitoringHost.exe</SourceImage>
-				<TargetImage condition="image">Sysmon.exe</TargetImage>
 				<TargetImage condition="is">C:\Program Files\VMware\VMware Tools\TPAutoConnSvc.exe</TargetImage>
 				<TargetImage condition="is">C:\Program Files\VMware\VMware Tools\TPAutoConnect.exe</TargetImage>
 				<TargetImage condition="is">C:\Program Files\Microsoft VS Code\Code.exe</TargetImage>
@@ -194,7 +193,6 @@
 				<Image condition="is">C:\Program Files\Windows Defender Advanced Threat Protection\SenseCncProxy.exe</Image> <!--MDATP-->
 				<Image condition="begin with">C:\Program Files\Azure Advanced Threat Protection Sensor\</Image> <!-- Microsoft Defender for Identity Sensor -->
 				<Image condition="begin with">C:\Windows\SystemApps\Microsoft.Windows.Cortana</Image>
-				<Image condition="begin with">C:\WindowsAzure\</Image>
 				<Image condition="end with">onedrivesetup.exe</Image>
 				<Image condition="end with">onedrive.exe</Image>
 				<Image condition="end with">skypeapp.exe</Image>
@@ -213,14 +211,11 @@
 				<TargetObject condition="contains">\AppModel\Deployment\Package</TargetObject>
 				<TargetObject condition="contains">\AppModel\SystemAppData\Microsoft.Windows.ContentDeliveryManager</TargetObject>
 				<TargetObject condition="contains">\Software\Microsoft\Windows\CurrentVersion\DeliveryOptimization\</TargetObject>
-				<TargetObject condition="contains">\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppModel\SystemAppData\Microsoft.OneConnect</TargetObject>
 				<TargetObject condition="is">HKLM\SOFTWARE\Microsoft\SecurityManager\CapAuthz</TargetObject>
 				<TargetObject condition="contains">\CurrentVersion\AppModel\SystemAppData\Microsoft.Windows.Cortana</TargetObject>
 				<TargetObject condition="contains">\DeliveryOptimization\Swarms\</TargetObject>
 				<TargetObject condition="is">HKLM\System\CurrentControlSet\Services\W32Time\Config\LastKnownGoodTime</TargetObject>
 				<TargetObject condition="begin with">HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppReadiness\</TargetObject>
-				<TargetObject condition="begin with">HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModel\StateRepository\Cache\Package</TargetObject> <!--Windows app package-->
-				<TargetObject condition="begin with">HKLM\SOFTWARE\Microsoft\Windows\Windows Error Reporting\TermReason</TargetObject>
 			</RegistryEvent>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -232,7 +227,7 @@
 			<PipeEvent onmatch="exclude">
 				<Image condition="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
 				<Image condition="begin with">C:\WindowsAzure\</Image> <!--Azure -->
-				<Image condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\MonitoringHost.exe</Image> <!--Microsoft Monitoring Agent-->
+				<Image condition="is">C:\Program Files\Microsoft Monitoring Agent\Agent\MonitoringHost.exe</Image>
 			</PipeEvent>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -270,10 +265,7 @@
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
 			<!--Event ID 26 == FileDeleteDetected -->
-			<FileDeleteDetected onmatch="exclude">
-				<Image condition="begin with">C:\WindowsAzure\</Image> <!--Azure -->
-				<Image condition="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
-			</FileDeleteDetected>
+			<FileDeleteDetected onmatch="exclude" />
 		</RuleGroup>
   </EventFiltering>
 </Sysmon>
