@@ -333,8 +333,8 @@
         "joinDomainTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/joinDomain.json', parameters('_artifactsLocationSasToken')))]",
         "installADFSTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/installADFS.json', parameters('_artifactsLocationSasToken')))]",
         "importPfxCertTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/importPfxCert.json', parameters('_artifactsLocationSasToken')))]",
-        "installAADConnectTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD/nestedtemplates/installAADConnect.json', parameters('_artifactsLocationSasToken')))]",
-        "enableTLSTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD/nestedtemplates/enableTLS12.json', parameters('_artifactsLocationSasToken')))]",
+        "installAADConnectTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/installAADConnect.json', parameters('_artifactsLocationSasToken')))]",
+        "enableTLSTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/enableTLS12.json', parameters('_artifactsLocationSasToken')))]",
         
         // Custom Scripts
         "initialSettingsScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/scripts/Set-Initial-Settings.ps1', parameters('_artifactsLocationSasToken')))]",
