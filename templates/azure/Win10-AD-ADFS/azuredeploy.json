@@ -775,7 +775,7 @@
                     "vmName":   {
                         "value": "[variables('adfsServer')[0].vmName]"
                     },
-                    "installSysmonScript": {
+                    "enableTLS12Script": {
                         "value": "[variables('enableTLSScript')]"
                     },
                     "location": {
@@ -897,7 +897,7 @@
                     "vmName":   {
                         "value": "[variables('domainController')[0].vmName]"
                     },
-                    "installSysmonScript": {
+                    "enableTLS12Script": {
                         "value": "[variables('enableTLSScript')]"
                     },
                     "location": {
