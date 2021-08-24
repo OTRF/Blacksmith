@@ -64,7 +64,7 @@
             Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server'
             ValueName = 'DisabledByDefault'
             ValueType = 'Dword'
-            ValueData =  '1'
+            ValueData =  '0'
             Ensure = 'Present'
         }
 
@@ -83,7 +83,7 @@
             Key = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client'
             ValueName = 'DisabledByDefault'
             ValueType = 'Dword'
-            ValueData =  '1'
+            ValueData =  '0'
             Ensure = 'Present'
         }
     }
