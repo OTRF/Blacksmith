@@ -318,7 +318,12 @@
             }
         ],
 
-        "allLinuxVMs": "[concat(variables('ubuntuVMs'), variables('centOSVMs'), variables('redhatVMs'))]"
+        "allLinuxVMs": "[concat(variables('ubuntuVMs'), variables('centOSVMs'), variables('redhatVMs'))]",
+
+        // Managed Identity
+        "identityType": {"type": "[parameters('identityType')]"},
+        "userAssignedIdentities": {"userAssignedIdentities": "[parameters('userAssignedIdentities')]"},
+        "identity" : "[if(empty(parameters('userAssignedIdentities')), variables('identityType'), union(variables('identityType'), variables('userAssignedIdentities')))]"
     },
     "resources": [
         {
@@ -523,10 +528,7 @@
             "apiVersion": "2019-03-01",
             "name": "[variables('allLinuxVMs')[copyIndex('vmVMCopy')].vmName]",
             "location": "[parameters('location')]",
-            "identity": {
-                "type": "[parameters('identityType')]",
-                "userAssignedIdentities": "[parameters('userAssignedIdentities')]"
-            },
+            "identity": "[variables('identity')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('allLinuxVMs')[copyIndex('vmVMCopy')].vmName))]"
             ],
