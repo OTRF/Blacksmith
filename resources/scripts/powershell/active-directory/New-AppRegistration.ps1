@@ -85,7 +85,7 @@ function New-AppRegistration {
     $DeploymentScriptOutputs = @{}
 
     # Processing current security context
-    Write-Host "[+] Running under the context of a $ConnectAs account"
+    Write-Output "[+] Running under the context of a $ConnectAs account"
     $context = Get-AzContext
     if (!$context) {
         if ($ConnectAs == 'User') {
@@ -97,7 +97,7 @@ function New-AppRegistration {
     }
 
     # Get MS Graph access token
-    Write-Host "[+] Getting MS Graph raw acess token.."
+    Write-Output "[+] Getting MS Graph raw acess token.."
     $accessToken = (Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com/").Token
 
     # Set up HTTP headers
@@ -114,11 +114,11 @@ function New-AppRegistration {
     $registeredApp = ((Invoke-RestMethod @params).value)[0]
 
     if ($registeredApp){
-        Write-Host "[!] Azure AD application $Name already exists!"
+        Write-Output "[!] Azure AD application $Name already exists!"
     }
     else {
         # Registering new application
-        Write-Host "[+] Registering new Azure AD application: $Name"
+        Write-Output "[+] Registering new Azure AD application: $Name"
         $body = @{ 
             displayName = "$Name"
             signInAudience = "$SignInAudience"
@@ -156,7 +156,7 @@ function New-AppRegistration {
     $DeploymentScriptOutputs['appId'] = $registeredApp.AppId
 
     if ($IdentifierUris) {
-        Write-Host "[+] Updating $Name application: Updating the URIs that identify the application within its Azure AD tenant."
+        Write-Output "[+] Updating $Name application: Updating the URIs that identify the application within its Azure AD tenant."
         $body = @{
             identifierUris = @($IdentifierUris)
         }
@@ -170,7 +170,7 @@ function New-AppRegistration {
     }
 
     if (($ReplyUrls) -and !($NativeApp) ) {
-        Write-Host "[+] Updating $Name application: Updating URLs where user tokens are sent for sign-in"
+        Write-Output "[+] Updating $Name application: Updating URLs where user tokens are sent for sign-in"
         $body = @{ 
             web = @{
                 redirectUris = @($ReplyUrls)
@@ -189,7 +189,7 @@ function New-AppRegistration {
     }
     # Creating the new Azure AD application service principal
     # Verify if service principal exists
-    Write-Host "[+] Creating a service principal mapped to the $Name application"
+    Write-Output "[+] Creating a service principal mapped to the $Name application"
     $params = @{
         "Method"  = "Get"
         "Uri"     = "https://graph.microsoft.com/v1.0/servicePrincipals?`$filter=displayName eq '$Name'"
@@ -197,7 +197,7 @@ function New-AppRegistration {
     }
     $appSP = ((Invoke-RestMethod @params).value)[0]
     if ($appSP){
-        Write-Host "[!] Azure AD application $Name already has a service principal"
+        Write-Output "[!] Azure AD application $Name already has a service principal"
     }
     else {
         $body = @{ 
@@ -217,7 +217,7 @@ function New-AppRegistration {
 
     #Add credentials to application
     if ($AddSecret) {
-        Write-Host "[+] Adding a secret to $Name application"
+        Write-Output "[+] Adding a secret to $Name application"
         $pwdCredentialName = 'CloudKatanaSecret'
         $body = @{
             passwordCredential = @{ displayName = "$($pwdCredentialName)" }
@@ -235,14 +235,14 @@ function New-AppRegistration {
             return
         }
         
-        Write-Host "[+] Extracting secret text from results. Save it for future operations"
+        Write-Output "[+] Extracting secret text from results. Save it for future operations"
         $secret = $credentials.secretText
         $DeploymentScriptOutputs['appSecretText'] = $secret
         $DeploymentScriptOutputs['appCredentialName'] = $pwdCredentialName
     }
 
     if ($UseV2AccessTokens){
-        Write-Host "[+] Updating $Name application: Setting application to use V2 access tokens"
+        Write-Output "[+] Updating $Name application: Setting application to use V2 access tokens"
         # Set application to use V2 access tokens
         $body = @{
             api = @{
@@ -259,7 +259,7 @@ function New-AppRegistration {
     }
 
     if($RequireAssignedRole){
-        Write-Host "[+] Updating $Name application: Setting application to require users being assigned a role "
+        Write-Output "[+] Updating $Name application: Setting application to require users being assigned a role "
         $body = @{
             appRoleAssignmentRequired = $True
         }
@@ -276,8 +276,8 @@ function New-AppRegistration {
     }
 
     if($AssignAppRoleToUser){
-        Write-Host "[+] Granting app role assignment to $AssignAppRoleToUser "
-        Write-Host "    [>>] Getting user's principal ID"
+        Write-Output "[+] Granting app role assignment to $AssignAppRoleToUser "
+        Write-Output "    [>>] Getting user's principal ID"
         $params = @{
             "Method"  = "Get"
             "Uri"     = "https://graph.microsoft.com/v1.0/users/$AssignAppRoleToUser"
@@ -285,7 +285,7 @@ function New-AppRegistration {
         }
         $principalId = (Invoke-RestMethod @params).Id
 
-        Write-Host "    [>>] Adding user to application.."
+        Write-Output "    [>>] Adding user to application.."
         $body = @{
             appRoleId = [Guid]::Empty.Guid
             principalId = $principalId
@@ -305,6 +305,6 @@ function New-AppRegistration {
             return
         }
     }
-    Write-Host "[+] Additional Output: "
+    Write-Output "[+] Additional Output: "
     $DeploymentScriptOutputs
 }
