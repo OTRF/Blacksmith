@@ -5,7 +5,7 @@ function New-AppRegistration {
     
     Author: Roberto Rodriguez (@Cyb3rWard0g)
     License: MIT
-    Required Dependencies: Azure CLI
+    Required Dependencies: Az PowerShell
     Optional Dependencies: None
     
     .DESCRIPTION
