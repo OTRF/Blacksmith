@@ -99,7 +99,8 @@ function New-AppRegistration {
     # Get MS Graph access token
     Write-Host "[+] Getting MS Graph raw acess token.."
     $accessToken = (Get-AzAccessToken -ResourceUrl "https://graph.microsoft.com/").Token
-
+    Write-Host $accessToken
+    
     # Set up HTTP headers
     $Headers = @{}
     $Headers["Authorization"] = "Bearer $accessToken"
