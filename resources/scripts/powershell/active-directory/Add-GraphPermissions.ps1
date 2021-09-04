@@ -14,7 +14,7 @@ function Add-GraphPermissions {
     .PARAMETER SvcPrincipalName
     Display name of the service principal. It is usually the same name as the Azure AD application.
 
-    .PARAMETER $SvcPrincipalId
+    .PARAMETER SvcPrincipalId
     Service principal Id to use to add permissions directly. This helps to use service principals such as user assigned manage identities.
 
     .PARAMETER PermissionsList
@@ -122,13 +122,18 @@ function Add-GraphPermissions {
     foreach ($type in $appResourceTypes) {
         # Process permissions type
         $rolePropertyType = Switch ($type) {
-            'delegated' { 'oauth2Permissions'}
+            'delegated' { 'oauth2PermissionScopes'}
             'application' { 'appRoles' }
         }
 
         # Get Microsoft Graph permissions
         Write-Host "[+] Getting $type Permissions from Microsoft Graph"
-        $graphPermissions = az ad sp show --id $roleSvcAppId --query "$rolePropertyType" | ConvertFrom-Json
+        $params = @{
+            "Method"  = "Get"
+            "Uri"     = "https://graph.microsoft.com/v1.0/servicePrincipals/$roleSvcAppId"
+            "Headers" = $Headers
+        }
+        $graphPermissions = (Invoke-Restmethod @params).$rolePropertyType
 
         # Get Role Assignments
         Write-Host "[+]Processing Role Assignments:"
