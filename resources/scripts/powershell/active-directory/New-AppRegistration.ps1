@@ -210,10 +210,10 @@ function New-AppRegistration {
             "Body"    = $body | ConvertTo-Json -Compress -Depth 10
         }
         $appSP = Invoke-RestMethod @params
-        write-host $appSP
         # Sleep
         Start-Sleep -s 10
     }
+    Write-Host $appSP
 
     #Add credentials to application
     if ($AddSecret) {
