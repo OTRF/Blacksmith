@@ -101,10 +101,12 @@ if [ "$SYSTEM_KERNEL" == "Linux" ]; then
   esac
 
   # ********** Download OMS-Auditd-Plugin Repository **********
+  echo "$INFO_TAG Downloading OMS Auditd Plugin Repository .."
   git clone https://github.com/microsoft/OMS-Auditd-Plugin /opt/OMS-Auditd-Plugin >> $LOGFILE 2>&1
   cd /opt/OMS-Auditd-Plugin && git checkout MSTIC-Research >> $LOGFILE 2>&1
 
   # ********** Build **********
+  echo "$INFO_TAG Building.."
   case "$LSB_DIST" in
   ubuntu | debian | raspbian)
     cmake . >> $LOGFILE 2>&1
@@ -124,6 +126,7 @@ if [ "$SYSTEM_KERNEL" == "Linux" ]; then
   /opt/microsoft/auoms/bin/auomsctl enable >> $LOGFILE 2>&1
 
   # ********** Manager Service **********
+  echo "$INFO_TAG Configuring Azure OMS and auditd services .."
   case "$LSB_DIST" in
   ubuntu | debian | raspbian)
     update-rc.d auoms defaults >> $LOGFILE 2>&1
@@ -147,6 +150,7 @@ if [ "$SYSTEM_KERNEL" == "Linux" ]; then
     ;;
   esac
 
+  echo "$INFO_TAG Starting Azure OMS and auditd service .."
   service auditd start >> $LOGFILE 2>&1
   service auoms start >> $LOGFILE 2>&1
 
