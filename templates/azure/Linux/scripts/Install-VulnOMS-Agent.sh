@@ -105,3 +105,5 @@ else
     echo "The final version with 32-bit support is 1.12.15-0, which will now be installed."
     wget -O ${BUNDLE_X86} ${GITHUB_RELEASE_X86}${BUNDLE_X86} && $SUDO sh ./${BUNDLE_X86} ${bundleParameters}
 fi
+
+service auoms start
