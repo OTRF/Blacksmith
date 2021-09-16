@@ -612,7 +612,7 @@
                     "fileUris": [
                         "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Linux/scripts/Install-VulnOMS-Agent.sh"
                     ],
-                    "commandToExecute": "[concat('bash Install-VulnOMS-Agent.sh',' ','-w',' ',parameters('workspaceId'),' ','-s',' ',parameters('workspaceKey'))]"
+                    "commandToExecute": "[concat('bash Install-VulnOMS-Agent.sh',' ','--install',' ','-w',' ',parameters('workspaceId'),' ','-s',' ',parameters('workspaceKey'))]"
                 },
                 "protectedSettings": {}
             }
