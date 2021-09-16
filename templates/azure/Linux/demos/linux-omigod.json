@@ -254,6 +254,7 @@
         "vmPrivateIPAddresPrefix": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray')[0], variables('vmPrivateIPPrefixArray')[1], variables('vmPrivateIPPrefixArray')[2])]",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
         "nsg-default-name": "nsg-ssh-allow",
+        "nsg-winrm-name": "nsg-winrm-allow",
         "nsg-id": {
             "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-default-name'))]"
         },
@@ -368,6 +369,19 @@
                             "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
                             "destinationAddressPrefix": "*"
                         }
+                    },
+                    {
+                        "name": "default-allow-5986",
+                        "properties": {
+                            "priority": 110,
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "destinationPortRange": "5986",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "sourceAddressPrefix": "VirtualNetwork",
+                            "destinationAddressPrefix": "*"
+                        }
                     }
                 ]
             }
@@ -434,6 +448,19 @@
                             "sourcePortRange": "*",
                             "sourceAddressPrefix": "*",
                             "destinationAddressPrefix": "AzureCloud"
+                        }
+                    },
+                    {
+                        "name": "default-allow-5986",
+                        "properties": {
+                            "priority": 120,
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "destinationPortRange": "5986",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "sourceAddressPrefix": "VirtualNetwork",
+                            "destinationAddressPrefix": "*"
                         }
                     }
                 ]
