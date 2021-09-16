@@ -78,7 +78,8 @@
             "defaultValue": "18.04-LTS",
             "allowedValues": [
                 "18.04-LTS",
-                "19.04"
+                "19.04",
+                "20_04-lts"
             ],
             "metadata": {
                 "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version."
@@ -254,7 +255,6 @@
         "vmPrivateIPAddresPrefix": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray')[0], variables('vmPrivateIPPrefixArray')[1], variables('vmPrivateIPPrefixArray')[2])]",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
         "nsg-default-name": "nsg-ssh-allow",
-        "nsg-winrm-name": "nsg-winrm-allow",
         "nsg-id": {
             "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-default-name'))]"
         },
@@ -305,7 +305,7 @@
                     "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('ubuntuVMs',5))]",
                     "vmSize": "[parameters('vmSize')]",
                     "publisher": "Canonical",
-                    "offer": "UbuntuServer",
+                    "offer": "[if(equals(parameters('ubuntuSKU'), '20_04-lts'),'0001-com-ubuntu-server-focal','UbuntuServer')]",
                     "sku": "[parameters('ubuntuSKU')]",
                     "version": "latest"
                 }
@@ -367,19 +367,6 @@
                             "protocol": "Tcp",
                             "sourcePortRange": "*",
                             "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
-                            "destinationAddressPrefix": "*"
-                        }
-                    },
-                    {
-                        "name": "default-allow-5986",
-                        "properties": {
-                            "priority": 110,
-                            "access": "Allow",
-                            "direction": "Inbound",
-                            "destinationPortRange": "5986",
-                            "protocol": "Tcp",
-                            "sourcePortRange": "*",
-                            "sourceAddressPrefix": "VirtualNetwork",
                             "destinationAddressPrefix": "*"
                         }
                     }
@@ -448,19 +435,6 @@
                             "sourcePortRange": "*",
                             "sourceAddressPrefix": "*",
                             "destinationAddressPrefix": "AzureCloud"
-                        }
-                    },
-                    {
-                        "name": "default-allow-5986",
-                        "properties": {
-                            "priority": 120,
-                            "access": "Allow",
-                            "direction": "Inbound",
-                            "destinationPortRange": "5986",
-                            "protocol": "Tcp",
-                            "sourcePortRange": "*",
-                            "sourceAddressPrefix": "VirtualNetwork",
-                            "destinationAddressPrefix": "*"
                         }
                     }
                 ]
