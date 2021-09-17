@@ -597,7 +597,7 @@
             }
         },
         {
-            "condition": "[and(parameters('vulnOMSAgentScriptUrl'), parameters('vulnOMSAgentScriptName'))]",
+            "condition": "[and(not(empty(parameters('vulnOMSAgentScriptUrl'))), not(empty(parameters('vulnOMSAgentScriptName'))))]",
             "name": "[concat(variables('allLinuxVMs')[copyIndex('InstallVulnOMI')].vmName, '/SetUpLinuxVM')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
@@ -625,7 +625,7 @@
             }
         },
         {
-            "condition": "[and(parameters('vulnOMSAgentScriptUrl'), parameters('vulnOMSAgentScriptName'))]",
+            "condition": "[and(not(empty(parameters('vulnOMSAgentScriptUrl'))), not(empty(parameters('vulnOMSAgentScriptName'))))]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(variables('allLinuxVMs')[copyIndex('InstallDSCExtension')].vmName, '/DSCForLinux')]",
             "apiVersion": "2019-12-01",
