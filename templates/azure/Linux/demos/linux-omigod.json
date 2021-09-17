@@ -696,35 +696,6 @@
                     }
                 }
             }
-        },
-        {
-            "condition": "[parameters('enableAuditdPlugin')]",
-            "name": "[concat(variables('allLinuxVMs')[copyIndex('SetUpAuditdCopy')].vmName, '/SetUpLinuxVM')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('allLinuxVMs')[copyIndex('SetUpAuditdCopy')].vmName)]",
-                "vmVMCopy",
-                "InstallVulnOMI"
-            ],
-            "copy": {
-                "name": "SetUpAuditdCopy",
-                "count": "[length(variables('allLinuxVMs'))]"
-            },
-            "properties": {
-                "publisher": "Microsoft.Azure.Extensions",
-                "type": "CustomScript",
-                "typeHandlerVersion": "2.1",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Linux/scripts/Install-OMS-Auditd-Plugin.sh"
-                    ],
-                    "commandToExecute": "[concat('bash Install-OMS-Auditd-Plugin.sh')]"
-                },
-                "protectedSettings": {}
-            }
         }
     ],
     "outputs": {

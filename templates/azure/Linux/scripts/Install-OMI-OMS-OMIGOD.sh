@@ -8,10 +8,10 @@
 ARCHITECTURE=$(uname -m)
 
 # Values to be updated upon each new release
-GITHUB_RELEASE_X64="https://github.com/microsoft/OMS-Agent-for-Linux/releases/download/OMSAgent_v1.13.35-0/"
+GITHUB_RELEASE_X64="https://github.com/microsoft/OMS-Agent-for-Linux/releases/download/OMSAgent_v1.13.40-0/"
 GITHUB_RELEASE_X86="https://github.com/Microsoft/OMS-Agent-for-Linux/releases/download/OMSAgent_v1.12.15-0/"
 
-BUNDLE_X64="omsagent-1.13.35-0.universal.x64.sh"
+BUNDLE_X64="omsagent-1.13.40-0.universal.x64.sh"
 BUNDLE_X86="omsagent-1.12.15-0.universal.x86.sh"
 
 usage()
@@ -74,8 +74,7 @@ do
 done
 
 # Assemble parameters
-#bundleParameters="--upgrade"
-bundleParameters="--install"
+bundleParameters="--upgrade"
 if [ -n "$onboardID" ]; then
     bundleParameters="${bundleParameters} -w $onboardID"
 fi
@@ -110,6 +109,57 @@ else
     wget -O ${BUNDLE_X86} ${GITHUB_RELEASE_X86}${BUNDLE_X86} && $SUDO sh ./${BUNDLE_X86} ${bundleParameters}
 fi
 
+# Sleep
+sleep 5s
+
+# Force vulnerable version
+# reference: https://github.com/microsoft/OMS-Agent-for-Linux/blob/master/tools/OMIcheck/omi_upgrade.sh
+
+omi_version="1.6.8-0"
+
+osslverstr=$(openssl version)
+echo $osslverstr
+echo $osslverstr | grep 1.1. > /dev/null
+isSSL11=$?
+echo isSSL11=$isSSL11
+echo $osslverstr | grep 1.0. > /dev/null
+isSSL10=$?
+echo isSSL10=$isSSL10
+
+if [ $isSSL11 = 0 ]; then
+    osslver="110"
+elif [ $isSSL10 = 0 ]; then
+    osslver="100"
+else
+    echo "Unexpected Open SSL version"
+    exit -1
+fi
+
+which dpkg > /dev/null
+if [ $? = 0 ]; then
+    pkgMgr="dpkg -i"
+    pkgName="omi-${omi_version}.ssl_${osslver}.ulinux.x64.deb"
+else
+    which rpm > /dev/null
+    if [ $? = 0 ]; then
+        # sometimes rpm db is not in a good shape.
+        pkgMgr="rpm --rebuilddb && rpm -Uhv"
+        #pkgMgr="rpm -Uhv"
+        pkgName="omi-${omi_version}.ssl_${osslver}.ulinux.x64.rpm"
+    else
+        echo Unknown package manager
+        exit -2
+    fi
+fi
+
+pkg="https://github.com/microsoft/omi/releases/download/v${omi_version}/$pkgName"
+echo $pkg
+wget -q $pkg -O /tmp/$pkgName
+ls -l /tmp/$pkgName
+echo sudo eval $pkgMgr /tmp/$pkgName
+eval sudo $pkgMgr /tmp/$pkgName
+/opt/omi/bin/omiserver -v
+
 # ********** Update OMI Server Configuration **********
 sed -i "s|^httpsport=0$|httpsport=0,5986|g" /etc/opt/omi/conf/omiserver.conf
 sed -i "s|^httpport=0$|httpport=0,5985|g" /etc/opt/omi/conf/omiserver.conf
@@ -122,5 +172,5 @@ service auoms restart
 
 ERROR=$?
 if [ $ERROR -ne 0 ]; then
-  echo "[!] Could not deploy Azure OMS and OMI for $LSB_DIST $DIST_VERSION (Error Code: $ERROR)."
+  echo "[!] Could not deploy Azure OMS and OMI (Error Code: $ERROR)."
 fi

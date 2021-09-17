@@ -3,19 +3,14 @@
 # Author: Roberto Rodriguez (@Cyb3rWard0g)
 # License: GPL-3.0
 
-# For more efficient script editing/reading, and also if/when we switch to different install script language
-INFO_TAG="[INSTALLATION-INFO]"
-ERROR_TAG="[INSTALLATION-ERROR]"
-
 # *********** Set Log File ***************
-LOGFILE="/var/log/oms-autid-plugin-install.log"
 echoerror() {
     printf "${RC} * ERROR${EC}: $@\n" 1>&2;
 }
 
 # *********** Check if user is root ***************
 if [[ $EUID -ne 0 ]]; then
-  echo "$INFO_TAG YOU MUST BE ROOT TO RUN THIS SCRIPT!"
+  echo "YOU MUST BE ROOT TO RUN THIS SCRIPT!"
   exit 1
 fi
 
@@ -26,7 +21,7 @@ SYSTEM_KERNEL="$(uname -s)"
 if [ "$SYSTEM_KERNEL" == "Linux" ]; then
   ARCHITECTURE=$(uname -m)
   if [ "${ARCHITECTURE}" != "x86_64" ]; then
-    echo "$ERROR_TAG ENVIRONMENT REQUIRES AN X86_64 BASED OPERATING SYSTEM TO INSTALL"
+    echo "ENVIRONMENT REQUIRES AN X86_64 BASED OPERATING SYSTEM TO INSTALL"
     echo "Your Systems Architecture: ${ARCHITECTURE}"
     exit 1
   fi
@@ -71,7 +66,7 @@ if [ "$SYSTEM_KERNEL" == "Linux" ]; then
     if [ -z "$DIST_VERSION" ] && [ -r /etc/os-release ]; then
       DIST_VERSION="$(. /etc/os-release && echo "$VERSION_ID")"
     fi
-    echo "$INFO_TAG $LSB_DIST $DIST_VERSION is not supported.." >> $LOGFILE 2>&1
+    echo "$LSB_DIST $DIST_VERSION is not supported.."
     exit 1
     ;;
   esac
@@ -80,85 +75,84 @@ if [ "$SYSTEM_KERNEL" == "Linux" ]; then
     echoerror "Could not verify distribution or version of the OS (Error Code: $ERROR)."
   fi
 
-  echo "$INFO_TAG Running script on $LSB_DIST $DIST_VERSION .." >> $LOGFILE 2>&1
+  echo "Running script on $LSB_DIST $DIST_VERSION .."
 
   # ********** Dependencies **********
-  echo "$INFO_TAG Installing dependencies .."
+  echo "Installing dependencies .."
   case "$LSB_DIST" in
   ubuntu | debian | raspbian)
-    apt update -y >> $LOGFILE 2>&1
-    apt install -y rapidjson-dev libmsgpack-dev libxml2-dev libboost-all-dev libaudit-dev libauparse-dev build-essential cmake auditd >> $LOGFILE 2>&1
+    apt update -y
+    apt install -y net-tools rapidjson-dev libmsgpack-dev libxml2-dev libboost-all-dev libaudit-dev libauparse-dev build-essential cmake auditd
     ;;
   centos | rhel)
-    rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm >> $LOGFILE 2>&1
-    yum update -y --exclude=WALinuxAgent >> $LOGFILE 2>&1
-    yum install -y git rapidjson-devel msgpack-devel libxml2-devel gcc gcc-c++ make cmake boost-devel audit yum-utils audit-libs-devel centos-release-scl-rh >> $LOGFILE 2>&1
-    yum-config-manager --enable rhel-server-rhscl-7-rpms >> $LOGFILE 2>&1
-    yum install -y devtoolset-7 >> $LOGFILE 2>&1
+    rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    yum update -y --exclude=WALinuxAgent
+    yum install -y git rapidjson-devel msgpack-devel libxml2-devel gcc gcc-c++ make cmake boost-devel audit yum-utils audit-libs-devel centos-release-scl-rh
+    yum-config-manager --enable rhel-server-rhscl-7-rpms
+    yum install -y devtoolset-7
     echo 'source scl_source enable devtoolset-7' >> ~/.bashrc
-    source scl_source enable devtoolset-7 >> $LOGFILE 2>&1
+    source scl_source enable devtoolset-7
     ;;
   esac
 
   # ********** Download OMS-Auditd-Plugin Repository **********
-  echo "$INFO_TAG Downloading OMS Auditd Plugin Repository .."
-  git clone https://github.com/microsoft/OMS-Auditd-Plugin /opt/OMS-Auditd-Plugin >> $LOGFILE 2>&1
-  cd /opt/OMS-Auditd-Plugin && git checkout MSTIC-Research >> $LOGFILE 2>&1
+  echo "Downloading OMS Auditd Plugin Repository .."
+  git clone https://github.com/microsoft/OMS-Auditd-Plugin /opt/OMS-Auditd-Plugin && cd /opt/OMS-Auditd-Plugin && git checkout MSTIC-Research
 
   # ********** Build **********
-  echo "$INFO_TAG Building.."
+  echo "Building.."
   case "$LSB_DIST" in
   ubuntu | debian | raspbian)
-    cmake . >> $LOGFILE 2>&1
+    cmake .
     ;;
   centos | rhel)
-    cmake -DCMAKE_CXX_COMPILER=//opt/rh/devtoolset-7/root/usr/bin/g++ . >> $LOGFILE 2>&1
+    cmake -DCMAKE_CXX_COMPILER=//opt/rh/devtoolset-7/root/usr/bin/g++ .
     ;;
   esac
 
-  make >> $LOGFILE 2>&1
+  make
 
   # Copy config files and rules
-  cp -n auoms auomscollect auomsctl /opt/microsoft/auoms/bin >> $LOGFILE 2>&1
-  cp -n conf/auoms.conf /etc/opt/microsoft/auoms >> $LOGFILE 2>&1
-  cp conf/outconf.d/testout.conf /etc/opt/microsoft/auoms/outconf.d/syslog.conf >> $LOGFILE 2>&1
-  cp rules/mstic-research.rules /etc/opt/microsoft/auoms/rules.d >> $LOGFILE 2>&1
-  /opt/microsoft/auoms/bin/auomsctl enable >> $LOGFILE 2>&1
+  cp -n auoms auomscollect auomsctl /opt/microsoft/auoms/bin
+  cp -n conf/auoms.conf /etc/opt/microsoft/auoms
+  cp conf/outconf.d/testout.conf /etc/opt/microsoft/auoms/outconf.d/syslog.conf
+  cp rules/mstic-research.rules /etc/opt/microsoft/auoms/rules.d
+  /opt/microsoft/auoms/bin/auomsctl enable
 
   # ********** Manager Service **********
-  echo "$INFO_TAG Configuring Azure OMS and auditd services .."
+  echo "Configuring Azure OMS and auditd services .."
   case "$LSB_DIST" in
   ubuntu | debian | raspbian)
-    update-rc.d auoms defaults >> $LOGFILE 2>&1
+    update-rc.d auoms defaults
     ;;
   centos | rhel)
-    chkconfig auoms on >> $LOGFILE 2>&1
+    chkconfig auoms on
     ;;
   esac
 
-  service auoms stop >> $LOGFILE 2>&1
-  service auditd stop >> $LOGFILE 2>&1
-  sed -i -e 's/active = no/active = yes/' /etc/audisp/plugins.d/auoms.conf >> $LOGFILE 2>&1
+  service auoms stop
+  service auditd stop
+  sed -i -e 's/active = no/active = yes/' /etc/audisp/plugins.d/auoms.conf
   
   # ********** Manager Service **********
   case "$LSB_DIST" in
   ubuntu | debian | raspbian)
-    update-rc.d auditd defaults >> $LOGFILE 2>&1
+    update-rc.d auditd defaults
     ;;
   centos | rhel)
-    chkconfig auditd on >> $LOGFILE 2>&1
+    chkconfig auditd on
     ;;
   esac
 
-  echo "$INFO_TAG Starting auditd service .."
-  service auditd start >> $LOGFILE 2>&1
-  service auoms start >> $LOGFILE 2>&1
+  echo "Starting auditd service .."
+  service auditd start
+  service auoms start
 
   ERROR=$?
   if [ $ERROR -ne 0 ]; then
-    echoerror "Could not deploy Azure OMS Auditd plugin for $LSB_DIST $DIST_VERSION (Error Code: $ERROR)." >> $LOGFILE 2>&1
+    echoerror "Could not deploy Azure OMS Auditd plugin for $LSB_DIST $DIST_VERSION (Error Code: $ERROR)."
     exit 1
   fi
 else
-  echoerror "SCRIPT ONLY WORKS IN LINUX VMs." >> $LOGFILE 2>&1
+  echoerror "SCRIPT ONLY WORKS IN LINUX VMs."
 fi
