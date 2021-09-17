@@ -150,9 +150,9 @@ if [ "$SYSTEM_KERNEL" == "Linux" ]; then
     ;;
   esac
 
-  echo "$INFO_TAG Starting Azure OMS and auditd service .."
+  echo "$INFO_TAG Starting auditd service .."
   service auditd start >> $LOGFILE 2>&1
-  service auoms start >> $LOGFILE 2>&1
+  #service auoms start >> $LOGFILE 2>&1
 
   ERROR=$?
   if [ $ERROR -ne 0 ]; then
