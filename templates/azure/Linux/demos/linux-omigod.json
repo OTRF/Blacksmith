@@ -230,17 +230,17 @@
             },
             "defaultValue": ""
         },
-        "installVulnOMSAgent": {
-            "type": "bool",
-            "metadata": {
-                "description": "Install vulnerable OMI agent through the installation of OMS"
-            },
-            "defaultValue": false
-        },
-        "vulnOMSAgentScript": {
+        "vulnOMSAgentScriptUrl": {
             "type": "securestring",
             "metadata": {
-                "description": "location of script to install 1.6.8.0"
+                "description": "URL of bundle script to install OMI 1.6.8.0 and OMS"
+            },
+            "defaultValue": ""
+        },
+        "vulnOMSAgentScriptName": {
+            "type": "securestring",
+            "metadata": {
+                "description": "name of bundle script to install OMI 1.6.8.0 and OMS"
             },
             "defaultValue": ""
         },
@@ -597,7 +597,7 @@
             }
         },
         {
-            "condition": "[parameters('installVulnOMSAgent')]",
+            "condition": "[and(parameters('vulnOMSAgentScriptUrl'), parameters('vulnOMSAgentScriptName'))]",
             "name": "[concat(variables('allLinuxVMs')[copyIndex('InstallVulnOMI')].vmName, '/SetUpLinuxVM')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
@@ -617,15 +617,15 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": [
-                        "[parameters('vulnOMSAgentScript')]"
+                        "[parameters('vulnOMSAgentScriptUrl')]"
                     ],
-                    "commandToExecute": "[concat('sh ', last(split(parameters('vulnOMSAgentScript'),'/')),' ','--install',' ','-w',' ',parameters('workspaceId'),' ','-s',' ',parameters('workspaceKey'))]"
+                    "commandToExecute": "[concat('sh ', parameters('vulnOMSAgentScriptName'),' ','--install',' ','-w',' ',parameters('workspaceId'),' ','-s',' ',parameters('workspaceKey'))]"
                 },
                 "protectedSettings": {}
             }
         },
         {
-            "condition": "[parameters('installVulnOMSAgent')]",
+            "condition": "[and(parameters('vulnOMSAgentScriptUrl'), parameters('vulnOMSAgentScriptName'))]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(variables('allLinuxVMs')[copyIndex('InstallDSCExtension')].vmName, '/DSCForLinux')]",
             "apiVersion": "2019-12-01",
