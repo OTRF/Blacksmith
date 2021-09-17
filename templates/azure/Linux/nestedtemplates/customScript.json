@@ -2,10 +2,10 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "virtualMachines": {
-            "type": "array",
+        "vmName": {
+            "type": "string",
             "metadata": {
-                "description": "List of endpoints to run custom scripts. The format is an array of endpoints with a property/attribute named 'vmName'"
+                "description": "Name of the VM to run scripts on"
             }
         },
         "extensionName": {
@@ -19,7 +19,6 @@
         },
         "location": {
             "type": "string",
-            "defaultValue": "[resourceGroup().location]",
             "metadata": {
                 "description": "Location for all resources."
             }
@@ -27,14 +26,10 @@
     },
     "resources": [
         {
-            "name": "[concat(parameters('virtualMachines')[copyIndex('CustomScriptCopy')].vmName,'/', parameters('extensionName'))]",
+            "name": "[concat(parameters('vmName'), '/', parameters('extensionName'))]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2020-06-01",
+            "apiVersion": "2019-03-01",
             "location": "[parameters('location')]",
-            "copy": {
-                "name": "CustomScriptCopy",
-                "count": "[length(parameters('virtualMachines'))]"
-            },
             "properties": {
                 "publisher": "Microsoft.Azure.Extensions",
                 "type": "CustomScript",

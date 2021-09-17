@@ -243,6 +243,20 @@
                 "description": "Do you want to enable an Auditd plugin that forwards audit events to OMS Agent for Linux. https://github.com/microsoft/OMS-Auditd-Plugin/tree/MSTIC-Research "
             }
         },
+        "_artifactsLocation": {
+            "type": "string",
+            "metadata": {
+                "description": "The location of resources, such as templates and DSC modules, that the template depends on"
+            },
+            "defaultValue": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/"
+        },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
+            },
+            "defaultValue": ""
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -252,6 +266,7 @@
         }
     },
     "variables": {
+        "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Linux/nestedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]",
         //Virtual Network Setup
         "virtualNetworkName": "[parameters('virtualNetworkName')]",
         "virtualNetworkAddressRange": "[parameters('virtualNetworkAddressRange')]",
@@ -313,7 +328,8 @@
                     "publisher": "Canonical",
                     "offer": "[if(equals(parameters('ubuntuSKU'), '20_04-lts'),'0001-com-ubuntu-server-focal','UbuntuServer')]",
                     "sku": "[parameters('ubuntuSKU')]",
-                    "version": "latest"
+                    "version": "latest",
+                    "extensionName": "SetupLinuxVM"
                 }
             },
             {
@@ -327,7 +343,8 @@
                     "publisher": "OpenLogic",
                     "offer": "Centos",
                     "sku": "[parameters('centOSSKU')]",
-                    "version": "latest"
+                    "version": "latest",
+                    "extensionName": "SetupLinuxVM"
                 }
             },
             {
@@ -341,7 +358,8 @@
                     "publisher": "RedHat",
                     "offer": "RHEL",
                     "sku": "[parameters('redhatSKU')]",
-                    "version": "latest"
+                    "version": "latest",
+                    "extensionName": "SetupLinuxVM"
                 }
             }
         ],
@@ -600,7 +618,7 @@
         },
         {
             "condition": "[parameters('setUpVulnOMIEnv')]",
-            "name": "[concat(variables('allLinuxVMs')[copyIndex('InstallVulnOMI')].vmName, '/SetUpLinuxVM')]",
+            "name": "[concat(variables('allLinuxVMs')[copyIndex('InstallVulnOMI')].vmName, '/', variables('allLinuxVMs')[copyIndex('InstallVulnOMI')].extensionName)]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
@@ -624,6 +642,46 @@
                     "commandToExecute": "[concat('sh Install-OMI-OMS-OMIGOD.sh ','-w',' ',parameters('workspaceId'),' ','-s',' ',parameters('workspaceKey'))]"
                 },
                 "protectedSettings": {}
+            }
+        },
+        {
+            "condition": "[parameters('enableAuditdPlugin')]",
+            "name": "[concat(variables('allLinuxVMs')[copyIndex('SetUpAuditdCopy')].vmName, '-SetUpAuditd')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "vmVMCopy",
+                "InstallVulnOMI"
+            ],
+            "copy": {
+                "name": "SetUpAuditdCopy",
+                "count": "[length(variables('allLinuxVMs'))]"
+            },
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "extensionName": {
+                        "value": "[variables('allLinuxVMs')[copyIndex('SetUpAuditdCopy')].extensionName]"
+                    },
+                    "commandToExecute": {
+                        "value": "[concat('bash Install-OMS-Auditd-Plugin.sh')]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Linux/scripts/Install-OMS-Auditd-Plugin.sh"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[variables('allLinuxVMs')[copyIndex('SetUpAuditdCopy')].vmName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
             }
         },
         {
