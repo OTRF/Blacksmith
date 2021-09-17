@@ -618,10 +618,9 @@
         },
         {
             "condition": "[parameters('setUpVulnOMIEnv')]",
-            "name": "[concat(variables('allLinuxVMs')[copyIndex('InstallVulnOMI')].vmName, '/', variables('allLinuxVMs')[copyIndex('InstallVulnOMI')].extensionName)]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
+            "name": "[concat(variables('allLinuxVMs')[copyIndex('InstallVulnOMI')].vmName, '-InstallOMIOMS')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
             "dependsOn": [
                 "[concat('Microsoft.Compute/virtualMachines/', variables('allLinuxVMs')[copyIndex('InstallVulnOMI')].vmName)]",
                 "vmVMCopy"
@@ -631,17 +630,30 @@
                 "count": "[length(variables('allLinuxVMs'))]"
             },
             "properties": {
-                "publisher": "Microsoft.Azure.Extensions",
-                "type": "CustomScript",
-                "typeHandlerVersion": "2.1",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "fileUris": [
-                        "[variables('installOMIGODScript')]"
-                    ],
-                    "commandToExecute": "[concat('sh Install-OMI-OMS-OMIGOD.sh ','-w',' ',parameters('workspaceId'),' ','-s',' ',parameters('workspaceKey'))]"
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
                 },
-                "protectedSettings": {}
+                "parameters": {
+                    "extensionName": {
+                        "value": "[variables('allLinuxVMs')[copyIndex('InstallVulnOMI')].extensionName]"
+                    },
+                    "commandToExecute": {
+                        "value": "[concat('sh Install-OMI-OMS-OMIGOD.sh ','-w',' ',parameters('workspaceId'),' ','-s',' ',parameters('workspaceKey'))]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "[variables('installOMIGODScript')]"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[variables('allLinuxVMs')[copyIndex('InstallVulnOMI')].vmName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
             }
         },
         {
