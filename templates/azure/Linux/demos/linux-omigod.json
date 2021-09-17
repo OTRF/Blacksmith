@@ -232,6 +232,7 @@
         },
         "setUpVulnOMIEnv": {
             "type": "bool",
+            "defaultValue": false,
             "metadata" : {
                 "description": "Do you want to install a vulnerable version of OMI (1.6.8.0) and open ports 5986 and 5985 "
             }
