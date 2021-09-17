@@ -238,7 +238,7 @@
             "defaultValue": ""
         },
         "vulnOMSAgentScriptName": {
-            "type": "securestring",
+            "type": "string",
             "metadata": {
                 "description": "name of bundle script to install OMI 1.6.8.0 and OMS"
             },
