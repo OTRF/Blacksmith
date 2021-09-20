@@ -78,7 +78,8 @@
             "defaultValue": "18.04-LTS",
             "allowedValues": [
                 "18.04-LTS",
-                "19.04"
+                "19.04",
+                "20_04-lts"
             ],
             "metadata": {
                 "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version."
@@ -145,6 +146,25 @@
                 "description": "The Red Hat version for the VM. This will pick a fully patched image of this given Red Hat version."
             }
         },
+        "identityType": {
+            "type": "string",
+            "metadata": {
+                "description": "The type of identity used for the virtual machine. The type 'SystemAssigned, UserAssigned' includes both an implicitly created identity and a set of user assigned identities. The type 'None' will remove any identities from the virtual machine. - SystemAssigned, UserAssigned, None. Reference: https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?tabs=json#virtualmachineidentity-object"
+            },
+            "defaultValue": "None",
+            "allowedValues": [
+                "SystemAssigned",
+                "UserAssigned",
+                "None"
+            ]
+        },
+        "userAssignedIdentities": {
+            "type": "object",
+            "metadata": {
+                "description": "The list of user identities associated with the Virtual Machine. The user identity dictionary key references will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}"
+            },
+            "defaultValue": {}
+        },
         "vmSize": {
             "type": "string",
             "defaultValue": "Standard_B2s",
@@ -159,34 +179,6 @@
             ],
             "metadata": {
                 "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
-            }
-        },
-        "enableMonitoringAgent": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to enable the Microsoft Log Analytics Monitoring agent on your Linux VMs? "
-            }
-        },
-        "workspaceId": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Log analytics workspace ID"
-            }
-        },
-        "workspaceKey": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Log analytics workspace keys"
-            }
-        },
-        "enableAuditdPlugin": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to enable an Auditd plugin that forwards audit events to OMS Agent for Linux. https://github.com/microsoft/OMS-Auditd-Plugin/tree/MSTIC-Research "
             }
         },
         "virtualNetworkName": {
@@ -223,6 +215,48 @@
                 "description": "Address Range of the Azure Bastion service"
             },
             "defaultValue": "192.168.3.0/27"
+        },
+        "workspaceId": {
+            "type": "string",
+            "metadata": {
+                "description": "Log analytics workspace ID"
+            },
+            "defaultValue": ""
+        },
+        "workspaceKey": {
+            "type": "string",
+            "metadata": {
+                "description": "Log analytics workspace keys"
+            },
+            "defaultValue": ""
+        },
+        "installOMSAgent": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata" : {
+                "description": "Do you want to install tbe Azure OMS Agent for Linux? https://github.com/microsoft/OMS-Agent-for-Linux"
+            }
+        },
+        "instalOMSAuditdPlugin": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Do you want to enable an Auditd plugin that forwards audit events to OMS Agent for Linux. https://github.com/microsoft/OMS-Auditd-Plugin"
+            }
+        },
+        "_artifactsLocation": {
+            "type": "string",
+            "metadata": {
+                "description": "The location of resources, such as templates and DSC modules, that the template depends on"
+            },
+            "defaultValue": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/"
+        },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
+            },
+            "defaultValue": ""
         },
         "location": {
             "type": "string",
@@ -269,6 +303,13 @@
         ],
         "allSubnets": "[if(equals(parameters('remoteAccessMode'),'AzureBastionHost'), concat(variables('subnets'), variables('azureBastionSubnet')), variables('subnets'))]",
         
+        // Script Templates
+        "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Linux/nestedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]",
+
+        // Custom Scripts
+        "installOMSAgentScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/bash/Install-OMS-Linux-Agent.sh', parameters('_artifactsLocationSasToken')))]",
+        "installOMSAuditdPluginScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/bash/Install-OMS-Auditd-Plugin.sh', parameters('_artifactsLocationSasToken')))]",
+
         //Linux VM Configurations
         "linuxConfiguration": {
             "disablePasswordAuthentication": true,
@@ -292,9 +333,10 @@
                     "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('ubuntuVMs',5))]",
                     "vmSize": "[parameters('vmSize')]",
                     "publisher": "Canonical",
-                    "offer": "UbuntuServer",
+                    "offer": "[if(equals(parameters('ubuntuSKU'), '20_04-lts'),'0001-com-ubuntu-server-focal','UbuntuServer')]",
                     "sku": "[parameters('ubuntuSKU')]",
-                    "version": "latest"
+                    "version": "latest",
+                    "extensionName": "SetUpLinuxVM"
                 }
             },
             {
@@ -308,7 +350,8 @@
                     "publisher": "OpenLogic",
                     "offer": "Centos",
                     "sku": "[parameters('centOSSKU')]",
-                    "version": "latest"
+                    "version": "latest",
+                    "extensionName": "SetUpLinuxVM"
                 }
             },
             {
@@ -322,12 +365,18 @@
                     "publisher": "RedHat",
                     "offer": "RHEL",
                     "sku": "[parameters('redhatSKU')]",
-                    "version": "latest"
+                    "version": "latest",
+                    "extensionName": "SetUpLinuxVM"
                 }
             }
         ],
 
-        "allLinuxVMs": "[concat(variables('ubuntuVMs'), variables('centOSVMs'), variables('redhatVMs'))]"
+        "allLinuxVMs": "[concat(variables('ubuntuVMs'), variables('centOSVMs'), variables('redhatVMs'))]",
+
+        // Managed Identity
+        "identityType": {"type": "[parameters('identityType')]"},
+        "userAssignedIdentities": {"userAssignedIdentities": "[parameters('userAssignedIdentities')]"},
+        "identity" : "[if(empty(parameters('userAssignedIdentities')), variables('identityType'), union(variables('identityType'), variables('userAssignedIdentities')))]"
     },
     "resources": [
         {
@@ -530,25 +579,26 @@
         {
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-03-01",
-            "name": "[variables('allLinuxVMs')[copyIndex('vmVMCopy')].vmName]",
+            "name": "[variables('allLinuxVMs')[copyIndex('vmSetupCopy')].vmName]",
             "location": "[parameters('location')]",
+            "identity": "[variables('identity')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('allLinuxVMs')[copyIndex('vmVMCopy')].vmName))]"
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('allLinuxVMs')[copyIndex('vmSetupCopy')].vmName))]"
             ],
             "copy": {
-                "name": "vmVMCopy",
+                "name": "vmSetupCopy",
                 "count": "[length(variables('allLinuxVMs'))]"
             },
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "[variables('allLinuxVMs')[copyIndex('vmVMCopy')].vmSize]"
+                    "vmSize": "[variables('allLinuxVMs')[copyIndex('vmSetupCopy')].vmSize]"
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "publisher": "[variables('allLinuxVMs')[copyIndex('vmVMCopy')].publisher]",
-                        "offer": "[variables('allLinuxVMs')[copyIndex('vmVMCopy')].offer]",
-                        "sku": "[variables('allLinuxVMs')[copyIndex('vmVMCopy')].sku]",
-                        "version": "[variables('allLinuxVMs')[copyIndex('vmVMCopy')].version]"
+                        "publisher": "[variables('allLinuxVMs')[copyIndex('vmSetupCopy')].publisher]",
+                        "offer": "[variables('allLinuxVMs')[copyIndex('vmSetupCopy')].offer]",
+                        "sku": "[variables('allLinuxVMs')[copyIndex('vmSetupCopy')].sku]",
+                        "version": "[variables('allLinuxVMs')[copyIndex('vmSetupCopy')].version]"
                     },
                     "osDisk": {
                         "createOption": "FromImage"
@@ -558,12 +608,12 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('allLinuxVMs')[copyIndex('vmVMCopy')].vmName))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('allLinuxVMs')[copyIndex('vmSetupCopy')].vmName))]"
                         }
                     ]
                 },
                 "osProfile": {
-                    "computerName": "[variables('allLinuxVMs')[copyIndex('vmVMCopy')].vmName]",
+                    "computerName": "[variables('allLinuxVMs')[copyIndex('vmSetupCopy')].vmName]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPasswordOrKey')]",
                     "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), json('null'), variables('linuxConfiguration'))]"
@@ -571,57 +621,83 @@
             }
         },
         {
-            "condition": "[parameters('enableMonitoringAgent')]",
-            "name": "[concat(variables('allLinuxVMs')[copyIndex('vmMMASetUpCopy')].vmName, '/OMSExtension')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
+            "condition": "[parameters('installOMSAgent')]",
+            "name": "[concat(variables('allLinuxVMs')[copyIndex('omsAgentInstallCopy')].vmName, '-OMSAgentSetup')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('allLinuxVMs')[copyIndex('vmMMASetUpCopy')].vmName)]"
+                "[concat('Microsoft.Compute/virtualMachines/', variables('allLinuxVMs')[copyIndex('omsAgentInstallCopy')].vmName)]",
+                "vmSetupCopy"
             ],
             "copy": {
-                "name": "vmMMASetUpCopy",
+                "name": "omsAgentInstallCopy",
                 "count": "[length(variables('allLinuxVMs'))]"
             },
             "properties": {
-                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                "type": "OmsAgentForLinux",
-                "typeHandlerVersion": "1.13",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "workspaceId": "[parameters('workspaceId')]"
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
                 },
-                "protectedSettings": {
-                    "workspaceKey": "[parameters('workspaceKey')]"
+                "parameters": {
+                    "extensionName": {
+                        "value": "[variables('allLinuxVMs')[copyIndex('omsAgentInstallCopy')].extensionName]"
+                    },
+                    "commandToExecute": {
+                        "value": "[concat('sh Install-OMS-Linux-Agent.sh ','-w',' ',parameters('workspaceId'),' ','-s',' ',parameters('workspaceKey'))]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "[variables('installOMSAgentScript')]"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[variables('allLinuxVMs')[copyIndex('omsAgentInstallCopy')].vmName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
                 }
             }
         },
         {
-            "condition": "[parameters('enableAuditdPlugin')]",
-            "name": "[concat(variables('allLinuxVMs')[copyIndex('SetUpLinuxCopy')].vmName, '/SetUpLinuxVM')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
+            "condition": "[parameters('instalOMSAuditdPlugin')]",
+            "name": "[concat(variables('allLinuxVMs')[copyIndex('auditdPluginInstallCopy')].vmName, '-OMSAuditdSetup')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('allLinuxVMs')[copyIndex('SetUpLinuxCopy')].vmName)]",
-                "vmMMASetUpCopy"
+                "vmSetupCopy",
+                "omsAgentInstallCopy"
             ],
             "copy": {
-                "name": "SetUpLinuxCopy",
+                "name": "auditdPluginInstallCopy",
                 "count": "[length(variables('allLinuxVMs'))]"
             },
             "properties": {
-                "publisher": "Microsoft.Azure.Extensions",
-                "type": "CustomScript",
-                "typeHandlerVersion": "2.1",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "fileUris": [
-                        "https://raw.githubusercontent.com/OTRF/Blacksmith/master/templates/azure/Linux/scripts/Install-OMS-Auditd-Plugin.sh"
-                    ],
-                    "commandToExecute": "[concat('bash Install-OMS-Auditd-Plugin.sh')]"
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
                 },
-                "protectedSettings": {}
+                "parameters": {
+                    "extensionName": {
+                        "value": "[variables('allLinuxVMs')[copyIndex('auditdPluginInstallCopy')].extensionName]"
+                    },
+                    "commandToExecute": {
+                        "value": "[concat('sh Install-OMS-Auditd-Plugin.sh')]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "[variables('installOMSAuditdPluginScript')]"
+                        ]
+                    },
+                    "vmName": {
+                        "value": "[variables('allLinuxVMs')[copyIndex('auditdPluginInstallCopy')].vmName]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
             }
         }
     ],

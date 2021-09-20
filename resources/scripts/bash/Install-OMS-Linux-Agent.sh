@@ -1,18 +1,8 @@
 #!/bin/sh
 
-# Easy download/install/onboard script for the OMSAgent for Linux
-#
+# Author: Roberto Rodriguez (@Cyb3rWard0g)
+# License: GPLv3s
 # Reference: https://raw.githubusercontent.com/microsoft/OMS-Agent-for-Linux/master/installer/scripts/onboard_agent.sh
-
-# Architecture
-ARCHITECTURE=$(uname -m)
-
-# Values to be updated upon each new release
-GITHUB_RELEASE_X64="https://github.com/microsoft/OMS-Agent-for-Linux/releases/download/OMSAgent_v1.13.40-0/"
-GITHUB_RELEASE_X86="https://github.com/Microsoft/OMS-Agent-for-Linux/releases/download/OMSAgent_v1.12.15-0/"
-
-BUNDLE_X64="omsagent-1.13.40-0.universal.x64.sh"
-BUNDLE_X86="omsagent-1.12.15-0.universal.x86.sh"
 
 usage()
 {
@@ -26,10 +16,11 @@ usage()
     echo "                             ex: opinsights.azure.us (for FairFax)"
     echo "  -p conf, --proxy conf      Use <conf> as the proxy configuration."
     echo "                             ex: -p [protocol://][user:password@]proxyhost[:port]"
+    echo "  -t tag --tag tag           Download bundle script from specific GitHub release tag (i.e OMSAgent_v1.13.40-0)."
+    echo "                             Latest version is installed by default"
     echo "  --purge                    Uninstall the package and remove all related data."
     echo "  -? | -h | --help           shows this usage text."
 }
-
 
 # Extract parameters
 while [ $# -ne 0 ]
@@ -57,6 +48,11 @@ do
 
         -p|--proxy)
             proxyConf=$2
+            shift 2
+            ;;
+        
+        -t|--tag)
+            tagRelease=$2
             shift 2
             ;;
 
@@ -98,10 +94,27 @@ if [ "$EUID" != 0 ]; then
     SUDO='sudo'
 fi
 
+# Set bundle script to latest GitHub release:
+GITHUB_RELEASE_X64=$(curl --silent "https://api.github.com/repos/microsoft/OMS-Agent-for-Linux/releases/latest" | grep -oP '"browser_download_url": "\K(.*)(?=")')
+# Output example: https://github.com/microsoft/OMS-Agent-for-Linux/releases/download/OMSAgent_v1.13.40-0/omsagent-1.13.40-0.universal.x64.sh
+BUNDLE_X64=$(basename $GITHUB_RELEASE_X64)
+# Output example: omsagent-1.13.40-0.universal.x64.sh
+
+GITHUB_RELEASE_X86="https://github.com/Microsoft/OMS-Agent-for-Linux/releases/download/OMSAgent_v1.12.15-0/"
+BUNDLE_X86="omsagent-1.12.15-0.universal.x86.sh"
+
+# Architecture
+ARCHITECTURE=$(uname -m)
+
 # Download, install, and onboard OMSAgent for Linux, depending on architecture of machine
 if [ "${ARCHITECTURE}" = 'x86_64' ]; then
     # x64 architecture
-    wget -O ${BUNDLE_X64} ${GITHUB_RELEASE_X64}${BUNDLE_X64} && $SUDO sh ./${BUNDLE_X64} ${bundleParameters}
+    if [ -n "$tagRelease" ]; then
+        ASSETS_URL=$(curl --silent "https://api.github.com/repos/microsoft/OMS-Agent-for-Linux/releases/tags/$tagRelease" | grep -oP '"assets_url": "\K(.*)(?=")')
+        GITHUB_RELEASE_X64=$(curl --silent "$ASSETS_URL" | grep -oP '"browser_download_url": "\K(.*)(?=")')
+        BUNDLE_X64=$(basename $GITHUB_RELEASE_X64)
+    fi
+    wget -O ${BUNDLE_X64} ${GITHUB_RELEASE_X64} && $SUDO sh ./${BUNDLE_X64} ${bundleParameters}
 else
     # x86 architecture
     echo "Note that there will be no further releases of the 32-bit OMS Linux agent."
@@ -109,68 +122,7 @@ else
     wget -O ${BUNDLE_X86} ${GITHUB_RELEASE_X86}${BUNDLE_X86} && $SUDO sh ./${BUNDLE_X86} ${bundleParameters}
 fi
 
-# Sleep
-sleep 5s
-
-# Force vulnerable version
-# reference: https://github.com/microsoft/OMS-Agent-for-Linux/blob/master/tools/OMIcheck/omi_upgrade.sh
-
-omi_version="1.6.8-0"
-
-osslverstr=$(openssl version)
-echo $osslverstr
-echo $osslverstr | grep 1.1. > /dev/null
-isSSL11=$?
-echo isSSL11=$isSSL11
-echo $osslverstr | grep 1.0. > /dev/null
-isSSL10=$?
-echo isSSL10=$isSSL10
-
-if [ $isSSL11 = 0 ]; then
-    osslver="110"
-elif [ $isSSL10 = 0 ]; then
-    osslver="100"
-else
-    echo "Unexpected Open SSL version"
-    exit -1
-fi
-
-which dpkg > /dev/null
-if [ $? = 0 ]; then
-    pkgMgr="dpkg -i"
-    pkgName="omi-${omi_version}.ssl_${osslver}.ulinux.x64.deb"
-else
-    which rpm > /dev/null
-    if [ $? = 0 ]; then
-        # sometimes rpm db is not in a good shape.
-        pkgMgr="rpm --rebuilddb && rpm -Uhv"
-        #pkgMgr="rpm -Uhv"
-        pkgName="omi-${omi_version}.ssl_${osslver}.ulinux.x64.rpm"
-    else
-        echo Unknown package manager
-        exit -2
-    fi
-fi
-
-pkg="https://github.com/microsoft/omi/releases/download/v${omi_version}/$pkgName"
-echo $pkg
-wget -q $pkg -O /tmp/$pkgName
-ls -l /tmp/$pkgName
-echo sudo eval $pkgMgr /tmp/$pkgName
-eval sudo $pkgMgr /tmp/$pkgName
-/opt/omi/bin/omiserver -v
-
-# ********** Update OMI Server Configuration **********
-sed -i "s|^httpsport=0$|httpsport=0,5986|g" /etc/opt/omi/conf/omiserver.conf
-sed -i "s|^httpport=0$|httpport=0,5985|g" /etc/opt/omi/conf/omiserver.conf
-
-# ********** Restart OMI service **********
-service omid restart
-
-# ********** Restart auoms service **********
-service auoms restart
-
 ERROR=$?
 if [ $ERROR -ne 0 ]; then
-  echo "[!] Could not deploy Azure OMS and OMI (Error Code: $ERROR)."
+  echo "[!] Could not install OMS agent (Error Code: $ERROR)."
 fi
