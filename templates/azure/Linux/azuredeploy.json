@@ -684,7 +684,7 @@
                         "value": "[variables('allLinuxVMs')[copyIndex('auditdPluginInstallCopy')].extensionName]"
                     },
                     "commandToExecute": {
-                        "value": "[concat('sh Install-OMS-Auditd-Plugin.sh')]"
+                        "value": "[concat('sh Install-OMS-Auditd-Plugin.sh --upgrade')]"
                     },
                     "fileUris": {
                         "value": [

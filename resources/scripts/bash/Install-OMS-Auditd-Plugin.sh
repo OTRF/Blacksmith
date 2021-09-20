@@ -8,6 +8,8 @@ usage()
     echo "usage: $1 [OPTIONS]"
     echo "Options:"
     echo "   "
+    echo "  --install                  Install the package from the system."
+    echo "  --upgrade                  Upgrade the package in the system."
     echo "  -t tag --tag tag           Download bundle script from specific GitHub release tag (i.e v2.4.5-44)."
     echo "                             Latest version is installed by default"
     echo "  -? | -h | --help           shows this usage text."
@@ -17,6 +19,15 @@ usage()
 while [ $# -ne 0 ]
 do
   case "$1" in
+    --install)
+      installMode="--install"
+      shift 1
+      ;;
+
+    --upgrade)
+      installMode="--upgrade"
+      shift 1
+      ;;
     -t|--tag)
       tagRelease=$2
       shift 2
@@ -52,4 +63,4 @@ if [ -n "$tagRelease" ]; then
   GITHUB_RELEASE_X64=$(curl --silent "$ASSETS_URL" | grep -oP '"browser_download_url": "\K(.*.sh)(?=")')
   BUNDLE_X64=$(basename $GITHUB_RELEASE_X64)
 fi
-wget -O ${BUNDLE_X64} ${GITHUB_RELEASE_X64} && $SUDO sh ./${BUNDLE_X64} "--install"
+wget -O ${BUNDLE_X64} ${GITHUB_RELEASE_X64} && $SUDO sh ./${BUNDLE_X64} ${installMode}
