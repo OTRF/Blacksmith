@@ -115,9 +115,9 @@ if [ -n "$httpsport" ]; then
     sed -i "s|^httpsport=0$|httpsport=0,${httpsport}|g" /etc/opt/omi/conf/omiserver.conf
 fi
 
-if [ -n "$httpport" ] || [ -n "$httpsport" ]; then
-    service omid restart
-fi
+# Restaring OMID and AUOMS
+systemctl status omid
+systemctl status auoms
 
 ERROR=$?
 if [ $ERROR -ne 0 ]; then

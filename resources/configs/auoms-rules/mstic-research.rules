@@ -11,6 +11,16 @@
 -a always,exit -F arch=b32 -S execve,ptrace,init_module,delete_module,execveat
 -a always,exit -F arch=b64 -S execve,ptrace,init_module,delete_module,kexec_load,finit_module,kexec_file_load,execveat
 
+#  IPV4 and IPV6 socket allocations
+-a always,exit -F arch=b32 -S socket -F a0=2 -k ipv4
+-a always,exit -F arch=b64 -S socket -F a0=2 -k ipv4
+-a always,exit -F arch=b32 -S socket -F a0=10 -k ipv6
+-a always,exit -F arch=b64 -S socket -F a0=10 -k ipv6
+
+# Files deleted
+-a always,exit -F arch=b32 -S unlink,unlinkat,rename,renameat,rmdir -k delete
+-a always,exit -F arch=b64 -S unlink,unlinkat,rename,renameat,rmdir -k delete
+
 # Memory page permission write and execute
 -a never,exit -F arch=b64 -S mmap -F exe=/usr/bin/python2.7
 -a never,exit -F arch=b64 -S mmap -F exe=/usr/bin/python3.6
@@ -49,3 +59,7 @@
 # Monitor clock events
 -a always,exit -F arch=b32 -S settimeofday,adjtimex,clock_settime,clock_adjtime
 -a always,exit -F arch=b64 -S adjtimex,settimeofday,clock_settime,clock_adjtime
+
+# Monitoring specific directories
+-w /etc/opt/microsoft/scx/conf/tmpdir/ -k scxExecuteScript
+-w /tmp -k tempdir
