@@ -116,8 +116,8 @@ if [ -n "$httpsport" ]; then
 fi
 
 # Restaring OMID and AUOMS
-systemctl status omid
-systemctl status auoms
+systemctl restart omid
+systemctl restart auoms
 
 ERROR=$?
 if [ $ERROR -ne 0 ]; then
