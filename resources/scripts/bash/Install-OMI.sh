@@ -75,11 +75,21 @@ LSB_DIST="$(echo "$LSB_DIST" | tr '[:upper:]' '[:lower:]')"
 case "$LSB_DIST" in
 ubuntu | debian)
   pkgMgr="dpkg -i"
-  pkgUrl=$(curl --silent "https://api.github.com/repos/microsoft/omi/releases/latest" | grep -oP '"browser_download_url": "\K(.*.deb)(?=")' | grep $osslver)
+  if [ -n "$tagRelease" ]; then
+    ASSETS_URL=$(curl --silent "https://api.github.com/repos/microsoft/omi/releases/tags/$tagRelease" | grep -oP '"assets_url": "\K(.*)(?=")')
+    pkgUrl=$(curl --silent "$ASSETS_URL" | grep -oP '"browser_download_url": "\K(.*.deb)(?=")' | grep $osslver)
+  else
+    pkgUrl=$(curl --silent "https://api.github.com/repos/microsoft/omi/releases/latest" | grep -oP '"browser_download_url": "\K(.*.deb)(?=")' | grep $osslver)
+  fi
   ;;
 centos | rhel)
   pkgMgr="rpm --rebuilddb && rpm -Uhv"
-  pkgUrl=$(curl --silent "https://api.github.com/repos/microsoft/omi/releases/latest" | grep -oP '"browser_download_url": "\K(.*.rpm)(?=")' | grep $osslver)
+  if [ -n "$tagRelease" ]; then
+    ASSETS_URL=$(curl --silent "https://api.github.com/repos/microsoft/omi/releases/tags/$tagRelease" | grep -oP '"assets_url": "\K(.*)(?=")')
+    pkgUrl=$(curl --silent "$ASSETS_URL" | grep -oP '"browser_download_url": "\K(.*.rpm)(?=")' | grep $osslver)
+  else
+    pkgUrl=$(curl --silent "https://api.github.com/repos/microsoft/omi/releases/latest" | grep -oP '"browser_download_url": "\K(.*.rpm)(?=")' | grep $osslver)
+  fi
   ;;
 esac
 pkgName=$(basename $pkgUrl)

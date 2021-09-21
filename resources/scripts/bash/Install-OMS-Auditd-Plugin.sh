@@ -64,3 +64,17 @@ if [ -n "$tagRelease" ]; then
   BUNDLE_X64=$(basename $GITHUB_RELEASE_X64)
 fi
 wget -O ${BUNDLE_X64} ${GITHUB_RELEASE_X64} && $SUDO sh ./${BUNDLE_X64} ${installMode}
+
+# Copying auoms conf and rules
+cp syslog.conf /etc/opt/microsoft/auoms/outconf.d/syslog.conf
+cp mstic-research.rules /etc/opt/microsoft/auoms/rules.d
+
+# Enable AUOMS
+sed -i -e 's/active = no/active = yes/' /etc/audisp/plugins.d/auoms.conf
+
+# Enable the auoms service (will start auoms if it is not running)
+/opt/microsoft/auoms/bin/auomsctl enable
+
+# Restaring OMID and AUOMS
+systemctl status omid
+systemctl status auoms

@@ -1,0 +1,51 @@
+# Author: Roberto Rodriguez (@Cyb3rWard0g)
+# License: GPLv3
+# Reference: https://github.com/microsoft/OMS-Auditd-Plugin/blob/MSTIC-Research/conf/outconf.d/testout.conf
+
+# Performance gain by exiting early on syscalls we know we don't want to monitor
+-a never,exit -F arch=b64 -S read,write,close,stat,lstat,poll,brk,rt_sigaction,rt_sigprocmask,ioctl,pread,pwrite,readv,writev,access,pipe,select,sched_yield,mremap,msync,mincore,madvise,shmget,shmat,shmctl,dup,dup2,pause,nanosleep,getitimer,alarm,setitimer,getpid,sendfile,socket,accept,sendto,recvfrom,sendmsg,recvmsg,shutdown,bind,listen,getsockname,getpeername,socketpair,setsockopt,getsockopt,clone,fork,vfork,exit,wait4,uname,semget,semop,semctl,shmdt,msgget,msgsnd,msgrcv,msgctl,fcntl,flock,fsync,fdatasync,getdents,getcwd,chdir,fchdir,readlink,lchown,umask,gettimeofday,getrlimit,getrusage,sysinfo,times,getuid,syslog,getgid,setuid,setgid,geteuid,getegid,setpgid,getppid,getpgrp,setsid,setreuid,setregid,getgroups,setgroups,setresuid,getresuid,setresgid,getresgid,getpgid,setfsuid,setfsgid,getsid,capget,capset,rt_sigpending,rt_sigtimedwait,rt_sigqueueinfo,rt_sigsuspend,sigaltstack,utime,mknod,uselib,personality,ustat,statfs,fstatfs,sysfs,getpriority,setpriority,sched_setparam,sched_getparam,sched_setscheduler,sched_getscheduler,sched_get_priority_max,sched_get_priority_min,sched_rr_get_interval,mlock,munlock,mlockall,munlockall,vhangup,modify_ldt,pivot_root,_sysctl,prctl,arch_prctl,adjtimex,setrlimit,chroot,sync,acct,settimeofday,mount,umount2,swapon,swapoff,reboot,sethostname,setdomainname,iopl,ioperm,create_module,get_kernel_syms,query_module,quotactl,nfsservctl,getpmsg,afs_syscall,tuxcall,security,gettid,readahead,getxattr,lgetxattr,fgetxattr,listxattr,llistxattr,flistxattr,removexattr,time,futex,sched_setaffinity,sched_getaffinity,set_thread_area,io_setup,io_destroy,io_getevents,io_submit,io_cancel,get_thread_area,lookup_dcookie,epoll_create,epoll_ctl_old,epoll_wait_old,getdents64,set_tid_address,restart_syscall,semtimedop,fadvise64,timer_create,timer_settime,timer_gettime,timer_getoverrun,timer_delete,clock_settime,clock_gettime,clock_getres,clock_nanosleep,exit_group,epoll_wait,epoll_ctl,utimes,vserver,mbind,set_mempolicy,get_mempolicy,mq_open,mq_unlink,mq_timedsend,mq_timedreceive,mq_notify,mq_getsetattr,waitid,add_key,request_key,keyctl,ioprio_set,ioprio_get,inotify_init,inotify_add_watch,inotify_rm_watch,migrate_pages,mknodat,futimesat,newfstatat,readlinkat,faccessat,pselect6,ppoll,unshare,set_robust_list,get_robust_list,splice,tee,sync_file_range,vmsplice,move_pages,utimensat,epoll_pwait,signalfd,timerfd,eventfd,fallocate,timerfd_settime,timerfd_gettime,accept4,signalfd4,eventfd2,epoll_create1,dup3,pipe2,inotify_init1,pwritev,rt_tgsigqueueinfo,perf_event_open,recvmmsg,fanotify_init,prlimit64,name_to_handle_at,clock_adjtime,syncfs,sendmmsg,setns,getcpu,process_vm_readv,process_vm_writev,kcmp,sched_setattr,sched_getattr,renameat2,seccomp,getrandom,memfd_create,bpf,userfaultfd,membarrier,mlock2,copy_file_range,preadv2,pwritev2,pkey_mprotect,pkey_alloc,pkey_free,statx
+
+-a never,exit -F arch=b32 -S exit,fork,read,write,close,waitpid,chdir,time,mknod,stat,lseek,getpid,mount,stime,alarm,fstat,pause,utime,access,nice,sync,dup,pipe,times,brk,signal,acct,umount,ioctl,fcntl,setpgid,olduname,umask,chroot,ustat,dup2,getppid,getpgrp,setsid,sigaction,sgetmask,ssetmask,sigsuspend,sigpending,sethostname,setrlimit,getrusage,gettimeofday,lstat,readlink,uselib,swapon,reboot,munmap,getpriority,setpriority,statfs,fstatfs,ioperm,socketcall,syslog,setitimer,getitimer,uname,iopl,vhangup,vm86old,wait4,swapoff,sysinfo,ipc,fsync,sigreturn,clone,setdomainname,modify_ldt,sigprocmask,quotactl,getpgid,fchdir,bdflush,sysfs,personality,getdents,select,flock,msync,readv,writev,getsid,fdatasync,mlock,munlock,mlockall,munlockall,sched_setparam,sched_getparam,sched_setscheduler,sched_getscheduler,sched_yield,sched_get_priority_max,sched_get_priority_min,sched_rr_get_interval,nanosleep,vm86,poll,nfsservctl,prctl,rt_sigreturn,rt_sigaction,rt_sigprocmask,rt_sigpending,rt_sigtimedwait,rt_sigqueueinfo,rt_sigsuspend,pread64,pwrite64,getcwd,capget,capset,sigaltstack,sendfile,vfork,getrlimit,stat64,lstat64,fstat64,getuid,getgid,geteuid,getegid,setreuid,setregid,getgroups,setgroups,setresuid,getresuid,setresgid,getresgid,setuid,setgid,setfsuid,setfsgid,pivot_root,mincore,madvise,getdents64,fcntl64,gettid,readahead,getxattr,lgetxattr,fgetxattr,listxattr,llistxattr,flistxattr,sendfile64,futex,sched_setaffinity,sched_getaffinity,set_thread_area,get_thread_area,io_setup,io_destroy,io_getevents,io_submit,io_cancel,fadvise64,exit_group,lookup_dcookie,epoll_create,epoll_ctl,epoll_wait,set_tid_address,timer_create,timer_settime,timer_gettime,timer_getoverrun,timer_delete,clock_gettime,clock_getres,clock_nanosleep,statfs64,fstatfs64,utimes,fadvise64_64,mbind,get_mempolicy,set_mempolicy,mq_open,mq_unlink,mq_timedsend,mq_timedreceive,mq_notify,mq_getsetattr,waitid,add_key,request_key,keyctl,ioprio_set,ioprio_get,inotify_init,inotify_add_watch,inotify_rm_watch,migrate_pages,mknodat,futimesat,fstatat64,readlinkat,faccessat,pselect6,ppoll,unshare,set_robust_list,get_robust_list,splice,sync_file_range,tee,vmsplice,move_pages,getcpu,epoll_pwait,utimensat,signalfd,eventfd,fallocate,timerfd_settime,timerfd_gettime,signalfd4,eventfd2,epoll_create1,dup3,pipe2,inotify_init1,preadv,pwritev,rt_tgsigqueueinfo,perf_event_open,recvmmsg
+
+# Monitor certain syscalls.
+-a always,exit -F arch=b32 -S execve,ptrace,init_module,delete_module,execveat
+-a always,exit -F arch=b64 -S execve,ptrace,init_module,delete_module,kexec_load,finit_module,kexec_file_load,execveat
+
+# Memory page permission write and execute
+-a never,exit -F arch=b64 -S mmap -F exe=/usr/bin/python2.7
+-a never,exit -F arch=b64 -S mmap -F exe=/usr/bin/python3.6
+-a never,exit -F arch=b64 -S mmap -F exe=/usr/bin/python3.7
+-a never,exit -F arch=b64 -S mmap -F exe=/usr/bin/python3.8
+-a never,exit -F arch=b64 -S mmap -F exe=/usr/bin/python3.9
+-a never,exit -F arch=b32 -S mmap -F exe=/usr/bin/python2.7
+-a never,exit -F arch=b32 -S mmap -F exe=/usr/bin/python3.6
+-a never,exit -F arch=b32 -S mmap -F exe=/usr/bin/python3.7
+-a never,exit -F arch=b32 -S mmap -F exe=/usr/bin/python3.8
+-a never,exit -F arch=b32 -S mmap -F exe=/usr/bin/python3.9
+-a always,exit -F arch=b64 -S mprotect -F a2&0x4
+-a always,exit -F arch=b64 -S mmap,remap_file_pages -F a2&=0x6
+-a always,exit -F arch=b32 -S mprotect -F a2&0x4
+-a always,exit -F arch=b32 -S remap_file_pages -F a2&=0x6
+
+# Kill -9 and Kill -STOP
+-a always,exit -F arch=b64 -S kill,tkill -F a1=0x9
+-a always,exit -F arch=b64 -S tgkill -F a2=0x9
+-a always,exit -F arch=b64 -S kill,tkill -F a1=0x13
+-a always,exit -F arch=b64 -S tgkill -F a2=0x13
+-a always,exit -F arch=b32 -S kill,tkill -F a1=0x9
+-a always,exit -F arch=b32 -S tgkill -F a2=0x9
+-a always,exit -F arch=b32 -S kill,tkill -F a1=0x13
+-a always,exit -F arch=b32 -S tgkill -F a2=0x13
+
+# Some file and directory watches
+-w /bin/kmod -p x -k kernelmodules
+-w /var/log/audit/ -p wxa -k audittampering
+-w /etc/audit/ -p wxa -k audittampering
+-w /etc/passwd -p wxa -k usergroup
+-w /etc/group -p wxa -k usergroup
+-w /etc/pam.d/ -p wxa -k pam
+-w /etc/azsec/ -p wxa -k azsec
+
+# Monitor clock events
+-a always,exit -F arch=b32 -S settimeofday,adjtimex,clock_settime,clock_adjtime
+-a always,exit -F arch=b64 -S adjtimex,settimeofday,clock_settime,clock_adjtime

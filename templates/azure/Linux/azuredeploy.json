@@ -237,7 +237,7 @@
                 "description": "Do you want to install tbe Azure OMS Agent for Linux? https://github.com/microsoft/OMS-Agent-for-Linux"
             }
         },
-        "instalOMSAuditdPlugin": {
+        "installOMSAuditdPlugin": {
             "type": "bool",
             "defaultValue": false,
             "metadata": {
@@ -309,6 +309,10 @@
         // Custom Scripts
         "installOMSAgentScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/bash/Install-OMS-Linux-Agent.sh', parameters('_artifactsLocationSasToken')))]",
         "installOMSAuditdPluginScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/bash/Install-OMS-Auditd-Plugin.sh', parameters('_artifactsLocationSasToken')))]",
+
+        // AUOMS Files
+        "auomsOutconf": "[uri(parameters('_artifactsLocation'), concat('resources/configs/auoms-outconf/syslog.conf', parameters('_artifactsLocationSasToken')))]",
+        "auomsRules": "[uri(parameters('_artifactsLocation'), concat('resources/configs/auoms-rules/mstic-research.rules', parameters('_artifactsLocationSasToken')))]",
 
         //Linux VM Configurations
         "linuxConfiguration": {
@@ -622,17 +626,12 @@
         },
         {
             "condition": "[parameters('installOMSAgent')]",
-            "name": "[concat(variables('allLinuxVMs')[copyIndex('omsAgentInstallCopy')].vmName, '-OMSAgentSetup')]",
+            "name": "installOMSAgent",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
+            "apiVersion": "2020-10-01",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('allLinuxVMs')[copyIndex('omsAgentInstallCopy')].vmName)]",
                 "vmSetupCopy"
             ],
-            "copy": {
-                "name": "omsAgentInstallCopy",
-                "count": "[length(variables('allLinuxVMs'))]"
-            },
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -640,8 +639,8 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "extensionName": {
-                        "value": "[variables('allLinuxVMs')[copyIndex('omsAgentInstallCopy')].extensionName]"
+                    "virtualMachines": {
+                        "value": "[variables('allLinuxVMs')]"
                     },
                     "commandToExecute": {
                         "value": "[concat('sh Install-OMS-Linux-Agent.sh ','-w',' ',parameters('workspaceId'),' ','-s',' ',parameters('workspaceKey'))]"
@@ -651,9 +650,6 @@
                             "[variables('installOMSAgentScript')]"
                         ]
                     },
-                    "vmName": {
-                        "value": "[variables('allLinuxVMs')[copyIndex('omsAgentInstallCopy')].vmName]"
-                    },
                     "location": {
                         "value": "[parameters('location')]"
                     }
@@ -661,18 +657,13 @@
             }
         },
         {
-            "condition": "[parameters('instalOMSAuditdPlugin')]",
-            "name": "[concat(variables('allLinuxVMs')[copyIndex('auditdPluginInstallCopy')].vmName, '-OMSAuditdSetup')]",
+            "condition": "[parameters('installOMSAuditdPlugin')]",
+            "name": "installOMSAuditdPlugin",
             "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
+            "apiVersion": "2020-10-01",
             "dependsOn": [
-                "vmSetupCopy",
-                "omsAgentInstallCopy"
+                "installOMSAgent"
             ],
-            "copy": {
-                "name": "auditdPluginInstallCopy",
-                "count": "[length(variables('allLinuxVMs'))]"
-            },
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -680,19 +671,18 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "extensionName": {
-                        "value": "[variables('allLinuxVMs')[copyIndex('auditdPluginInstallCopy')].extensionName]"
+                    "virtualMachines": {
+                        "value": "[variables('allLinuxVMs')]"
                     },
                     "commandToExecute": {
                         "value": "[concat('sh Install-OMS-Auditd-Plugin.sh --upgrade')]"
                     },
                     "fileUris": {
                         "value": [
-                            "[variables('installOMSAuditdPluginScript')]"
+                            "[variables('installOMSAuditdPluginScript')]",
+                            "[variables('auomsOutconf')]",
+                            "[variables('auomsRules')]"
                         ]
-                    },
-                    "vmName": {
-                        "value": "[variables('allLinuxVMs')[copyIndex('auditdPluginInstallCopy')].vmName]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
