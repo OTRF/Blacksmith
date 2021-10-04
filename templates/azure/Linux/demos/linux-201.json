@@ -285,7 +285,8 @@
                     "publisher": "Canonical",
                     "offer": "UbuntuServer",
                     "sku": "[parameters('ubuntuSKU')]",
-                    "version": "latest"
+                    "version": "latest",
+                     "extensionName": "SetUpLinuxVM"
                 }
             },
             {
@@ -299,7 +300,8 @@
                     "publisher": "OpenLogic",
                     "offer": "Centos",
                     "sku": "[parameters('centOSSKU')]",
-                    "version": "latest"
+                    "version": "latest",
+                     "extensionName": "SetUpLinuxVM"
                 }
             },
             {
@@ -313,7 +315,8 @@
                     "publisher": "RedHat",
                     "offer": "RHEL",
                     "sku": "[parameters('redhatSKU')]",
-                    "version": "latest"
+                    "version": "latest",
+                     "extensionName": "SetUpLinuxVM"
                 }
             }
         ],
