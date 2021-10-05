@@ -139,7 +139,9 @@
                 "7.7",
                 "8",
                 "8.1",
-                "8.2"
+                "8.2",
+                "8_3",
+                "8_4"
             ],
             "metadata": {
                 "description": "The Red Hat version for the VM. This will pick a fully patched image of this given Red Hat version."
