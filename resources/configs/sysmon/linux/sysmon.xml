@@ -1,0 +1,108 @@
+<!--
+    SysmonForLinux
+
+    Copyright (c) Microsoft Corporation
+
+    All rights reserved.
+
+    MIT License
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the ""Software""), to deal in the Software without
+ restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom th
+e Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED *AS IS*, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+ AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISI
+NG FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<Sysmon schemaversion="4.81">
+  <EventFiltering>
+    <!-- Event ID 1 == ProcessCreate. Log all newly created processes except-->
+    <RuleGroup name="" groupRelation="or">
+      <ProcessCreate onmatch="exclude">
+        <CurrentDirectory condition="begin with">/var/lib/waagent/</CurrentDirectory>
+        <Image condition="is">/opt/microsoft/auoms/bin/auomsctl</Image>
+        <CommandLine condition="is">pgrep -U omsagent omiagent</CommandLine>
+        <ParentImage condition="is">/opt/microsoft/auoms/bin/auomsctl</ParentImage>
+        <ParentImage condition="is">/opt/microsoft/omsagent/ruby/bin/ruby</ParentImage>
+        <Rule name="omsagentPython" groupRelation="and">
+          <User condition="is">omsagent</User>
+          <ParentImage condition="is">/usr/bin/python2.7</ParentImage>
+        </Rule>
+        <Image condition="is">/usr/bin/dircolors</Image>
+      </ProcessCreate>
+    </RuleGroup>
+    <!-- Event ID 3 == NetworkConnect Detected. Log all network connections except -->
+    <RuleGroup name="" groupRelation="or">
+      <NetworkConnect onmatch="exclude">
+        <Rule name="" groupRelation="or">
+          <Image condition="is">/opt/microsoft/omsagent/ruby/bin/ruby</Image>
+          <DestinationIp condition="is">168.63.129.16</DestinationIp>
+        </Rule>
+        <Rule name="LocalDNSCachingResolverCall" groupRelation="and">
+          <SourceIp condition="is">127.0.0.53</SourceIp>
+          <DestinationIp condition="is">127.0.0.1</DestinationIp>
+          <SourcePort condition="is">53</SourcePort>
+        </Rule>
+        <Rule name="LocalDNSCachingResolverDest" groupRelation="and">
+          <DestinationIp condition="is">127.0.0.53</DestinationIp>
+          <DestinationPort condition="is">53</DestinationPort>
+        </Rule>
+      </NetworkConnect>
+    </RuleGroup>
+    <!-- Event ID 5 == ProcessTerminate. Log all processes terminated except -->
+    <RuleGroup name="" groupRelation="or">
+      <ProcessTerminate onmatch="exclude">
+        <Image condition="is">/sbin/xtables-multi</Image>
+        <Image condition="is">/usr/bin/clear</Image>
+        <Image condition="is">/lib/systemd/systemd-journald</Image>
+      </ProcessTerminate>
+    </RuleGroup>
+    <!-- Event ID 11 == FileCreate. Log every file creation except -->
+    <RuleGroup name="" groupRelation="or">
+      <FileCreate onmatch="exclude">
+        <Image condition="is">/opt/microsoft/omsagent/ruby/bin/ruby</Image>
+        <TargetFilename condition="begin with">/var/lib/waagent/</TargetFilename>
+        <TargetFilename condition="begin with">/var/opt/microsoft/omsconfig/</TargetFilename>
+        <TargetFilename condition="begin with">/etc/opt/omi/conf/omsconfig/</TargetFilename>
+        <TargetFilename condition="begin with">/var/opt/microsoft/linuxmonagent/</TargetFilename>
+        <TargetFilename condition="begin with">/var/opt/microsoft/omsagent/</TargetFilename>
+        <Rule name="" groupRelation="and">
+          <User condition="is">syslog</User>
+          <TargetFilename condition="contains">microsoft/linuxmonagent</TargetFilename>
+          <Image condition="is">/usr/sbin/mdsd</Image>
+        </Rule>
+        <Rule name="" groupRelation="and">
+          <User condition="is">syslog</User>
+          <Image condition="is">/opt/microsoft/azuremonitoragent/bin/mdsd</Image>
+          <TargetFilename condition="begin with">/var/opt/microsoft/azuremonitoragent/</TargetFilename>
+        </Rule>
+      </FileCreate>
+    </RuleGroup>
+    <!--Event ID 23 == FileDelete. Log all files being deleted except-->
+    <RuleGroup name="" groupRelation="or">
+      <FileDelete onmatch="exclude">
+        <Rule name="OMSRuby" groupRelation="and">
+          <Image condition="is">/opt/microsoft/omsagent/ruby/bin/ruby</Image>
+          <User condition="is">omsagent</User>
+        </Rule>
+        <Rule name="MSFTDepAgt" groupRelation="and">
+          <Image condition="is">/opt/microsoft/dependency-agent/bin/microsoft-dependency-agent</Image>
+          <TargetFilename condition="begin with">/var/opt/microsoft/dependency-agent/</TargetFilename>
+        </Rule>
+        <Rule name="" groupRelation="and">
+          <User condition="is">syslog</User>
+          <TargetFilename condition="contains">microsoft/linuxmonagent</TargetFilename>
+          <Image condition="is">/usr/sbin/mdsd</Image>
+        </Rule>
+        <Rule name="" groupRelation="and">
+          <User condition="is">root</User>
+          <TargetFilename condition="begin with">/var/lib/waagent/</TargetFilename>
+          <Image condition="begin with">/usr/bin/python</Image>
+        </Rule>
+      </FileDelete>
+    </RuleGroup>
+  </EventFiltering>
+</Sysmon>
