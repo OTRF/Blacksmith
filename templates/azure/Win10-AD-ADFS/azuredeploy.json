@@ -218,13 +218,6 @@
                 "description": "Do you want to install Sysmon on the endpoint?"
             }
         },
-        "enableMonitoringAgent": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to enable the Microsoft Log Analytics Monitoring agent? "
-            }
-        },
         "enableAADConnect": {
             "type": "bool",
             "metadata": {
@@ -1190,33 +1183,6 @@
             }
         },
         {
-            "condition": "[parameters('enableMonitoringAgent')]",
-            "name": "[concat(variables('allEndpoints')[copyIndex('vmMMASetUpCopy')].vmName, '/OMSExtension')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "vmDomainJoinCopy",
-                "InstallADFS"
-            ],
-            "copy": {
-                "name": "vmMMASetUpCopy",
-                "count": "[length(variables('allEndpoints'))]"
-            },
-            "properties": {
-                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                "type": "MicrosoftMonitoringAgent",
-                "typeHandlerVersion": "1.0",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "workspaceId": "[parameters('workspaceId')]"
-                },
-                "protectedSettings": {
-                    "workspaceKey": "[parameters('workspaceKey')]"
-                }
-            }
-        },
-        {
             "condition": "[parameters('enableAADConnect')]",
             "name": "[concat(variables('domainController')[0].vmName, '-installAADConnect')]",
             "type": "Microsoft.Resources/deployments",
@@ -1225,8 +1191,7 @@
                 "vmDomainJoinCopy",
                 "InstallADFS",
                 "DCImportPfxCert",
-                "[concat(variables('domainController')[0].vmName, '-installSysmon')]",
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('domainController')[0].vmName, 'OMSExtension')]"
+                "[concat(variables('domainController')[0].vmName, '-installSysmon')]"
             ],
             "properties": {
                 "mode": "Incremental",
