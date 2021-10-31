@@ -169,20 +169,6 @@
                 "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
             }
         },
-        "workspaceId": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Log analytics workspace ID"
-            }
-        },
-        "workspaceKey": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Log analytics workspace keys"
-            }
-        },
         "virtualNetworkName": {
             "type": "string",
             "metadata": {
