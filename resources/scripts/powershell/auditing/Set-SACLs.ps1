@@ -21,7 +21,6 @@ regKey;wellKnownSidType;rights;inheritanceFlags;propagationFlags;auditFlags
 "HKLM:\SYSTEM\CurrentControlSet\Services\SysmonDrv\Parameters";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows\EventLog\EventForwarding\SubscriptionManager";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
-"HKLM:\SOFTWARE\Microsoft\.NETFramework";"AuthenticatedUserSid";"WriteKey";"None";"None";"Success"
 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\webcam";"AuthenticatedUserSid";"SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
 "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone";"AuthenticatedUserSid";"SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
 "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\TelemetryController";"AuthenticatedUserSid";"SetValue,WriteKey";"ContainerInherit";"InheritOnly";"Success"
