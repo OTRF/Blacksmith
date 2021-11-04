@@ -156,20 +156,6 @@
                 "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
             }
         },
-        "workspaceId": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Log analytics workspace ID"
-            }
-        },
-        "workspaceKey": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Log analytics workspace keys"
-            }
-        },
         "virtualNetworkName": {
             "type": "string",
             "metadata": {
@@ -585,31 +571,31 @@
         {
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2018-10-01",
-            "name": "[variables('allEndpoints')[copyIndex('vmVMCopy')].vmName]",
+            "name": "[variables('monitoredEndpoints')[copyIndex('vmVMCopy')].vmName]",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('allEndpoints')[copyIndex('vmVMCopy')].vmName))]"
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('monitoredEndpoints')[copyIndex('vmVMCopy')].vmName))]"
             ],
             "copy": {
                 "name": "vmVMCopy",
-                "count": "[length(variables('allEndpoints'))]"
+                "count": "[length(variables('monitoredEndpoints'))]"
             },
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "[variables('allEndpoints')[copyIndex('vmVMCopy')].vmSize]"
+                    "vmSize": "[variables('monitoredEndpoints')[copyIndex('vmVMCopy')].vmSize]"
                 },
                 "osProfile": {
-                    "computerName": "[variables('allEndpoints')[copyIndex('vmVMCopy')].vmName]",
+                    "computerName": "[variables('monitoredEndpoints')[copyIndex('vmVMCopy')].vmName]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "publisher": "[variables('allEndpoints')[copyIndex('vmVMCopy')].publisher]",
-                        "offer": "[variables('allEndpoints')[copyIndex('vmVMCopy')].offer]",
-                        "sku": "[variables('allEndpoints')[copyIndex('vmVMCopy')].sku]",
-                        "version": "[variables('allEndpoints')[copyIndex('vmVMCopy')].version]"
+                        "publisher": "[variables('monitoredEndpoints')[copyIndex('vmVMCopy')].publisher]",
+                        "offer": "[variables('monitoredEndpoints')[copyIndex('vmVMCopy')].offer]",
+                        "sku": "[variables('monitoredEndpoints')[copyIndex('vmVMCopy')].sku]",
+                        "version": "[variables('monitoredEndpoints')[copyIndex('vmVMCopy')].version]"
                     },
                     "osDisk": {
                         "createOption": "FromImage"
@@ -619,7 +605,53 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('allEndpoints')[copyIndex('vmVMCopy')].vmName))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('monitoredEndpoints')[copyIndex('vmVMCopy')].vmName))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2018-10-01",
+            "name": "[variables('wecServer')[0].vmName]",
+            "location": "[parameters('location')]",
+            "identity": {"type": "SystemAssigned"},
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('wecServer')[0].vmName))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('wecServer')[0].vmSize]"
+                },
+                "osProfile": {
+                    "computerName": "[variables('wecServer')[0].vmName]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('wecServer')[0].publisher]",
+                        "offer": "[variables('wecServer')[0].offer]",
+                        "sku": "[variables('wecServer')[0].sku]",
+                        "version": "[variables('wecServer')[0].version]"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": []
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('wecServer')[0].vmName))]"
                         }
                     ]
                 },
