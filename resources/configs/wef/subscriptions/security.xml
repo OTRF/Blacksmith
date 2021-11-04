@@ -20,7 +20,7 @@
             <QueryList>
                 <Query Id="0">
                     <Select Path="Security">*</Select>
-                    <Suppress Path="Security">*[System[(EventID=5156)]] and ((*[EventData[Data[@Name="DestAddress"] = "172.18.38.6"]]) or (*[EventData[Data[@Name="DestAddress"] = "10.0.1.10"]]) or (*[EventData[Data[@Name="Application"] = "\\*\networkwatcheragent.exe"]]) or (*[EventData[Data[@Name="Application"] = "\\*\windowsazureguestagent.exe"]]))</Suppress>
+                    <Suppress Path="Security">*[System[(EventID=5156)]] and ((*[EventData[Data[@Name="DestAddress"] = "192.168.2.5"]]) or (*[EventData[Data[@Name="Application"] = "\\*\networkwatcheragent.exe"]]) or (*[EventData[Data[@Name="Application"] = "\\*\windowsazureguestagent.exe"]]))</Suppress>
                 </Query>
             </QueryList>
         ]]>
