@@ -1026,8 +1026,8 @@
             "value": "[variables('allEndpoints')]"
         },
         "wecVMDeployed": {
-            "type": "object",
-            "value": "[variables('wecServer')[0]]"
+            "type": "array",
+            "value": "[variables('wecServer')]"
         }
     }
 }
