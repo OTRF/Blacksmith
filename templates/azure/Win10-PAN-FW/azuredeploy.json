@@ -1034,9 +1034,13 @@
             "type": "string",
             "value": "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
         },
-        "endpoints": {
+        "allVMsDeployed": {
             "type": "array",
             "value": "[variables('allEndpoints')]"
+        },
+        "allWinVMsDeployed": {
+            "type": "array",
+            "value": "[variables('windowsVM')]"
         }
     }
 }
