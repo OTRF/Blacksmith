@@ -169,6 +169,25 @@
                 "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
             }
         },
+        "identityType": {
+            "type": "string",
+            "metadata": {
+                "description": "The type of identity used for the virtual machine. The type 'SystemAssigned, UserAssigned' includes both an implicitly created identity and a set of user assigned identities. The type 'None' will remove any identities from the virtual machine. - SystemAssigned, UserAssigned, None. Reference: https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?tabs=json#virtualmachineidentity-object"
+            },
+            "defaultValue": "None",
+            "allowedValues": [
+                "SystemAssigned",
+                "UserAssigned",
+                "None"
+            ]
+        },
+        "userAssignedIdentities": {
+            "type": "object",
+            "metadata": {
+                "description": "The list of user identities associated with the Virtual Machine. The user identity dictionary key references will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}"
+            },
+            "defaultValue": {}
+        },
         "virtualNetworkName": {
             "type": "string",
             "metadata": {
@@ -414,7 +433,12 @@
             "[variables('setSACLScript')]",
             "[variables('setWallPaperScript')]"
         ],
-        "initialDCADFSScripts": "[if(equals(parameters('certificateType'),'TrustedSigned'), concat(variables('initialSetUpScripts'), variables('pfxCertUri')), variables('initialSetUpScripts'))]"
+        "initialDCADFSScripts": "[if(equals(parameters('certificateType'),'TrustedSigned'), concat(variables('initialSetUpScripts'), variables('pfxCertUri')), variables('initialSetUpScripts'))]",
+
+        // Managed Identity
+        "identityType": {"type": "[parameters('identityType')]"},
+        "userAssignedIdentities": {"userAssignedIdentities": "[parameters('userAssignedIdentities')]"},
+        "identity" : "[if(empty(parameters('userAssignedIdentities')), variables('identityType'), union(variables('identityType'), variables('userAssignedIdentities')))]"
     },
     "resources": [
         {
@@ -629,6 +653,7 @@
             "apiVersion": "2018-10-01",
             "name": "[variables('allEndpoints')[copyIndex('vmVMCopy')].vmName]",
             "location": "[parameters('location')]",
+            "identity": "[variables('identity')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
                 "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('allEndpoints')[copyIndex('vmVMCopy')].vmName))]"

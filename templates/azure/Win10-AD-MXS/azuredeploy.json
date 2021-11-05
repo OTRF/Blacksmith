@@ -196,19 +196,24 @@
                 "MXS2016-x64-CU12-KB4471392"
             ]
         },
-        "workspaceId": {
+        "identityType": {
             "type": "string",
-            "defaultValue": "",
             "metadata": {
-                "description": "Log analytics workspace ID"
-            }
+                "description": "The type of identity used for the virtual machine. The type 'SystemAssigned, UserAssigned' includes both an implicitly created identity and a set of user assigned identities. The type 'None' will remove any identities from the virtual machine. - SystemAssigned, UserAssigned, None. Reference: https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?tabs=json#virtualmachineidentity-object"
+            },
+            "defaultValue": "None",
+            "allowedValues": [
+                "SystemAssigned",
+                "UserAssigned",
+                "None"
+            ]
         },
-        "workspaceKey": {
-            "type": "string",
-            "defaultValue": "",
+        "userAssignedIdentities": {
+            "type": "object",
             "metadata": {
-                "description": "Log analytics workspace keys"
-            }
+                "description": "The list of user identities associated with the Virtual Machine. The user identity dictionary key references will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}"
+            },
+            "defaultValue": {}
         },
         "virtualNetworkName": {
             "type": "string",
@@ -243,13 +248,6 @@
             "defaultValue": false,
             "metadata": {
                 "description": "Do you want to install Sysmon on the endpoint?"
-            }
-        },
-        "enableMonitoringAgent": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Do you want to enable the Microsoft Log Analytics Monitoring agent? "
             }
         },
         "enableAADConnect": {
@@ -423,7 +421,12 @@
         "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
         "workstationsOUPath": "[concat('OU=Workstations; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
         "serversOUPath": "[concat('OU=Servers; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
-        "mxsISODirectory": "C:\\ProgramData\\"
+        "mxsISODirectory": "C:\\ProgramData\\",
+
+        // Managed Identity
+        "identityType": {"type": "[parameters('identityType')]"},
+        "userAssignedIdentities": {"userAssignedIdentities": "[parameters('userAssignedIdentities')]"},
+        "identity" : "[if(empty(parameters('userAssignedIdentities')), variables('identityType'), union(variables('identityType'), variables('userAssignedIdentities')))]"
     },
     "resources": [
         {
@@ -638,6 +641,7 @@
             "apiVersion": "2018-10-01",
             "name": "[variables('allEndpoints')[copyIndex('vmVMCopy')].vmName]",
             "location": "[parameters('location')]",
+            "identity": "[variables('identity')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
                 "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('allEndpoints')[copyIndex('vmVMCopy')].vmName))]"
@@ -1171,33 +1175,6 @@
                     "location": {
                         "value": "[parameters('location')]"
                     }
-                }
-            }
-        },
-        {
-            "condition": "[parameters('enableMonitoringAgent')]",
-            "name": "[concat(variables('allEndpoints')[copyIndex('vmMMASetUpCopy')].vmName, '/OMSExtension')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "vmDomainJoinCopy",
-                "PostInstallMSExchange"
-            ],
-            "copy": {
-                "name": "vmMMASetUpCopy",
-                "count": "[length(variables('allEndpoints'))]"
-            },
-            "properties": {
-                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                "type": "MicrosoftMonitoringAgent",
-                "typeHandlerVersion": "1.0",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "workspaceId": "[parameters('workspaceId')]"
-                },
-                "protectedSettings": {
-                    "workspaceKey": "[parameters('workspaceKey')]"
                 }
             }
         },

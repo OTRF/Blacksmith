@@ -103,19 +103,24 @@
                 "Standard_A4_v2"
             ]
         },
-        "workspaceId": {
+        "identityType": {
             "type": "string",
             "metadata": {
-                "description": "Log analytics workspace ID"
+                "description": "The type of identity used for the virtual machine. The type 'SystemAssigned, UserAssigned' includes both an implicitly created identity and a set of user assigned identities. The type 'None' will remove any identities from the virtual machine. - SystemAssigned, UserAssigned, None. Reference: https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?tabs=json#virtualmachineidentity-object"
             },
-            "defaultValue": ""
+            "defaultValue": "None",
+            "allowedValues": [
+                "SystemAssigned",
+                "UserAssigned",
+                "None"
+            ]
         },
-        "workspaceKey": {
-            "type": "string",
+        "userAssignedIdentities": {
+            "type": "object",
             "metadata": {
-                "description": "Log analytics workspace keys"
+                "description": "The list of user identities associated with the Virtual Machine. The user identity dictionary key references will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}"
             },
-            "defaultValue": ""
+            "defaultValue": {}
         },
         "newVirtualNetwork": {
             "type": "bool",
@@ -170,13 +175,6 @@
             "type": "bool",
             "metadata": {
                 "description": "Do you want to install Sysmon on the endpoint?"
-            },
-            "defaultValue": false
-        },
-        "enableMonitoringAgent": {
-            "type": "bool",
-            "metadata": {
-                "description": "Do you want to enable the Microsoft Log Analytics Monitoring agent on your Linux VMs? "
             },
             "defaultValue": false
         },
@@ -294,7 +292,12 @@
                     "extensionName": "SetupWinVM"
                 }
             }
-        ]
+        ],
+
+        // Managed Identity
+        "identityType": {"type": "[parameters('identityType')]"},
+        "userAssignedIdentities": {"userAssignedIdentities": "[parameters('userAssignedIdentities')]"},
+        "identity" : "[if(empty(parameters('userAssignedIdentities')), variables('identityType'), union(variables('identityType'), variables('userAssignedIdentities')))]"
     },
     "resources": [
         {
@@ -511,6 +514,7 @@
             "apiVersion": "2018-10-01",
             "name": "[variables('allWinWKS')[copyIndex('vmVMCopy')].vmName]",
             "location": "[parameters('location')]",
+            "identity": "[variables('identity')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
                 "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('allWinWKS')[copyIndex('vmVMCopy')].vmName))]"
@@ -617,7 +621,7 @@
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('allWinWKS')[copyIndex('vmAntiMalwareSetupCopy')].vmName)]"
+                "vmVMCopy"
             ],
             "copy": {
                 "name": "vmAntiMalwareSetupCopy",
@@ -644,32 +648,6 @@
                     }
                 },
                 "protectedSettings": null
-            }
-        },
-        {
-            "condition": "[parameters('enableMonitoringAgent')]",
-            "name": "[concat(variables('allWinWKS')[copyIndex('vmMMASetUpCopy')].vmName, '/OMSExtension')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('allWinWKS')[copyIndex('vmMMASetUpCopy')].vmName)]"
-            ],
-            "copy": {
-                "name": "vmMMASetUpCopy",
-                "count": "[length(variables('allWinWKS'))]"
-            },
-            "properties": {
-                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                "type": "MicrosoftMonitoringAgent",
-                "typeHandlerVersion": "1.0",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "workspaceId": "[parameters('workspaceId')]"
-                },
-                "protectedSettings": {
-                    "workspaceKey": "[parameters('workspaceKey')]"
-                }
             }
         }
     ],
