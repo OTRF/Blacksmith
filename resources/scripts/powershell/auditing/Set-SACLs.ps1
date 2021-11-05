@@ -30,7 +30,6 @@ regKey;wellKnownSidType;rights;inheritanceFlags;propagationFlags;auditFlags
 "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\GBG";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
 "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\Data";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
 "HKLM:\SOFTWARE\Microsoft\Internet Explorer";"AuthenticatedUserSid";"QueryValues";"None";"None";"Success"
-"HKLM:\SYSTEM\ControlSet001\Control\Session Manager\Environment";"AuthenticatedUserSid";"SetValue,WriteKey";"None";"None";"Success"
 "@
 
 write-host "Enabling audit rules.."
