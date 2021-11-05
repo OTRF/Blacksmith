@@ -77,27 +77,6 @@
                 "Standard_A4_v2"
             ]
         },
-        "enableMonitoringAgent": {
-            "type": "bool",
-            "metadata": {
-                "description": "Do you want to enable the Microsoft Log Analytics Monitoring agent on your Linux VMs? "
-            },
-            "defaultValue": false
-        },
-        "workspaceId": {
-            "type": "string",
-            "metadata": {
-                "description": "Log analytics workspace ID"
-            },
-            "defaultValue": ""
-        },
-        "workspaceKey": {
-            "type": "string",
-            "metadata": {
-                "description": "Log analytics workspace keys"
-            },
-            "defaultValue": ""
-        },
         "virtualNetworkName": {
             "type": "string",
             "metadata": {
@@ -326,32 +305,6 @@
                         "enabled": true,
                         "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
                     }
-                }
-            }
-        },
-        {
-            "condition": "[parameters('enableMonitoringAgent')]",
-            "name": "[concat(variables('allWinVMs')[copyIndex('vmMMASetUpCopy')].vmName, '/OMSExtension')]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('allWinVMs')[copyIndex('vmMMASetUpCopy')].vmName)]"
-            ],
-            "copy": {
-                "name": "vmMMASetUpCopy",
-                "count": "[length(variables('allWinVMs'))]"
-            },
-            "properties": {
-                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
-                "type": "MicrosoftMonitoringAgent",
-                "typeHandlerVersion": "1.0",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "workspaceId": "[parameters('workspaceId')]"
-                },
-                "protectedSettings": {
-                    "workspaceKey": "[parameters('workspaceKey')]"
                 }
             }
         }
