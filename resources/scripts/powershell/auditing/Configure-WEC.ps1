@@ -1,7 +1,7 @@
 # Author: Roberto Rodriguez (@Cyb3rWard0g)
 # License: GPL-3.0
 
-# Referneces:
+# References:
 # https://www.ultimatewindowssecurity.com/webinars/watch_get.aspx?Attach=1&Type=SlidesPDF&ID=1426
 # https://community.softwaregrp.com/dcvta86296/attachments/dcvta86296/arcsight-discussions/24729/1/Protect2015-WindowsEventForwarding.pdf
 # https://docs.microsoft.com/en-us/biztalk/technical-guides/settings-that-can-be-modified-to-improve-network-performance
