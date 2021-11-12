@@ -1029,6 +1029,10 @@
             "type": "array",
             "value": "[variables('allEndpoints')]"
         },
+        "allMonitoredWinVMsDeployed": {
+            "type": "array",
+            "value": "[variables('monitoredEndpoints')]"
+        },
         "wecVMDeployed": {
             "type": "array",
             "value": "[variables('wecServer')]"
