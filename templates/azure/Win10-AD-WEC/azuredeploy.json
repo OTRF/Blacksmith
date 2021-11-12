@@ -198,6 +198,13 @@
             },
             "defaultValue": false
         },
+        "wefSubscriptionsUrl": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/resources/configs/wef/subscriptions.zip",
+            "metadata": {
+                "description": "A compressed file (.zip) with all the wef subscriptions to import to the Windows Event Collector (WEC). WEF subscriptions example: https://github.com/OTRF/Blacksmith/tree/master/resources/configs/wef/subscriptions "
+            }
+        },
         "_artifactsLocation": {
             "type": "string",
             "defaultValue": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/",
@@ -286,9 +293,6 @@
         "joinDomainScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/active-directory/Join-Domain.zip', parameters('_artifactsLocationSasToken')))]",
         "installSysmonScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/software/Install-Sysmon.zip', parameters('_artifactsLocationSasToken')))]",
         "installAADConnectScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/misc/Install-AADConnect.zip', parameters('_artifactsLocationSasToken')))]",
-
-        // Other files
-        "wefSubscriptions": "[uri(parameters('_artifactsLocation'), concat('resources/configs/wef/subscriptions.zip', parameters('_artifactsLocationSasToken')))]",
 
         // Initial Setup Scripts
         "initialSetUpScripts": [
@@ -937,7 +941,7 @@
                         ]
                     },
                     "commandToExecute": {
-                        "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Configure-WEC.ps1 -SubscriptionsUrl ', variables('wefSubscriptions'))]"
+                        "value": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Configure-WEC.ps1 -SubscriptionsUrl ', parameters('wefSubscriptionsUrl'))]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
