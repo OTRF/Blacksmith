@@ -23,7 +23,7 @@ $request = [System.Net.WebRequest]::Create($url)
 $response = $request.GetResponse()
 $realTagUrl = $response.ResponseUri.OriginalString
 $version = $realTagUrl.split('/')[-1].Trim('v')
-$rpcFwFiles = @("rpcFireqWall.dll", "rpcFwManager.exe", "rpcMessages.dll")
+$rpcFwFiles = @("rpcFireWall.dll", "rpcFwManager.exe", "rpcMessages.dll")
 $rpcReleaseDownloadUrl = $realTagUrl.Replace('tag', 'download') + '/'
 $response.Close()
 write-host "[+] RPC Firewall version: $version"
@@ -37,7 +37,14 @@ $rpcFwFiles | ForEach-Object {
     write-Host "[+] Downloading" $_ "From" $downloadUrl
     $request = [System.Net.WebRequest]::Create($downloadUrl)
     $response = $request.GetResponse()
-    $OutputFile = [System.IO.Path]::GetFileName($response.ResponseUri)
+    if ($response.Server –eq 'AmazonS3')
+    {
+        $OutputFile = Split-Path $downloadUrl -leaf
+    }
+    else
+    {
+        $OutputFile = [System.IO.Path]::GetFileName($response.ResponseUri)
+    }
     $response.Close()
     $File = "C:\ProgramData\$OutputFile"
     # Check to see if file already exists
@@ -64,4 +71,5 @@ if (!(Test-Path $File)) { Write-Error "$File does not exist" -ErrorAction Stop }
 
 # Installing RPC Firewall
 write-Host "[+] Installing RPC Firewall.."
+Set-Location C:\ProgramData
 & "C:\ProgramData\RpcFwManager.exe" /install
