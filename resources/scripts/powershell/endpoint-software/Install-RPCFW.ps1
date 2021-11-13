@@ -37,9 +37,9 @@ $rpcFwFiles | ForEach-Object {
     write-Host "[+] Downloading" $_ "From" $downloadUrl
     $request = [System.Net.WebRequest]::Create($downloadUrl)
     $response = $request.GetResponse()
-    if ($response.Server –eq 'AmazonS3')
+    if ($response.Server -eq 'AmazonS3')
     {
-        $OutputFile = Split-Path $downloadUrl -leaf
+        $OutputFile = Split-Path $downloadUrl -Leaf
     }
     else
     {
