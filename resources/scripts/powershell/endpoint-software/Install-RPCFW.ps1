@@ -73,4 +73,5 @@ if (!(Test-Path $File)) { Write-Error "$File does not exist" -ErrorAction Stop }
 write-Host "[+] Installing RPC Firewall.."
 Set-Location C:\ProgramData
 & "C:\ProgramData\RpcFwManager.exe" /install
-& "C:\ProgramData\RpcFwManager.exe" /process
+# Protecting lsass as prt of the POC
+& "C:\ProgramData\RpcFwManager.exe" /process lsass
