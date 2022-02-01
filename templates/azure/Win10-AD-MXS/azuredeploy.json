@@ -1186,8 +1186,7 @@
             "dependsOn": [
                 "vmDomainJoinCopy",
                 "PostInstallMSExchange",
-                "[concat(variables('domainController')[0].vmName, '-installSysmon')]",
-                "[resourceId('Microsoft.Compute/virtualMachines/extensions', variables('domainController')[0].vmName, 'OMSExtension')]"
+                "[concat(variables('domainController')[0].vmName, '-installSysmon')]"
             ],
             "properties": {
                 "mode": "Incremental",
