@@ -17,7 +17,11 @@ Param(
 )
 
 # Reference: https://docs.microsoft.com/en-us/exchange/new-features/build-numbers-and-release-dates?view=exchserver-2019&WT.mc_id=M365-MVP-5003086
+# https://www.catalog.update.microsoft.com/home.aspx
 $MXSReleaseDownloadUri = Switch ($MXSRelease) {
+    'MXS2016-x64-CU22-KB5005333' { 'https://download.microsoft.com/download/f/0/e/f0e65686-3761-4c9d-b8b2-9fb71a207b8d/ExchangeServer2016-x64-CU22.ISO' }
+    'MXS2016-x64-CU21-KB5003611' { 'https://download.microsoft.com/download/7/d/5/7d5c319b-510b-4a2c-a77a-099c6f30ab54/ExchangeServer2016-x64-CU21.ISO' }
+    'MXS2016-x64-CU20-KB4602569' { 'https://download.microsoft.com/download/0/b/7/0b702b8b-03ab-4553-9e2c-c73bb0c8535f/ExchangeServer2016-x64-CU20.ISO' }
     'MXS2016-x64-CU19-KB4588884' { 'https://download.microsoft.com/download/a/8/4/a84c8458-c924-4e6d-a19b-be65848c0fe3/ExchangeServer2016-x64-CU19.ISO' }
     'MXS2016-x64-CU18-KB4571788' { 'https://download.microsoft.com/download/d/2/3/d23b113b-9634-4456-acba-1f7b0ce22b0e/ExchangeServer2016-x64-cu18.iso' }
     'MXS2016-x64-CU17-KB4556414' { 'https://download.microsoft.com/download/0/5/f/05fbbfff-8316-4d12-a59d-80b3c56e4d81/ExchangeServer2016-x64-cu17.iso' }
