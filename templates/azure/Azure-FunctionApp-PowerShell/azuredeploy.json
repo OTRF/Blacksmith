@@ -4,7 +4,7 @@
     "parameters": {
         "functionAppName": {
             "type": "string",
-            "defaultValue": "[concat('fnapp', uniqueString(resourceGroup().id))]",
+            "defaultValue": "[concat('funcapp', uniqueString(resourceGroup().id))]",
             "metadata": {
                 "description": "Specifies the name of the Function App."
             }
