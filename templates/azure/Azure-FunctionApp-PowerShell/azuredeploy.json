@@ -136,15 +136,8 @@
                 "name": "[parameters('storageAccountSKUName')]"
             },
             "properties": {
-                "protocolSettings": {
-                    "smb": {}
-                },
                 "cors": {
                     "corsRules": []
-                },
-                "shareDeleteRetentionPolicy": {
-                    "enabled": true,
-                    "days": 7
                 }
             }
         },
