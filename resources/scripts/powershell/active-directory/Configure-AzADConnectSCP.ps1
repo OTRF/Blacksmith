@@ -1,6 +1,8 @@
 #
 # Windows PowerShell script to configure the SCP for Hybrid Azure AD join
-#
+# The service connection point (SCP) is used by your devices to discover your Azure AD tenant information.
+# If your devices are in different forets, each forest needs an SCP.
+# Reference: https://docs.microsoft.com/en-us/azure/active-directory/devices/howto-hybrid-azure-ad-join
 
 param([string]$Domain, [switch]$Help)
 
