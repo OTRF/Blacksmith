@@ -290,6 +290,9 @@
         // Custom Scripts
         "initialSettingsScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD/scripts/Set-Initial-Settings.ps1', parameters('_artifactsLocationSasToken')))]",
         "prepareBoxScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Prepare-Box.ps1', parameters('_artifactsLocationSasToken')))]",
+        "disarmBoxScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Disarm-Box.ps1', parameters('_artifactsLocationSasToken')))]",
+        "disarmFirewallScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Disarm-Firewall.ps1', parameters('_artifactsLocationSasToken')))]",
+        "configurePSRemotingScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/misc/Configure-PSRemoting.ps1', parameters('_artifactsLocationSasToken')))]",
         "setSecurityAuditingScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Enable-WinAuditCategories.ps1', parameters('_artifactsLocationSasToken')))]",
         "setPowerShellLogging": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/auditing/Enable-PowerShell-Logging.ps1', parameters('_artifactsLocationSasToken')))]",
         "saclModule": "https://raw.githubusercontent.com/OTRF/Set-AuditRule/master/Set-AuditRule.ps1",
@@ -308,6 +311,9 @@
             "[variables('initialSettingsScript')]",
             "[variables('dscModules')]",
             "[variables('prepareBoxScript')]",
+            "[variables('disarmBoxScript')]",
+            "[variables('disarmFirewallScript')]",
+            "[variables('configurePSRemotingScript')]",
             "[variables('setSecurityAuditingScript')]",
             "[variables('setPowerShellLogging')]",
             "[variables('saclModule')]",
@@ -315,26 +321,7 @@
             "[variables('setWallPaperScript')]"
         ],
 
-        // Virtual Machine Properties
-        "copy": [
-            {
-                "name": "allWinWKS",
-                "count": "[parameters('numberOfWorkstations')]",
-                "input": {
-                    "tag": "workstation",
-                    "vmName": "[concat(parameters('vmNamePrefix'),copyIndex('allWinWKS',5))]",
-                    "os": "windows",
-                    "subnetref": "[variables('subnetRef')]",
-                    "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('allWinWKS',5))]",
-                    "vmSize": "[parameters('vmSize')]",
-                    "publisher": "MicrosoftWindowsDesktop",
-                    "offer": "Windows-10",
-                    "sku": "[parameters('windowsDesktopSKU')]",
-                    "version": "[parameters('windowsDesktopVersion')]",
-                    "extensionName": "SetupWinVM"
-                }
-            }
-        ],
+        // DC Properties
         "domainController": [
             {
                 "tag": "domainController",
@@ -352,7 +339,6 @@
         ],
 
         // Additional Variables
-        "allEndpoints": "[concat(variables('allWinWKS'), variables('domainController'))]",
         "domainNameArray": "[split(parameters('domainFQDN'),'.')]",
         "ouPath": "[concat('OU=Workstations; DC=', variables('domainNameArray')[0], '; DC=', variables('domainNameArray')[1])]",
 
@@ -527,42 +513,34 @@
             "condition": "[equals(parameters('remoteAccessMode'),'AllowPublicIP')]",
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2018-11-01",
-            "name": "[concat('pip-', variables('allEndpoints')[copyIndex('vmPublicIpCopy')].vmName)]",
+            "name": "[concat('pip-', variables('domainController')[0].vmName)]",
             "location": "[parameters('location')]",
-            "copy": {
-                "name": "vmPublicIpCopy",
-                "count": "[length(variables('allEndpoints'))]"
-            },
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "[toLower(concat(variables('allEndpoints')[copyIndex('vmPublicIpCopy')].vmName, '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
+                    "domainNameLabel": "[toLower(concat(variables('domainController')[0].vmName, '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
                 }
             }
         },
         {
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-11-01",
-            "name": "[concat('nic-', variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].vmName)]",
+            "name": "[concat('nic-', variables('domainController')[0].vmName)]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].vmName))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('domainController')[0].vmName))]",
                 "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
             ],
-            "copy": {
-                "name": "vmNetworkInterfaceCopy",
-                "count": "[length(variables('allEndpoints'))]"
-            },
             "properties": {
                 "ipConfigurations": [
                     {
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAllocationMethod": "Static",
-                            "privateIPAddress": "[variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].ipAddress]",
-                            "publicIPAddress": "[if(equals(parameters('remoteAccessMode'),'AllowPublicIP'), json(concat('{\"id\":', '\"', resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].vmName)),'\"}')),json('null'))]",
+                            "privateIPAddress": "[variables('domainController')[0].ipAddress]",
+                            "publicIPAddress": "[if(equals(parameters('remoteAccessMode'),'AllowPublicIP'), json(concat('{\"id\":', '\"', resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('domainController')[0].vmName)),'\"}')),json('null'))]",
                             "subnet": {
-                                "id": "[variables('allEndpoints')[copyIndex('vmNetworkInterfaceCopy')].subnetref]"
+                                "id": "[variables('domainController')[0].subnetref]"
                             }
                         }
                     }
@@ -570,34 +548,86 @@
             }
         },
         {
+            "name": "deployWin10VM",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), 'templates/azure/Win10/azuredeploy.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "numberOfWorkstations": {
+                        "value": "[parameters('numberOfWorkstations')]"
+                    },
+                    "vmNamePrefix": {
+                        "value": "[parameters('vmNamePrefix')]"
+                    },
+                    "windowsDesktopSKU": {
+                        "value": "[parameters('windowsDesktopSKU')]"
+                    },
+                    "windowsDesktopVersion": {
+                        "value": "[parameters('windowsDesktopVersion')]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('vmSize')]"
+                    },
+                    "newVirtualNetwork": {
+                        "value": false
+                    },
+                    "existingSubnetId": {
+                        "value": "[variables('subnetRef')]"
+                    },
+                    "remoteAccessMode": {
+                        "value": "[parameters('remoteAccessMode')]"
+                    },
+                    "allowedIPAddresses": {
+                        "value": "[parameters('allowedIPAddresses')]"
+                    },
+                    "enableSysmon": {
+                        "value": "[parameters('enableSysmon')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2018-10-01",
-            "name": "[variables('allEndpoints')[copyIndex('vmVMCopy')].vmName]",
+            "name": "[variables('domainController')[0].vmName]",
             "location": "[parameters('location')]",
             "identity": "[variables('identity')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('allEndpoints')[copyIndex('vmVMCopy')].vmName))]"
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('domainController')[0].vmName))]"
             ],
-            "copy": {
-                "name": "vmVMCopy",
-                "count": "[length(variables('allEndpoints'))]"
-            },
             "properties": {
                 "hardwareProfile": {
-                    "vmSize": "[variables('allEndpoints')[copyIndex('vmVMCopy')].vmSize]"
+                    "vmSize": "[variables('domainController')[0].vmSize]"
                 },
                 "osProfile": {
-                    "computerName": "[variables('allEndpoints')[copyIndex('vmVMCopy')].vmName]",
+                    "computerName": "[variables('domainController')[0].vmName]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "publisher": "[variables('allEndpoints')[copyIndex('vmVMCopy')].publisher]",
-                        "offer": "[variables('allEndpoints')[copyIndex('vmVMCopy')].offer]",
-                        "sku": "[variables('allEndpoints')[copyIndex('vmVMCopy')].sku]",
-                        "version": "[variables('allEndpoints')[copyIndex('vmVMCopy')].version]"
+                        "publisher": "[variables('domainController')[0].publisher]",
+                        "offer": "[variables('domainController')[0].offer]",
+                        "sku": "[variables('domainController')[0].sku]",
+                        "version": "[variables('domainController')[0].version]"
                     },
                     "osDisk": {
                         "createOption": "FromImage"
@@ -607,7 +637,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('allEndpoints')[copyIndex('vmVMCopy')].vmName))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('domainController')[0].vmName))]"
                         }
                     ]
                 },
@@ -617,30 +647,6 @@
                         "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
                     }
                 }
-            }
-        },
-        {
-            "name": "[concat(variables('allWinWKS')[copyIndex('InitialSetUpWKSCopy')].vmName, '/', variables('allWinWKS')[copyIndex('InitialSetUpWKSCopy')].extensionName)]",
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('allWinWKS')[copyIndex('InitialSetUpWKSCopy')].vmName)]"
-            ],
-            "copy": {
-                "name": "InitialSetUpWKSCopy",
-                "count": "[length(variables('allWinWKS'))]"
-            },
-            "properties": {
-                "publisher": "Microsoft.Compute",
-                "type": "CustomScriptExtension",
-                "typeHandlerVersion": "1.8",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "fileUris": "[variables('initialSetUpScripts')]",
-                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1',' ','-SetupType Endpoint')]"
-                },
-                "protectedSettings": {}
             }
         },
         {
@@ -658,7 +664,7 @@
                 "autoUpgradeMinorVersion": true,
                 "settings": {
                     "fileUris": "[variables('initialSetUpScripts')]",
-                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1',' ','-SetupType DC')]"
+                    "commandToExecute": "powershell -ExecutionPolicy Unrestricted -File ./Set-Initial-Settings.ps1"
                 },
                 "protectedSettings": {}
             }
@@ -736,16 +742,16 @@
             }
         },
         {
-            "name": "[concat(variables('allWinWKS')[copyIndex('vmDomainJoinCopy')].vmName, '-joinDomain')]",
+            "name": "[concat(reference('deployWin10VM').outputs.allWinVMsDeployed.value[copyIndex('vmDomainJoinCopy')].vmName, '-joinDomain')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "InitialSetUpWKSCopy",
+                "deployWin10VM",
                 "UpdateVNetDNS"
             ],
             "copy": {
                 "name": "vmDomainJoinCopy",
-                "count": "[length(variables('allWinWKS'))]"
+                "count": "[length(reference('deployWin10VM').outputs.allWinVMsDeployed.value)]"
             },
             "properties": {
                 "mode": "Incremental",
@@ -755,7 +761,7 @@
                 },
                 "parameters": {
                     "vmName":   {
-                        "value": "[variables('allWinWKS')[copyIndex('vmDomainJoinCopy')].vmName]"
+                        "value": "[reference('deployWin10VM').outputs.allWinVMsDeployed.value[copyIndex('vmDomainJoinCopy')].vmName]"
                     },
                     "joinDomainScript": {
                         "value": "[variables('joinDomainScript')]"
@@ -774,37 +780,6 @@
                     },
                     "joinOU": {
                         "value": "[variables('ouPath')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[parameters('enableSysmon')]",
-            "name": "[concat(variables('allWinWKS')[copyIndex('vmSysmonSetUpCopy')].vmName, '-installSysmon')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            "dependsOn": [
-                "vmDomainJoinCopy"
-            ],
-            "copy": {
-                "name": "vmSysmonSetupCopy",
-                "count": "[length(variables('allWinWKS'))]"
-            },
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('sysmonInstallTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "vmName":   {
-                        "value": "[variables('allWinWKS')[copyIndex('vmSysmonSetupCopy')].vmName]"
-                    },
-                    "installSysmonScript": {
-                        "value": "[variables('installSysmonScript')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -879,7 +854,7 @@
         },
         "allWinVMsDeployed": {
             "type": "array",
-            "value": "[variables('allEndpoints')]"
+            "value": "[concat(variables('domainController'), reference('deployWin10VM').outputs.allWinVMsDeployed.value)]"
         }
     }
 }
