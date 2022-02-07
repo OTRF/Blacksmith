@@ -742,17 +742,13 @@
             }
         },
         {
-            "name": "[concat(reference('deployWin10VM').outputs.allWinVMsDeployed.value[copyIndex('vmDomainJoinCopy')].vmName, '-joinDomain')]",
+            "name": "JoinWorkstations",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
                 "deployWin10VM",
                 "UpdateVNetDNS"
             ],
-            "copy": {
-                "name": "vmDomainJoinCopy",
-                "count": "[length(reference('deployWin10VM').outputs.allWinVMsDeployed.value)]"
-            },
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -760,8 +756,8 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "vmName":   {
-                        "value": "[reference('deployWin10VM').outputs.allWinVMsDeployed.value[copyIndex('vmDomainJoinCopy')].vmName]"
+                    "virtualMachines":   {
+                        "value": "[reference('deployWin10VM').outputs.allWinVMsDeployed.value]"
                     },
                     "joinDomainScript": {
                         "value": "[variables('joinDomainScript')]"
@@ -820,7 +816,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "vmDomainJoinCopy",
+                "JoinWorkstations",
                 "[concat(variables('domainController')[0].vmName, '-installSysmon')]"
             ],
             "properties": {

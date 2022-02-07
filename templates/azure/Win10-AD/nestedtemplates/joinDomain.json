@@ -2,8 +2,11 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "vmName": {
-            "type": "string"
+        "virtualMachines": {
+            "type": "array",
+            "metadata": {
+                "description": "List of endpoints to join to a domain"
+            }
         },
         "joinDomainScript": {
             "type": "string"
@@ -32,10 +35,14 @@
     },
     "resources": [
         {
-            "name": "[concat(parameters('vmName'), '/PowerShellDSC')]",
+            "name": "[concat(parameters('virtualMachines')[copyIndex('JoinCopy')].vmName, '/PowerShellDSC')]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2019-12-01",
             "location": "[parameters('location')]",
+            "copy": {
+                "name": "JoinCopy",
+                "count": "[length(parameters('virtualMachines'))]"
+            },
             "properties": {
                 "publisher": "Microsoft.Powershell",
                 "type": "DSC",
