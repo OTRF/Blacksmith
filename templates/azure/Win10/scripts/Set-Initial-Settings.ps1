@@ -19,6 +19,9 @@
 # Set Windows Audit Policies
 & .\Enable-WinAuditCategories.ps1
 
+# PowerShell Logging
+& .\Enable-PowerShell-Logging.ps1
+
 # Set Audit Rules from Set-AuditRule project
 & .\Set-SACLs.ps1
 
