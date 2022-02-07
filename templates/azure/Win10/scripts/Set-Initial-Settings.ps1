@@ -13,6 +13,9 @@
 # Additional Firewall rules
 & .\Disarm-Firewall.ps1
 
+# Enable PSRemoting
+& .\Configure-PSRemoting.ps1
+
 # Set Windows Audit Policies
 & .\Enable-WinAuditCategories.ps1
 
