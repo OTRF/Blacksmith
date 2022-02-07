@@ -332,8 +332,8 @@
         "allSubnets": "[if(equals(parameters('remoteAccessMode'),'AzureBastionHost'), concat(variables('subnets'), variables('azureBastionSubnet')), variables('subnets'))]",
 
         // Nested Templates
-        "updateDNSServerScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/vnet-dns-server.json', parameters('_artifactsLocationSasToken')))]",
-        "sysmonInstallTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/sysmonInstall.json', parameters('_artifactsLocationSasToken')))]",
+        "updateDNSServerScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD/nestedtemplates/vnet-dns-server.json', parameters('_artifactsLocationSasToken')))]",
+        "sysmonInstallTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10/nestedtemplates/sysmonInstall.json', parameters('_artifactsLocationSasToken')))]",
         "createADTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/createADForest.json', parameters('_artifactsLocationSasToken')))]",
         "joinDomainTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD/nestedtemplates/joinDomain.json', parameters('_artifactsLocationSasToken')))]",
         "installADFSTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/installADFS.json', parameters('_artifactsLocationSasToken')))]",

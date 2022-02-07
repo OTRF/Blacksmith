@@ -282,7 +282,7 @@
         
         // Nested Templates
         "updateDNSServerScript": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD/nestedtemplates/vnet-dns-server.json', parameters('_artifactsLocationSasToken')))]",
-        "sysmonInstallTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD/nestedtemplates/sysmonInstall.json', parameters('_artifactsLocationSasToken')))]",
+        "sysmonInstallTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10/nestedtemplates/sysmonInstall.json', parameters('_artifactsLocationSasToken')))]",
         "createADTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD/nestedtemplates/createADForest.json', parameters('_artifactsLocationSasToken')))]",
         "joinDomainTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD/nestedtemplates/joinDomain.json', parameters('_artifactsLocationSasToken')))]",
         "installAADConnectTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD/nestedtemplates/installAADConnect.json', parameters('_artifactsLocationSasToken')))]",
