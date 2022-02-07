@@ -3,7 +3,7 @@
 [CmdletBinding()]
 param (
     [Parameter(Mandatory)]
-    [ValidateSet("DC","ADFS",'Endpoint')]
+    [ValidateSet("DC","ADFS")]
     [string]$SetupType
 
 )
@@ -21,7 +21,7 @@ Install-Module -Name ComputerManagementDsc -RequiredVersion 8.4.0
 
 if ($SetupType -eq 'DC')
 {
-    Install-Module -Name xDnsServer -RequiredVersion 1.16.0.0
+    Install-Module -Name xDnsServer -RequiredVersion 2.0.0
     Install-Module -Name xSmbShare -Force
     Install-Module -Name MSOnline -Force
     Install-Module -Name AzureAD -Force

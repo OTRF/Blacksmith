@@ -30,6 +30,15 @@ if (($SetupType -eq 'DC') -or ($SetupType -eq 'ADFS'))
 # Custom Settings applied
 & .\Prepare-Box.ps1
 
+# Additional configs
+& .\Disarm-Box.ps1
+
+# Additional Firewall rules
+& .\Disarm-Firewall.ps1
+
+# Enable PSRemoting
+& .\Configure-PSRemoting.ps1
+
 # Windows Security Audit Categories
 if ($SetupType -eq 'DC')
 {
@@ -49,7 +58,7 @@ else
 # Set Wallpaper
 & .\Set-WallPaper.ps1
 
-# Add domain solorigatelabs.com to intranet
+# Add custom domain to intranet
 <#
 $IntranetDomainSite = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\Domains\blacksmith.local'
 if (-not (Test-Path -Path $IntranetDomainSite))
