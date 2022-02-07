@@ -7,6 +7,12 @@
 # Custom Settings applied
 & .\Prepare-Box.ps1
 
+# Additional configs
+& .\Disarm-Box.ps1
+
+# Additional Firewall rules
+& .\Disarm-Firewall.ps1
+
 # Set Windows Audit Policies
 & .\Enable-WinAuditCategories.ps1
 
