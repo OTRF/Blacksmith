@@ -4,6 +4,7 @@
 [CmdletBinding()]
 param (
     [Parameter(Mandatory=$false)]
+    [ValidateSet("DC")]
     [string]$SetupType
 )
 
@@ -12,6 +13,15 @@ param (
 
 # Custom Settings applied
 & .\Prepare-Box.ps1
+
+# Additional configs
+& .\Disarm-Box.ps1
+
+# Additional Firewall rules
+& .\Disarm-Firewall.ps1
+
+# Enable PSRemoting
+& .\Configure-PSRemoting.ps1
 
 # Windows Security Audit Categories
 if ($SetupType -eq 'DC')

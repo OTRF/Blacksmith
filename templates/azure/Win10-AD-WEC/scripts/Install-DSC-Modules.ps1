@@ -2,8 +2,8 @@
 
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory)]
-    [ValidateSet("DC",'Endpoint')]
+    [Parameter(Mandatory=$false)]
+    [ValidateSet("DC")]
     [string]$SetupType
 
 )
@@ -19,7 +19,7 @@ Install-Module -Name NetworkingDsc -RequiredVersion 8.2.0
 Install-Module -Name xPSDesiredStateConfiguration -RequiredVersion 9.1.0
 Install-Module -Name ComputerManagementDsc -RequiredVersion 8.4.0
 
-if ($SetupType -ne 'Endpoint')
+if ($SetupType -eq 'DC')
 {
-    Install-Module -Name xDnsServer -RequiredVersion 1.16.0.0
+    Install-Module -Name xDnsServer -RequiredVersion 2.0.0
 }

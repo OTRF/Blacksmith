@@ -7,7 +7,7 @@ param (
     [ValidateSet("DC","ADFS")]
     [string]$SetupType,
 
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory)]
     [ValidateSet('TrustedSigned','SelfSigned')]
     [string]$CertificateType,
 
@@ -18,13 +18,10 @@ param (
 # Install DSC Modules
 & .\Install-DSC-Modules.ps1 -SetupType $SetupType
 
-if (($SetupType -eq 'DC') -or ($SetupType -eq 'ADFS'))
+if ($CertificateType -eq 'TrustedSigned')
 {
-    if ($CertificateType -eq 'TrustedSigned')
-    {
-        # Move trusted CA signed SSL certificate
-        Move-Item $PfxCertName C:\ProgramData\
-    }
+    # Move trusted CA signed SSL certificate
+    Move-Item $PfxCertName C:\ProgramData\
 }
 
 # Custom Settings applied
