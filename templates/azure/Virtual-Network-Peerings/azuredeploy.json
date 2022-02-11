@@ -1,0 +1,68 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sourceVnet": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the source virtual network"
+            }
+        },
+        "sourceVnetId": {
+            "type": "string",
+            "metadata": {
+                "description": "Id of the source virtual network"
+            }
+        },
+        "targetVnet": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the target virtual network"
+            }
+        },
+        "targetVnetId": {
+            "type": "string",
+            "metadata": {
+                "description": "Id of the target virtual network"
+            }
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('sourceVnet'), '/peering-to-remote-', parameters('targetVnet'))]",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2019-11-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": false,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteVirtualNetwork": {
+                    "id": "[parameters('targetVnetId')]"
+                }
+            }
+        },
+        {
+            "name": "[concat(parameters('targetVnet'), '/peering-to-remote-', parameters('sourceVnet'))]",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2019-11-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "allowVirtualNetworkAccess": true,
+                "allowForwardedTraffic": false,
+                "allowGatewayTransit": false,
+                "useRemoteGateways": false,
+                "remoteVirtualNetwork": {
+                    "id": "[parameters('sourceVnetId')]"
+                }
+            }
+        }
+    ]
+}
