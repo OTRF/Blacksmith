@@ -197,6 +197,8 @@
         }
     },
     "variables": {
+        // Script Templates
+        "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Linux/nestedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]",
         "c2SetupScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/bash/Install-C2s.sh', parameters('_artifactsLocationSasToken')))]",
         "dockerSetupScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/bash/Install-Docker.sh', parameters('_artifactsLocationSasToken')))]"
     },
@@ -276,25 +278,34 @@
             }
         },
         {
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-03-01",
-            "name": "[concat(reference('deployC2VM').outputs.allLinuxVMsDeployed.value[0].vmName, '/C2Setup')]",
-            "location": "[parameters('location')]",
+            "name": "installC2Framework",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
             "dependsOn": [
                 "deployC2VM"
             ],
             "properties": {
-                "publisher": "Microsoft.Azure.Extensions",
-                "type": "CustomScript",
-                "typeHandlerVersion": "2.1",
-                "autoUpgradeMinorVersion": true,
-                "settings": {},
-                "protectedSettings": {
-                    "commandToExecute": "[concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework'))]",
-                    "fileUris": [
-                        "[variables('dockerSetupScript')]",
-                        "[variables('c2SetupScript')]"
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('customScriptTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "virtualMachines": {
+                        "value": "[reference('deployC2VM').outputs.allLinuxVMsDeployed.value]"
+                    },
+                    "commandToExecute": {
+                        "value": "[concat('bash Install-C2s.sh -r', ' ', parameters('c2Framework'))]"
+                    },
+                    "fileUris": {
+                        "value": [
+                            "[variables('dockerSetupScript')]",
+                            "[variables('c2SetupScript')]"
                     ]
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
                 }
             }
         }
