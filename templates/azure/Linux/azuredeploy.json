@@ -342,12 +342,14 @@
             }
         },
 
+        "vmFQDNSuffix": "[toLower(concat('-', uniquestring(resourceGroup().id, parameters('utcValue')), '.', parameters('location'), '.cloudapp.azure.com'))]",
         "Copy": [
             {
                 "name": "ubuntuVMs",
                 "count": "[parameters('numberOfUbuntuVMs')]",
                 "input": {
                     "vmName": "[concat(parameters('ubuntuVMNamePrefix'),copyIndex('ubuntuVMs',5))]",
+                    "dnsFQDN": "[if(equals(parameters('remoteAccessMode'),'AllowPublicIP'), toLower(concat(parameters('ubuntuVMNamePrefix'),copyIndex('ubuntuVMs',5), variables('vmFQDNSuffix'))),'')]",
                     "subnetref": "[variables('subnetRef')]",
                     "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('ubuntuVMs',5))]",
                     "vmSize": "[parameters('vmSize')]",
@@ -363,6 +365,7 @@
                 "count": "[parameters('numberOfCentOSVMs')]",
                 "input": {
                     "vmName": "[concat(parameters('centOSVMNamePrefix'),copyIndex('centOSVMs',10))]",
+                    "dnsFQDN": "[if(equals(parameters('remoteAccessMode'),'AllowPublicIP'), toLower(concat(parameters('centOSVMNamePrefix'),copyIndex('centOSVMs',10), variables('vmFQDNSuffix'))),'')]",
                     "subnetref": "[variables('subnetRef')]",
                     "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('centOSVMs',10))]",
                     "vmSize": "[parameters('vmSize')]",
@@ -378,6 +381,7 @@
                 "count": "[parameters('numberOfRedHatVMs')]",
                 "input": {
                     "vmName": "[concat(parameters('redhatVMNamePrefix'),copyIndex('redhatVMs',15))]",
+                    "dnsFQDN": "[if(equals(parameters('remoteAccessMode'),'AllowPublicIP'), toLower(concat(parameters('redhatVMNamePrefix'),copyIndex('redhatVMs',15), variables('vmFQDNSuffix'))),'')]",
                     "subnetref": "[variables('subnetRef')]",
                     "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('redhatVMs',15))]",
                     "vmSize": "[parameters('vmSize')]",

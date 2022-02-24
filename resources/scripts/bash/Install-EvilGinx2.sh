@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # Author: Roberto Rodriguez (@Cyb3rWard0g)
+# References:
+# https://breakdev.org/evilginx-2-1-the-first-post-release-update/
 
 # *********** log tagging variables ***********
 INFO_TAG="[INSTALLATION-INFO]"
