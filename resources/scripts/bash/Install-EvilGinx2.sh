@@ -21,10 +21,12 @@ cd /opt/evilginx2 && docker build -t evilginx2 . >> $LOGFILE 2>&1
 
 # *********** Updating resolved.conf ***********
 sed -i "s|^#DNS=$|DNS=8.8.8.8|g" /etc/systemd/resolved.conf
-sed -i "s|^#DNSStubListener=$|DNSStubListener=no|g" /etc/systemd/resolved.conf
+sed -i "s|^#DNSStubListener=yes$|DNSStubListener=no|g" /etc/systemd/resolved.conf
 
 ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
 systemctl restart systemd-resolved
 
 # *********** Run evilginx2 container ***********
-docker run -d -it -p 53:53/udp -p 80:80 -p 443:443 --name evilginx2 -v /opt/evilginx2/phishlets:/app/phishlets evilginx2 >> $LOGFILE 2>&1
+# SSH to VM
+# sudo su
+# docker run -it -p 53:53/udp -p 80:80 -p 443:443 --name evilginx2 -v /opt/evilginx2/phishlets:/app/phishlets evilginx2

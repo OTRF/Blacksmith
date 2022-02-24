@@ -123,7 +123,7 @@
             "metadata": {
                 "description": "Name of the Virtual Network"
             },
-            "defaultValue": "vnet-c2"
+            "defaultValue": "vnet-linux"
         },
         "virtualNetworkAddressRange": {
             "type": "string",
@@ -144,7 +144,7 @@
             "metadata": {
                 "description": "Name of the subnet"
             },
-            "defaultValue": "snet-c2"
+            "defaultValue": "snet-linux"
         },
         "azureBastionSubnetRange": {
             "type": "string",
