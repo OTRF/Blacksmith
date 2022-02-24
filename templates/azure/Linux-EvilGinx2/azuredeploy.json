@@ -287,6 +287,10 @@
         }
     ],
     "outputs": {
+        "vmDeployed": {
+            "type": "object",
+            "value": "[reference('deployEvilGinx2').outputs.allLinuxVMsDeployed.value[0]]"
+        },
         "vmName": {
             "type": "string",
             "value": "[reference('deployEvilGinx2').outputs.allLinuxVMsDeployed.value[0].vmName]"
