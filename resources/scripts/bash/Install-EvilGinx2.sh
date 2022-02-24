@@ -7,11 +7,7 @@ INFO_TAG="[INSTALLATION-INFO]"
 ERROR_TAG="[INSTALLATION-ERROR]"
 
 # *********** Set Log File ***************
-<<<<<<< HEAD
 LOGFILE="/var/log/evilginx2-install.log"
-=======
-LOGFILE="/var/log/C2s-install.log"
->>>>>>> 5dcffcf23dde4337e5409fe62e846db0a4b81b14
 echoerror() {
     printf "${RC} * ERROR${EC}: $@\n" 1>&2;
 }
@@ -23,7 +19,6 @@ echoerror() {
 git clone https://github.com/kgretzky/evilginx2 /opt/evilginx2 >> $LOGFILE 2>&1
 cd /opt/evilginx2 && docker build -t evilginx2 . >> $LOGFILE 2>&1
 
-<<<<<<< HEAD
 # *********** Updating resolved.conf ***********
 sed -i "s|^#DNS=$|DNS=8.8.8.8|g" /etc/systemd/resolved.conf
 sed -i "s|^#DNSStubListener=$|DNSStubListener=no|g" /etc/systemd/resolved.conf
@@ -32,6 +27,4 @@ ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
 systemctl restart systemd-resolved
 
 # *********** Run evilginx2 container ***********
-=======
->>>>>>> 5dcffcf23dde4337e5409fe62e846db0a4b81b14
 docker run -d -it -p 53:53/udp -p 80:80 -p 443:443 --name evilginx2 -v /opt/evilginx2/phishlets:/app/phishlets evilginx2 >> $LOGFILE 2>&1
