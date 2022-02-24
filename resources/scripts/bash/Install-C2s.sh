@@ -13,7 +13,7 @@ echoerror() {
     printf "${RC} * ERROR${EC}: $@\n" 1>&2;
 }
 
-# *********** helk function ***************
+# *********** Script Menu ***************
 usage(){
     echo " "
     echo "Usage: $0 [option...]" >&2
