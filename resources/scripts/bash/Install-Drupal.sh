@@ -48,10 +48,10 @@ fi
 
 # Install Docker and Docker-Compose
 if [[ ! -f Install-Docker.sh ]]; then
-    wget https://raw.githubusercontent.com/OTRF/Blacksmith/master/resources/scripts/bash/Install-Docker.sh
-    chmod +x Install-Docker.sh
+    wget https://raw.githubusercontent.com/OTRF/Blacksmith/master/resources/scripts/bash/Install-Docker.sh >> $LOGFILE 2>&1
+    chmod +x Install-Docker.sh >> $LOGFILE 2>&1
 fi
-./Install-Docker.sh
+./Install-Docker.sh >> $LOGFILE 2>&1
 
 # Check what branch to download
 if [[ $RUN_DRUPAL == "latest" ]]; then
@@ -59,7 +59,7 @@ if [[ $RUN_DRUPAL == "latest" ]]; then
 else
     git clone --branch $RUN_DRUPAL https://github.com/bitnami/bitnami-docker-drupal /opt/bitnami-docker-drupal >> $LOGFILE 2>&1
     # Update docker-compose.yml file to download the right docker image tag
-    sed -i -E "s|image: 'bitnami\/drupal\:.*|image: \'bitnami\/drupal\:$RUN_DRUPAL\'|g" /opt/bitnami-docker-drupal/docker-compose.yml
+    sed -i -E "s|image: 'bitnami\/drupal\:.*|image: \'bitnami\/drupal\:$RUN_DRUPAL\'|g" /opt/bitnami-docker-drupal/docker-compose.yml >> $LOGFILE 2>&1
 fi
 
 # Run docker containers in the background

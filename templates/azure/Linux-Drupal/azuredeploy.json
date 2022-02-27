@@ -61,7 +61,7 @@
         },
         "ubuntuVMNamePrefix": {
             "type": "string",
-            "defaultValue": "C2",
+            "defaultValue": "DrupalServer",
             "metadata": {
                 "description": "Prefix name for all Ubuntu virtual machines"
             }
