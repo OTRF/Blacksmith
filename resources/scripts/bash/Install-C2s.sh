@@ -61,7 +61,11 @@ case $RUN_C2 in
 esac
 
 # Install Docker and Docker-Compose
-./Install-Docker.sh
+if [[ ! -f Install-Docker.sh ]]; then
+    wget https://raw.githubusercontent.com/OTRF/Blacksmith/master/resources/scripts/bash/Install-Docker.sh >> $LOGFILE 2>&1
+    chmod +x Install-Docker.sh >> $LOGFILE 2>&1
+fi
+./Install-Docker.sh >> $LOGFILE 2>&1
 
 # Create Adversary Directory
 mkdir -p /opt/attack-platform

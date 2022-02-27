@@ -15,7 +15,11 @@ echoerror() {
 }
 
 # Install Docker and Docker-Compose
-./Install-Docker.sh
+if [[ ! -f Install-Docker.sh ]]; then
+    wget https://raw.githubusercontent.com/OTRF/Blacksmith/master/resources/scripts/bash/Install-Docker.sh >> $LOGFILE 2>&1
+    chmod +x Install-Docker.sh >> $LOGFILE 2>&1
+fi
+./Install-Docker.sh >> $LOGFILE 2>&1
 
 # *********** Installing Service ***********
 git clone https://github.com/kgretzky/evilginx2 /opt/evilginx2 >> $LOGFILE 2>&1
