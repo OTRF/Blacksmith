@@ -1,0 +1,124 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "ruleName": {
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the data collection rule to create."
+            }
+        },
+        "tagsArray": {
+            "type": "Object",
+            "defaultValue": {}
+        },
+        "workspaceResourceId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the Azure resource ID of the Log Analytics workspace to use to send data to."
+            }
+        },
+        "dataCollectionEndpointId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the Azure resource ID of the Data Collection Endpoint to use."
+            }
+        },
+        "streams": {
+            "type": "array",
+            "defaultValue": [
+                "Custom-WindowsEvent"
+            ],
+            "metadata": {
+                "description": "Names of streams for incoming data."
+            }
+        },
+        "streamDeclarations": {
+            "type": "object",
+            "defaultValue": {
+                "Custom-WindowsEvent": {
+                    "columns": [
+                        {
+                            "name": "Time",
+                            "type": "datetime"
+                        },
+                        {
+                            "name": "RawEventData",
+                            "type": "string"
+                        }
+                    ]
+                }
+            },
+            "metadata": {
+                "description": "Defines the columns of the incoming data."
+            }
+        },
+        "transformKql": {
+            "type": "string",
+            "defaultValue": "source | extend EventData = parse_json(RawEventData) | extend TimeGenerated=Time,Channel=tostring(EventData.Channel),Computer=tostring(EventData.Hostname),EventID=toint(EventData.EventID),EventLevel=toint(EventData.Level),Provider=tostring(EventData.SourceName),Task=toint(EventData.Task),Type='WindowsEvent'| project TimeGenerated,Channel,Computer,EventData,EventID,EventLevel,Provider,Task,Type",
+            "metadata": {
+                "description": "transformation query to run over the stream for any additional enrichments before writing data to a table."
+            }
+        },
+        "outputStream": {
+            "type": "string",
+            "defaultValue": "Microsoft-WindowsEvent",
+            "metadata": {
+                "description": "The name of the destination table. If the table is a built-in table, you need to add 'Microsoft-' as a prefix to the table name (i.e. WindowsEvent is Microsoft-WindowsEvent). If it is a custom table, then you need to add 'Custom-' as a prefix to the table name."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "westus2",
+            "allowedValues": [
+                "westus2",
+                "eastus2",
+                "eastus2euap"
+            ],
+            "metadata": {
+                "description": "Specifies the location in which to create the Data Collection Rule."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "microsoft.insights/dataCollectionRules",
+            "apiVersion": "2021-09-01-preview",
+            "name": "[parameters('ruleName')]",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('tagsArray')]",
+            "properties": {
+                "dataCollectionEndpointId": "[parameters('dataCollectionEndpointId')]",
+                "streamDeclarations": "[parameters('streamDeclarations')]",
+                "destinations": {
+                    "logAnalytics": [
+                        {
+                            "workspaceResourceId": "[parameters('workspaceResourceId')]",
+                            "name": "clv2ws1"
+                        }
+                    ]
+                },
+                "dataFlows": [
+                    {
+                        "streams": "[parameters('streams')]",
+                        "destinations": [
+                            "clv2ws1"
+                        ],
+                        "transformKql": "[parameters('transformKql')]",
+                        "outputStream": "[parameters('outputStream')]"
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {
+        "dataCollectionRuleId": {
+            "type": "String",
+            "value": "[resourceId('microsoft.insights/dataCollectionRules', parameters('ruleName'))]"
+        },
+        "immutableId": {
+            "type": "String",
+            "value": "[reference(resourceId('Microsoft.Insights/dataCollectionRules', parameters('ruleName'))).immutableId]"
+        }
+    }
+}
