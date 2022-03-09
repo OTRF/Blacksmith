@@ -86,7 +86,7 @@
       }
     },
     "variables": {
-      "uniqueStorageAccountName": "[concat(parameters('storageAccountName'), uniquestring(subscription().subscriptionId, resourceGroup().id, parameters('utcValue')))]",
+      "uniqueStorageAccountName": "[substring(concat(parameters('storageAccountName'), uniquestring(subscription().subscriptionId, resourceGroup().id, parameters('utcValue'))), 0, 20)]",
       "storageAccountNameTidy": "[toLower(trim(variables('uniqueStorageAccountName')))]",
       "listAccountSasRequestContent": {
             "signedServices": "bf",
@@ -113,7 +113,7 @@
                 {
                     "type": "blobServices/containers",
                     "apiVersion": "2019-06-01",
-                    "name": "[concat('default/',parameters('containerName'))]",
+                    "name": "[concat('default/',toLower(parameters('containerName')))]",
                     "dependsOn": [
                         "[variables('uniqueStorageAccountName')]"
                     ],
