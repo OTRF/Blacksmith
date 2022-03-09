@@ -14,7 +14,7 @@
             "minLength": 3,
             "maxLength": 7,
             "metadata": {
-            "description": "The prefix of the storage account name. Storage account name must be between 3 and 24 characters in length and use numbers and lower-case letters only. This input is used with a unique string of 13 characters generated automatically to create a unique Storage Account Name across Azure."
+            "description": "The prefix of the storage account name must be from 3 to 7 characters in length. The complete Storage account name must be between 3 and 24 characters in length and use numbers and lower-case letters only. This input is used with a unique string of 13 characters generated automatically to create a unique Storage Account Name across Azure."
             }
         },
         "storageSKUName": {
@@ -43,8 +43,10 @@
         },
         "containerName": {
             "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
             "metadata": {
-            "description": "The name of the blob container within the specified storage account."
+                "description": "The name of the blob container within the specified storage account. he complete Storage account name must be between 3 and 63 characters in length and use lowercase letters, numbers, and hyphens. Start with lowercase letter or number. Can't use consecutive hyphens."
             }
         },
         "enableAzureDefender": {
@@ -90,6 +92,7 @@
     "variables": {
       "uniqueStorageAccountName": "[concat(parameters('storageNamePrefix'), uniquestring(subscription().subscriptionId, resourceGroup().id, parameters('utcValue')))]",
       "storageAccountNameTidy": "[toLower(trim(variables('uniqueStorageAccountName')))]",
+      "containerNameTidy": "[toLower(trim(parameters('containerName')))]",
       "listAccountSasRequestContent": {
             "signedServices": "bf",
             "signedPermission": "r",
@@ -115,7 +118,7 @@
                 {
                     "type": "blobServices/containers",
                     "apiVersion": "2019-06-01",
-                    "name": "[concat('default/',toLower(parameters('containerName')))]",
+                    "name": "[concat('default/',variables('containerNameTidy'))]",
                     "dependsOn": [
                         "[variables('storageAccountNameTidy')]"
                     ],
