@@ -9,10 +9,12 @@
                 "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
             }
         },
-        "storageAccountName": {
+        "storageNamePrefix": {
             "type": "string",
+            "minLength": 3,
+            "maxLength": 7,
             "metadata": {
-            "description": "The name of the storage account. Storage account name must be between 3 and 24 characters in length and use numbers and lower-case letters only. This variable then is used to generate a uniquestring"
+            "description": "The prefix of the storage account name. Storage account name must be between 3 and 24 characters in length and use numbers and lower-case letters only. This input is used with a unique string of 13 characters generated automatically to create a unique Storage Account Name across Azure."
             }
         },
         "storageSKUName": {
@@ -86,7 +88,7 @@
       }
     },
     "variables": {
-      "uniqueStorageAccountName": "[substring(concat(parameters('storageAccountName'), uniquestring(subscription().subscriptionId, resourceGroup().id, parameters('utcValue'))), 0, 20)]",
+      "uniqueStorageAccountName": "[concat(parameters('storageNamePrefix'), uniquestring(subscription().subscriptionId, resourceGroup().id, parameters('utcValue')))]",
       "storageAccountNameTidy": "[toLower(trim(variables('uniqueStorageAccountName')))]",
       "listAccountSasRequestContent": {
             "signedServices": "bf",
@@ -99,7 +101,7 @@
     },
     "resources": [
         {
-            "name": "[variables('uniqueStorageAccountName')]",
+            "name": "[variables('storageAccountNameTidy')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
             "location": "[parameters('location')]",
@@ -115,7 +117,7 @@
                     "apiVersion": "2019-06-01",
                     "name": "[concat('default/',toLower(parameters('containerName')))]",
                     "dependsOn": [
-                        "[variables('uniqueStorageAccountName')]"
+                        "[variables('storageAccountNameTidy')]"
                     ],
                     "properties": {
                         "publicAccess": "None"
@@ -125,12 +127,12 @@
         },
         {
             "condition": "[parameters('enableAzureDefender')]",
-            "name": "[concat(variables('uniqueStorageAccountName'), '/Microsoft.Security/current')]",
+            "name": "[concat(variables('storageAccountNameTidy'), '/Microsoft.Security/current')]",
             "type": "Microsoft.Storage/storageAccounts/providers/advancedThreatProtectionSettings",
             "apiVersion": "2019-01-01",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/', variables('uniqueStorageAccountName'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountNameTidy'))]"
             ],
             "properties": {
                 "isEnabled": true
@@ -138,12 +140,12 @@
         },
         {
             "condition": "[parameters('enableDiagnosticLogging')]",
-            "name": "[concat(variables('uniqueStorageAccountName'),'/default/Microsoft.Insights/', parameters('diagnosticSettingName'))]",
+            "name": "[concat(variables('storageAccountNameTidy'),'/default/Microsoft.Insights/', parameters('diagnosticSettingName'))]",
             "type": "Microsoft.Storage/storageAccounts/fileServices/providers/diagnosticsettings",
             "apiVersion": "2017-05-01-preview",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/', variables('uniqueStorageAccountName'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountNameTidy'))]"
             ],
             "properties": {
                 "logs": [
@@ -171,12 +173,12 @@
         },
         {
             "condition": "[parameters('enableDiagnosticLogging')]",
-            "name": "[concat(variables('uniqueStorageAccountName'),'/default/Microsoft.Insights/', parameters('diagnosticSettingName'))]",
+            "name": "[concat(variables('storageAccountNameTidy'),'/default/Microsoft.Insights/', parameters('diagnosticSettingName'))]",
             "type": "Microsoft.Storage/storageAccounts/blobServices/providers/diagnosticsettings",
             "apiVersion": "2017-05-01-preview",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/', variables('uniqueStorageAccountName'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountNameTidy'))]"
             ],
             "properties": {
                 "logs": [
