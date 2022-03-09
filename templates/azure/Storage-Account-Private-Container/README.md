@@ -7,7 +7,7 @@
 You can run this template and enable Azure Defender for Storage and Diagnostic Logging for Blog and File resources
 
 ```
-az deployment group create -f ./azuredeploy.json -g mordor --parameters storageAccountName='mimiaccount' containerName='mimifolder' enableAzureDefender=true enableDiagnosticLogging=true diagnosticSettingName='mimifilelog' workspaceName=workspacej7546atlkgpu
+az deployment group create -f ./azuredeploy.json -g mordor --parameters storageAccountName='mimiaccount' containerName='mimifolder' enableAzureDefender=true enableDiagnosticLogging=true diagnosticSettingName='mimifilelog' workspaceName=workspacej7546atlkgpu signedExpiry='2022-12-25T00:00:00Z'
 ```
 
 After the deployment finishes, you will see the following settings enabled

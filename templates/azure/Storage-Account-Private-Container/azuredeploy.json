@@ -73,6 +73,10 @@
             },
             "defaultValue": ""
         },
+        "signedExpiry": {
+            "type": "string",
+            "defaultValue": "2022-12-25T00:00:00Z"
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -88,7 +92,7 @@
             "signedServices": "bf",
             "signedPermission": "r",
             "keyToSign": "key2",
-            "signedExpiry": "2021-10-30T00:00:00Z",
+            "signedExpiry": "[parameters('signedExpiry')]",
             "signedResourceTypes": "sco"
         },
         "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
