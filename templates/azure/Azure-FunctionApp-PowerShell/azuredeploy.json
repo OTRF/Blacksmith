@@ -314,5 +314,11 @@
                 "hostNameType": "Verified"
             }
         }
-    ]
+    ],
+    "outputs": {
+        "functionAppResource": {
+            "type": "object",
+            "value": "[reference(resourceId('Microsoft.Web/sites', parameters('functionAppName')))]"
+        }
+    }
 }
