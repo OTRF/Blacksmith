@@ -1,0 +1,66 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "deploymentScriptName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of deployment script resource"
+            }
+        },
+        "identityId": {
+            "type": "string",
+            "metadata": {
+                "description": "Id of the managed identity to create Azure AD applications used by cloud katana to expose its API and enable Azure AD authentication and authorization. Format: /subscriptions/SUBSCRIPTIONID/resourcegroups/GROUP/providers/Microsoft.ManagedIdentity/userAssignedIdentities/IDENTITYNAME"
+            }
+        },
+        "utcValue": {
+            "type": "string",
+            "defaultValue": "[utcNow()]"
+        },
+        "scriptContent": {
+            "type": "string",
+            "metadata": {
+                "description": "Script Content"
+            }
+        },
+        "supportingScriptUris": {
+            "type": "array",
+            "metadata": {
+                "description": "Supporting files for the external script."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+            "description": "Specifies the Azure location for all resources."
+            }
+      }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deploymentScripts",
+            "apiVersion": "2020-10-01",
+            "name": "[parameters('deploymentScriptName')]",
+            "location": "[parameters('location')]",
+            "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "[parameters('identityId')]": {}
+                }
+            },
+            "kind": "AzurePowerShell",
+            "properties": {
+                "forceUpdateTag": "[parameters('utcValue')]",
+                "azPowerShellVersion": "6.2",
+                "timeout": "PT30M",
+                "scriptContent": "[parameters('scriptContent')]",
+                "supportingScriptUris": "[parameters('supportingScriptUris')]",
+                "cleanupPreference": "OnSuccess",
+                "retentionInterval": "PT1H"
+            }
+        }
+    ],
+    "outputs": {}
+}
