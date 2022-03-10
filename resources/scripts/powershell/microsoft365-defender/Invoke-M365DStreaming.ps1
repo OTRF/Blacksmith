@@ -70,13 +70,6 @@ function Invoke-M365DStreaming {
         
     )
 
-    # Processing current security context
-    Write-Host "[+] Running under the context of a Managed Identity account"
-    $context = Get-AzContext
-    if (!$context) {
-        Connect-AzAccount -Identity
-    }
-
     # Get MS Graph access token
     Write-Host "[+] Getting WindowsDefenderAtp raw acess token.."
     $accessToken = (Get-AzAccessToken -ResourceUrl "https://securitycenter.microsoft.com/mtp").Token
