@@ -54,6 +54,27 @@
             },
             "defaultValue": "192.168.0.0/16"
         },
+        "disableCopyPaste": {
+            "type": "bool",
+            "metadata": {
+                "description": "Enable/Disable Copy/Paste feature of the Bastion Host resource."
+            },
+            "defaultValue": false
+        },
+        "enableFileCopy": {
+            "type": "bool",
+            "metadata": {
+                "description": "File Copy feature of the Bastion Host resource."
+            },
+            "defaultValue": true
+        },
+        "enableShareableLink": {
+            "type": "bool",
+            "metadata": {
+                "description": "Enable/Disable Shareable Link of the Bastion Host resource."
+            },
+            "defaultValue": true
+        },
         "location": {
             "type": "string",
             "metadata": {
@@ -83,7 +104,7 @@
                     {
                         "name": "[variables('azureBastionSubnetName')]",
                         "properties": {
-                        "addressPrefix": "[parameters('azureBastionSubnetRange')]"
+                            "addressPrefix": "[parameters('azureBastionSubnetRange')]"
                         }
                     }
                 ]
@@ -124,6 +145,9 @@
                 "name": "[parameters('azureBastionHostSku')]"
             },
             "properties": {
+                "disableCopyPaste": "[parameters('disableCopyPaste')]",
+                "enableFileCopy": "[parameters('enableFileCopy')]",
+                "enableShareableLink": "[parameters('enableShareableLink')]",
                 "ipConfigurations": [
                     {
                         "name": "IpConf",
