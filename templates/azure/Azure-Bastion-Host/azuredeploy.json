@@ -1,0 +1,158 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "azureBastionHostName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "metadata": {
+                "description": "Name of Azure Bastion Host"
+            },
+            "defaultValue": "AzureBastionHost"
+        },
+        "azureBastionHostSku": {
+            "type": "string",
+            "metadata": {
+                "description": "The sku of this bastion Host"
+            },
+            "allowedValues": [
+                "Basic",
+                "Standard"
+            ],
+            "defaultValue": "Standard"
+        },
+        "azureBastionSubnetRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the Azure Bastion service"
+            },
+            "defaultValue": "192.168.3.0/26"
+        },
+        "newOrExistingVnet": {
+            "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
+            "metadata": {
+                "description": "Specify whether to provision new vnet or deploy to existing vnet"
+            }
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Virtual Network"
+            },
+            "defaultValue": "vnet-win"
+        },
+        "virtualNetworkAddressRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the virtual network"
+            },
+            "defaultValue": "192.168.0.0/16"
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location for all resources."
+            },
+            "defaultValue": "[resourceGroup().location]"
+        }
+    },
+    "variables": {
+        //Bastion Host Network
+        "azureBastionSubnetName": "AzureBastionSubnet"
+    },
+    "resources": [
+        {
+            "condition": "[equals(parameters('newOrExistingVnet'), 'new')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2021-05-01",
+            "name": "[parameters('virtualNetworkName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('virtualNetworkAddressRange')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('azureBastionSubnetName')]",
+                        "properties": {
+                        "addressPrefix": "[parameters('azureBastionSubnetRange')]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "condition": "[equals(parameters('newOrExistingVnet'), 'existing')]",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2021-05-01",
+            "name": "[concat(parameters('virtualNetworkName'), '/', variables('azureBastionSubnetName'))]",
+            "properties": {
+                "addressPrefix": "[parameters('azureBastionSubnetRange')]"
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2021-05-01",
+            "name": "[concat('pip-', parameters('azureBastionHostName'))]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Static"
+            }
+        },
+        {
+            "type": "Microsoft.Network/bastionHosts",
+            "apiVersion": "2021-02-01",
+            "name": "[parameters('azureBastionHostName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', parameters('azureBastionHostName')))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), variables('azureBastionSubnetName'))]"
+            ],
+            "sku": {
+                "name": "[parameters('azureBastionHostSku')]"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "IpConf",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', parameters('azureBastionHostName')))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), variables('azureBastionSubnetName'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {
+        "virtualNetworkName": {
+            "type": "string",
+            "value": "[parameters('virtualNetworkName')]"
+        },
+        "virtualNetworkId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+        },
+        "virtualNetworkAddressRange": {
+            "type": "string",
+            "value": "[parameters('virtualNetworkAddressRange')]"
+        }
+    }
+}
