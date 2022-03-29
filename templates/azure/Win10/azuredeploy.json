@@ -2,13 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "utcValue": {
-            "type": "string",
-            "metadata": {
-                "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
-            },
-            "defaultValue": "[utcNow()]"
-        },
         "adminUsername": {
             "type": "string",
             "metadata": {
@@ -110,13 +103,6 @@
                 "description": "Specify whether to provision new vnet or deploy to existing vnet"
             }
         },
-        "existingSubnetId": {
-            "type": "string",
-            "metadata": {
-                "description": "Id of existing subnet used while setting up the network settings for the virtual VM."
-            },
-            "defaultValue": ""
-        },
         "virtualNetworkName": {
             "type": "string",
             "metadata": {
@@ -131,6 +117,17 @@
             },
             "defaultValue": "192.168.0.0/16"
         },
+        "newOrExistingSubnet": {
+            "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
+            "metadata": {
+                "description": "Specify whether to provision new subnet or use and existing subnet."
+            }
+        },
         "subnetName": {
             "type": "string",
             "metadata": {
@@ -144,6 +141,24 @@
                 "description": "Address Range of the subnet"
             },
             "defaultValue": "192.168.2.0/24"
+        },
+        "newOrExistingNSG": {
+            "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
+            "metadata": {
+                "description": "Specify whether to provision a new Network Security Group or use an existing one."
+            }
+        },
+        "networkSecurityGroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of default network Security Group. This could be an existing one or new one"
+            },
+            "defaultValue": "nsg-rdp-allow"
         },
         "remoteAccessMode": {
             "type": "string",
@@ -162,6 +177,17 @@
                 "description": "The sourceAddressPrefixes allowed to connect to this deployment"
             },
             "defaultValue": "*"
+        },
+        "newOrExistingBastion": {
+            "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
+            "metadata": {
+                "description": "Specify whether to provision a new Azure Bastion Host or not."
+            }
         },
         "azureBastionHostName": {
             "type": "string",
@@ -205,6 +231,13 @@
             },
             "defaultValue": ""
         },
+        "utcValue": {
+            "type": "string",
+            "metadata": {
+                "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
+            },
+            "defaultValue": "[utcNow()]"
+        },
         "location": {
             "type": "string",
             "metadata": {
@@ -223,8 +256,8 @@
         "subnetRange": "[parameters('subnetRange')]",
         "vmPrivateIPPrefixArray": "[take(split(variables('subnetRange'),'.'),3)]",
         "vmPrivateIPAddresPrefix": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray')[0], variables('vmPrivateIPPrefixArray')[1], variables('vmPrivateIPPrefixArray')[2])]",
-        "subnetRef": "[if(equals(parameters('newOrExistingVnet'), 'new'),resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName')), parameters('existingSubnetId'))]",
-        "nsg-default-name": "nsg-rdp-allow",
+        "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
+        "nsg-default-name": "[parameters('networkSecurityGroupName')]",
         "nsg-id": {
             "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-default-name'))]"
         },
@@ -305,31 +338,35 @@
             "condition": "[equals(parameters('newOrExistingVnet'), 'new')]",
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2021-05-01",
-            "name": "[parameters('virtualNetworkName')]",
+            "name": "[variables('virtualNetworkName')]",
             "location": "[parameters('location')]",
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
                         "[variables('virtualNetworkAddressRange')]"
                     ]
-                },
-                "subnets": [
-                    {
-                        "name": "[variables('subnetName')]",
-                        "properties": {
-                        "addressPrefix": "[variables('subnetRange')]"
-                        }
-                    }
-                ]
+                }
             }
         },
         {
-            "condition": "[and(equals(parameters('remoteAccessMode'),'AzureBastionHost'),equals(parameters('newOrExistingVnet'), 'new'))]",
+            "condition": "[equals(parameters('newOrExistingSubnet'), 'new')]",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2021-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+            ],
+            "name": "[concat(variables('virtualNetworkName'), '/', variables('subnetName'))]",
+            "properties": {
+                "addressPrefix": "[variables('subnetRange')]"
+            }
+        },
+        {
+            "condition": "[and(equals(parameters('remoteAccessMode'),'AzureBastionHost'),equals(parameters('newOrExistingBastion'), 'new'))]",
             "name": "deployAzureBastion",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2020-10-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -348,7 +385,7 @@
                         "value": "existing"
                     },
                     "virtualNetworkName": {
-                        "value": "[parameters('virtualNetworkName')]"
+                        "value": "[variables('virtualNetworkName')]"
                     },
                     "location": {
                         "value":  "[resourceGroup().location]"
@@ -357,10 +394,10 @@
             }
         },
         {
-            "condition": "[and(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), equals(parameters('newOrExistingVnet'), 'new'))]",
+            "condition": "[and(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), equals(parameters('newOrExistingNSG'), 'new'))]",
             "comments": "Default Network Security Group for Windows endpoints",
             "type": "Microsoft.Network/networkSecurityGroups",
-            "apiVersion": "2019-08-01",
+            "apiVersion": "2021-05-01",
             "name": "[variables('nsg-default-name')]",
             "location": "[parameters('location')]",
             "properties": {
@@ -384,7 +421,7 @@
         {
             "condition": "[equals(parameters('remoteAccessMode'),'AllowPublicIP')]",
             "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2018-11-01",
+            "apiVersion": "2021-05-01",
             "name": "[concat('pip-', variables('allWinWKS')[copyIndex('vmPublicIpCopy')].vmName)]",
             "location": "[parameters('location')]",
             "copy": {
@@ -400,13 +437,14 @@
         },
         {
             "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2019-11-01",
+            "apiVersion": "2021-05-01",
             "name": "[concat('nic-', variables('allWinWKS')[copyIndex('vmNetworkInterfaceCopy')].vmName)]",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('allWinWKS')[copyIndex('vmNetworkInterfaceCopy')].vmName))]",
                 "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-default-name'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+                "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]"
             ],
             "copy": {
                 "name": "vmNetworkInterfaceCopy",
@@ -421,17 +459,17 @@
                             "privateIPAddress": "[variables('allWinWKS')[copyIndex('vmNetworkInterfaceCopy')].ipAddress]",
                             "publicIPAddress": "[if(equals(parameters('remoteAccessMode'),'AllowPublicIP'), json(concat('{\"id\":', '\"', resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('allWinWKS')[copyIndex('vmNetworkInterfaceCopy')].vmName)),'\"}')),json('null'))]",
                             "subnet": {
-                                "id": "[if(equals(parameters('newOrExistingVnet'), 'new'), variables('allWinWKS')[copyIndex('vmNetworkInterfaceCopy')].subnetref, parameters('existingSubnetId'))]"
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]"
                             }
                         }
                     }
                 ],
-                "networkSecurityGroup": "[if(and(equals(parameters('newOrExistingVnet'), 'new'), equals(parameters('remoteAccessMode'), 'AllowPublicIP')), variables('nsg-id'), json('null'))]"
+                "networkSecurityGroup": "[if(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), variables('nsg-id'), json('null'))]"
             }
         },
         {
             "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2018-10-01",
+            "apiVersion": "2021-11-01",
             "name": "[variables('allWinWKS')[copyIndex('vmVMCopy')].vmName]",
             "location": "[parameters('location')]",
             "identity": "[variables('identity')]",

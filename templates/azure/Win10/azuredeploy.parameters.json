@@ -8,44 +8,23 @@
         "adminPassword": {
             "value": "GEN-PASSWORD"
         },
-        "vmNamePrefix": {
-            "value": "WORKSTATION"
-        },
         "numberOfWorkstations": {
             "value": 1
         },
+        "vmNamePrefix": {
+            "value": "WORKSTATION"
+        },
+        "vmNameSuffix": {
+            "value": 5
+        },
         "windowsDesktopSKU": {
-            "value": "19h2-pro"
+            "value": "20h1-pro"
         },
         "windowsDesktopVersion": {
             "value": "latest"
         },
         "vmSize": {
             "value": "Standard_B2s"
-        },
-        "allowedIPAddresses": {
-            "value": "*"
-        },
-        "_artifactsLocation": {
-            "value": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/"
-        },
-        "_artifactsLocationSasToken": {
-            "value": ""
-        },
-        "enableMonitoringAgent": {
-            "value": false
-        },
-        "workspaceId": {
-            "value": ""
-        },
-        "workspaceKey": {
-            "value": ""
-        },
-        "enableSysmon": {
-            "value": false
-        },
-        "enableAntimalware": {
-            "value": false
         },
         "virtualNetworkName": {
             "value": "vnet-win"
@@ -58,6 +37,24 @@
         },
         "subnetName": {
             "value": "snet-win"
+        },
+        "remoteAccessMode": {
+            "value": "AllowPublicIP"
+        },
+        "allowedIPAddresses": {
+            "value": "*"
+        },
+        "enableSysmon": {
+            "value": false
+        },
+        "enableAntimalware": {
+            "value": false
+        },
+        "_artifactsLocation": {
+            "value": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/"
+        },
+        "_artifactsLocationSasToken": {
+            "value": ""
         }
     }
 }
