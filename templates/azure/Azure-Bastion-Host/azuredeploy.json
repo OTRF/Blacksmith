@@ -2,20 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "virtualNetworkName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the Virtual Network"
-            },
-            "defaultValue": "vnet-bastion"
-        },
-        "virtualNetworkAddressRange": {
-            "type": "string",
-            "metadata": {
-                "description": "Address Range of the virtual network"
-            },
-            "defaultValue": "192.168.0.0/16"
-        },
         "azureBastionHostName": {
             "type": "string",
             "minLength": 1,
@@ -36,13 +22,6 @@
             ],
             "defaultValue": "Standard"
         },
-        "azureBastionSubnetRange": {
-            "type": "string",
-            "metadata": {
-                "description": "Address Range of the Azure Bastion service"
-            },
-            "defaultValue": "192.168.3.0/26"
-        },
         "newOrExistingVnet": {
             "type": "string",
             "defaultValue": "new",
@@ -53,6 +32,27 @@
             "metadata": {
                 "description": "Specify whether to provision new vnet or deploy to existing vnet"
             }
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Virtual Network"
+            },
+            "defaultValue": "vnet-bastion"
+        },
+        "virtualNetworkAddressRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the virtual network"
+            },
+            "defaultValue": "192.168.0.0/16"
+        },
+        "azureBastionSubnetRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the Azure Bastion service"
+            },
+            "defaultValue": "192.168.3.0/26"
         },
         "disableCopyPaste": {
             "type": "bool",
