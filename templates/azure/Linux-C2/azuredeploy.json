@@ -25,31 +25,6 @@
                 "description": "SSH Key or password for the Virtual Machine. SSH key is recommended. The password must be at least 8 characters in length and must contain at least one digit, one non-alphanumeric character, and one upper or lower case letter."
             }
         },
-        "remoteAccessMode": {
-            "type": "string",
-            "defaultValue": "AllowPublicIP",
-            "allowedValues": [
-                "AllowPublicIP",
-                "AzureBastionHost"
-            ],
-            "metadata": {
-                "description": "Do you want to restrict access to your environment by a Public IP or set up an Azure Bastion Host. If the former, make sure you add your public IP address to the variable 'allowedIPAddresses'"
-            }
-        },
-        "allowedIPAddresses": {
-            "type": "string",
-            "metadata": {
-                "description": "The sourceAddressPrefixes allowed to connect to this deployment"
-            },
-            "defaultValue": "*"
-        },
-        "azureBastionHostName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of Azure Bastion Host assigned to the Virtual network in this template"
-            },
-            "defaultValue": "AzureBastionHost"
-        },
         "numberOfUbuntuVMs": {
             "type": "int",
             "defaultValue": 1,
@@ -113,19 +88,16 @@
                 "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
             }
         },
-        "newVirtualNetwork": {
-            "type": "bool",
-            "metadata": {
-                "description": "Is this a new virtual network? If so, set this to true."
-            },
-            "defaultValue": true
-        },
-        "existingSubnetId": {
+        "newOrExistingVnet": {
             "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
             "metadata": {
-                "description": "Id of existing subnet used while setting up the network settings for the virtual VM."
-            },
-            "defaultValue": ""
+                "description": "Specify whether to provision new vnet or deploy to existing vnet"
+            }
         },
         "virtualNetworkName": {
             "type": "string",
@@ -137,16 +109,20 @@
         "virtualNetworkAddressRange": {
             "type": "string",
             "metadata": {
-                "description": "Virtual Network address range"
+                "description": "Address Range of the virtual network"
             },
             "defaultValue": "10.0.0.0/16"
         },
-        "subnetRange": {
+        "newOrExistingSubnet": {
             "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
             "metadata": {
-                "description": "subnet range"
-            },
-            "defaultValue": "10.0.0.0/24"
+                "description": "Specify whether to provision new subnet or use and existing subnet."
+            }
         },
         "subnetName": {
             "type": "string",
@@ -155,12 +131,73 @@
             },
             "defaultValue": "snet-c2"
         },
+        "subnetRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the subnet"
+            },
+            "defaultValue": "10.0.1.0/24"
+        },
+        "newOrExistingNSG": {
+            "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
+            "metadata": {
+                "description": "Specify whether to provision a new Network Security Group or use an existing one."
+            }
+        },
+        "networkSecurityGroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of default network Security Group. This could be an existing one or new one"
+            },
+            "defaultValue": "nsg-ssh-allow"
+        },
+        "remoteAccessMode": {
+            "type": "string",
+            "metadata": {
+                "description": "Do you want to restrict access to your environment by a Public IP or set up an Azure Bastion Host. If the former, make sure you add your public IP address to the variable 'allowedIPAddresses'"
+            },
+            "defaultValue": "AllowPublicIP",
+            "allowedValues": [
+                "AllowPublicIP",
+                "AzureBastionHost"
+            ]
+        },
+        "allowedIPAddresses": {
+            "type": "string",
+            "metadata": {
+                "description": "The sourceAddressPrefixes allowed to connect to this deployment"
+            },
+            "defaultValue": "*"
+        },
+        "newOrExistingBastion": {
+            "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
+            "metadata": {
+                "description": "Specify whether to provision a new Azure Bastion Host or not."
+            }
+        },
+        "azureBastionHostName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of Azure Bastion Host assigned to the Virtual network in this template"
+            },
+            "defaultValue": "vnet-c2-bastion"
+        },
         "azureBastionSubnetRange": {
             "type": "string",
             "metadata": {
                 "description": "Address Range of the Azure Bastion service"
             },
-            "defaultValue": "192.168.3.0/27"
+            "defaultValue": "10.0.3.0/26"
         },
         "c2Framework": {
             "type": "string",
@@ -223,15 +260,6 @@
                     "adminPasswordOrKey": {
                         "value": "[parameters('adminPasswordOrKey')]"
                     },
-                    "remoteAccessMode": {
-                        "value": "[parameters('remoteAccessMode')]"
-                    },
-                    "allowedIPAddresses": {
-                        "value": "[parameters('allowedIPAddresses')]"
-                    },
-                    "azureBastionHostName": {
-                        "value": "[parameters('azureBastionHostName')]"
-                    },
                     "numberOfUbuntuVMs": {
                         "value": "[parameters('numberOfUbuntuVMs')]"
                     },
@@ -250,11 +278,8 @@
                     "vmSize": {
                         "value": "[parameters('vmSize')]"
                     },
-                    "newVirtualNetwork": {
-                        "value": "[parameters('newVirtualNetwork')]"
-                    },
-                    "existingSubnetId": {
-                        "value": "[parameters('existingSubnetId')]"
+                    "newOrExistingVnet": {
+                        "value": "new"
                     },
                     "virtualNetworkName": {
                         "value": "[parameters('virtualNetworkName')]"
@@ -262,11 +287,23 @@
                     "virtualNetworkAddressRange": {
                         "value": "[parameters('virtualNetworkAddressRange')]"
                     },
-                    "subnetRange": {
-                        "value": "[parameters('subnetRange')]"
+                    "newOrExistingSubnet": {
+                        "value": "new"
                     },
                     "subnetName": {
                         "value": "[parameters('subnetName')]"
+                    },
+                    "subnetRange": {
+                        "value": "[parameters('subnetRange')]"
+                    },
+                    "remoteAccessMode": {
+                        "value": "[parameters('remoteAccessMode')]"
+                    },
+                    "allowedIPAddresses": {
+                        "value": "[parameters('allowedIPAddresses')]"
+                    },
+                    "azureBastionHostName": {
+                        "value": "[parameters('azureBastionHostName')]"
                     },
                     "azureBastionSubnetRange": {
                         "value": "[parameters('azureBastionSubnetRange')]"
