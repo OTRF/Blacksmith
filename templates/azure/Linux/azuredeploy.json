@@ -32,31 +32,6 @@
                 "description": "SSH Key or password for the Virtual Machine. SSH key is recommended. The password must be at least 8 characters in length and must contain at least one digit, one non-alphanumeric character, and one upper or lower case letter."
             }
         },
-        "remoteAccessMode": {
-            "type": "string",
-            "defaultValue": "AllowPublicIP",
-            "allowedValues": [
-                "AllowPublicIP",
-                "AzureBastionHost"
-            ],
-            "metadata": {
-                "description": "Do you want to restrict access to your environment by a Public IP or set up an Azure Bastion Host. If the former, make sure you add your public IP address to the variable 'allowedIPAddresses'"
-            }
-        },
-        "allowedIPAddresses": {
-            "type": "string",
-            "metadata": {
-                "description": "The sourceAddressPrefixes allowed to connect to this deployment"
-            },
-            "defaultValue": "*"
-        },
-        "azureBastionHostName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of Azure Bastion Host assigned to the Virtual network in this template"
-            },
-            "defaultValue": "AzureBastionHost"
-        },
         "numberOfUbuntuVMs": {
             "type": "int",
             "defaultValue": 1,
@@ -182,12 +157,16 @@
                 "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
             }
         },
-        "newVirtualNetwork": {
-            "type": "bool",
+        "newOrExistingVnet": {
+            "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
             "metadata": {
-                "description": "Is this a new virtual network? If so, set this to true."
-            },
-            "defaultValue": true
+                "description": "Specify whether to provision new vnet or deploy to existing vnet"
+            }
         },
         "existingSubnetId": {
             "type": "string",
@@ -224,12 +203,37 @@
             },
             "defaultValue": "192.168.2.0/24"
         },
+        "remoteAccessMode": {
+            "type": "string",
+            "defaultValue": "AllowPublicIP",
+            "allowedValues": [
+                "AllowPublicIP",
+                "AzureBastionHost"
+            ],
+            "metadata": {
+                "description": "Do you want to restrict access to your environment by a Public IP or set up an Azure Bastion Host. If the former, make sure you add your public IP address to the variable 'allowedIPAddresses'"
+            }
+        },
+        "allowedIPAddresses": {
+            "type": "string",
+            "metadata": {
+                "description": "The sourceAddressPrefixes allowed to connect to this deployment"
+            },
+            "defaultValue": "*"
+        },
+        "azureBastionHostName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of Azure Bastion Host assigned to the Virtual network in this template"
+            },
+            "defaultValue": "vnet-linux-bastion"
+        },
         "azureBastionSubnetRange": {
             "type": "string",
             "metadata": {
                 "description": "Address Range of the Azure Bastion service"
             },
-            "defaultValue": "192.168.3.0/27"
+            "defaultValue": "192.168.3.0/26"
         },
         "workspaceId": {
             "type": "string",
@@ -289,37 +293,15 @@
         "subnetRange": "[parameters('subnetRange')]",
         "vmPrivateIPPrefixArray": "[take(split(variables('subnetRange'),'.'),3)]",
         "vmPrivateIPAddresPrefix": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray')[0], variables('vmPrivateIPPrefixArray')[1], variables('vmPrivateIPPrefixArray')[2])]",
-        "subnetRef": "[if(and(parameters('newVirtualNetwork'),empty(parameters('existingSubnetId'))),resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName')), parameters('existingSubnetId'))]",
+        "subnetRef": "[if(equals(parameters('newOrExistingVnet'), 'new'),resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName')), parameters('existingSubnetId'))]",
         "nsg-default-name": "nsg-ssh-allow",
         "nsg-id": {
             "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-default-name'))]"
         },
-        "subnets": [
-            {
-                "name": "[variables('subnetName')]",
-                "properties": {
-                    "addressPrefix": "[variables('subnetRange')]"
-                }
-            }
-        ],
-        //Bastion Host Network
-        "bastionSubnetName": "AzureBastionSubnet",
-        "nsg-bastion-host-name": "nsg-bastion-host",
-        "azureBastionSubnet": [
-            {
-                "name": "[variables('bastionSubnetName')]",
-                "properties": {
-                    "addressPrefix": "[parameters('azureBastionSubnetRange')]",
-                    "networkSecurityGroup": {
-                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-bastion-host-name'))]"
-                    }
-                }
-            }
-        ],
-        "allSubnets": "[if(equals(parameters('remoteAccessMode'),'AzureBastionHost'), concat(variables('subnets'), variables('azureBastionSubnet')), variables('subnets'))]",
         
         // Script Templates
         "customScriptTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Linux/nestedtemplates/customScript.json', parameters('_artifactsLocationSasToken')))]",
+        "azureBastionTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Azure-Bastion-Host/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
 
         // Custom Scripts
         "installOMSAgentScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/bash/Install-OMS-Linux-Agent.sh', parameters('_artifactsLocationSasToken')))]",
@@ -402,8 +384,63 @@
         "identity" : "[if(empty(parameters('userAssignedIdentities')), variables('identityType'), union(variables('identityType'), variables('userAssignedIdentities')))]"
     },
     "resources": [
+         {
+            "condition": "[equals(parameters('newOrExistingVnet'), 'new')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2021-05-01",
+            "name": "[parameters('virtualNetworkName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('virtualNetworkAddressRange')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('subnetName')]",
+                        "properties": {
+                        "addressPrefix": "[variables('subnetRange')]"
+                        }
+                    }
+                ]
+            }
+        },
         {
-            "condition": "[and(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), parameters('newVirtualNetwork'))]",
+            "condition": "[and(equals(parameters('remoteAccessMode'),'AzureBastionHost'),equals(parameters('newOrExistingVnet'), 'new'))]",
+            "name": "deployAzureBastion",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('azureBastionTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "azureBastionHostName": {
+                        "value": "[parameters('azureBastionHostName')]"
+                    },
+                    "azureBastionSubnetRange": {
+                        "value": "[parameters('azureBastionSubnetRange')]"
+                    },
+                    "newOrExistingVnet": {
+                        "value": "existing"
+                    },
+                    "virtualNetworkName": {
+                        "value": "[parameters('virtualNetworkName')]"
+                    },
+                    "location": {
+                        "value":  "[resourceGroup().location]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[and(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), equals(parameters('newOrExistingVnet'), 'new'))]",
             "comments": "Default Network Security Group for Linux endpoints",
             "type": "Microsoft.Network/networkSecurityGroups",
             "apiVersion": "2019-08-01",
@@ -422,131 +459,6 @@
                             "sourcePortRange": "*",
                             "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
                             "destinationAddressPrefix": "*"
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "condition": "[and(equals(parameters('remoteAccessMode'), 'AzureBastionHost'),parameters('newVirtualNetwork'))]",
-            "comments": "Default Network Security Group for Azure Bastion Host",
-            "type": "Microsoft.Network/networkSecurityGroups",
-            "apiVersion": "2019-08-01",
-            "name": "[variables('nsg-bastion-host-name')]",
-            "location": "[parameters('location')]",
-            "properties": {
-                "securityRules": [
-                    {
-                        "name": "AllowHTTPsInbound",
-                        "properties": {
-                            "priority": 100,
-                            "access": "Allow",
-                            "direction": "Inbound",
-                            "destinationPortRange": "443",
-                            "protocol": "Tcp",
-                            "sourcePortRange": "*",
-                            "sourceAddressPrefix": "Internet",
-                            "destinationAddressPrefix": "*"
-                        }
-                    },
-                    {
-                        "name": "AllowGatewayManagerInbound",
-                        "properties": {
-                            "priority": 110,
-                            "access": "Allow",
-                            "direction": "Inbound",
-                            "destinationPortRange": "443",
-                            "protocol": "Tcp",
-                            "sourcePortRange": "*",
-                            "sourceAddressPrefix": "GatewayManager",
-                            "destinationAddressPrefix": "*"
-                        }
-                    },
-                    {
-                        "name": "AllowSshRdpOutbound",
-                        "properties": {
-                            "priority": 100,
-                            "access": "Allow",
-                            "direction": "Outbound",
-                            "destinationPortRanges": [
-                                "22",
-                                "3389"
-                            ],
-                            "protocol": "*",
-                            "sourcePortRange": "*",
-                            "sourceAddressPrefix": "*",
-                            "destinationAddressPrefix": "VirtualNetwork"
-                        }
-                    },
-                    {
-                        "name": "AllowAzureCloudOutbound",
-                        "properties": {
-                            "priority": 110,
-                            "access": "Allow",
-                            "direction": "Outbound",
-                            "destinationPortRange": "443",
-                            "protocol": "Tcp",
-                            "sourcePortRange": "*",
-                            "sourceAddressPrefix": "*",
-                            "destinationAddressPrefix": "AzureCloud"
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "condition": "[parameters('newVirtualNetwork')]",
-            "type": "Microsoft.Network/virtualNetworks",
-            "apiVersion": "2019-02-01",
-            "name": "[variables('virtualNetworkName')]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-bastion-host-name'))]"
-            ],
-            "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "[variables('virtualNetworkAddressRange')]"
-                    ]
-                },
-                "subnets": "[variables('allSubnets')]"
-            }
-        },
-        {
-            "condition": "[and(equals(parameters('remoteAccessMode'),'AzureBastionHost'),parameters('newVirtualNetwork'))]",
-            "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2018-11-01",
-            "name": "[concat('pip-', parameters('azureBastionHostName'))]",
-            "location": "[parameters('location')]",
-            "sku": {
-                "name": "Standard"
-            },
-            "properties": {
-                "publicIPAllocationMethod": "Static"
-            }
-        },
-        {
-            "condition": "[and(equals(parameters('remoteAccessMode'),'AzureBastionHost'),parameters('newVirtualNetwork'))]",
-            "type": "Microsoft.Network/bastionHosts",
-            "apiVersion": "2020-05-01",
-            "name": "[parameters('azureBastionHostName')]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', parameters('azureBastionHostName')))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
-            ],
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "IpConf",
-                        "properties": {
-                            "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', parameters('azureBastionHostName')))]"
-                            },
-                            "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'), variables('bastionSubnetName'))]"
-                            }
                         }
                     }
                 ]
@@ -592,12 +504,12 @@
                             "privateIPAddress": "[variables('allLinuxVMs')[copyIndex('vmNetworkInterfaceCopy')].ipAddress]",
                             "publicIPAddress": "[if(equals(parameters('remoteAccessMode'),'AllowPublicIP'), json(concat('{\"id\":', '\"', resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('allLinuxVMs')[copyIndex('vmNetworkInterfaceCopy')].vmName)),'\"}')),json('null'))]",
                             "subnet": {
-                                "id": "[if(parameters('newVirtualNetwork'), variables('allLinuxVMs')[copyIndex('vmNetworkInterfaceCopy')].subnetref, parameters('existingSubnetId'))]"
+                                "id": "[if(equals(parameters('newOrExistingVnet'), 'new'), variables('allLinuxVMs')[copyIndex('vmNetworkInterfaceCopy')].subnetref, parameters('existingSubnetId'))]"
                             }
                         }
                     }
                 ],
-                "networkSecurityGroup": "[if(and(parameters('newVirtualNetwork'), equals(parameters('remoteAccessMode'), 'AllowPublicIP')), variables('nsg-id'), json('null'))]"
+                "networkSecurityGroup": "[if(and(equals(parameters('newOrExistingVnet'), 'new'), equals(parameters('remoteAccessMode'), 'AllowPublicIP')), variables('nsg-id'), json('null'))]"
             }
         },
         {
