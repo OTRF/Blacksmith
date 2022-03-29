@@ -138,24 +138,6 @@
             },
             "defaultValue": "10.0.1.0/24"
         },
-        "newOrExistingNSG": {
-            "type": "string",
-            "defaultValue": "new",
-            "allowedValues": [
-                "new",
-                "existing"
-            ],
-            "metadata": {
-                "description": "Specify whether to provision a new Network Security Group or use an existing one."
-            }
-        },
-        "networkSecurityGroupName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of default network Security Group. This could be an existing one or new one"
-            },
-            "defaultValue": "nsg-ssh-allow"
-        },
         "remoteAccessMode": {
             "type": "string",
             "metadata": {
@@ -279,7 +261,7 @@
                         "value": "[parameters('vmSize')]"
                     },
                     "newOrExistingVnet": {
-                        "value": "new"
+                        "value": "[parameters('newOrExistingVnet')]"
                     },
                     "virtualNetworkName": {
                         "value": "[parameters('virtualNetworkName')]"
@@ -288,7 +270,7 @@
                         "value": "[parameters('virtualNetworkAddressRange')]"
                     },
                     "newOrExistingSubnet": {
-                        "value": "new"
+                        "value": "[parameters('newOrExistingSubnet')]"
                     },
                     "subnetName": {
                         "value": "[parameters('subnetName')]"
@@ -301,6 +283,9 @@
                     },
                     "allowedIPAddresses": {
                         "value": "[parameters('allowedIPAddresses')]"
+                    },
+                    "newOrExistingBastion": {
+                        "value": "[parameters('newOrExistingBastion')]"
                     },
                     "azureBastionHostName": {
                         "value": "[parameters('azureBastionHostName')]"
