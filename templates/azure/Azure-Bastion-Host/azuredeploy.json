@@ -2,6 +2,20 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "virtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Virtual Network"
+            },
+            "defaultValue": "vnet-bastion"
+        },
+        "virtualNetworkAddressRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the virtual network"
+            },
+            "defaultValue": "192.168.0.0/16"
+        },
         "azureBastionHostName": {
             "type": "string",
             "minLength": 1,
@@ -9,12 +23,12 @@
             "metadata": {
                 "description": "Name of Azure Bastion Host"
             },
-            "defaultValue": "AzureBastionHost"
+            "defaultValue": "vnet-bastion-host"
         },
         "azureBastionHostSku": {
             "type": "string",
             "metadata": {
-                "description": "The sku of this bastion Host"
+                "description": "The sku of this bastion Host. Reference: https://docs.microsoft.com/en-us/azure/bastion/bastion-overview#sku"
             },
             "allowedValues": [
                 "Basic",
@@ -40,33 +54,12 @@
                 "description": "Specify whether to provision new vnet or deploy to existing vnet"
             }
         },
-        "virtualNetworkName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the Virtual Network"
-            },
-            "defaultValue": "vnet-win"
-        },
-        "virtualNetworkAddressRange": {
-            "type": "string",
-            "metadata": {
-                "description": "Address Range of the virtual network"
-            },
-            "defaultValue": "192.168.0.0/16"
-        },
         "disableCopyPaste": {
             "type": "bool",
             "metadata": {
                 "description": "Enable/Disable Copy/Paste feature of the Bastion Host resource."
             },
             "defaultValue": false
-        },
-        "enableFileCopy": {
-            "type": "bool",
-            "metadata": {
-                "description": "File Copy feature of the Bastion Host resource."
-            },
-            "defaultValue": true
         },
         "enableShareableLink": {
             "type": "bool",
@@ -146,7 +139,7 @@
             },
             "properties": {
                 "disableCopyPaste": "[parameters('disableCopyPaste')]",
-                "enableFileCopy": "[parameters('enableFileCopy')]",
+                "enableFileCopy": "[if(equals(parameters('azureBastionHostSku'),'Standard'), bool('true'), bool('false'))]",
                 "enableShareableLink": "[parameters('enableShareableLink')]",
                 "ipConfigurations": [
                     {
