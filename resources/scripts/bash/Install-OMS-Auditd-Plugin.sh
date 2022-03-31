@@ -76,5 +76,5 @@ sed -i -e 's/active = no/active = yes/' /etc/audisp/plugins.d/auoms.conf
 /opt/microsoft/auoms/bin/auomsctl enable
 
 # Restaring OMID and AUOMS
-systemctl status omid
-systemctl status auoms
+systemctl restart omid
+systemctl restart auoms
