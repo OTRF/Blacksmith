@@ -292,7 +292,7 @@
         }
     },
     "variables": {
-        "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
+        "storageAccountName": "[concat(uniquestring(resourceGroup().id, deployment().name, parameters('utcValue')))]",
         "virtualNetworkName": "[parameters('virtualNetworkName')]",
         "virtualNetworkAddressRange": "[parameters('virtualNetworkAddressRange')]",
         "subnetName0": "[parameters('subnetName0')]",

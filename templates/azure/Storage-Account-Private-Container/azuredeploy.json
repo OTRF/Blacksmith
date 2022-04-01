@@ -90,7 +90,7 @@
       }
     },
     "variables": {
-      "uniqueStorageAccountName": "[concat(parameters('storageNamePrefix'), uniquestring(subscription().subscriptionId, resourceGroup().id, parameters('utcValue')))]",
+      "uniqueStorageAccountName": "[concat(parameters('storageNamePrefix'), uniquestring(subscription().subscriptionId, resourceGroup().id, deployment().name, parameters('utcValue')))]",
       "storageAccountNameTidy": "[toLower(trim(variables('uniqueStorageAccountName')))]",
       "containerNameTidy": "[toLower(trim(parameters('containerName')))]",
       "listAccountSasRequestContent": {
