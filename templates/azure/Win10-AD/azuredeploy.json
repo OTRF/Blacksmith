@@ -886,6 +886,10 @@
             "type": "string",
             "value": "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
         },
+        "dcVMDeployed": {
+            "type": "object",
+            "value": "[variables('domainController')[0]]"
+        },
         "allWinVMsDeployed": {
             "type": "array",
             "value": "[concat(variables('domainController'), reference('deployWin10VM').outputs.allWinVMsDeployed.value)]"
