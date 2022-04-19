@@ -98,6 +98,26 @@
                 "description": "The zip content url. In Azure App Service, you can run your apps directly from a deployment ZIP package file."
             }
         },
+        "identityType": {
+            "type": "string",
+            "metadata": {
+                "description": "The type of identity used for the virtual machine. The type 'SystemAssigned, UserAssigned' includes both an implicitly created identity and a set of user assigned identities. The type 'None' will remove any identities from the virtual machine. - SystemAssigned, UserAssigned, None. Reference: https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?tabs=json#virtualmachineidentity-object"
+            },
+            "defaultValue": "None",
+            "allowedValues": [
+                "SystemAssigned",
+                "UserAssigned",
+                "SystemAssigned, UserAssigned",
+                "None"
+            ]
+        },
+        "userAssignedIdentityId": {
+            "type": "string",
+            "metadata": {
+                "description": "An array of user asigned managed identities associated with the Azure Function app. The user identity should be in the resource id format: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName} and separated by a comma if there is more than one."
+            },
+            "defaultValue": ""
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -116,7 +136,11 @@
             "powerShellVersion": "[parameters('powerShellVersion')]",
             "use32BitWorkerProcess": "[parameters('use32BitWorkerProcess')]",
             "netFrameworkVersion": "[parameters('netFrameworkVersion')]"
-        }
+        },
+        // Managed Identity
+        "identityType": {"type": "[parameters('identityType')]"},
+        "userAssignedIdentity": {"userAssignedIdentities": {"[parameters('userAssignedIdentityId')]": {}}},
+        "identity" : "[if(empty(parameters('userAssignedIdentityId')), variables('identityType'), union(variables('identityType'), variables('userAssignedIdentity')))]"
     },
     "resources": [
         {
@@ -164,6 +188,7 @@
                 "[resourceId('Microsoft.Insights/components', variables('functionAppName'))]"
             ],
             "kind": "[variables('Kind')]",
+            "identity": "[variables('identity')]",
             "properties": {
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
                 "siteConfig": "[variables('siteConfig')]"
