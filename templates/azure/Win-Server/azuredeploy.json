@@ -15,6 +15,13 @@
                 "description": "Password for the all Virtual machines. The password must be at least 8 characters in length and must contain at least one digit, one non-alphanumeric character, and one upper or lower case letter"
             }
         },
+        "vmName": {
+            "type": "string",
+            "defaultValue": "SERVER",
+            "metadata": {
+                "description": "Name of Virtual machine name."
+            }
+        },
         "windowsServerSKU": {
             "type": "string",
             "defaultValue": "2019-Datacenter",
@@ -254,7 +261,7 @@
         "windowsServer": [
             {
                 "tag": "windowsServer",
-                "vmName": "SERVER",
+                "vmName": "[parameters('vmName')]",
                 "os": "windows",
                 "subnetref": "[variables('subnetRef')]",
                 "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),'30')]",
