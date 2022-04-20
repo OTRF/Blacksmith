@@ -1,5 +1,11 @@
 # Author: Roberto Rodriguez (@Cyb3rWard0g)
 
+# Install Active Directory Module for Windows PowerShell
+Write-Host "Installing Active Directory module for Windows PowerShell"
+
+Import-Module ServerManager
+Add-WindowsFeature -Name "RSAT-AD-PowerShell" -IncludeAllSubFeature
+
 # Installing Chocolatey
 write-host "Installing Chocolatey.."
 
