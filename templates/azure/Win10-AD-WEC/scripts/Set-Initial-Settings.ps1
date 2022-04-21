@@ -4,7 +4,7 @@
 [CmdletBinding()]
 param (
     [Parameter(Mandatory=$false)]
-    [ValidateSet("DC")]
+    [ValidateSet("DC","WEC")]
     [string]$SetupType
 )
 
