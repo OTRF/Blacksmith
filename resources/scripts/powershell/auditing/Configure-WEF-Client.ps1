@@ -48,6 +48,7 @@ New-ItemProperty -Path $regKey -Name 1 -Value "Server=http://$WECFQDN`:5985/wsma
 # Adding the Network Service to the Event Log Readers group
 write-Host "Adding Network Service to Event Log Readers restricted group.."
 Add-LocalGroupMember -Group "Event Log Readers" -Member "Network Service"
+# net.exe localgroup "Event Log Readers" "Network Service" /add
 
 Restart-Service WinRM
 
