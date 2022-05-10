@@ -21,7 +21,7 @@
     },
     "resources": [
         {
-            "name": "[concat(parameters('virtualMachines')[copyIndex('AMACopy')].vmName,'/', if(equals(parameters('virtualMachines')[copyIndex('AMACopy')].os, 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux'))]",
+            "name": "[concat(parameters('virtualMachines')[copyIndex('AMDACopy')].vmName,'/', if(equals(parameters('virtualMachines')[copyIndex('AMDACopy')].os, 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux'))]",
             "type": "Microsoft.Compute/virtualMachines/extensions",
              "apiVersion": "2020-06-01",
             "location": "[parameters('location')]",
@@ -31,7 +31,7 @@
             },
             "properties": {
                 "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
-                "type": "[if(equals(parameters('virtualMachines')[copyIndex('AMACopy')].os, 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
+                "type": "[if(equals(parameters('virtualMachines')[copyIndex('AMDACopy')].os, 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
                 "typeHandlerVersion": "[variables('DaExtensionVersion')]",
                 "autoUpgradeMinorVersion": true
             }
