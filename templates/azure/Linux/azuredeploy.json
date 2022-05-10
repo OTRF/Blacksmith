@@ -364,6 +364,7 @@
                 "count": "[parameters('numberOfUbuntuVMs')]",
                 "input": {
                     "vmName": "[concat(parameters('ubuntuVMNamePrefix'),copyIndex('ubuntuVMs',5))]",
+                    "os": "linux",
                     "dnsFQDN": "[if(equals(parameters('remoteAccessMode'),'AllowPublicIP'), toLower(concat(parameters('ubuntuVMNamePrefix'),copyIndex('ubuntuVMs',5), variables('vmFQDNSuffix'))),'')]",
                     "subnetref": "[variables('subnetRef')]",
                     "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('ubuntuVMs',5))]",
@@ -380,6 +381,7 @@
                 "count": "[parameters('numberOfCentOSVMs')]",
                 "input": {
                     "vmName": "[concat(parameters('centOSVMNamePrefix'),copyIndex('centOSVMs',10))]",
+                    "os": "linux",
                     "dnsFQDN": "[if(equals(parameters('remoteAccessMode'),'AllowPublicIP'), toLower(concat(parameters('centOSVMNamePrefix'),copyIndex('centOSVMs',10), variables('vmFQDNSuffix'))),'')]",
                     "subnetref": "[variables('subnetRef')]",
                     "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('centOSVMs',10))]",
@@ -396,6 +398,7 @@
                 "count": "[parameters('numberOfRedHatVMs')]",
                 "input": {
                     "vmName": "[concat(parameters('redhatVMNamePrefix'),copyIndex('redhatVMs',15))]",
+                    "os": "linux",
                     "dnsFQDN": "[if(equals(parameters('remoteAccessMode'),'AllowPublicIP'), toLower(concat(parameters('redhatVMNamePrefix'),copyIndex('redhatVMs',15), variables('vmFQDNSuffix'))),'')]",
                     "subnetref": "[variables('subnetRef')]",
                     "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('redhatVMs',15))]",
