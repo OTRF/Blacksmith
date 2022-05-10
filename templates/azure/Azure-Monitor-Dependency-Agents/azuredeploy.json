@@ -1,0 +1,41 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines": {
+            "type": "array",
+            "metadata": {
+                "description": "List of endpoints to install the Azure Monitor Dependency Agent. The format is an array of endpoints with a property/attribute named 'vmName'"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    },
+    "variables": {
+        "DaExtensionVersion": "9.5"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('virtualMachines')[copyIndex('AMACopy')].vmName,'/', if(equals(parameters('virtualMachines')[copyIndex('AMACopy')].os, 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux'))]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+             "apiVersion": "2020-06-01",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "AMDACopy",
+                "count": "[length(parameters('virtualMachines'))]"
+            },
+            "properties": {
+                "publisher": "Microsoft.Azure.Monitoring.DependencyAgent",
+                "type": "[if(equals(parameters('virtualMachines')[copyIndex('AMACopy')].os, 'windows'), 'DependencyAgentWindows', 'DependencyAgentLinux')]",
+                "typeHandlerVersion": "[variables('DaExtensionVersion')]",
+                "autoUpgradeMinorVersion": true
+            }
+        }
+    ],
+    "outputs": {}
+}
