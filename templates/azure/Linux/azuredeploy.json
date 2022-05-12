@@ -423,7 +423,7 @@
          {
             "condition": "[equals(parameters('newOrExistingVnet'), 'new')]",
             "type": "Microsoft.Network/virtualNetworks",
-            "apiVersion": "2021-05-01",
+            "apiVersion": "2021-03-01",
             "name": "[variables('virtualNetworkName')]",
             "location": "[parameters('location')]",
             "properties": {
@@ -437,7 +437,7 @@
         {
             "condition": "[equals(parameters('newOrExistingSubnet'), 'new')]",
             "type": "Microsoft.Network/virtualNetworks/subnets",
-            "apiVersion": "2021-05-01",
+            "apiVersion": "2021-03-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
             ],
