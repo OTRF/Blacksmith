@@ -105,16 +105,6 @@
                                 "type": "string"
                             },
                             {
-                                "name": "_ResourceId",
-                                "description": "A unique identifier for the resource that the record is associated with",
-                                "type": "string"
-                            },
-                            {
-                                "name": "_SubscriptionId",
-                                "description": "A unique identifier for the subscription that the record is associated with",
-                                "type": "string"
-                            },
-                            {
                                 "name": "Task",
                                 "description": "Event task name",
                                 "type": "int"

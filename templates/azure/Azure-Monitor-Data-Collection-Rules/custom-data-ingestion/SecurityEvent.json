@@ -653,10 +653,6 @@
                                 "type": "string"
                             },
                             {
-                                "name": "_ResourceId",
-                                "type": "string"
-                            },
-                            {
                                 "name": "RestrictedAdminMode",
                                 "type": "string"
                             },
@@ -770,10 +766,6 @@
                             },
                             {
                                 "name": "SubjectUserSid",
-                                "type": "string"
-                            },
-                            {
-                                "name": "_SubscriptionId",
                                 "type": "string"
                             },
                             {
