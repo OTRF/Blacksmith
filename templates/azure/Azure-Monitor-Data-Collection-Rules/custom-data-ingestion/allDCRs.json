@@ -14,7 +14,7 @@
                 "description": "Specifies the Azure resource ID of the Log Analytics workspace to use to send data to."
             }
         },
-        "dataCollectionEndpointId": {
+        "dataCollectionEndpointResourceId": {
             "type": "string",
             "metadata": {
                 "description": "Specifies the Azure resource ID of the Data Collection Endpoint to use."
@@ -37,7 +37,8 @@
         "artifactsBlacksmith": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/",
         "customDCRsTemplates": "[concat(variables('artifactsBlacksmith'), 'templates/azure/Azure-Monitor-Data-Collection-Rules/custom-data-ingestion/')]",
         "windowsEventDCRTemplate": "[uri(variables('customDCRsTemplates'), 'WindowsEvent.json')]",
-        "securityEventDCRTemplate": "[uri(variables('customDCRsTemplates'), 'SecurityEvent.json')]"
+        "securityEventDCRTemplate": "[uri(variables('customDCRsTemplates'), 'SecurityEvent.json')]",
+        "syslogDCRTemplate": "[uri(variables('customDCRsTemplates'), 'Syslog.json')]"
     },
     "resources": [
         {
@@ -55,8 +56,8 @@
                      "workspaceResourceId": {
                         "value": "[parameters('workspaceResourceId')]"
                     },
-                    "dataCollectionEndpointId": {
-                        "value": "[parameters('dataCollectionEndpointId')]"
+                    "dataCollectionEndpointResourceId": {
+                        "value": "[parameters('dataCollectionEndpointResourceId')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
@@ -79,8 +80,32 @@
                      "workspaceResourceId": {
                         "value": "[parameters('workspaceResourceId')]"
                     },
-                    "dataCollectionEndpointId": {
-                        "value": "[parameters('dataCollectionEndpointId')]"
+                    "dataCollectionEndpointResourceId": {
+                        "value": "[parameters('dataCollectionEndpointResourceId')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[contains(parameters('targetTables'),'Syslog')]",
+            "name": "SyslogEventDCR",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('syslogDCRTemplate')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                     "workspaceResourceId": {
+                        "value": "[parameters('workspaceResourceId')]"
+                    },
+                    "dataCollectionEndpointResourceId": {
+                        "value": "[parameters('dataCollectionEndpointResourceId')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"

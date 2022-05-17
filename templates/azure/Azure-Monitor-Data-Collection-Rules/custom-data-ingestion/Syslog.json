@@ -48,66 +48,61 @@
             "properties": {
                 "dataCollectionEndpointId": "[parameters('dataCollectionEndpointResourceId')]",
                 "streamDeclarations": {
-                    "Custom-WindowsEvent": {
+                    "Custom-Syslog": {
                         "columns": [
                             {
-                                "name": "Channel",
-                                "description": "Event log channel",
-                                "type": "string"
-                            },
-                            {
                                 "name": "Computer",
-                                "description": "Name of endpoint where event was originated",
+                                "description": "Computer that the event was collected from.",
                                 "type": "string"
                             },
                             {
-                                "name": "EventData",
-                                "description": "Contains the event data parsed to dynamic type. If the parsing fails then this field will contain null and the RawEventData field will be populated.",
-                                "type": "dynamic"
+                                "name": "EventTime",
+                                "description": "Name of endpoint where event was originatedDate and time that the event was generated.",
+                                "type": "datetime"
                             },
                             {
-                                "name": "EventID",
-                                "description": "ID of event",
+                                "name": "Facility",
+                                "description": "The part of the system that generated the message.",
+                                "type": "string"
+                            },
+                            {
+                                "name": "HostIP",
+                                "description": "IP address of the system sending the message.",
+                                "type": "string"
+                            },
+                            {
+                                "name": "HostName",
+                                "description": "Name of the system sending the message.",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ProcessID",
+                                "description": "ID of the process that generated the message.",
                                 "type": "int"
                             },
                             {
-                                "name": "EventLevel",
-                                "description": "level of event.",
-                                "type": "int"
-                            },
-                            {
-                                "name": "EventLevelName",
-                                "description": "Name of event level",
+                                "name": "ProcessName",
+                                "decription": "Name of the process that generated the message.",
                                 "type": "string"
                             },
                             {
-                                "name": "EventOriginId",
-                                "description": "The unique ID of the original event",
+                                "name": "SeverityLevel",
+                                "decription": "Severity level of the event.",
                                 "type": "string"
                             },
                             {
-                                "name": "ManagementGroupName",
-                                "decription": "Management group name",
+                                "name": "SourceSystem",
+                                "description": "Type of agent the data was collected from. For syslog the value is typically Linux.",
                                 "type": "string"
                             },
                             {
-                                "name": "Provider",
-                                "decription": "Event provider",
+                                "name": "SyslogMessage",
+                                "description": "Text of the message.",
                                 "type": "string"
-                            },
-                            {
-                                "name": "RawEventData",
-                                "description": "The raw event XML when parsing fails. It's null when parsing successful.",
-                                "type": "string"
-                            },
-                            {
-                                "name": "Task",
-                                "description": "Event task name",
-                                "type": "int"
                             },
                             {
                                 "name": "TimeGenerated",
-                                "description": "Time event was generated",
+                                "description": "Date and time the record was created.",
                                 "type": "datetime"
                             },
                             {
@@ -129,12 +124,12 @@
                 "dataFlows": [
                     {
                         "streams": [
-                            "Custom-WindowsEvent"
+                            "Custom-Syslog"
                         ],
                         "destinations": [
                             "clv2ws1"
                         ],
-                        "outputStream": "Microsoft-WindowsEvent"
+                        "outputStream": "Microsoft-Syslog"
                     }
                 ]
             }

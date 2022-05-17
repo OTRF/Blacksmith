@@ -15,7 +15,7 @@
                 "description": "Specifies the Azure resource ID of the Log Analytics workspace to use to send data to."
             }
         },
-        "dataCollectionEndpointId": {
+        "dataCollectionEndpointResourceId": {
             "type": "string",
             "metadata": {
                 "description": "Specifies the Azure resource ID of the Data Collection Endpoint to use."
@@ -44,7 +44,7 @@
                 "createdBy": "Sentinel"
             },
             "properties": {
-                "dataCollectionEndpointId": "[parameters('dataCollectionEndpointId')]",
+                "dataCollectionEndpointId": "[parameters('dataCollectionEndpointResourceId')]",
                 "streamDeclarations": {
                     "Custom-SecurityEvent": {
                         "columns": [
@@ -923,6 +923,9 @@
                         "destinations": [
                             "clv2ws1"
                         ],
+                        // The following fields exist in the SecurityEvent schema with type 'string', but make the deployment of DCR fail:
+                        // InterfaceUuid, LogonGuid, SourceComputerId, SubcategoryGuid, TargetLogonGuid
+                        "transformkql": " source | project AccessMask,Account,AccountDomain,AccountExpires,AccountName,AccountSessionIdentifier,AccountType,Activity,AdditionalInfo,AdditionalInfo2,AllowedToDelegateTo,Attributes,AuditPolicyChanges,AuditsDiscarded,AuthenticationLevel,AuthenticationPackageName,AuthenticationProvider,AuthenticationServer,AuthenticationService,AuthenticationType,AzureDeploymentID,CACertificateHash,CalledStationID,CallerProcessId,CallerProcessName,CallingStationID,CAPublicKeyHash,CategoryId,CertificateDatabaseHash,Channel,ClassId,ClassName,ClientAddress,ClientIPAddress,ClientName,CommandLine,CompatibleIds,Computer,DCDNSName,DeviceDescription,DeviceId,DisplayName,Disposition,DomainBehaviorVersion,DomainName,DomainPolicyChanged,DomainSid,EAPType,ElevatedToken,ErrorCode,EventData,EventID,EventSourceName,ExtendedQuarantineState,FailureReason,FileHash,FilePath,FilePathNoUser,Filter,ForceLogoff,Fqbn,FullyQualifiedSubjectMachineName,FullyQualifiedSubjectUserName,GroupMembership,HandleId,HardwareIds,HomeDirectory,HomePath,IpAddress,IpPort,KeyLength,Level,LmPackageName,LocationInformation,LockoutDuration,LockoutObservationWindow,LockoutThreshold,LoggingResult,LogonHours,LogonID,LogonProcessName,LogonType,LogonTypeName,MachineAccountQuota,MachineInventory,MachineLogon,ManagementGroupName,MandatoryLabel,MaxPasswordAge,MemberName,MemberSid,MinPasswordAge,MinPasswordLength,MixedDomainMode,NASIdentifier,NASIPv4Address,NASIPv6Address,NASPort,NASPortType,NetworkPolicyName,NewDate,NewMaxUsers,NewProcessId,NewProcessName,NewRemark,NewShareFlags,NewTime,NewUacValue,NewValue,NewValueType,ObjectName,ObjectServer,ObjectType,ObjectValueName,OemInformation,OldMaxUsers,OldRemark,OldShareFlags,OldUacValue,OldValue,OldValueType,OperationType,PackageName,ParentProcessName,PasswordHistoryLength,PasswordLastSet,PasswordProperties,PreviousDate,PreviousTime,PrimaryGroupId,PrivateKeyUsageCount,PrivilegeList,Process,ProcessId,ProcessName,ProfilePath,Properties,ProtocolSequence,ProxyPolicyName,QuarantineHelpURL,QuarantineSessionID,QuarantineSessionIdentifier,QuarantineState,QuarantineSystemHealthResult,RelativeTargetName,RemoteIpAddress,RemotePort,Requester,RequestId,RestrictedAdminMode,RowsDeleted,SamAccountName,ScriptPath,SecurityDescriptor,ServiceAccount,ServiceFileName,ServiceName,ServiceStartType,ServiceType,SessionName,ShareLocalPath,ShareName,SidHistory,SourceSystem,Status,StorageAccount,SubcategoryId,Subject,SubjectAccount,SubjectDomainName,SubjectKeyIdentifier,SubjectLogonId,SubjectMachineName,SubjectMachineSID,SubjectUserName,SubjectUserSid,SubStatus,TableId,TargetAccount,TargetDomainName,TargetInfo,TargetLinkedLogonId,TargetLogonId,TargetOutboundDomainName,TargetOutboundUserName,TargetServerName,TargetSid,TargetUser,TargetUserName,TargetUserSid,Task,TemplateContent,TemplateDSObjectFQDN,TemplateInternalName,TemplateOID,TemplateSchemaVersion,TemplateVersion,TimeGenerated,TokenElevationType,TransmittedServices,Type,UserAccountControl,UserParameters,UserPrincipalName,UserWorkstations,VendorIds,VirtualAccount,Workstation,WorkstationName",
                         "outputStream": "Microsoft-SecurityEvent"
                     }
                 ]
