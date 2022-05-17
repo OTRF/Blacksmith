@@ -665,7 +665,7 @@
                                 "type": "string"
                             },
                             {
-                                "name": "ScriptPath	",
+                                "name": "ScriptPath",
                                 "type": "string"
                             },
                             {

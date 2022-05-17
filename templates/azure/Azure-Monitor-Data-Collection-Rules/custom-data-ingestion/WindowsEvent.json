@@ -61,15 +61,6 @@
                                 "type": "string"
                             },
                             {
-                                "name": "Data",
-                                "type": "dynamic"
-                            },
-                            {
-                                "name": "EventData",
-                                "description": "Contains the event data parsed to dynamic type. If the parsing fails then this field will contain null and the RawEventData field will be populated.",
-                                "type": "dynamic"
-                            },
-                            {
                                 "name": "EventID",
                                 "description": "ID of event",
                                 "type": "int"
