@@ -35,8 +35,9 @@
     },
     "variables": {
         "artifactsBlacksmith": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/",
-        "windowsEventDCRTemplate": "[uri(variables('artifactsBlacksmith'), 'templates/azure/Azure-Monitor-Data-Collection-Rules/WindowsEvent.json')]",
-        "securityEventDCRTemplate": "[uri(variables('artifactsBlacksmith'), 'templates/azure/Azure-Monitor-Data-Collection-Rules/SecurityEvent.json')]"
+        "customDCRsTemplates": "[concat(variables('artifactsBlacksmith'), 'templates/azure/Azure-Monitor-Data-Collection-Rules/custom-data-ingestion/')]",
+        "windowsEventDCRTemplate": "[uri(variables('customDCRsTemplates'), 'WindowsEvent.json')]",
+        "securityEventDCRTemplate": "[uri(variables('customDCRsTemplates'), 'SecurityEvent.json')]"
     },
     "resources": [
         {
