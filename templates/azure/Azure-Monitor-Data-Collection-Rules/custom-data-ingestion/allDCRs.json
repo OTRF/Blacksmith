@@ -1,0 +1,93 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "targetTables": {
+            "type": "array",
+            "metadata": {
+                "description": "Tables in a Log Analytics workspace that support direct data ingestion."
+            }
+        },
+        "workspaceResourceId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the Azure resource ID of the Log Analytics workspace to use to send data to."
+            }
+        },
+        "dataCollectionEndpointId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the Azure resource ID of the Data Collection Endpoint to use."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "westus2",
+            "allowedValues": [
+                "westus2",
+                "eastus2",
+                "eastus2euap"
+            ],
+            "metadata": {
+                "description": "Specifies the location in which to create the Data Collection Rule."
+            }
+        }
+    },
+    "variables": {
+        "artifactsBlacksmith": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/",
+        "windowsEventDCRTemplate": "[uri(variables('artifactsBlacksmith'), 'templates/azure/Azure-Monitor-Data-Collection-Rules/WindowsEvent.json')]",
+        "securityEventDCRTemplate": "[uri(variables('artifactsBlacksmith'), 'templates/azure/Azure-Monitor-Data-Collection-Rules/SecurityEvent.json')]"
+    },
+    "resources": [
+        {
+            "condition": "[contains(parameters('targetTables'),'WindowsEvent')]",
+            "name": "WindowsEventDCR",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('windowsEventDCRTemplate')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                     "workspaceResourceId": {
+                        "value": "[parameters('workspaceResourceId')]"
+                    },
+                    "dataCollectionEndpointId": {
+                        "value": "[parameters('dataCollectionEndpointId')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[contains(parameters('targetTables'),'SecurityEvent')]",
+            "name": "SecurityEventDCR",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('securityEventDCRTemplate')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                     "workspaceResourceId": {
+                        "value": "[parameters('workspaceResourceId')]"
+                    },
+                    "dataCollectionEndpointId": {
+                        "value": "[parameters('dataCollectionEndpointId')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+    }
+}

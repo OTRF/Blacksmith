@@ -1,0 +1,167 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "ruleName": {
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the data collection rule to create."
+            },
+            "defaultValue": "[concat('WindowsEvent', uniquestring(subscription().subscriptionId, resourceGroup().id, deployment().name))]"
+        },
+        "tagsArray": {
+            "type": "Object",
+            "defaultValue": {}
+        },
+        "workspaceResourceId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the Azure resource ID of the Log Analytics workspace to use to send data to."
+            }
+        },
+        "dataCollectionEndpointId": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the Azure resource ID of the Data Collection Endpoint to use."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "westus2",
+            "allowedValues": [
+                "westus2",
+                "eastus2",
+                "eastus2euap"
+            ],
+            "metadata": {
+                "description": "Specifies the location in which to create the Data Collection Rule."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "microsoft.insights/dataCollectionRules",
+            "apiVersion": "2021-09-01-preview",
+            "name": "[parameters('ruleName')]",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('tagsArray')]",
+            "properties": {
+                "dataCollectionEndpointId": "[parameters('dataCollectionEndpointId')]",
+                "streamDeclarations": {
+                    "Custom-WindowsEvent": {
+                        "columns": [
+                            {
+                                "name": "Channel",
+                                "description": "Event log channel",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Computer",
+                                "description": "Name of endpoint where event was originated",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Data",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "EventData",
+                                "description": "Contains the event data parsed to dynamic type. If the parsing fails then this field will contain null and the RawEventData field will be populated.",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "EventID",
+                                "description": "ID of event",
+                                "type": "int"
+                            },
+                            {
+                                "name": "EventLevel",
+                                "description": "level of event.",
+                                "type": "int"
+                            },
+                            {
+                                "name": "EventLevelName",
+                                "description": "Name of event level",
+                                "type": "string"
+                            },
+                            {
+                                "name": "EventOriginId",
+                                "description": "The unique ID of the original event",
+                                "type": "string"
+                            },
+                            {
+                                "name": "ManagementGroupName",
+                                "decription": "Management group name",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Provider",
+                                "decription": "Event provider",
+                                "type": "string"
+                            },
+                            {
+                                "name": "RawEventData",
+                                "description": "The raw event XML when parsing fails. It's null when parsing successful.",
+                                "type": "string"
+                            },
+                            {
+                                "name": "_ResourceId",
+                                "description": "A unique identifier for the resource that the record is associated with",
+                                "type": "string"
+                            },
+                            {
+                                "name": "_SubscriptionId",
+                                "description": "A unique identifier for the subscription that the record is associated with",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Task",
+                                "description": "Event task name",
+                                "type": "int"
+                            },
+                            {
+                                "name": "TimeGenerated",
+                                "description": "Time event was generated",
+                                "type": "datetime"
+                            },
+                            {
+                                "name": "Type",
+                                "description": "The name of the table",
+                                "type": "string"
+                            }
+                        ]
+                    }
+                },
+                "destinations": {
+                    "logAnalytics": [
+                        {
+                            "workspaceResourceId": "[parameters('workspaceResourceId')]",
+                            "name": "clv2ws1"
+                        }
+                    ]
+                },
+                "dataFlows": [
+                    {
+                        "streams": [
+                            "Custom-WindowsEvent"
+                        ],
+                        "destinations": [
+                            "clv2ws1"
+                        ],
+                        "outputStream": "Microsoft-WindowsEvent"
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {
+        "dataCollectionRuleId": {
+            "type": "String",
+            "value": "[resourceId('microsoft.insights/dataCollectionRules', parameters('ruleName'))]"
+        },
+        "immutableId": {
+            "type": "String",
+            "value": "[reference(resourceId('Microsoft.Insights/dataCollectionRules', parameters('ruleName'))).immutableId]"
+        }
+    }
+}
