@@ -115,5 +115,13 @@
         }
     ],
     "outputs": {
+        "allDCRIds": {
+            "type": "array",
+            "value": [
+                "[reference('WindowsEventDCR').outputs.dataCollectionRuleId.value]",
+                "[reference('SecurityEventDCR').outputs.dataCollectionRuleId.value]",
+                "[reference('SyslogEventDCR').outputs.dataCollectionRuleId.value]"
+            ]
+        }
     }
 }
