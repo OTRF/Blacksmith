@@ -43,7 +43,6 @@
             "tags": {
                 "createdBy": "Sentinel"
             },
-            "kind": "Windows",
             "properties": {
                 "dataCollectionEndpointId": "[parameters('dataCollectionEndpointId')]",
                 "streamDeclarations": {
@@ -322,7 +321,8 @@
                                 "type": "string"
                             },
                             {
-                                "name": "InterfaceUuid"
+                                "name": "InterfaceUuid",
+                                "type": "string"
                             },
                             {
                                 "name": "IpAddress",
@@ -365,7 +365,8 @@
                                 "type": "string"
                             },
                             {
-                                "name": "LogonGuid"
+                                "name": "LogonGuid",
+                                "type": "string"
                             },
                             {
                                 "name": "LogonHours",
@@ -708,7 +709,8 @@
                                 "type": "string"
                             },
                             {
-                                "name": "SourceComputerId"
+                                "name": "SourceComputerId",
+                                "type": "string"
                             },
                             {
                                 "name": "SourceSystem",
@@ -723,7 +725,8 @@
                                 "type": "string"
                             },
                             {
-                                "name": "SubcategoryGuid"
+                                "name": "SubcategoryGuid",
+                                "type": "string"
                             },
                             {
                                 "name": "SubcategoryId",
@@ -790,7 +793,8 @@
                                 "type": "string"
                             },
                             {
-                                "name": "TargetLogonGuid"
+                                "name": "TargetLogonGuid",
+                                "type": "string"
                             },
                             {
                                 "name": "TargetLogonId",
