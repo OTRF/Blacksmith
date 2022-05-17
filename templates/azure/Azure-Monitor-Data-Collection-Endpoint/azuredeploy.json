@@ -45,7 +45,7 @@
         }
     ],
     "outputs": {
-        "dataCollectionEndpointId": {
+        "dataCollectionEndpointResourceId": {
             "type": "string",
             "value": "[resourceId('Microsoft.Insights/dataCollectionEndpoints', parameters('dataCollectionEndpointName'))]"
         },
