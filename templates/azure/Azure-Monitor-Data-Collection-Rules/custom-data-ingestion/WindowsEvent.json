@@ -45,6 +45,7 @@
             "name": "[parameters('ruleName')]",
             "location": "[parameters('location')]",
             "tags": "[parameters('tagsArray')]",
+            "kind": "Windows",
             "properties": {
                 "dataCollectionEndpointId": "[parameters('dataCollectionEndpointId')]",
                 "streamDeclarations": {
