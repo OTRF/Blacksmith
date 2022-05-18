@@ -2,7 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "scopeIDs": {
+        "scopeResourceIDs": {
             "type": "array",
             "metadata": {
                 "description": "List of resource IDs to use in the scope"
@@ -26,15 +26,15 @@
         {
             "type": "Microsoft.Authorization/roleAssignments",
             "apiVersion": "2020-10-01-preview",
-            "name": "[guid(parameters('scopeIDs')[copyIndex('rolesAssignmentCopy')])]",
+            "name": "[guid(parameters('scopeResourceIDs')[copyIndex('rolesAssignmentCopy')])]",
+            "scope": "[parameters('scopeResourceIDs')[copyIndex('rolesAssignmentCopy')]]",
             "copy": {
                 "name": "rolesAssignmentCopy",
-                "count": "[length(parameters('scopeIDs'))]"
+                "count": "[length(parameters('scopeResourceIDs'))]"
             },
             "properties": {
-                "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
+                "roleDefinitionId": "[parameters('roleDefinitionId')]",
                 "principalId": "[parameters('principalId')]",
-                "scope": "[parameters('scopeIDs')[copyIndex('rolesAssignmentCopy')]]",
                 "principalType": "ServicePrincipal"
             }
         }
