@@ -63,7 +63,7 @@
                             {
                                 "name": "EventData",
                                 "description": "Contains the event data parsed to dynamic type. If the parsing fails then this field will contain null and the RawEventData field will be populated.",
-                                "type": "dynamic"
+                                "type": "string"
                             },
                             {
                                 "name": "EventID",
@@ -134,6 +134,7 @@
                         "destinations": [
                             "clv2ws1"
                         ],
+                        "transformkql": "source | extend EventData = parse_json(EventData) | project Channel,Computer,EventData,EventID,EventLevel,EventLevelName,EventOriginId,ManagementGroupName,Provider,RawEventData,Task,TimeGenerated,Type",
                         "outputStream": "Microsoft-WindowsEvent"
                     }
                 ]
