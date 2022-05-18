@@ -14,10 +14,24 @@
                 "description": "Id of the role definition"
             }
         },
+        "principalType": {
+            "type": "string",
+            "defaultValue": "ServicePrincipal",
+            "metadata": {
+                "description": "The principal type of the assigned principal ID."
+            },
+            "allowedValues": [
+                "Device",
+                "ForeignGroup",
+                "Group",
+                "ServicePrincipal",
+                "User"
+            ]
+        },
         "principalId": {
             "type": "string",
             "metadata": {
-                "description": "Principal ID"
+                "description": "The ID of the user, group, or application (service principal object ID) you want to assign the role to"
             }
         }
     },
@@ -35,7 +49,7 @@
             "properties": {
                 "roleDefinitionId": "[parameters('roleDefinitionId')]",
                 "principalId": "[parameters('principalId')]",
-                "principalType": "ServicePrincipal"
+                "principalType": "[parameters('principalType')]"
             }
         }
     ],
