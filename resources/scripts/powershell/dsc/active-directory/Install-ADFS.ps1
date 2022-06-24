@@ -69,7 +69,7 @@ configuration Install-ADFS
                 # ***** Customize Landing Page *****
                 Set-AdfsGlobalWebContent -CompanyName "Open Threat Research"
                 Set-AdfsWebTheme -TargetName default -Illustration @{path="C:\ProgramData\otr.jpg"}
-                Set-AdfsGlobalWebContent -SignInPageDescriptionText "<p>Sign-in to the Open Threat Research Community and collaborate!</p>"
+                #Set-AdfsGlobalWebContent -SignInPageDescriptionText "<p>Sign-in to the Open Threat Research Community and collaborate!</p>"
 
                 # ***** Enabling ADFS Verbose Auditing *****
                 <#
