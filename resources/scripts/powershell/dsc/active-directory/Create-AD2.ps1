@@ -186,7 +186,7 @@ configuration Create-AD {
                 {
                     $UserPrincipalName = $DomainUser.SamAccountName + "@" + $DomainName
                     $DisplayName = $DomainUser.LastName + " " + $DomainUser.FirstName
-                    $OUPath = "OU="+$DomainUser.UserContainer+","+$DCPathString
+                    $OUPath = "OU="+$DomainUser.UserContainer+","+$using:DCPathString
                     $SamAccountName = $DomainUser.SamAccountName
                     $ServiceName = $DomainUser.FirstName
 
