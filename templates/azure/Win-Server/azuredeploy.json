@@ -40,10 +40,14 @@
             "allowedValues": [
                 "Standard_A2",
                 "Standard_A3",
+                "Standard_A2_v2",
+                "Standard_A4_v2",
                 "Standard_B2s",
                 "Standard_B2ms",
-                "Standard_A2_v2",
-                "Standard_A4_v2"
+                "Standard_D2_v3",
+                "Standard_D4_v3",
+                "Standard_D2s_v3",
+                "Standard_D4s_v3"
             ],
             "metadata": {
                 "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
