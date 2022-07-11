@@ -1,0 +1,493 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Username for the Virtual Machine."
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "minLength": 12,
+            "metadata": {
+                "description": "Password for the all Virtual machines. The password must be at least 12 characters in length and must contain at least one digit, one non-alphanumeric character, and one upper or lower case letter"
+            }
+        },
+        "numberOfWorkstations": {
+            "type": "int",
+            "minValue": 1,
+            "maxValue": 100,
+            "metadata": {
+                "description": "Number of VMs to deploy"
+            },
+            "defaultValue": 1
+        },
+        "vmNamePrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "Prefix for the name of your virtual machine. You can set a Suffix with the vmNameSuffix parameter which only allows numbers."
+            },
+            "defaultValue": "WORKSTATION"
+        },
+        "vmNameSuffix": {
+            "type": "int",
+            "metadata": {
+                "description": "Suffix number for the name of your virtual machine. This parameter only allows numbers and is aligned with the IP address."
+            },
+            "defaultValue": 5
+        },
+        "windowsDesktopSKU": {
+            "type": "string",
+            "metadata": {
+                "description": "The Windows version for the Desktop VM. This will pick a fully patched image of this given Windows version."
+            },
+            "defaultValue": "20h1-pro",
+            "allowedValues": [
+                "19h1-pro",
+                "19h2-pro",
+                "rs4-pro",
+                "rs5-pro",
+                "20h1-pro",
+                "20h2-pro",
+                "21h1-pro"
+            ]
+        },
+        "windowsDesktopVersion": {
+            "type": "string",
+            "defaultValue": "latest"
+        },
+        "vmSize": {
+            "type": "string",
+            "metadata": {
+                "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
+            },
+            "defaultValue": "Standard_B2s",
+            "allowedValues": [
+                "Standard_A2",
+                "Standard_A3",
+                "Standard_B2s",
+                "Standard_B2ms",
+                "Standard_A2_v2",
+                "Standard_A4_v2"
+            ]
+        },
+        "identityType": {
+            "type": "string",
+            "metadata": {
+                "description": "The type of identity used for the virtual machine. The type 'SystemAssigned, UserAssigned' includes both an implicitly created identity and a set of user assigned identities. The type 'None' will remove any identities from the virtual machine. - SystemAssigned, UserAssigned, None. Reference: https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?tabs=json#virtualmachineidentity-object"
+            },
+            "defaultValue": "None",
+            "allowedValues": [
+                "SystemAssigned",
+                "UserAssigned",
+                "None"
+            ]
+        },
+        "userAssignedIdentities": {
+            "type": "object",
+            "metadata": {
+                "description": "The list of user identities associated with the Virtual Machine. The user identity dictionary key references will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}"
+            },
+            "defaultValue": {}
+        },
+        "newOrExistingVnet": {
+            "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
+            "metadata": {
+                "description": "Specify whether to provision new vnet or deploy to existing vnet"
+            }
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Virtual Network"
+            },
+            "defaultValue": "vnet-win"
+        },
+        "virtualNetworkAddressRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the virtual network"
+            },
+            "defaultValue": "192.168.0.0/16"
+        },
+        "newOrExistingSubnet": {
+            "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
+            "metadata": {
+                "description": "Specify whether to provision new subnet or use and existing subnet."
+            }
+        },
+        "subnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the subnet"
+            },
+            "defaultValue": "snet-win"
+        },
+        "subnetRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the subnet"
+            },
+            "defaultValue": "192.168.2.0/24"
+        },
+        "newOrExistingNSG": {
+            "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
+            "metadata": {
+                "description": "Specify whether to provision a new Network Security Group or use an existing one."
+            }
+        },
+        "networkSecurityGroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of default network Security Group. This could be an existing one or new one"
+            },
+            "defaultValue": "nsg-rdp-allow"
+        },
+        "remoteAccessMode": {
+            "type": "string",
+            "metadata": {
+                "description": "Do you want to restrict access to your environment by a Public IP or set up an Azure Bastion Host. If the former, make sure you add your public IP address to the variable 'allowedIPAddresses'"
+            },
+            "defaultValue": "AllowPublicIP",
+            "allowedValues": [
+                "AllowPublicIP",
+                "AzureBastionHost"
+            ]
+        },
+        "allowedIPAddresses": {
+            "type": "string",
+            "metadata": {
+                "description": "The sourceAddressPrefixes allowed to connect to this deployment"
+            },
+            "defaultValue": "*"
+        },
+        "newOrExistingBastion": {
+            "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
+            "metadata": {
+                "description": "Specify whether to provision a new Azure Bastion Host or not."
+            }
+        },
+        "azureBastionHostName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of Azure Bastion Host assigned to the Virtual network in this template"
+            },
+            "defaultValue": "vnet-win-bastion"
+        },
+        "azureBastionSubnetRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the Azure Bastion service"
+            },
+            "defaultValue": "192.168.3.0/26"
+        },
+        "_artifactsLocation": {
+            "type": "string",
+            "metadata": {
+                "description": "The location of resources, such as templates and DSC modules, that the template depends on"
+            },
+            "defaultValue": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/"
+        },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
+            },
+            "defaultValue": ""
+        },
+        "utcValue": {
+            "type": "string",
+            "metadata": {
+                "description": "Returns the current (UTC) datetime value in the specified format. If no format is provided, the ISO 8601 (yyyyMMddTHHmmssZ) format is used"
+            },
+            "defaultValue": "[utcNow()]"
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location for all resources."
+            },
+            "defaultValue": "[resourceGroup().location]"
+        }
+    },
+    "variables": {
+        "storageAccountName": "[concat(uniquestring(resourceGroup().id, parameters('utcValue')))]",
+        
+        // Virtual Network Setup
+        "virtualNetworkName": "[parameters('virtualNetworkName')]",
+        "virtualNetworkAddressRange": "[parameters('virtualNetworkAddressRange')]",
+        "subnetName": "[parameters('subnetName')]",
+        "subnetRange": "[parameters('subnetRange')]",
+        "vmPrivateIPPrefixArray": "[take(split(variables('subnetRange'),'.'),3)]",
+        "vmPrivateIPAddresPrefix": "[format('{0}.{1}.{2}.',variables('vmPrivateIPPrefixArray')[0], variables('vmPrivateIPPrefixArray')[1], variables('vmPrivateIPPrefixArray')[2])]",
+        "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
+        "nsg-default-name": "[parameters('networkSecurityGroupName')]",
+        "nsg-id": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-default-name'))]"
+        },
+        
+        //Nested Templates
+        "azureBastionTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Azure-Bastion-Host/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
+
+        "copy": [
+            {
+                "name": "allWinWKS",
+                "count": "[parameters('numberOfWorkstations')]",
+                "input": {
+                    "tag": "workstation",
+                    "vmName": "[concat(parameters('vmNamePrefix'),copyIndex('allWinWKS',parameters('vmNameSuffix')))]",
+                    "os": "windows",
+                    "subnetref": "[variables('subnetRef')]",
+                    "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),copyIndex('allWinWKS',parameters('vmNameSuffix')))]",
+                    "vmSize": "[parameters('vmSize')]",
+                    "publisher": "MicrosoftWindowsDesktop",
+                    "offer": "Windows-10",
+                    "sku": "[parameters('windowsDesktopSKU')]",
+                    "version": "[parameters('windowsDesktopVersion')]",
+                    "extensionName": "SetupWinVM"
+                }
+            }
+        ],
+
+        // Managed Identity
+        "identityType": {"type": "[parameters('identityType')]"},
+        "userAssignedIdentities": {"userAssignedIdentities": "[parameters('userAssignedIdentities')]"},
+        "identity" : "[if(empty(parameters('userAssignedIdentities')), variables('identityType'), union(variables('identityType'), variables('userAssignedIdentities')))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2018-11-01",
+            "name": "[variables('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "Storage",
+            "properties": {}
+        },
+        {
+            "condition": "[equals(parameters('newOrExistingVnet'), 'new')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2021-05-01",
+            "name": "[variables('virtualNetworkName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('virtualNetworkAddressRange')]"
+                    ]
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('newOrExistingSubnet'), 'new')]",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2021-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+            ],
+            "name": "[concat(variables('virtualNetworkName'), '/', variables('subnetName'))]",
+            "properties": {
+                "addressPrefix": "[variables('subnetRange')]"
+            }
+        },
+        {
+            "condition": "[and(equals(parameters('remoteAccessMode'),'AzureBastionHost'),equals(parameters('newOrExistingBastion'), 'new'))]",
+            "name": "deployAzureBastion",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('azureBastionTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "azureBastionHostName": {
+                        "value": "[parameters('azureBastionHostName')]"
+                    },
+                    "azureBastionSubnetRange": {
+                        "value": "[parameters('azureBastionSubnetRange')]"
+                    },
+                    "newOrExistingVnet": {
+                        "value": "existing"
+                    },
+                    "virtualNetworkName": {
+                        "value": "[variables('virtualNetworkName')]"
+                    },
+                    "location": {
+                        "value":  "[resourceGroup().location]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[and(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), equals(parameters('newOrExistingNSG'), 'new'))]",
+            "comments": "Default Network Security Group for Windows endpoints",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2021-05-01",
+            "name": "[variables('nsg-default-name')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "default-allow-3389",
+                        "properties": {
+                            "priority": 100,
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "destinationPortRange": "3389",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "sourceAddressPrefix": "[parameters('allowedIPAddresses')]",
+                            "destinationAddressPrefix": "*"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "condition": "[equals(parameters('remoteAccessMode'),'AllowPublicIP')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2021-05-01",
+            "name": "[concat('pip-', variables('allWinWKS')[copyIndex('vmPublicIpCopy')].vmName)]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "vmPublicIpCopy",
+                "count": "[length(variables('allWinWKS'))]"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[toLower(concat(variables('allWinWKS')[copyIndex('vmPublicIpCopy')].vmName, '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2021-05-01",
+            "name": "[concat('nic-', variables('allWinWKS')[copyIndex('vmNetworkInterfaceCopy')].vmName)]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('allWinWKS')[copyIndex('vmNetworkInterfaceCopy')].vmName))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg-default-name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]"
+            ],
+            "copy": {
+                "name": "vmNetworkInterfaceCopy",
+                "count": "[length(variables('allWinWKS'))]"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[variables('allWinWKS')[copyIndex('vmNetworkInterfaceCopy')].ipAddress]",
+                            "publicIPAddress": "[if(equals(parameters('remoteAccessMode'),'AllowPublicIP'), json(concat('{\"id\":', '\"', resourceId('Microsoft.Network/publicIPAddresses/', concat('pip-', variables('allWinWKS')[copyIndex('vmNetworkInterfaceCopy')].vmName)),'\"}')),json('null'))]",
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": "[if(equals(parameters('remoteAccessMode'), 'AllowPublicIP'), variables('nsg-id'), json('null'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2021-11-01",
+            "name": "[variables('allWinWKS')[copyIndex('vmVMCopy')].vmName]",
+            "location": "[parameters('location')]",
+            "identity": "[variables('identity')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat('nic-', variables('allWinWKS')[copyIndex('vmVMCopy')].vmName))]"
+            ],
+            "copy": {
+                "name": "vmVMCopy",
+                "count": "[length(variables('allWinWKS'))]"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('allWinWKS')[copyIndex('vmVMCopy')].vmSize]"
+                },
+                "osProfile": {
+                    "computerName": "[variables('allWinWKS')[copyIndex('vmVMCopy')].vmName]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('allWinWKS')[copyIndex('vmVMCopy')].publisher]",
+                        "offer": "[variables('allWinWKS')[copyIndex('vmVMCopy')].offer]",
+                        "sku": "[variables('allWinWKS')[copyIndex('vmVMCopy')].sku]",
+                        "version": "[variables('allWinWKS')[copyIndex('vmVMCopy')].version]"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage"
+                    },
+                    "dataDisks": []
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat('nic-', variables('allWinWKS')[copyIndex('vmVMCopy')].vmName))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "virtualNetworkName": {
+            "type": "string",
+            "value": "[variables('virtualNetworkName')]"
+        },
+        "virtualNetworkId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+        },
+        "subnetId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]"
+        },
+        "allWinVMsDeployed": {
+            "type": "array",
+            "value": "[variables('allWinWKS')]"
+        }
+    }
+}
