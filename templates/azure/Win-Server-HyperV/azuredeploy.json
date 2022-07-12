@@ -1,0 +1,348 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Username for the Virtual Machine."
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "minLength": 12,
+            "metadata": {
+                "description": "Password for the all Virtual machines. The password must be at least 8 characters in length and must contain at least one digit, one non-alphanumeric character, and one upper or lower case letter"
+            }
+        },
+        "vmName": {
+            "type": "string",
+            "defaultValue": "HYPERVSERVER",
+            "metadata": {
+                "description": "Name of Virtual machine name."
+            }
+        },
+        "windowsServerSKU": {
+            "type": "string",
+            "defaultValue": "2019-Datacenter",
+            "allowedValues": [
+                "2016-Datacenter",
+                "2019-Datacenter",
+                "2022-datacenter"
+            ],
+            "metadata": {
+                "description": "The Windows version for the Server VM. This will pick a fully patched image of this given Windows version."
+            }
+        },
+        "vmSize": {
+            "type": "string",
+            "defaultValue": "Standard_D4_v3",
+            "allowedValues": [
+                "Standard_D2_v3",
+                "Standard_D4_v3",
+                "Standard_D8_v3",
+                "Standard_D16_v3",
+                "Standard_D32_v3",
+                "Standard_D2s_v3",
+                "Standard_D4s_v3",
+                "Standard_D8s_v3",
+                "Standard_D16s_v3",
+                "Standard_D32s_v3",
+                "Standard_D64_v3",
+                "Standard_E2_v3",
+                "Standard_E4_v3",
+                "Standard_E8_v3",
+                "Standard_E16_v3",
+                "Standard_E32_v3",
+                "Standard_E64_v3",
+                "Standard_D64s_v3",
+                "Standard_E2s_v3",
+                "Standard_E4s_v3",
+                "Standard_E8s_v3",
+                "Standard_E16s_v3",
+                "Standard_E32s_v3",
+                "Standard_E64s_v3"
+            ],
+            "metadata": {
+                "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
+            }
+        },
+        "identityType": {
+            "type": "string",
+            "metadata": {
+                "description": "The type of identity used for the virtual machine. The type 'SystemAssigned, UserAssigned' includes both an implicitly created identity and a set of user assigned identities. The type 'None' will remove any identities from the virtual machine. - SystemAssigned, UserAssigned, None. Reference: https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?tabs=json#virtualmachineidentity-object"
+            },
+            "defaultValue": "None",
+            "allowedValues": [
+                "SystemAssigned",
+                "UserAssigned",
+                "None"
+            ]
+        },
+        "userAssignedIdentities": {
+            "type": "object",
+            "metadata": {
+                "description": "The list of user identities associated with the Virtual Machine. The user identity dictionary key references will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}"
+            },
+            "defaultValue": {}
+        },
+        "newOrExistingVnet": {
+            "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
+            "metadata": {
+                "description": "Specify whether to provision new vnet or deploy to existing vnet"
+            }
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Virtual Network"
+            },
+            "defaultValue": "vnet-winad"
+        },
+        "virtualNetworkAddressRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the virtual network"
+            },
+            "defaultValue": "192.168.0.0/16"
+        },
+        "newOrExistingSubnet": {
+            "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
+            "metadata": {
+                "description": "Specify whether to provision new subnet or use and existing subnet."
+            }
+        },
+        "subnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the subnet"
+            },
+            "defaultValue": "snet-win"
+        },
+        "subnetRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the subnet"
+            },
+            "defaultValue": "192.168.2.0/24"
+        },
+        "newOrExistingNSG": {
+            "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
+            "metadata": {
+                "description": "Specify whether to provision a new Network Security Group or use an existing one."
+            }
+        },
+        "networkSecurityGroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of default network Security Group. This could be an existing one or new one"
+            },
+            "defaultValue": "nsg-rdp-allow"
+        },
+        "remoteAccessMode": {
+            "type": "string",
+            "metadata": {
+                "description": "Do you want to restrict access to your environment by a Public IP or set up an Azure Bastion Host. If the former, make sure you add your public IP address to the variable 'allowedIPAddresses'"
+            },
+            "defaultValue": "AllowPublicIP",
+            "allowedValues": [
+                "AllowPublicIP",
+                "AzureBastionHost"
+            ]
+        },
+        "allowedIPAddresses": {
+            "type": "string",
+            "metadata": {
+                "description": "The sourceAddressPrefixes allowed to connect to this deployment"
+            },
+            "defaultValue": "*"
+        },
+        "newOrExistingBastion": {
+            "type": "string",
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "existing"
+            ],
+            "metadata": {
+                "description": "Specify whether to provision a new Azure Bastion Host or not."
+            }
+        },
+        "azureBastionHostName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of Azure Bastion Host assigned to the Virtual network in this template"
+            },
+            "defaultValue": "vnet-winad-bastion"
+        },
+        "azureBastionSubnetRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Range of the Azure Bastion service"
+            },
+            "defaultValue": "192.168.3.0/26"
+        },
+        "_artifactsLocation": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/",
+            "metadata": {
+                "description": "The location of resources, such as templates and DSC modules, that the template depends on"
+            }
+        },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    },
+    "variables": {
+        // Nested Templates
+        "installHyperVTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win-Server-HyperV/nestedtemplates/installHyperV.json', parameters('_artifactsLocationSasToken')))]",
+
+        // Powershell DSC Scripts
+        "installHyperVScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/misc/Install-HyperV.zip', parameters('_artifactsLocationSasToken')))]"
+    },
+    "resources": [
+        {
+            "name": "deployWinServer",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), 'templates/azure/Win-Server/azuredeploy.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "windowsServerSKU": {
+                        "value": "[parameters('windowsServerSKU')]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('vmSize')]"
+                    },
+                    "identityType": {
+                        "value": "[parameters('identityType')]"
+                    },
+                    "userAssignedIdentities": {
+                        "value": "[parameters('userAssignedIdentities')]"
+                    },
+                    "remoteAccessMode": {
+                        "value": "[parameters('remoteAccessMode')]"
+                    },
+                    "allowedIPAddresses": {
+                        "value": "[parameters('allowedIPAddresses')]"
+                    },
+                    "newOrExistingVnet": {
+                        "value": "[parameters('newOrExistingVnet')]"
+                    },
+                    "virtualNetworkName": {
+                        "value": "[parameters('virtualNetworkName')]"
+                    },
+                    "virtualNetworkAddressRange": {
+                        "value": "[parameters('virtualNetworkAddressRange')]"
+                    },
+                    "newOrExistingSubnet": {
+                        "value": "[parameters('newOrExistingSubnet')]"
+                    },
+                    "subnetName": {
+                        "value": "[parameters('subnetName')]"
+                    },
+                    "subnetRange": {
+                        "value": "[parameters('subnetRange')]"
+                    },
+                    "newOrExistingNSG": {
+                        "value": "[parameters('newOrExistingNSG')]"
+                    },
+                    "networkSecurityGroupName": {
+                        "value": "[parameters('networkSecurityGroupName')]"
+                    },
+                    "newOrExistingBastion": {
+                        "value": "[parameters('newOrExistingBastion')]"
+                    },
+                    "azureBastionHostName": {
+                        "value": "[parameters('azureBastionHostName')]"
+                    },
+                    "azureBastionSubnetRange": {
+                        "value": "[parameters('azureBastionSubnetRange')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "InstallHyperV",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "deployWinServer"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('installHyperVTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmName":   {
+                        "value": "[reference('deployWinServer').outputs.virtualNetworkName.value]"
+                    },
+                    "installHyperVScript": {
+                        "value": "[variables('installHyperVScript')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "virtualNetworkName": {
+            "type": "string",
+            "value": "[reference('deployWinServer').outputs.virtualNetworkName.value]"
+        },
+        "virtualNetworkId": {
+            "type": "string",
+            "value": "[reference('deployWinServer').outputs.virtualNetworkId.value]"
+        },
+        "winServerDeployed": {
+            "type": "object",
+            "value": "[reference('deployWinServer').outputs.winServerDeployed.value]"
+        }
+    }
+}

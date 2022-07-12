@@ -1,0 +1,39 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "value": "GEN-UNIQUE"
+        },
+        "adminPassword": {
+            "value": "GEN-PASSWORD"
+        },
+        "vmSize": {
+            "value": "Standard_B2s"
+        },
+        "virtualNetworkName": {
+            "value": "vnet-win"
+        },
+        "virtualNetworkAddressRange": {
+            "value": "192.168.0.0/16"
+        },
+        "subnetRange": {
+            "value": "192.168.2.0/24"
+        },
+        "subnetName": {
+            "value": "snet-win"
+        },
+        "remoteAccessMode": {
+            "value": "AllowPublicIP"
+        },
+        "allowedIPAddresses": {
+            "value": "*"
+        },
+        "_artifactsLocation": {
+            "value": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/"
+        },
+        "_artifactsLocationSasToken": {
+            "value": ""
+        }
+    }
+}
