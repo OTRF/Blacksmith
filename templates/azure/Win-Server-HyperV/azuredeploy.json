@@ -319,7 +319,7 @@
                 },
                 "parameters": {
                     "vmName":   {
-                        "value": "[reference('deployWinServer').outputs.winServerDeployed.vmName.value]"
+                        "value": "[reference('deployWinServer').outputs.winServerDeployed.value.vmName]"
                     },
                     "installHyperVScript": {
                         "value": "[variables('installHyperVScript')]"
