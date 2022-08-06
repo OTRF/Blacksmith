@@ -22,9 +22,12 @@ configuration Create-AD {
 
     $Interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
     $InterfaceAlias = $($Interface.Name)
-    $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($AdminCreds.Password)
-    $AdminPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($bstr)
+
     $ComputerName = Get-Content env:computername
+
+    $DomainNameArray = $DomainFQDN.split('.')
+    $DCPathString = "DC=" + $DomainNameArray[0]
+    $DomainNameArray | Select-Object -Skip 1 | ForEach-Object {$DCPathString = $DCPathString + ',DC=' + $_}
 
     Node localhost
     {
@@ -131,9 +134,7 @@ configuration Create-AD {
                     $arrService.Refresh()
                 }
 
-                $DomainName1,$DomainName2 = ($using:domainFQDN).split('.')
-
-                $ParentPath = "DC=$DomainName1,DC=$DomainName2"
+                $ParentPath = $using:DCPathString
                 $OUS = @(("Workstations","Workstations in the domain"),("Servers","Servers in the domain"),("LogCollectors","Servers collecting event logs"),("DomainUsers","Users in the domain"))
 
                 foreach($OU in $OUS)
@@ -177,7 +178,6 @@ configuration Create-AD {
                 }
 
                 $DomainName = $using:domainFQDN
-                $DomainName1,$DomainName2 = $DomainName.split('.')
                 $ADServer = $using:ComputerName+"."+$DomainName
 
                 $NewDomainUsers = $using:DomainUsers
@@ -186,7 +186,7 @@ configuration Create-AD {
                 {
                     $UserPrincipalName = $DomainUser.SamAccountName + "@" + $DomainName
                     $DisplayName = $DomainUser.LastName + " " + $DomainUser.FirstName
-                    $OUPath = "OU="+$DomainUser.UserContainer+",DC=$DomainName1,DC=$DomainName2"
+                    $OUPath = "OU="+$DomainUser.UserContainer+","+$using:DCPathString
                     $SamAccountName = $DomainUser.SamAccountName
                     $ServiceName = $DomainUser.FirstName
 
@@ -226,7 +226,7 @@ configuration Create-AD {
                         }
                         if($DomainUser.JobTitle -Like "Service Account")
                         {
-                            setspn -a $ServiceName/$DomainName $DomainName1\$SamAccountName
+                            setspn -a $ServiceName/$DomainName $DomainName\$SamAccountName
                         }
                     }
                 }
