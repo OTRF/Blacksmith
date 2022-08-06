@@ -458,7 +458,9 @@
                 "name": "Standard_LRS"
             },
             "kind": "Storage",
-            "properties": {}
+            "properties": {
+                "allowBlobPublicAccess" : false
+            }
         },
         {
             "comments": "Default Network Security Group for all endpoints",
