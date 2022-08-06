@@ -332,7 +332,9 @@
                 "name": "Standard_LRS"
             },
             "kind": "Storage",
-            "properties": {}
+            "properties": {
+                "allowBlobPublicAccess" : false
+            }
         },
         {
             "condition": "[equals(parameters('newOrExistingVnet'), 'new')]",
