@@ -86,7 +86,7 @@
         },
         "windowsServerVersion": {
             "type": "string",
-            "defaultValue": "17763.3131.220505",
+            "defaultValue": "latest",
             "allowedValues": [
                 "17763.1282.2006061952",
                 "17763.1339.2007101755",
