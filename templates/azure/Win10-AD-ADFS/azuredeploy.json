@@ -377,7 +377,8 @@
         "updateDNSServerTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD/nestedtemplates/vnet-dns-server.json', parameters('_artifactsLocationSasToken')))]",
         "azureBastionTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Azure-Bastion-Host/azuredeploy.json', parameters('_artifactsLocationSasToken')))]",
         "sysmonInstallTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10/nestedtemplates/sysmonInstall.json', parameters('_artifactsLocationSasToken')))]",
-        "createADTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/createADForest.json', parameters('_artifactsLocationSasToken')))]",
+        "createADTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD/nestedtemplates/createADForest.json', parameters('_artifactsLocationSasToken')))]",
+        "prepareADFSTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/prepareADFS.json', parameters('_artifactsLocationSasToken')))]",
         "joinDomainTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD/nestedtemplates/joinDomain.json', parameters('_artifactsLocationSasToken')))]",
         "installADFSTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/installADFS.json', parameters('_artifactsLocationSasToken')))]",
         "importPfxCertTemplateUri": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/nestedtemplates/importPfxCert.json', parameters('_artifactsLocationSasToken')))]",
@@ -398,7 +399,8 @@
         
         // Powershell DSC Scripts
         "dscModules": "[uri(parameters('_artifactsLocation'), concat('templates/azure/Win10-AD-ADFS/scripts/Install-DSC-Modules.ps1', parameters('_artifactsLocationSasToken')))]",
-        "createADForestScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/active-directory/Create-AD-ADFS.zip', parameters('_artifactsLocationSasToken')))]",
+        "createADForestScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/active-directory/Create-AD.zip', parameters('_artifactsLocationSasToken')))]",
+        "prepareADFSScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/active-directory/Prepare-ADFS.zip', parameters('_artifactsLocationSasToken')))]",
         "joinDomainScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/active-directory/Join-Domain.zip', parameters('_artifactsLocationSasToken')))]",
         "importPfxCertScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/misc/Import-PfxCert.zip', parameters('_artifactsLocationSasToken')))]",
         "installADFSScript": "[uri(parameters('_artifactsLocation'), concat('resources/scripts/powershell/dsc/active-directory/Install-ADFS.zip', parameters('_artifactsLocationSasToken')))]",
@@ -839,6 +841,44 @@
                     "domainFQDN": {
                         "value": "[parameters('domainFQDN')]"
                     },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "domainUsers": {
+                        "value": "[parameters('domainUsers')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "PrepareADFS",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "CreateADForest"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('prepareADFSTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmName":   {
+                        "value": "[variables('domainController')[0].vmName]"
+                    },
+                    "prepareADFSScript": {
+                        "value": "[variables('prepareADFSScript')]"
+                    },
+                    "domainFQDN": {
+                        "value": "[parameters('domainFQDN')]"
+                    },
                     "federationServiceName": {
                         "value": "[variables('federationServiceName')]"
                     },
@@ -856,9 +896,6 @@
                     },
                     "adfsPassword": {
                         "value": "[parameters('adfsPassword')]"
-                    },
-                    "domainUsers": {
-                        "value": "[parameters('domainUsers')]"
                     },
                     "pfxCertName": {
                         "value": "[parameters('pfxCertName')]"
@@ -883,7 +920,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "CreateADForest"
+                "PrepareADFS"
             ],
             "properties": {
                 "mode": "Incremental",
