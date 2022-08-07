@@ -53,7 +53,6 @@ configuration Prepare-ADFS {
             PasswordAuthentication  = 'Negotiate'
             PasswordNeverExpires    = $true
             Ensure                  = "Present"
-            DependsOn               = "[WaitForADDomain]WaitForDCReady"
         }
 
         xDnsRecord AddADFSHostDNS {
@@ -62,7 +61,6 @@ configuration Prepare-ADFS {
             Target      = $AdfsIPAddress
             Type        = "ARecord"
             Ensure      = "Present"
-            DependsOn   = "[WaitForADDomain]WaitForDCReady"
         }
 
         if ($CertificateType -eq 'SelfSigned') {
@@ -89,7 +87,6 @@ configuration Prepare-ADFS {
             { 
                 Name        = "ADCS-Cert-Authority"
                 Ensure      = "Present"
-                DependsOn   = "[WaitForADDomain]WaitForDCReady"
             }
 
             ADCSCertificationAuthority CreateADCSAuthority
