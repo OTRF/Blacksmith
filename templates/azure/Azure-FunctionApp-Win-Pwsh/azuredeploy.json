@@ -168,7 +168,10 @@
             "sku": {
                 "name": "[parameters('storageAccountSKUName')]"
             },
-            "kind": "[parameters('storageAccountType')]"
+            "kind": "[parameters('storageAccountType')]",
+            "properties": {
+                "allowBlobPublicAccess" : false
+            }
         },
         {
             "type": "Microsoft.Insights/components",
