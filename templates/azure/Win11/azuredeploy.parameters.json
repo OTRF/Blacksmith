@@ -1,0 +1,60 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "value": "GEN-UNIQUE"
+        },
+        "adminPassword": {
+            "value": "GEN-PASSWORD"
+        },
+        "numberOfWorkstations": {
+            "value": 1
+        },
+        "vmNamePrefix": {
+            "value": "WORKSTATION"
+        },
+        "vmNameSuffix": {
+            "value": 5
+        },
+        "windowsDesktopSKU": {
+            "value": "21h2-pro"
+        },
+        "windowsDesktopVersion": {
+            "value": "latest"
+        },
+        "vmSize": {
+            "value": "Standard_D2s_v3"
+        },
+        "virtualNetworkName": {
+            "value": "vnet-win"
+        },
+        "virtualNetworkAddressRange": {
+            "value": "192.168.0.0/16"
+        },
+        "subnetRange": {
+            "value": "192.168.2.0/24"
+        },
+        "subnetName": {
+            "value": "snet-win"
+        },
+        "remoteAccessMode": {
+            "value": "AllowPublicIP"
+        },
+        "allowedIPAddresses": {
+            "value": "*"
+        },
+        "enableSysmon": {
+            "value": false
+        },
+        "enableAntimalware": {
+            "value": false
+        },
+        "_artifactsLocation": {
+            "value": "https://raw.githubusercontent.com/notonlybytes/Blacksmith/master/"
+        },
+        "_artifactsLocationSasToken": {
+            "value": ""
+        }
+    }
+}
