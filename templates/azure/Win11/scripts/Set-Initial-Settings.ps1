@@ -25,5 +25,8 @@
 # Set Audit Rules from Set-AuditRule project
 & .\Set-SACLs.ps1
 
+# Set Wallpaper
+& .\Set-WallPaper.ps1
+
 # Enable Virtualization Based Security and Credential Guard
 & .\Enable-CredGuard.ps1

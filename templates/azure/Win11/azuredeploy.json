@@ -46,7 +46,7 @@
             "defaultValue": "win11-21h2-pro",
             "allowedValues": [
                 "win11-21h2-pro",
-                "win11-22h1-pro"
+                "win11-22h2-pro"
 
             ]
         },
@@ -216,7 +216,7 @@
             "metadata": {
                 "description": "The location of resources, such as templates and DSC modules, that the template depends on"
             },
-            "defaultValue": "https://raw.githubusercontent.com/notonlybytes/Blacksmith/master/"
+            "defaultValue": "https://raw.githubusercontent.com/OTRF/Blacksmith/master/"
         },
         "_artifactsLocationSasToken": {
             "type": "securestring",
@@ -289,6 +289,7 @@
             "[variables('setPowerShellLogging')]",
             "[variables('saclModule')]",
             "[variables('setSACLScript')]",
+            "[variables('setWallPaperScript')]",
             "[variables('enableCGScript')]"
         ],
 
