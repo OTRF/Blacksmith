@@ -198,6 +198,7 @@
 				<Image condition="is">C:\windows\system32\AUDIODG.EXE</Image>
 				<Image condition="is">C:\Program Files\Windows Defender Advanced Threat Protection\MsSense.exe</Image>  <!--MDATP-->
 				<Image condition="is">C:\Program Files\Windows Defender Advanced Threat Protection\SenseCncProxy.exe</Image> <!--MDATP-->
+				<Image condition="is">C:\Program Files\Windows Defender\MsMpEng.exe</Image> <!-- Defender -->
 				<Image condition="begin with">C:\Program Files\Azure Advanced Threat Protection Sensor\</Image> <!-- Microsoft Defender for Identity Sensor -->
 				<Image condition="begin with">C:\Windows\SystemApps\Microsoft.Windows.Cortana</Image>
 				<Image condition="begin with">C:\WindowsAzure\</Image>
