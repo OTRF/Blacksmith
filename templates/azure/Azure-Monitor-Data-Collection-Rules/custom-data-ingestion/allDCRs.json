@@ -115,17 +115,25 @@
         }
     ],
     "outputs": {
-        "windowsEventDCRId" : {
+        "windowsEventDCRImmutableId" : {
             "type": "string",
-            "value": "[reference('WindowsEventDCR').outputs.dataCollectionRuleId.value]"
+            "value": "[reference('WindowsEventDCR').outputs.immutableId.value]"
         },
-        "securityEventDCRId" : {
+        "securityEventDCRImmutableId" : {
             "type": "string",
-            "value": "[reference('SecurityEventDCR').outputs.dataCollectionRuleId.value]"
+            "value": "[reference('SecurityEventDCR').outputs.immutableId.value]"
         },
-        "syslogEventDCRId" : {
+        "syslogEventDCRImmutableId" : {
             "type": "string",
-            "value": "[reference('SyslogEventDCR').outputs.dataCollectionRuleId.value]"
+            "value": "[reference('SyslogEventDCR').outputs.immutableId.value]"
+        },
+        "allDCRImmutableIds": {
+            "type": "array",
+            "value": [
+                "[reference('WindowsEventDCR').outputs.immutableId.value]",
+                "[reference('SecurityEventDCR').outputs.immutableId.value]",
+                "[reference('SyslogEventDCR').outputs.immutableId.value]"
+            ]
         },
         "allDCRIds": {
             "type": "array",
