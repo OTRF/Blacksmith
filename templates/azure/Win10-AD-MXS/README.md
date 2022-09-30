@@ -7,7 +7,11 @@
 * One Windows Microsoft Exchange Server 2016 (One Server)
     * Admin mailbox audit logging enabled
     * Admin audit logging enabled (Every cmdlet and every parameter in the organization and Log Level set to `Verbose`)
-* Microsoft Exchange 2016 Versions:
+* Microsoft Exchange 2016 Versions ([Exchange Server build numbers and release dates](https://learn.microsoft.com/en-us/Exchange/new-features/build-numbers-and-release-dates)):
+    * `MXS2016-x64-CU23-KB5011155` -> `ExchangeServer2016-x64-CU23.ISO`
+    * `MXS2016-x64-CU22-KB5005333` -> `ExchangeServer2016-x64-CU22.ISO`
+    * `MXS2016-x64-CU21-KB5003611` -> `ExchangeServer2016-x64-CU21.ISO`
+    * `MXS2016-x64-CU20-KB4602569` -> `ExchangeServer2016-x64-CU20.ISO`
     * `MXS2016-x64-CU19-KB4588884` -> `ExchangeServer2016-x64-CU19.ISO`
     * `MXS2016-x64-CU18-KB4571788` -> `ExchangeServer2016-x64-cu18.iso`
     * `MXS2016-x64-CU17-KB4556414` -> `ExchangeServer2016-x64-cu17.iso`

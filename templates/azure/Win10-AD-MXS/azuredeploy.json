@@ -151,6 +151,7 @@
             "type": "string",
             "defaultValue": "MXS2016-x64-CU19-KB4588884",
             "allowedValues": [
+                "MXS2016-x64-CU23-KB5011155",
                 "MXS2016-x64-CU22-KB5005333",
                 "MXS2016-x64-CU21-KB5003611",
                 "MXS2016-x64-CU20-KB4602569",
