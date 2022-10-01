@@ -1246,6 +1246,10 @@
             "type": "string",
             "value": "[resourceId('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
         },
+        "mxServerDeployed": {
+            "type": "array",
+            "value": "[variables('mxServer')]"
+        },
         "allWinVMsDeployed": {
             "type": "array",
             "value": "[concat(variables('allServers'), reference('deployWin10VM').outputs.allWinVMsDeployed.value)]"
