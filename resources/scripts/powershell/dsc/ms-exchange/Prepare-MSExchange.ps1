@@ -2,6 +2,7 @@
 # License: GPLv3
 configuration Prepare-MSExchange
 {    
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     Import-DscResource -ModuleName ComputerManagementDsc, xPSDesiredStateConfiguration
 
     Node localhost
