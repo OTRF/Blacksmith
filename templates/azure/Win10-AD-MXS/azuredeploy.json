@@ -1004,11 +1004,37 @@
             }
         },
         {
-            "name": "PrepareMSExchange",
+            "name": "[concat(variables('mxServer')[0].vmName, '-enableTLS')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
                 "JoinMXServer"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('enableTLSTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmName":   {
+                        "value": "[variables('mxServer')[0].vmName]"
+                    },
+                    "enableTLS12Script": {
+                        "value": "[variables('enableTLSScript')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "PrepareMSExchange",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "[concat(variables('mxServer')[0].vmName, '-enableTLS')]"
             ],
             "properties": {
                 "mode": "Incremental",
