@@ -17,7 +17,7 @@ configuration PrepareAD-MSExchange
         [String]$MXSISODirectory,
 
         [Parameter(Mandatory)]
-        [ValidateSet('MXS2016-x64-CU19-KB4588884','MXS2016-x64-CU18-KB4571788','MXS2016-x64-CU17-KB4556414','MXS2016-x64-CU16-KB4537678','MXS2016-x64-CU15-KB4522150','MXS2016-x64-CU14-KB4514140','MXS2016-x64-CU13-KB4488406','MXS2016-x64-CU12-KB4471392')]
+        [ValidateSet('MXS2016-x64-CU23-KB5011155','MXS2016-x64-CU22-KB5005333','MXS2016-x64-CU21-KB500361','MXS2016-x64-CU20-KB4602569','MXS2016-x64-CU19-KB4588884','MXS2016-x64-CU18-KB4571788','MXS2016-x64-CU17-KB4556414','MXS2016-x64-CU16-KB4537678','MXS2016-x64-CU15-KB4522150','MXS2016-x64-CU14-KB4514140','MXS2016-x64-CU13-KB4488406','MXS2016-x64-CU12-KB4471392')]
         [string]$MXSRelease
     ) 
     
@@ -29,6 +29,10 @@ configuration PrepareAD-MSExchange
     # Set MS Exchange ISO File
     # Reference: https://docs.microsoft.com/en-us/exchange/new-features/build-numbers-and-release-dates?view=exchserver-2019&WT.mc_id=M365-MVP-5003086
     $MXSISOFile = Switch ($MXSRelease) {
+        'MXS2016-x64-CU23-KB5011155' { 'ExchangeServer2016-x64-CU23.ISO' }
+        'MXS2016-x64-CU22-KB5005333' { 'ExchangeServer2016-x64-CU22.ISO' }
+        'MXS2016-x64-CU21-KB5003611' { 'ExchangeServer2016-x64-CU21.ISO' }
+        'MXS2016-x64-CU20-KB4602569' { 'ExchangeServer2016-x64-CU20.ISO' }
         'MXS2016-x64-CU19-KB4588884' { 'ExchangeServer2016-x64-CU19.ISO' }
         'MXS2016-x64-CU18-KB4571788' { 'ExchangeServer2016-x64-cu18.iso' }
         'MXS2016-x64-CU17-KB4556414' { 'ExchangeServer2016-x64-cu17.iso' }
@@ -41,6 +45,10 @@ configuration PrepareAD-MSExchange
 
     #https://docs.microsoft.com/en-us/Exchange/plan-and-deploy/prepare-ad-and-domains?view=exchserver-2016#exchange-2016-active-directory-versions
     $MXDirVersions = Switch ($MXSRelease) {
+        'MXS2016-x64-CU23-KB5011155' { @{SchemaVersion = 15334; OrganizationVersion = 16223; DomainVersion = 13243} }
+        'MXS2016-x64-CU22-KB5005333' { @{SchemaVersion = 15334; OrganizationVersion = 16222; DomainVersion = 13242} }
+        'MXS2016-x64-CU21-KB5003611' { @{SchemaVersion = 15334; OrganizationVersion = 16221; DomainVersion = 13241} }
+        'MXS2016-x64-CU20-KB4602569' { @{SchemaVersion = 15333; OrganizationVersion = 16220; DomainVersion = 13240} }
         'MXS2016-x64-CU19-KB4588884' { @{SchemaVersion = 15333; OrganizationVersion = 16219; DomainVersion = 13239} }
         'MXS2016-x64-CU18-KB4571788' { @{SchemaVersion = 15332; OrganizationVersion = 16218; DomainVersion = 13238} }
         'MXS2016-x64-CU17-KB4556414' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
