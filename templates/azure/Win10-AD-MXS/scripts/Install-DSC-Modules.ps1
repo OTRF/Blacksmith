@@ -26,6 +26,6 @@ Install-Module -Name AzureAD -Force
 
 if ($SetupType -eq 'MXS')
 {
-    Install-Module -Name xExchange -RequiredVersion 1.32.0
+    Install-Module -Name xExchange -RequiredVersion 1.33.0
     Install-Module -Name StorageDsc -RequiredVersion 5.0.1
 }
