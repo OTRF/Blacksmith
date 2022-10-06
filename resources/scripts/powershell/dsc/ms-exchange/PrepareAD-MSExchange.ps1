@@ -29,38 +29,38 @@ configuration PrepareAD-MSExchange
     # Set MS Exchange ISO File
     # Reference: https://docs.microsoft.com/en-us/exchange/new-features/build-numbers-and-release-dates?view=exchserver-2019&WT.mc_id=M365-MVP-5003086
     $MXSISOFile = Switch ($MXSRelease) {
-        'MXS2016-x64-CU23-KB5011155' { 'ExchangeServer2016-x64-CU23.ISO' }
-        'MXS2016-x64-CU22-KB5005333' { 'ExchangeServer2016-x64-CU22.ISO' }
-        'MXS2016-x64-CU21-KB5003611' { 'ExchangeServer2016-x64-CU21.ISO' }
-        'MXS2016-x64-CU20-KB4602569' { 'ExchangeServer2016-x64-CU20.ISO' }
-        'MXS2016-x64-CU19-KB4588884' { 'ExchangeServer2016-x64-CU19.ISO' }
-        'MXS2016-x64-CU18-KB4571788' { 'ExchangeServer2016-x64-cu18.iso' }
-        'MXS2016-x64-CU17-KB4556414' { 'ExchangeServer2016-x64-cu17.iso' }
-        'MXS2016-x64-CU16-KB4537678' { 'ExchangeServer2016-x64-CU16.ISO' }
-        'MXS2016-x64-CU15-KB4522150' { 'ExchangeServer2016-x64-CU15.ISO' }
-        'MXS2016-x64-CU14-KB4514140' { 'ExchangeServer2016-x64-cu14.iso' }
-        'MXS2016-x64-CU13-KB4488406' { 'ExchangeServer2016-x64-cu13.iso' }
-        'MXS2016-x64-CU12-KB4471392' { 'ExchangeServer2016-x64-cu12.iso' }
+        'MXS2016-x64-CU23-KB5011155' { @{ISO = 'ExchangeServer2016-x64-CU23.ISO'; CumulativeUpdate = 23} }
+        'MXS2016-x64-CU22-KB5005333' { @{ISO = 'ExchangeServer2016-x64-CU22.ISO'; CumulativeUpdate = 22} }
+        'MXS2016-x64-CU21-KB5003611' { @{ISO = 'ExchangeServer2016-x64-CU21.ISO'; CumulativeUpdate = 21} }
+        'MXS2016-x64-CU20-KB4602569' { @{ISO = 'ExchangeServer2016-x64-CU20.ISO'; CumulativeUpdate = 20} }
+        'MXS2016-x64-CU19-KB4588884' { @{ISO = 'ExchangeServer2016-x64-CU19.ISO'; CumulativeUpdate = 19} }
+        'MXS2016-x64-CU18-KB4571788' { @{ISO = 'ExchangeServer2016-x64-cu18.iso'; CumulativeUpdate = 18} }
+        'MXS2016-x64-CU17-KB4556414' { @{ISO = 'ExchangeServer2016-x64-cu17.iso'; CumulativeUpdate = 17} }
+        'MXS2016-x64-CU16-KB4537678' { @{ISO = 'ExchangeServer2016-x64-CU16.ISO'; CumulativeUpdate = 16} }
+        'MXS2016-x64-CU15-KB4522150' { @{ISO = 'ExchangeServer2016-x64-CU15.ISO'; CumulativeUpdate = 15} }
+        'MXS2016-x64-CU14-KB4514140' { @{ISO = 'ExchangeServer2016-x64-cu14.iso'; CumulativeUpdate = 14} }
+        'MXS2016-x64-CU13-KB4488406' { @{ISO = 'ExchangeServer2016-x64-cu13.iso'; CumulativeUpdate = 13} }
+        'MXS2016-x64-CU12-KB4471392' { @{ISO = 'ExchangeServer2016-x64-cu12.iso'; CumulativeUpdate = 12} }
     }
 
     #https://docs.microsoft.com/en-us/Exchange/plan-and-deploy/prepare-ad-and-domains?view=exchserver-2016#exchange-2016-active-directory-versions
     $MXDirVersions = Switch ($MXSRelease) {
-        'MXS2016-x64-CU23-KB5011155' { @{SchemaVersion = 15334; OrganizationVersion = 16223; DomainVersion = 13243; CumulativeUpdate = 23} }
-        'MXS2016-x64-CU22-KB5005333' { @{SchemaVersion = 15334; OrganizationVersion = 16222; DomainVersion = 13242; CumulativeUpdate = 22} }
-        'MXS2016-x64-CU21-KB5003611' { @{SchemaVersion = 15334; OrganizationVersion = 16221; DomainVersion = 13241; CumulativeUpdate = 21} }
-        'MXS2016-x64-CU20-KB4602569' { @{SchemaVersion = 15333; OrganizationVersion = 16220; DomainVersion = 13240; CumulativeUpdate = 20} }
-        'MXS2016-x64-CU19-KB4588884' { @{SchemaVersion = 15333; OrganizationVersion = 16219; DomainVersion = 13239; CumulativeUpdate = 19} }
-        'MXS2016-x64-CU18-KB4571788' { @{SchemaVersion = 15332; OrganizationVersion = 16218; DomainVersion = 13238; CumulativeUpdate = 18} }
-        'MXS2016-x64-CU17-KB4556414' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237; CumulativeUpdate = 17} }
-        'MXS2016-x64-CU16-KB4537678' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237; CumulativeUpdate = 16} }
-        'MXS2016-x64-CU15-KB4522150' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237; CumulativeUpdate = 15} }
-        'MXS2016-x64-CU14-KB4514140' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237; CumulativeUpdate = 14} }
-        'MXS2016-x64-CU13-KB4488406' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237; CumulativeUpdate = 13} }
-        'MXS2016-x64-CU12-KB4471392' { @{SchemaVersion = 15332; OrganizationVersion = 16215; DomainVersion = 13236; CumulativeUpdate = 12} }
+        'MXS2016-x64-CU23-KB5011155' { @{SchemaVersion = 15334; OrganizationVersion = 16223; DomainVersion = 13243} }
+        'MXS2016-x64-CU22-KB5005333' { @{SchemaVersion = 15334; OrganizationVersion = 16222; DomainVersion = 13242} }
+        'MXS2016-x64-CU21-KB5003611' { @{SchemaVersion = 15334; OrganizationVersion = 16221; DomainVersion = 13241} }
+        'MXS2016-x64-CU20-KB4602569' { @{SchemaVersion = 15333; OrganizationVersion = 16220; DomainVersion = 13240} }
+        'MXS2016-x64-CU19-KB4588884' { @{SchemaVersion = 15333; OrganizationVersion = 16219; DomainVersion = 13239} }
+        'MXS2016-x64-CU18-KB4571788' { @{SchemaVersion = 15332; OrganizationVersion = 16218; DomainVersion = 13238} }
+        'MXS2016-x64-CU17-KB4556414' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
+        'MXS2016-x64-CU16-KB4537678' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
+        'MXS2016-x64-CU15-KB4522150' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
+        'MXS2016-x64-CU14-KB4514140' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
+        'MXS2016-x64-CU13-KB4488406' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
+        'MXS2016-x64-CU12-KB4471392' { @{SchemaVersion = 15332; OrganizationVersion = 16215; DomainVersion = 13236} }
     }
 
-    $MXSReleaseCU = $MXDirVersions.CumulativeUpdate
-    $MXSISOFilePath = Join-Path $MXSISODirectory $MXSISOFile
+    $MXSISOCU = $MXSISOFile.CumulativeUpdate
+    $MXSISOFilePath = Join-Path $MXSISODirectory $MXSISOFile.ISO
 
     Node localhost
     {
@@ -107,7 +107,7 @@ configuration PrepareAD-MSExchange
             SetScript =
             {
                 
-                if ($($using:MXSReleaseCU) -ge 22) {
+                if ($($using:MXSISOCU) -ge 22) {
                     <#
                     https://support.microsoft.com/en-us/topic/setup-fails-for-unattended-installation-of-exchange-server-2019-cu11-or-2016-cu22-or-later-234d7d9a-a94e-4386-9384-46761edf9268
                     Exchange Server 2019 CU11 and Exchange Server 2016 CU22 introduce two new setup switches for the EULA, and remove an existing parameter (IAcceptExchangeServerLicenseTerms).
@@ -150,7 +150,7 @@ configuration PrepareAD-MSExchange
         {
             SetScript =
             {
-                if ($($using:MXSReleaseCU) -ge 22) {
+                if ($($using:MXSISOCU) -ge 22) {
                     <#
                     https://support.microsoft.com/en-us/topic/setup-fails-for-unattended-installation-of-exchange-server-2019-cu11-or-2016-cu22-or-later-234d7d9a-a94e-4386-9384-46761edf9268
                     Exchange Server 2019 CU11 and Exchange Server 2016 CU22 introduce two new setup switches for the EULA, and remove an existing parameter (IAcceptExchangeServerLicenseTerms).
