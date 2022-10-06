@@ -170,7 +170,7 @@ configuration Prepare-MSExchange
             Ensure      = "Present"
             Name        = "IIS URL Rewrite Module 2"
             Path        = "C:\ProgramData\rewrite_amd64_en-US.msi"
-            ProductId   = "38D32370-3A31-40E9-91D0-D236F47E3C4A"
+            ProductId   = "9BCA2118-F753-4A1E-BCF3-5A820729965C"
             Arguments   = '/L*V "C:\ProgramData\urlrewriter.txt" /quiet'
             DependsOn   = "[xRemoteFile]DownloadUrlRewrite"
         }
