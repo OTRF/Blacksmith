@@ -149,13 +149,16 @@ configuration PrepareAD-MSExchange
         }
 
         # https://docs.microsoft.com/en-us/Exchange/plan-and-deploy/prepare-ad-and-domains?view=exchserver-2016#step-2-prepare-active-directory
-		xExchWaitForADPrep WaitPrepAD
+        xExchWaitForADPrep WaitPrepAD
 		{
-			Identity            = "not used"
+            Identity            = "not used"
 			Credential          = $DomainCreds
 			SchemaVersion       = $MXDirVersions.SchemaVersion
             OrganizationVersion = $MXDirVersions.OrganizationVersion
             DomainVersion       = $MXDirVersions.DomainVersion
+            ExchangeDomains     = @("$DomainFQDN")
+            RetryIntervalSec    = 60
+            RetryCount          = 35
             DependsOn           = '[xScript]PrepAD'
         }
 
