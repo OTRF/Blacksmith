@@ -45,20 +45,21 @@ configuration PrepareAD-MSExchange
 
     #https://docs.microsoft.com/en-us/Exchange/plan-and-deploy/prepare-ad-and-domains?view=exchserver-2016#exchange-2016-active-directory-versions
     $MXDirVersions = Switch ($MXSRelease) {
-        'MXS2016-x64-CU23-KB5011155' { @{SchemaVersion = 15334; OrganizationVersion = 16223; DomainVersion = 13243} }
-        'MXS2016-x64-CU22-KB5005333' { @{SchemaVersion = 15334; OrganizationVersion = 16222; DomainVersion = 13242} }
-        'MXS2016-x64-CU21-KB5003611' { @{SchemaVersion = 15334; OrganizationVersion = 16221; DomainVersion = 13241} }
-        'MXS2016-x64-CU20-KB4602569' { @{SchemaVersion = 15333; OrganizationVersion = 16220; DomainVersion = 13240} }
-        'MXS2016-x64-CU19-KB4588884' { @{SchemaVersion = 15333; OrganizationVersion = 16219; DomainVersion = 13239} }
-        'MXS2016-x64-CU18-KB4571788' { @{SchemaVersion = 15332; OrganizationVersion = 16218; DomainVersion = 13238} }
-        'MXS2016-x64-CU17-KB4556414' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
-        'MXS2016-x64-CU16-KB4537678' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
-        'MXS2016-x64-CU15-KB4522150' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
-        'MXS2016-x64-CU14-KB4514140' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
-        'MXS2016-x64-CU13-KB4488406' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237} }
-        'MXS2016-x64-CU12-KB4471392' { @{SchemaVersion = 15332; OrganizationVersion = 16215; DomainVersion = 13236} }
+        'MXS2016-x64-CU23-KB5011155' { @{SchemaVersion = 15334; OrganizationVersion = 16223; DomainVersion = 13243; CumulativeUpdate = 23} }
+        'MXS2016-x64-CU22-KB5005333' { @{SchemaVersion = 15334; OrganizationVersion = 16222; DomainVersion = 13242; CumulativeUpdate = 22} }
+        'MXS2016-x64-CU21-KB5003611' { @{SchemaVersion = 15334; OrganizationVersion = 16221; DomainVersion = 13241; CumulativeUpdate = 21} }
+        'MXS2016-x64-CU20-KB4602569' { @{SchemaVersion = 15333; OrganizationVersion = 16220; DomainVersion = 13240; CumulativeUpdate = 20} }
+        'MXS2016-x64-CU19-KB4588884' { @{SchemaVersion = 15333; OrganizationVersion = 16219; DomainVersion = 13239; CumulativeUpdate = 19} }
+        'MXS2016-x64-CU18-KB4571788' { @{SchemaVersion = 15332; OrganizationVersion = 16218; DomainVersion = 13238; CumulativeUpdate = 18} }
+        'MXS2016-x64-CU17-KB4556414' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237; CumulativeUpdate = 17} }
+        'MXS2016-x64-CU16-KB4537678' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237; CumulativeUpdate = 16} }
+        'MXS2016-x64-CU15-KB4522150' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237; CumulativeUpdate = 15} }
+        'MXS2016-x64-CU14-KB4514140' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237; CumulativeUpdate = 14} }
+        'MXS2016-x64-CU13-KB4488406' { @{SchemaVersion = 15332; OrganizationVersion = 16217; DomainVersion = 13237; CumulativeUpdate = 13} }
+        'MXS2016-x64-CU12-KB4471392' { @{SchemaVersion = 15332; OrganizationVersion = 16215; DomainVersion = 13236; CumulativeUpdate = 12} }
     }
 
+    $MXSReleaseCU = $MXDirVersions.CumulativeUpdate
     $MXSISOFilePath = Join-Path $MXSISODirectory $MXSISOFile
 
     Node localhost
@@ -90,12 +91,35 @@ configuration PrepareAD-MSExchange
         # Prepare Exchange AD #
         # #####################
 
-        # Prepare Schema
+        <#
+        Prepare Schema
+        --------------
+        xExchInstall PrepSchema
+		{
+			Path = 'F:\Setup.exe'
+            Arguments = "/PrepareSchema /DomainController:$DomainController.$DomainFQDN /IAcceptExchangeServerLicenseTerms"
+            Credential = $DomainCreds
+            DependsOn  = '[WaitForVolume]WaitForISO'
+        }
+        #>
         xScript PrepSchema
         {
             SetScript =
             {
-                F:\Setup.exe /PrepareSchema /DomainController:$using:DomainController.$using:DomainFQDN /IAcceptExchangeServerLicenseTerms
+                
+                if ($($using:MXSReleaseCU) -ge 22) {
+                    <#
+                    https://support.microsoft.com/en-us/topic/setup-fails-for-unattended-installation-of-exchange-server-2019-cu11-or-2016-cu22-or-later-234d7d9a-a94e-4386-9384-46761edf9268
+                    Exchange Server 2019 CU11 and Exchange Server 2016 CU22 introduce two new setup switches for the EULA, and remove an existing parameter (IAcceptExchangeServerLicenseTerms).
+                    This change was made to enable administrators to set the state of diagnostic data collection that is done in Exchange Server 2019 CU11 and Exchange Server 2016 CU22 and later CUs.
+                    To accept the EULA and set the state of diagnostic data collection, use either of following parameters:
+                    - /IAcceptExchangeServerLicenseTerms_DiagnosticDataON (This parameter enables sending data to Microsoft.)
+                    - /IAcceptExchangeServerLicenseTerms_DiagnosticDataOFF (This parameter disables sending data to Microsoft.)
+                    #>
+                    F:\Setup.exe /PrepareSchema /DomainController:$using:DomainController.$using:DomainFQDN /IAcceptExchangeServerLicenseTerms_DiagnosticDataOFF
+                } else {
+                    F:\Setup.exe /PrepareSchema /DomainController:$using:DomainController.$using:DomainFQDN /IAcceptExchangeServerLicenseTerms
+                }
             }
             GetScript =  
             {
@@ -110,16 +134,10 @@ configuration PrepareAD-MSExchange
             PsDscRunAsCredential = $DomainCreds
             DependsOn  = '[WaitForVolume]WaitForISO'
         }
+
         <#
-        xExchInstall PrepSchema
-		{
-			Path = 'F:\Setup.exe'
-            Arguments = "/PrepareSchema /DomainController:$DomainController.$DomainFQDN /IAcceptExchangeServerLicenseTerms"
-            Credential = $DomainCreds
-            DependsOn  = '[WaitForVolume]WaitForISO'
-        }
-        
-        # Prepare AD
+        Prepare AD
+        ----------
         xExchInstall PrepAD
 		{
 			Path = 'F:\Setup.exe'
@@ -132,7 +150,19 @@ configuration PrepareAD-MSExchange
         {
             SetScript =
             {
-                F:\Setup.exe /PrepareAD /OrganizationName:$using:DomainNetbiosName /DomainController:$using:DomainController.$using:DomainFQDN /IAcceptExchangeServerLicenseTerms
+                if ($($using:MXSReleaseCU) -ge 22) {
+                    <#
+                    https://support.microsoft.com/en-us/topic/setup-fails-for-unattended-installation-of-exchange-server-2019-cu11-or-2016-cu22-or-later-234d7d9a-a94e-4386-9384-46761edf9268
+                    Exchange Server 2019 CU11 and Exchange Server 2016 CU22 introduce two new setup switches for the EULA, and remove an existing parameter (IAcceptExchangeServerLicenseTerms).
+                    This change was made to enable administrators to set the state of diagnostic data collection that is done in Exchange Server 2019 CU11 and Exchange Server 2016 CU22 and later CUs.
+                    To accept the EULA and set the state of diagnostic data collection, use either of following parameters:
+                    - /IAcceptExchangeServerLicenseTerms_DiagnosticDataON (This parameter enables sending data to Microsoft.)
+                    - /IAcceptExchangeServerLicenseTerms_DiagnosticDataOFF (This parameter disables sending data to Microsoft.)
+                    #>
+                    F:\Setup.exe /PrepareAD /OrganizationName:$using:DomainNetbiosName /DomainController:$using:DomainController.$using:DomainFQDN /IAcceptExchangeServerLicenseTerms_DiagnosticDataOFF
+                } else {
+                    F:\Setup.exe /PrepareAD /OrganizationName:$using:DomainNetbiosName /DomainController:$using:DomainController.$using:DomainFQDN /IAcceptExchangeServerLicenseTerms
+                }
             }
             GetScript =  
             {

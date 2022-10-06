@@ -29,21 +29,27 @@ configuration Install-MSExchange
     # Set MS Exchange ISO File
     # Reference: https://docs.microsoft.com/en-us/exchange/new-features/build-numbers-and-release-dates?view=exchserver-2019&WT.mc_id=M365-MVP-5003086
     $MXSISOFile = Switch ($MXSRelease) {
-        'MXS2016-x64-CU23-KB5011155' { 'ExchangeServer2016-x64-CU23.ISO' }
-        'MXS2016-x64-CU22-KB5005333' { 'ExchangeServer2016-x64-CU22.ISO' }
-        'MXS2016-x64-CU21-KB5003611' { 'ExchangeServer2016-x64-CU21.ISO' }
-        'MXS2016-x64-CU20-KB4602569' { 'ExchangeServer2016-x64-CU20.ISO' }
-        'MXS2016-x64-CU19-KB4588884' { 'ExchangeServer2016-x64-CU19.ISO' }
-        'MXS2016-x64-CU18-KB4571788' { 'ExchangeServer2016-x64-cu18.iso' }
-        'MXS2016-x64-CU17-KB4556414' { 'ExchangeServer2016-x64-cu17.iso' }
-        'MXS2016-x64-CU16-KB4537678' { 'ExchangeServer2016-x64-CU16.ISO' }
-        'MXS2016-x64-CU15-KB4522150' { 'ExchangeServer2016-x64-CU15.ISO' }
-        'MXS2016-x64-CU14-KB4514140' { 'ExchangeServer2016-x64-cu14.iso' }
-        'MXS2016-x64-CU13-KB4488406' { 'ExchangeServer2016-x64-cu13.iso' }
-        'MXS2016-x64-CU12-KB4471392' { 'ExchangeServer2016-x64-cu12.iso' }
+        'MXS2016-x64-CU23-KB5011155' { @{ISO = 'ExchangeServer2016-x64-CU23.ISO'; CumulativeUpdate = 23} }
+        'MXS2016-x64-CU22-KB5005333' { @{ISO = 'ExchangeServer2016-x64-CU22.ISO'; CumulativeUpdate = 22} }
+        'MXS2016-x64-CU21-KB5003611' { @{ISO = 'ExchangeServer2016-x64-CU21.ISO'; CumulativeUpdate = 21} }
+        'MXS2016-x64-CU20-KB4602569' { @{ISO = 'ExchangeServer2016-x64-CU20.ISO'; CumulativeUpdate = 20} }
+        'MXS2016-x64-CU19-KB4588884' { @{ISO = 'ExchangeServer2016-x64-CU19.ISO'; CumulativeUpdate = 19} }
+        'MXS2016-x64-CU18-KB4571788' { @{ISO = 'ExchangeServer2016-x64-cu18.iso'; CumulativeUpdate = 18} }
+        'MXS2016-x64-CU17-KB4556414' { @{ISO = 'ExchangeServer2016-x64-cu17.iso'; CumulativeUpdate = 17} }
+        'MXS2016-x64-CU16-KB4537678' { @{ISO = 'ExchangeServer2016-x64-CU16.ISO'; CumulativeUpdate = 16} }
+        'MXS2016-x64-CU15-KB4522150' { @{ISO = 'ExchangeServer2016-x64-CU15.ISO'; CumulativeUpdate = 15} }
+        'MXS2016-x64-CU14-KB4514140' { @{ISO = 'ExchangeServer2016-x64-cu14.iso'; CumulativeUpdate = 14} }
+        'MXS2016-x64-CU13-KB4488406' { @{ISO = 'ExchangeServer2016-x64-cu13.iso'; CumulativeUpdate = 13} }
+        'MXS2016-x64-CU12-KB4471392' { @{ISO = 'ExchangeServer2016-x64-cu12.iso'; CumulativeUpdate = 12} }
     }
 
-    $MXSISOFilePath = Join-Path $MXSISODirectory $MXSISOFile
+    $MXSISOFileCU = $MXSISOFile.CumulativeUpdate
+    if ($MXSISOFileCU -ge 22) {
+        $InstallExchangeArgs = "/mode:Install /role:Mailbox /OrganizationName:$DomainNetbiosName /DomainController:$DomainController.$DomainFQDN /IAcceptExchangeServerLicenseTerms_DiagnosticDataOFF"
+    } else {
+        $InstallExchangeArgs = "/mode:Install /role:Mailbox /OrganizationName:$DomainNetbiosName /DomainController:$DomainController.$DomainFQDN /Iacceptexchangeserverlicenseterms"
+    }
+    $MXSISOFilePath = Join-Path $MXSISODirectory $MXSISOFile.ISO
 
     Node localhost
     {
@@ -78,7 +84,7 @@ configuration Install-MSExchange
         xExchInstall InstallExchange
         {
             Path       = 'F:\Setup.exe'
-            Arguments  = "/mode:Install /role:Mailbox /OrganizationName:$DomainNetbiosName /DomainController:$DomainController.$DomainFQDN /Iacceptexchangeserverlicenseterms"
+            Arguments  = $InstallExchangeArgs
             Credential = $DomainCreds
             DependsOn  = '[WaitForVolume]WaitForISO'
         }
