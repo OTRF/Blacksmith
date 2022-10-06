@@ -86,19 +86,19 @@ configuration Prepare-MSExchange
         xRemoteFile DownloadUcma
         {
             DestinationPath = "C:\ProgramData\UcmaRuntimeSetup.exe"
-            Uri = "https://download.microsoft.com/download/2/C/4/2C47A5C1-A1F3-4843-B9FE-84C0032C61EC/UcmaRuntimeSetup.exe"
-            DependsOn = @("[xScript]disableHybridDetectionRegKey","[xWindowsFeatureSet]InstallWinFeatures")
+            Uri             = "https://download.microsoft.com/download/2/C/4/2C47A5C1-A1F3-4843-B9FE-84C0032C61EC/UcmaRuntimeSetup.exe"
+            DependsOn       = @("[xScript]disableHybridDetectionRegKey","[xWindowsFeatureSet]InstallWinFeatures")
         }
 
         Package InstallUCMA4
-		{
-			Ensure = "Present"
-			Name = "Microsoft Unified Communications Managed API 4.0, Runtime"
-			Path = "C:\ProgramData\UcmaRuntimeSetup.exe"
-			ProductId = '41D635FE-4F9D-47F7-8230-9B29D6D42D31'
-			Arguments = '-q'
-			DependsOn = "[xRemoteFile]DownloadUcma"
-		}
+        {
+            Ensure      = "Present"
+            Name        = "Microsoft Unified Communications Managed API 4.0, Runtime"
+            Path        = "C:\ProgramData\UcmaRuntimeSetup.exe"
+            ProductId   = '41D635FE-4F9D-47F7-8230-9B29D6D42D31'
+            Arguments   = '-q'
+            DependsOn   = "[xRemoteFile]DownloadUcma"
+        }
 		
 		# Reboot node if necessary
 		PendingReboot RebootPostInstallUCMA4
@@ -112,7 +112,7 @@ configuration Prepare-MSExchange
         {
             DestinationPath = "C:\ProgramData\ndp48-x86-x64-allos-enu.exe"
             Uri             = "https://go.microsoft.com/fwlink/?linkid=2088631"
-            DependsOn = '[PendingReboot]RebootPostInstallUCMA4'
+            DependsOn       = '[PendingReboot]RebootPostInstallUCMA4'
         }
 
         # ***** Download VC++ redist 2013 (x64) *****
@@ -152,11 +152,34 @@ configuration Prepare-MSExchange
             DependsOn = @("[xRemoteFile]DownloadDotNet48","[xRemoteFile]Downloadvcredist2012","[xRemoteFile]Downloadvcredist2013")
         }
 
+        <#
+        IIS URL Rewrite module download and install
+        -------------------------------------------
+        IIS URL Rewrite 2.1 enables Web administrators to create powerful rules to implement URLs that are easier for users to remember and easier for search engines to find.
+        https://www.iis.net/downloads/microsoft/url-rewrite
+        #>
+        xRemoteFile DownloadUrlRewrite
+        {
+            DestinationPath = "C:\ProgramData\rewrite_amd64_en-US.msi"
+            Uri             = "https://download.microsoft.com/download/1/2/8/128E2E22-C1B9-44A4-BE2A-5859ED1D4592/rewrite_amd64_en-US.msi"
+            DependsOn       = "[xScript]InstallAdditionalReqs"
+        }
+
+        Package UrlRewrite
+        {
+            Ensure      = "Present"
+            Name        = "IIS URL Rewrite Module 2"
+            Path        = "C:\ProgramData\rewrite_amd64_en-US.msi"
+            ProductId   = "38D32370-3A31-40E9-91D0-D236F47E3C4A"
+            Arguments   = '/L*V "C:\ProgramData\urlrewriter.txt" /quiet'
+            DependsOn   = "[xRemoteFile]DownloadUrlRewrite"
+        }
+
         # Reboot Before installing MX
         PendingReboot RebootBeforeMXInstall
         { 
-            Name = "RebootBeforeMXInstall"
-            DependsOn = '[xScript]InstallAdditionalReqs'
+            Name        = "RebootBeforeMXInstall"
+            DependsOn   = "[Package]UrlRewrite"
         }
     }
 }
