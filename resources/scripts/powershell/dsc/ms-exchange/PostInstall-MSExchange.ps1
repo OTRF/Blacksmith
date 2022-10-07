@@ -43,14 +43,33 @@ configuration PostInstall-MSExchange
                 $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "http://$using:ComputerName.$using:DomainFQDN/PowerShell/" -Authentication Kerberos
                 Import-PSSession -Session $Session -DisableNameChecking
 
-                # Enable Audit on all user mailboxes
-                Get-Mailbox -ResultSize Unlimited -Filter "RecipientTypeDetails -eq 'UserMailbox'" | Select-Object PrimarySmtpAddress | ForEach-object {Set-Mailbox -Identity $_.PrimarySmtpAddress -AuditEnabled $true}
+                # Enable Audit on the only user (admin account)
+                Write-Verbose "[*] Getting all mailboxes.."
+                $tries = 0
+                $mailBoxes = Get-Mailbox -ResultSize Unlimited -Filter "RecipientTypeDetails -eq 'UserMailbox'"
+                
+                while ((@($mailBoxes).Count -eq 0) -and ($tries -lt 7)) {
+                    Write-Verbose "[!] No mailboxes found.."
+                    start-sleep -seconds 10
+                }
+
+                Write-Verbose "[+] Mailboxes found.."
+                Write-Verbose "[*] Checking if audit is enabled on mailboxes.."
+                $tries = 0
+                while (!($mailBoxes.AuditEnabled) -and ($tries -lt 7)) {
+                    $mailboxes | Set-Mailbox -AuditEnabled $true -erroraction 'silentlycontinue'
+                    $tries++
+                    Write-Verbose "[!] Audit not enabled.."
+                    start-sleep -seconds 10
+                }
+                Write-Verbose "[+] Audit enabled on mailboxes.."
 
                 # Verify Mailbox Auditing
                 # Get-Mailbox -ResultSize Unlimited -Filter "RecipientTypeDetails -eq 'UserMailbox'" | Format-List Name,Audit*
 
                 # Enable Admin Audit Logging
                 # This example enables administrator audit logging for every cmdlet and every parameter in the organization, with the exception of Get cmdlets.
+                Write-Verbose "[+] Setting Admin Audit Logging.."
                 Set-AdminAuditLogConfig -AdminAuditLogEnabled $true -AdminAuditLogCmdlets * -AdminAuditLogParameters * -LogLevel Verbose
 
                 # View Admin Audit Logging Settings
