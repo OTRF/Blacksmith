@@ -113,7 +113,9 @@
                 "tier": "[parameters('storageSKUTier')]"
             },
             "kind": "StorageV2",
-            "properties": {},
+            "properties": {
+                "allowBlobPublicAccess" : false
+            },
             "resources": [
                 {
                     "type": "blobServices/containers",
