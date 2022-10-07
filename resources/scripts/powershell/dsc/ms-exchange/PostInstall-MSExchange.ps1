@@ -40,8 +40,8 @@ configuration PostInstall-MSExchange
             SetScript =
             {
                 # Connect to MXS Powershell Exchange
-                $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "http://$using:ComputerName.$using:DomainFQDN/PowerShell/"
-                $M = Import-PSSession $Session
+                $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri "http://$using:ComputerName.$using:DomainFQDN/PowerShell/" -Authentication Kerberos
+                Import-PSSession -Session $Session -DisableNameChecking
 
                 # Enable Audit on all user mailboxes
                 Get-Mailbox -ResultSize Unlimited -Filter "RecipientTypeDetails -eq 'UserMailbox'" | Select-Object PrimarySmtpAddress | ForEach-object {Set-Mailbox -Identity $_.PrimarySmtpAddress -AuditEnabled $true}
