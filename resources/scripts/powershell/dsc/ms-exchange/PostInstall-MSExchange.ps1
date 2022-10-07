@@ -45,10 +45,8 @@ configuration PostInstall-MSExchange
 
                 # Enable Audit on the only user (admin account)
                 Write-Verbose "[*] Getting all mailboxes.."
-                $tries = 0
-                $mailBoxes = Get-Mailbox -ResultSize Unlimited -Filter "RecipientTypeDetails -eq 'UserMailbox'"
-                
-                while ((@($mailBoxes).Count -eq 0) -and ($tries -lt 7)) {
+                $tries = 0   
+                while ((@(Get-Mailbox -ResultSize Unlimited -Filter "RecipientTypeDetails -eq 'UserMailbox'").Count -eq 0) -and ($tries -lt 12)) {
                     Write-Verbose "[!] No mailboxes found.."
                     start-sleep -seconds 10
                 }
@@ -56,7 +54,7 @@ configuration PostInstall-MSExchange
                 Write-Verbose "[+] Mailboxes found.."
                 Write-Verbose "[*] Checking if audit is enabled on mailboxes.."
                 $tries = 0
-                while (!($mailBoxes.AuditEnabled) -and ($tries -lt 7)) {
+                while (!((Get-Mailbox -ResultSize Unlimited -Filter "RecipientTypeDetails -eq 'UserMailbox'").AuditEnabled) -and ($tries -lt 12)) {
                     $mailboxes | Set-Mailbox -AuditEnabled $true -erroraction 'silentlycontinue'
                     $tries++
                     Write-Verbose "[!] Audit not enabled.."
