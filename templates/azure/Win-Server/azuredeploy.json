@@ -142,6 +142,13 @@
             },
             "defaultValue": "192.168.2.0/24"
         },
+        "ipAddressHostNumber": {
+            "type": "string",
+            "metadata": {
+                "description": "An Ip address has two parts. The last number is considered the host number. For example, if the IP address is 192.168.123.132 and we divide it into these two parts, you get 192.168.123 as the Network and 132 as the Host Number."
+            },
+            "defaultValue": "30"
+        },
         "newOrExistingNSG": {
             "type": "string",
             "defaultValue": "new",
@@ -288,7 +295,7 @@
                 "vmName": "[parameters('vmName')]",
                 "os": "windows",
                 "subnetref": "[variables('subnetRef')]",
-                "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),'30')]",
+                "ipAddress": "[concat(variables('vmPrivateIPAddresPrefix'),parameters('ipAddressHostNumber'))]",
                 "vmSize": "[parameters('vmSize')]",
                 "publisher": "MicrosoftWindowsServer",
                 "offer": "WindowsServer",
