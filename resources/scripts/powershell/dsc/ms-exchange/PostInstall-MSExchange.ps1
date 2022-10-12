@@ -54,6 +54,7 @@ configuration PostInstall-MSExchange
                 Write-Verbose "[+] Mailboxes found.."
                 Write-Verbose "[*] Checking if audit is enabled on mailboxes.."
                 $tries = 0
+                $mailboxes = Get-Mailbox -ResultSize Unlimited -Filter "RecipientTypeDetails -eq 'UserMailbox'"
                 while (!((Get-Mailbox -ResultSize Unlimited -Filter "RecipientTypeDetails -eq 'UserMailbox'").AuditEnabled) -and ($tries -lt 12)) {
                     $mailboxes | Set-Mailbox -AuditEnabled $true -erroraction 'silentlycontinue'
                     $tries++
