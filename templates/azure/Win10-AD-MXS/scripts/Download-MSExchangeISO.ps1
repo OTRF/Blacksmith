@@ -4,6 +4,8 @@
 Param(
     [Parameter(Mandatory=$true)]
     [ValidateSet(
+        'MXS2019-x64-CU12-KB5011156',
+        'MXS2019-x64-CU11-KB5005334',
         'MXS2016-x64-CU23-KB5011155',
         'MXS2016-x64-CU22-KB5005333',
         'MXS2016-x64-CU21-KB5003611',
@@ -17,7 +19,7 @@ Param(
         'MXS2016-x64-CU13-KB4488406',
         'MXS2016-x64-CU12-KB4471392'
     )]
-    [string] $MXSRelease = 'MXS2016-x64-CU19-KB4588884',
+    [string] $MXSRelease = 'MXS2016-x64-CU22-KB5005333',
 
     [Parameter(Mandatory=$true)]
     [ValidateScript({
@@ -32,7 +34,9 @@ Param(
 # Reference: https://docs.microsoft.com/en-us/exchange/new-features/build-numbers-and-release-dates?view=exchserver-2019&WT.mc_id=M365-MVP-5003086
 # https://www.catalog.update.microsoft.com/home.aspx
 $MXSReleaseDownloadUri = Switch ($MXSRelease) {
-    'MXS2016-x64-CU23-KB5011155' { 'https://download.microsoft.com/download/8/d/2/8d2d01b4-5bbb-4726-87da-0e331bc2b76f/ExchangeServer2016-x64-CU23.ISO'}
+    'MXS2019-x64-CU12-KB5011156' { 'https://download.microsoft.com/download/b/c/7/bc766694-8398-4258-8e1e-ce4ddb9b3f7d/ExchangeServer2019-x64-CU12.ISO' }
+    'MXS2019-x64-CU11-KB5005334' { 'https://download.microsoft.com/download/5/3/e/53e75dbd-ca33-496a-bd23-1d861feaa02a/ExchangeServer2019-x64-CU11.ISO' }
+    'MXS2016-x64-CU23-KB5011155' { 'https://download.microsoft.com/download/8/d/2/8d2d01b4-5bbb-4726-87da-0e331bc2b76f/ExchangeServer2016-x64-CU23.ISO' }
     'MXS2016-x64-CU22-KB5005333' { 'https://download.microsoft.com/download/f/0/e/f0e65686-3761-4c9d-b8b2-9fb71a207b8d/ExchangeServer2016-x64-CU22.ISO' }
     'MXS2016-x64-CU21-KB5003611' { 'https://download.microsoft.com/download/7/d/5/7d5c319b-510b-4a2c-a77a-099c6f30ab54/ExchangeServer2016-x64-CU21.ISO' }
     'MXS2016-x64-CU20-KB4602569' { 'https://download.microsoft.com/download/0/b/7/0b702b8b-03ab-4553-9e2c-c73bb0c8535f/ExchangeServer2016-x64-CU20.ISO' }
@@ -55,7 +59,6 @@ $wc = new-object System.Net.WebClient
 
 $request = [System.Net.WebRequest]::Create($MXSReleaseDownloadUri)
 $response = $request.GetResponse()
-$totalLength = [System.Math]::Floor($response.get_ContentLength()/1024)
 $OutputFile = [System.IO.Path]::GetFileName($response.ResponseUri)
 $response.Close()
 

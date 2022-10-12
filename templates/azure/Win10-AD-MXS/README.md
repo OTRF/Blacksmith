@@ -1,4 +1,4 @@
-# Windows 10 + Windows Server (Active Directory) + Windows Server 2016 (MS Exchange)
+# Windows 10 + Windows Server (Active Directory) + Windows Server (MS Exchange 2016 or 2019)
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2FBlacksmith%2Fmaster%2Ftemplates%2Fazure%2FWin10-AD-MXS%2Fazuredeploy.json) [![Visualize](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FOTRF%2FBlacksmith%2Fmaster%2Ftemplates%2Fazure%2FWin10-AD-MXS%2Fazuredeploy.json)
 
@@ -7,6 +7,9 @@
 * One Windows Microsoft Exchange Server 2016 (One Server)
     * Admin mailbox audit logging enabled
     * Admin audit logging enabled (Every cmdlet and every parameter in the organization and Log Level set to `Verbose`)
+* Microsoft Exchange 2019 Versions ([Exchange Server build numbers and release dates](https://learn.microsoft.com/en-us/Exchange/new-features/build-numbers-and-release-dates)):
+    * `MXS2019-x64-CU12-KB5011156` -> `ExchangeServer2019-x64-CU12.ISO`
+    * `MXS2019-x64-CU11-KB5005334` -> `ExchangeServer2019-x64-CU11.ISO`
 * Microsoft Exchange 2016 Versions ([Exchange Server build numbers and release dates](https://learn.microsoft.com/en-us/Exchange/new-features/build-numbers-and-release-dates)):
     * `MXS2016-x64-CU23-KB5011155` -> `ExchangeServer2016-x64-CU23.ISO`
     * `MXS2016-x64-CU22-KB5005333` -> `ExchangeServer2016-x64-CU22.ISO`
