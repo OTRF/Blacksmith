@@ -309,7 +309,7 @@
             "name": "[format('{0}/{1}', parameters('functionAppName'), 'zipdeploy')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]",
-                "[concat('Microsoft.Web/sites/config/',parameters('functionAppName'),'/authsettings')]"
+                "[resourceId('Microsoft.Web/sites/config',parameters('functionAppName'),'authsettings')]"
             ],
             "properties": {
                 "packageUri": "[parameters('packageUri')]"
