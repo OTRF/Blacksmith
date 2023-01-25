@@ -246,18 +246,6 @@
                         "WEBSITE_RUN_FROM_PACKAGE": "[parameters('websiteRunFromPackage')]",
                         "MICROSOFT_PROVIDER_AUTHENTICATION_SECRET": "[parameters('aadAppClientSecret')]"
                     }
-                },
-                {
-                    "condition": "[and(equals(parameters('websiteRunFromPackage'), '1'), not(empty(parameters('packageUri'))))]",
-                    "apiVersion": "2021-02-01",
-                    "type": "extensions",
-                    "name": "zipdeploy",    
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
-                    ],
-                    "properties": {
-                        "packageUri": "[parameters('packageUri')]"
-                    }
                 }
             ]      
         },
@@ -294,6 +282,18 @@
                 "allowedAudiences": [
                     "[concat('api://', parameters('aadAppClientId'))]"
                 ]
+            }
+        },
+        {
+            "condition": "[and(equals(parameters('websiteRunFromPackage'), '1'), not(empty(parameters('packageUri'))))]",
+            "type": "Microsoft.Web/sites/extensions",
+            "apiVersion": "2019-08-01",
+            "name": "[concat(variables('functionAppName'),'/zipdeploy')]",  
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+            ],
+            "properties": {
+                "packageUri": "[parameters('packageUri')]"
             }
         }
     ],
