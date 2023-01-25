@@ -163,11 +163,6 @@
         "storageAccountName":"[concat(parameters('functionAppName'), 'sa')]",
         "storageSuffix":"[environment().suffixes.storage]",
         "kind": "functionapp", // Windows
-        "siteConfig": {
-            "powerShellVersion": "[parameters('powerShellVersion')]",
-            "use32BitWorkerProcess": "[parameters('use32BitWorkerProcess')]",
-            "netFrameworkVersion": "[parameters('netFrameworkVersion')]"
-        },
         // Managed Identity
         "identityType": {"type": "[parameters('identityType')]"},
         "userAssignedIdentity": {"userAssignedIdentities": {"[parameters('userAssignedIdentityId')]": {}}},
@@ -313,7 +308,8 @@
             "apiVersion": "2022-03-01",
             "name": "[format('{0}/{1}', parameters('functionAppName'), 'zipdeploy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]",
+                "[concat('Microsoft.Web/sites/config/',parameters('functionAppName'),'/authsettings')]"
             ],
             "properties": {
                 "packageUri": "[parameters('packageUri')]"
