@@ -135,6 +135,21 @@
             },
             "defaultValue": ""
         },
+        "aadAppClientId": {
+            "type": "string",
+            "metadata": {
+                "description": "Client Id of the Azure AD Application used to enable authentication to the Azure Function App."
+            },
+            "defaultValue": ""
+            
+        },
+        "aadAppClientSecret": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Client Secret of the Azure AD Application used to enable authentication to the Azure Function App."
+            },
+            "defaultValue": ""
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -228,7 +243,8 @@
                         "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', toLower(variables('storageAccountName')),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value, ';EndpointSuffix=',toLower(variables('storageSuffix')))]",
                         "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=', toLower(variables('storageAccountName')),';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value, ';EndpointSuffix=',toLower(variables('storageSuffix')))]",
                         "WEBSITE_CONTENTSHARE": "[toLower(variables('functionAppName'))]",
-                        "WEBSITE_RUN_FROM_PACKAGE": "[parameters('websiteRunFromPackage')]"
+                        "WEBSITE_RUN_FROM_PACKAGE": "[parameters('websiteRunFromPackage')]",
+                        "MICROSOFT_PROVIDER_AUTHENTICATION_SECRET": "[parameters('aadAppClientSecret')]"
                     }
                 },
                 {
@@ -256,6 +272,28 @@
             "properties": {
                 "siteName": "[variables('functionAppName')]",
                 "hostNameType": "Verified"
+            }
+        },
+        {
+            "condition": "[and(not(empty(parameters('aadAppClientId'))),not(empty(parameters('aadAppClientSecret'))))]",
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2022-03-01",
+            "name": "[concat(variables('functionAppName'),'/authsettings')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+            ],
+            "properties": {
+                "enabled": true,
+                "unauthenticatedClientAction": "RedirectToLoginPage",
+                "tokenStoreEnabled": true,
+                "defaultProvider": "AzureActiveDirectory",
+                "clientId": "[parameters('aadAppClientId')]",
+                "clientSecretSettingName": "MICROSOFT_PROVIDER_AUTHENTICATION_SECRET",
+                "issuer": "https://login.microsoftonline.com/common/v2.0",
+                "allowedAudiences": [
+                    "[concat('api://', parameters('aadAppClientId'))]"
+                ]
             }
         }
     ],
