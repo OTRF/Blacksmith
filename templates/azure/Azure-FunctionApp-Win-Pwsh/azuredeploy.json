@@ -284,23 +284,41 @@
             "condition": "[and(not(empty(parameters('aadAppClientId'))),not(empty(parameters('aadAppClientSecret'))))]",
             "type": "Microsoft.Web/sites/config",
             "apiVersion": "2022-03-01",
-            "name": "[concat(parameters('functionAppName'),'/authsettings')]",
+            "name": "[concat(parameters('functionAppName'),'/authsettingsV2')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
             ],
             "properties": {
-                "enabled": true,
-                "unauthenticatedClientAction": "RedirectToLoginPage",
-                "tokenStoreEnabled": true,
-                "defaultProvider": "AzureActiveDirectory",
-                "clientId": "[parameters('aadAppClientId')]",
-                "clientSecretSettingName": "MICROSOFT_PROVIDER_AUTHENTICATION_SECRET",
-                "issuer": "https://login.microsoftonline.com/common/v2.0",
-                "allowedAudiences": [
-                    "[concat('api://', parameters('aadAppClientId'))]"
-                ]
-            }
+                    "platform": {
+                        "enabled": true,
+                        "runtimeVersion": "~1"
+                    },
+                    "globalValidation": {
+                        "unauthenticatedClientAction": "RedirectToLoginPage",
+                        "redirectToProvider": "aad"
+                    },
+                    "identityProviders": {
+                        "azureActiveDirectory": {
+                            "registration": {
+                                "openIdIssuer": "https://login.microsoftonline.com/common/v2.0",
+                                "clientId": "[parameters('aadAppClientId')]",
+                                "clientSecretSettingName": "MICROSOFT_PROVIDER_AUTHENTICATION_SECRET"
+                            },
+                            "validation": {
+                                "allowedAudiences": [
+                                     "[concat('api://', parameters('aadAppClientId'))]"
+                                ]
+                            }
+                        }
+                    },
+                    "login": {
+                        "tokenStore": {
+                            "enabled": true
+                        },
+                        "preserveUrlFragmentsForLogins": false
+                    }
+                }
         },
         {
             "condition": "[and(equals(parameters('websiteRunFromPackage'), '1'), not(empty(parameters('packageUri'))))]",
@@ -309,7 +327,7 @@
             "name": "[format('{0}/{1}', parameters('functionAppName'), 'zipdeploy')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]",
-                "[resourceId('Microsoft.Web/sites/config',parameters('functionAppName'),'authsettings')]"
+                "[resourceId('Microsoft.Web/sites/config',parameters('functionAppName'),'authsettingsV2')]"
             ],
             "properties": {
                 "packageUri": "[parameters('packageUri')]"
