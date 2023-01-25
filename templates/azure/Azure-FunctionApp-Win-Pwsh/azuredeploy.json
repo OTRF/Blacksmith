@@ -159,9 +159,8 @@
         }
     },
     "variables": {
-        "functionAppName": "[substring(concat(parameters('functionAppName'), uniqueString(resourceGroup().id)), 0, 20)]",
-        "appServicePlanName": "[concat('ASP-', variables('functionAppName'))]",
-        "storageAccountName":"[concat(variables('functionAppName'), 'sa')]",
+        "appServicePlanName": "[concat('ASP-', parameters('functionAppName'))]",
+        "storageAccountName":"[concat(parameters('functionAppName'), 'sa')]",
         "storageSuffix":"[environment().suffixes.storage]",
         "kind": "functionapp", // Windows
         "siteConfig": {
@@ -191,7 +190,7 @@
         {
             "type": "Microsoft.Insights/components",
             "apiVersion": "2020-02-02",
-            "name": "[variables('functionAppName')]",
+            "name": "[parameters('functionAppName')]",
             "location": "[parameters('location')]",
             "kind": "web",
             "properties": {
@@ -214,51 +213,77 @@
         {
             "type": "Microsoft.Web/sites",
             "apiVersion": "2021-02-01",
-            "name": "[variables('functionAppName')]",
+            "name": "[parameters('functionAppName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
                 "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
-                "[resourceId('Microsoft.Insights/components', variables('functionAppName'))]"
+                "[resourceId('Microsoft.Insights/components', parameters('functionAppName'))]"
             ],
             "kind": "[variables('Kind')]",
             "identity": "[variables('identity')]",
             "properties": {
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
-                "siteConfig": "[variables('siteConfig')]"
-            },
-            "resources": [
-                {
-                    "apiVersion": "2020-09-01",
-                    "type": "config",
-                    "name": "appsettings",
-                    "dependsOn": [
-                        "[concat('Microsoft.Web/sites/', variables('functionAppName'))]"
-                    ],
-                    "properties": {
-                        "FUNCTIONS_EXTENSION_VERSION": "~4",
-                        "FUNCTIONS_WORKER_RUNTIME": "powershell",
-                        "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.insights/components', variables('functionAppName')), '2015-05-01').InstrumentationKey]",
-                        "APPLICATIONINSIGHTS_CONNECTION_STRING": "[reference(resourceId('microsoft.insights/components', variables('functionAppName')), '2015-05-01').ConnectionString]",
-                        "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', toLower(variables('storageAccountName')),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value, ';EndpointSuffix=',toLower(variables('storageSuffix')))]",
-                        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=', toLower(variables('storageAccountName')),';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value, ';EndpointSuffix=',toLower(variables('storageSuffix')))]",
-                        "WEBSITE_CONTENTSHARE": "[toLower(variables('functionAppName'))]",
-                        "WEBSITE_RUN_FROM_PACKAGE": "[parameters('websiteRunFromPackage')]",
-                        "MICROSOFT_PROVIDER_AUTHENTICATION_SECRET": "[parameters('aadAppClientSecret')]"
+                "siteConfig": {
+                    "use32BitWorkerProcess": "[parameters('use32BitWorkerProcess')]",
+                    "netFrameworkVersion": "[parameters('netFrameworkVersion')]",
+                    "siteConfig": {
+                        "appSettings": [
+                            {
+                                "name": "FUNCTIONS_EXTENSION_VERSION",
+                                "value": "~4"
+                            },
+                            {
+                                "name": "FUNCTIONS_WORKER_RUNTIME",
+                                "value": "powershell"
+                            },
+                            {
+                                "name": "FUNCTIONS_WORKER_RUNTIME_VERSION",
+                                "value": "[parameters('powerShellVersion')]"
+                            },
+                            {
+                                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                                "value": "[reference(resourceId('Microsoft.insights/components', parameters('functionAppName')), '2015-05-01').InstrumentationKey]"
+                            },
+                            {
+                                "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+                                "value": "[reference(resourceId('microsoft.insights/components', parameters('functionAppName')), '2015-05-01').ConnectionString]"
+                            },
+                            {
+                                "name": "AzureWebJobsStorage",
+                                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', toLower(variables('storageAccountName')),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value, ';EndpointSuffix=',toLower(variables('storageSuffix')))]"
+                            },
+                            {
+                                "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', toLower(variables('storageAccountName')),';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value, ';EndpointSuffix=',toLower(variables('storageSuffix')))]"
+                            },
+                            {
+                                "name": "WEBSITE_CONTENTSHARE",
+                                "value": "[toLower(parameters('functionAppName'))]"
+                            },
+                            {
+                                "name": "WEBSITE_RUN_FROM_PACKAGE",
+                                "value": "[parameters('websiteRunFromPackage')]"
+                            },
+                            {
+                                "name": "MICROSOFT_PROVIDER_AUTHENTICATION_SECRET",
+                                "value": "[parameters('aadAppClientSecret')]"
+                            }
+                        ]
                     }
                 }
-            ]      
+            }      
         },
         {
             "type": "Microsoft.Web/sites/hostNameBindings",
             "apiVersion": "2018-11-01",
-            "name": "[concat(variables('functionAppName'), '/', variables('functionAppName'), '.azurewebsites.net')]",
+            "name": "[concat(parameters('functionAppName'), '/', parameters('functionAppName'), '.azurewebsites.net')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
             ],
             "properties": {
-                "siteName": "[variables('functionAppName')]",
+                "siteName": "[parameters('functionAppName')]",
                 "hostNameType": "Verified"
             }
         },
@@ -266,10 +291,10 @@
             "condition": "[and(not(empty(parameters('aadAppClientId'))),not(empty(parameters('aadAppClientSecret'))))]",
             "type": "Microsoft.Web/sites/config",
             "apiVersion": "2022-03-01",
-            "name": "[concat(variables('functionAppName'),'/authsettings')]",
+            "name": "[concat(parameters('functionAppName'),'/authsettings')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
             ],
             "properties": {
                 "enabled": true,
@@ -287,10 +312,10 @@
         {
             "condition": "[and(equals(parameters('websiteRunFromPackage'), '1'), not(empty(parameters('packageUri'))))]",
             "type": "Microsoft.Web/sites/extensions",
-            "apiVersion": "2019-08-01",
-            "name": "[concat(variables('functionAppName'),'/zipdeploy')]",  
+            "apiVersion": "2022-03-01",
+            "name": "[format('{0}/{1}', parameters('functionAppName'), 'zipdeploy')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
             ],
             "properties": {
                 "packageUri": "[parameters('packageUri')]"
@@ -300,7 +325,7 @@
     "outputs": {
         "functionAppResource": {
             "type": "object",
-            "value": "[reference(resourceId('Microsoft.Web/sites', variables('functionAppName')))]"
+            "value": "[reference(resourceId('Microsoft.Web/sites', parameters('functionAppName')))]"
         }
     }
 }
