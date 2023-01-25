@@ -110,7 +110,7 @@
         },
         "packageUri": {
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": "https://github.com/OTRF/Blacksmith/blob/master/templates/azure/Azure-FunctionApp-Win-Pwsh/funcApp.zip?raw=true",
             "metadata": {
                 "description": "The zip content url. In Azure App Service, you can run your apps directly from a deployment ZIP package file."
             }
