@@ -79,7 +79,7 @@
         },
         "signedExpiry": {
             "type": "string",
-            "defaultValue": "2022-12-25T00:00:00Z"
+            "defaultValue": "2023-12-25T00:00:00Z"
         },
         "location": {
             "type": "string",
