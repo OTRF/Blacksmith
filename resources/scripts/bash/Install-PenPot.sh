@@ -23,4 +23,4 @@ fi
 if [[ ! -f docker-compose.yaml ]]; then
     wget https://raw.githubusercontent.com/OTRF/Blacksmith/master/resources/scripts/docker/penpot/docker-compose.yaml >> $LOGFILE 2>&1
 fi
-docker compose -p penpot -f docker-compose.yaml up -d
+docker compose -p penpot -f docker-compose.yaml up -d >> $LOGFILE 2>&1
