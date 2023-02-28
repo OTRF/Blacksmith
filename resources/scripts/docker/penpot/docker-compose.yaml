@@ -7,32 +7,11 @@ networks:
 volumes:
   penpot_postgres_v15:
   penpot_assets:
-  # penpot_traefik:
+  #penpot_traefik:
 
 services:
   ## Traefik service declaration example. Consider using it if you are going to expose
   ## penpot to the internet or different host than `localhost`.
-
-  # traefik:
-  #   image: traefik:v2.9
-  #   networks:
-  #     - penpot
-  #   command:
-  #     - "--api.insecure=true"
-  #     - "--entryPoints.web.address=:80"
-  #     - "--providers.docker=true"
-  #     - "--providers.docker.exposedbydefault=false"
-  #     - "--entryPoints.websecure.address=:443"
-  #     - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
-  #     - "--certificatesresolvers.letsencrypt.acme.email=<EMAIL_ADDRESS>"
-  #     - "--certificatesresolvers.letsencrypt.acme.storage=/traefik/acme.json"
-  #   volumes:
-  #     - "penpot_traefik:/traefik"
-  #     - "/var/run/docker.sock:/var/run/docker.sock"
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-
   nginx:
     build: ../nginx/
     container_name: nginx
@@ -42,14 +21,34 @@ services:
         max-file: "9"
         max-size: "6m"
     volumes:
-      - ../nginx/configs/basic:/etc/nginx/conf.d/default.conf
-      - ../nginx/scripts/:/opt/scripts/
+      - ../nginx/configs/penpot:/etc/nginx/conf.d/default.conf
     entrypoint: /opt/scripts/nginx-entrypoint.sh
     ports:
+      - "80:80"
       - "9001:9001"
-    restart: always
+      - "443:443"
     networks:
       - penpot
+
+  #traefik:
+  #  image: traefik:v2.9
+  #  networks:
+  #     - penpot
+  #  command:
+  #    - "--api.insecure=true"
+  #    - "--entryPoints.web.address=:80"
+  #    - "--providers.docker=true"
+  #    - "--providers.docker.exposedbydefault=false"
+  #    - "--entryPoints.websecure.address=:443"
+  #    - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+  #    - "--certificatesresolvers.letsencrypt.acme.email=traefik@acme.com"
+  #    - "--certificatesresolvers.letsencrypt.acme.storage=/traefik/acme.json"
+  #  volumes:
+  #    - "penpot_traefik:/traefik"
+  #    - "/var/run/docker.sock:/var/run/docker.sock"
+  #  ports:
+  #    - "80:80"
+  #    - "443:443"
 
   penpot-frontend:
     image: "penpotapp/frontend:latest"
@@ -67,8 +66,8 @@ services:
     networks:
       - penpot
 
-    labels:
-      - "traefik.enable=true"
+    #labels:
+    #  - "traefik.enable=true"
 
       ## HTTP: example of labels for the case if you are going to expose penpot to the
       ## internet using only HTTP (without HTTPS) with traefik
@@ -83,10 +82,10 @@ services:
       # - "traefik.http.middlewares.http-redirect.redirectscheme.scheme=https"
       # - "traefik.http.middlewares.http-redirect.redirectscheme.permanent=true"
       # - "traefik.http.routers.penpot-http.entrypoints=web"
-      # - "traefik.http.routers.penpot-http.rule=Host(`<DOMAIN_NAME>`)"
+      # - "traefik.http.routers.penpot-http.rule=Host('domain-name')"
       # - "traefik.http.routers.penpot-http.middlewares=http-redirect"
       # - "traefik.http.routers.penpot-https.entrypoints=websecure"
-      # - "traefik.http.routers.penpot-https.rule=Host(`<DOMAIN_NAME>`)"
+      # - "traefik.http.routers.penpot-https.rule=Host('domain-name')"
       # - "traefik.http.services.penpot-https.loadbalancer.server.port=80"
       # - "traefik.http.routers.penpot-https.tls=true"
       # - "traefik.http.routers.penpot-https.tls.certresolver=letsencrypt"
@@ -180,7 +179,8 @@ services:
       ## Consider using traefik and set the 'disable-secure-session-cookies' if you are
       ## not going to serve penpot under HTTPS.
 
-      - PENPOT_PUBLIC_URI=http://localhost:9001
+      # If you are using nginx you can set this without port 9001
+      - PENPOT_PUBLIC_URI=https://${DOMAIN_NAME}
 
       ## Database connection parameters. Don't touch them unless you are using custom
       ## postgresql connection parameters.

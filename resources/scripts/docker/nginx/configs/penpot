@@ -10,8 +10,8 @@ server {
 
 server {
     ## Log location ##
-    #access_log /var/log/nginx/kibana.access.log;
-    #error_log /var/log/nginx/kibana.error.log;
+    #access_log /var/log/nginx/access.log;
+    #error_log /var/log/nginx/error.log;
     ## End ##
 
     ## (Web) Server Configuration ##
@@ -64,8 +64,7 @@ server {
     gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
     ## End ##
 
-    ## Kibana Settings / Kibana Proxy ##
-    # Kibana generates really long URI's so need to set this
+    # long URIs need this
     large_client_header_buffers 4 64k;
 
     # Proxy forward to elasticsearch

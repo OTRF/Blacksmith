@@ -1,11 +1,5 @@
-# HELK script: HELK Nginx Dockerfile
-# HELK build Stage: Alpha
 # Author: Roberto Rodriguez (@Cyb3rWard0g)
 # License: GPL-3.0
-
-# References: 
-# https://cyberwardog.blogspot.com/2017/02/setting-up-pentesting-i-mean-threat_98.html
-# https://github.com/spujadas/elk-docker/blob/master/Dockerfile
 
 FROM nginx:1.17.9
 LABEL maintainer="Roberto Rodriguez @Cyb3rWard0g"
@@ -21,7 +15,7 @@ RUN apt-get install -qqy curl
 RUN apt-get -qy clean \
   autoremove
 
-# *********** Adding HELK scripts and files to Container ***************
+# *********** Adding and files to Container ***************
 COPY scripts/nginx-entrypoint.sh /opt/scripts/
 RUN chmod +x /opt/scripts/nginx-entrypoint.sh
 

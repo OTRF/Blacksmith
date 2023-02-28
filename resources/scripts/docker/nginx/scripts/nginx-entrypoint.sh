@@ -10,7 +10,7 @@ _term() {
 }
 trap _term SIGTERM
 
-# ************* Creating JupyterHub Certificate ***********
+# ************* Creating Certificate ***********
 openssl req \
     -x509 \
     -nodes \
