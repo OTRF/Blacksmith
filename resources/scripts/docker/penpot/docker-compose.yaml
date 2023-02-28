@@ -8,7 +8,6 @@ volumes:
   penpot_postgres_v15:
   penpot_assets:
   # penpot_traefik:
-  # penpot_minio:
 
 services:
   ## Traefik service declaration example. Consider using it if you are going to expose
@@ -93,7 +92,8 @@ services:
       ## You can read more about all available flags on:
       ## https://help.penpot.app/technical-guide/configuration/#advanced-configuration
 
-      - PENPOT_FLAGS=enable-registration enable-login-with-password
+      - PENPOT_FLAGS=enable-registration disable-login-with-password enable-login-with-oidc
+      - PENPOT_OIDC_CLIENT_ID=${CLIENT_ID}
 
   penpot-backend:
     image: "penpotapp/backend:latest"
@@ -137,7 +137,10 @@ services:
       ## environment variables for the backend here:
       ## https://help.penpot.app/technical-guide/configuration/#advanced-configuration
 
-      - PENPOT_FLAGS=enable-registration enable-login-with-password disable-email-verification enable-smtp enable-prepl-server
+      - PENPOT_FLAGS=enable-registration disable-login-with-password disable-email-verification enable-login-with-oidc
+      - PENPOT_OIDC_CLIENT_ID=${CLIENT_ID}
+      - PENPOT_OIDC_BASE_URI=https://login.microsoftonline.com/${TENANT_ID}/v2.0/
+      - PENPOT_OIDC_CLIENT_SECRET=${CLIENT_SECRET}
 
       ## Penpot SECRET KEY. It serves as a master key from which other keys for subsystems
       ## (eg http sessions) are derived.
@@ -151,12 +154,6 @@ services:
       ## python3 -c "import secrets; print(secrets.token_urlsafe(64))"
 
       # - PENPOT_SECRET_KEY=my-insecure-key
-
-      ## The PREPL host. Mainly used for external programatic access to penpot backend
-      ## (example: admin). By default it listen on `localhost` but if you are going to use
-      ## the `admin`, you will need to uncomment this and set the host to `0.0.0.0`.
-
-      # - PENPOT_PREPL_HOST=0.0.0.0
 
       ## Public URI. If you are going to expose this instance to the internet and use it
       ## under different domain than 'localhost', you will need to adjust it to the final
@@ -185,35 +182,12 @@ services:
       - PENPOT_ASSETS_STORAGE_BACKEND=assets-fs
       - PENPOT_STORAGE_ASSETS_FS_DIRECTORY=/opt/data/assets
 
-      ## Also can be configured to to use a S3 compatible storage
-      ## service like MiniIO. Look below for minio service setup.
-
-      # - AWS_ACCESS_KEY_ID=<KEY_ID>
-      # - AWS_SECRET_ACCESS_KEY=<ACCESS_KEY>
-      # - PENPOT_ASSETS_STORAGE_BACKEND=assets-s3
-      # - PENPOT_STORAGE_ASSETS_S3_ENDPOINT=http://penpot-minio:9000
-      # - PENPOT_STORAGE_ASSETS_S3_BUCKET=<BUKET_NAME>
-
       ## Telemetry. When enabled, a periodical process will send anonymous data about this
       ## instance. Telemetry data will enable us to learn on how the application is used,
       ## based on real scenarios. If you want to help us, please leave it enabled. You can
       ## audit what data we send with the code available on github
 
-      - PENPOT_TELEMETRY_ENABLED=true
-
-      ## Example SMTP/Email configuration. By default, emails are sent to the mailcatch
-      ## service, but for production usage is recommended to setup a real SMTP
-      ## provider. Emails are used to confirm user registrations & invitations. Look below
-      ## how mailcatch service is configured.
-
-      - PENPOT_SMTP_DEFAULT_FROM=no-reply@example.com
-      - PENPOT_SMTP_DEFAULT_REPLY_TO=no-reply@example.com
-      - PENPOT_SMTP_HOST=penpot-mailcatch
-      - PENPOT_SMTP_PORT=1025
-      - PENPOT_SMTP_USERNAME=
-      - PENPOT_SMTP_PASSWORD=
-      - PENPOT_SMTP_TLS=false
-      - PENPOT_SMTP_SSL=false
+      - PENPOT_TELEMETRY_ENABLED=false
 
   penpot-exporter:
     image: "penpotapp/exporter:latest"
@@ -251,36 +225,3 @@ services:
     restart: always
     networks:
       - penpot
-
-  ## A mailcatch service, used as temporal SMTP server. You can access via HTTP to the
-  ## port 1080 for read all emails the penpot platform has sent. Should be only used as a
-  ## temporal solution meanwhile you don't have a real SMTP provider configured.
-
-  penpot-mailcatch:
-    image: sj26/mailcatcher:latest
-    restart: always
-    expose:
-      - '1025'
-    ports:
-      - "1080:1080"
-    networks:
-      - penpot
-
-  ## Example configuration of MiniIO (S3 compatible object storage service); If you don't
-  ## have preference, then just use filesystem, this is here just for the completeness.
-
-  # minio:
-  #   image: "minio/minio:latest"
-  #   command: minio server /mnt/data --console-address ":9001"
-  #   restart: always
-  #
-  #   volumes:
-  #     - "penpot_minio:/mnt/data"
-  #
-  #   environment:
-  #     - MINIO_ROOT_USER=minioadmin
-  #     - MINIO_ROOT_PASSWORD=minioadmin
-  #
-  #   ports:
-  #     - 9000:9000
-  #     - 9001:9001
