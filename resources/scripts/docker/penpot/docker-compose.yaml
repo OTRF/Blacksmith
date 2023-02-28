@@ -33,11 +33,29 @@ services:
   #     - "80:80"
   #     - "443:443"
 
+  nginx:
+    build: ../nginx/
+    container_name: nginx
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "9"
+        max-size: "6m"
+    volumes:
+      - ../nginx/configs/basic:/etc/nginx/conf.d/default.conf
+      - ../nginx/scripts/:/opt/scripts/
+    entrypoint: /opt/scripts/nginx-entrypoint.sh
+    ports:
+      - "9001:9001"
+    restart: always
+    networks:
+      - penpot
+
   penpot-frontend:
     image: "penpotapp/frontend:latest"
     restart: always
     ports:
-      - 9001:80
+      - 80
 
     volumes:
       - penpot_assets:/opt/data/assets
