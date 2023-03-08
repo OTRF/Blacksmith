@@ -58,7 +58,7 @@ Ring,Mordor,mordorsvc,IT Support,Service Account,Th3K1ng!1122,Users,DomainUsers
 write-host "Creating domain users.."
 $domainUsers | ConvertFrom-Csv | ForEach-Object {
     $UserPrincipalName = $_.SamAccountName + "@" + $domainFQDN
-    $DisplayName = $_.LastName + " " + $_.FirstName
+    $DisplayName = $_.FirstName + " " + $_.LastName
     $OUPath = "OU="+$_.UserContainer+",DC=$DomainName1,DC=$DomainName2"
     $SamAccountName = $_.SamAccountName
     $ServiceName = $_.FirstName
