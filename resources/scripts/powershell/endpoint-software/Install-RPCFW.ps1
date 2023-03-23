@@ -16,36 +16,21 @@ param (
 Resolve-DnsName github.com
 Resolve-DnsName raw.githubusercontent.com
 
-write-host "[*] Getting latest versions from RPC Firewall GitHub projects.."
-# Get Latest Version of rpcfirewall
-$url = 'https://github.com/zeronetworks/rpcfirewall/releases/latest'
-$request = [System.Net.WebRequest]::Create($url)
-$response = $request.GetResponse()
-$realTagUrl = $response.ResponseUri.OriginalString
-$version = $realTagUrl.split('/')[-1].Trim('v')
-$rpcFwFiles = @("rpcFireWall.dll", "rpcFwManager.exe", "rpcMessages.dll")
-$rpcReleaseDownloadUrl = $realTagUrl.Replace('tag', 'download') + '/'
-$response.Close()
-write-host "[+] RPC Firewall version: $version"
+write-host "[*] Getting latest versions from RPC Firewall GitHub project.."
+$releases = Invoke-RestMethod -Uri 'https://api.github.com/repos/zeronetworks/rpcfirewall/releases'
+$latest = $releases[0]
+$assets = $latest.assets
+
+write-host "[+]RPC Firewall Release Name: $($latest.name)"
 
 # Initializing Web Client
 $wc = new-object System.Net.WebClient
 
-# Downloading RPC Firewall service files
-$rpcFwFiles | ForEach-Object {
-    $downloadUrl = $rpcReleaseDownloadUrl + $_ 
-    write-Host "[+] Downloading" $_ "From" $downloadUrl
-    $request = [System.Net.WebRequest]::Create($downloadUrl)
-    $response = $request.GetResponse()
-    if ($response.Server -eq 'AmazonS3')
-    {
-        $OutputFile = Split-Path $downloadUrl -Leaf
-    }
-    else
-    {
-        $OutputFile = [System.IO.Path]::GetFileName($response.ResponseUri)
-    }
-    $response.Close()
+# Downloading Assets
+foreach ($asset in $assets){
+    $downloadUrl = $asset.browser_download_url
+    write-Host "[+] Downloading" $asset.name "From" $downloadUrl
+    $OutputFile = Split-Path $downloadUrl -Leaf
     $File = "C:\ProgramData\$OutputFile"
     # Check to see if file already exists
     if (Test-Path $File) { Write-host "  [!] $File already exist"; return }
@@ -53,7 +38,20 @@ $rpcFwFiles | ForEach-Object {
     $wc.DownloadFile($downloadUrl, $File)
     # If for some reason, a file does not exists, STOP
     if (!(Test-Path $File)) { Write-Error "$File does not exist" -ErrorAction Stop }
+    # Decompress if it is zip file
+    if ($File.ToLower().EndsWith(".zip"))
+    {
+        # Unzip file
+        write-Host "  [+] Decompressing $OutputFile .."
+        $UnpackName = (Get-Item $File).Basename
+        $RPCFWFolder = "C:\ProgramData\$UnpackName"
+        expand-archive -path $File -DestinationPath $RPCFWFolder
+        if (!(Test-Path $RPCFWFolder)) { Write-Error "$File was not decompressed successfully" -ErrorAction Stop }
+    }
 }
+
+# Rename RPC Firewall Config file
+Rename-Item -Path $RPCFWFolder\RpcFw.conf -NewName $RPCFWFolder\RpcFw.Backup
 
 # Downloading RPC Firewall config file
 write-Host "[+] Downloading Rpc FW config file from" $RPCFWConfigUrl
@@ -61,7 +59,7 @@ $request = [System.Net.WebRequest]::Create($RPCFWConfigUrl)
 $response = $request.GetResponse()
 $OutputFile = [System.IO.Path]::GetFileName($response.ResponseUri)
 $response.Close()
-$File = "C:\ProgramData\$OutputFile"
+$File = "$RPCFWFolder\$OutputFile"
 # Check to see if file already exists
 if (Test-Path $File) { Write-host "  [!] $File already exist"; return }
 # Download if it does not exists
@@ -71,7 +69,7 @@ if (!(Test-Path $File)) { Write-Error "$File does not exist" -ErrorAction Stop }
 
 # Installing RPC Firewall
 write-Host "[+] Installing RPC Firewall.."
-Set-Location C:\ProgramData
-& "C:\ProgramData\RpcFwManager.exe" /install
+Set-Location $RPCFWFolder
+& $RPCFWFolder\rpcFwManager.exe /install
 # Protecting lsass as prt of the POC
-& "C:\ProgramData\RpcFwManager.exe" /process lsass
+& $RPCFWFolder\rpcFwManager.exe /start process lsass
