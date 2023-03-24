@@ -46,6 +46,36 @@ foreach ($asset in $assets){
     }
 }
 
+# Installing Dependency
+$MVC_Check = Get-ItemProperty HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* | Where-Object { $_.displayname -like "Microsoft Visual C++*" } | Select-Object DisplayName, DisplayVersion
+if (!$MVC_Check)
+{
+    # Microsoft Visual C++ Redistributable latest supported downloads
+    # https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist?view=msvc-170
+    $msVisualDownloadUrl = 'https://aka.ms/vs/17/release/vc_redist.x64.exe'
+    write-Host "[+] Downloading Microsoft Visual C++ Redistributable from" $msVisualDownloadUrl
+    $request = [System.Net.WebRequest]::Create($msVisualDownloadUrl)
+    $response = $request.GetResponse()
+    if ($response.Server -eq 'AmazonS3'){
+        $OutputFile = Split-Path $msVisualDownloadUrl -leaf
+    }
+    else{
+        $OutputFile = [System.IO.Path]::GetFileName($response.ResponseUri)
+    }
+    $response.Close()
+    $File = "C:\ProgramData\$OutputFile"
+    # Check to see if file already exists
+    if (Test-Path $File) { Write-host "  [!] $File already exist"; return }
+    # Download if it does not exists
+    $wc.DownloadFile($msVisualDownloadUrl, $File)
+    # If for some reason, a file does not exists, STOP
+    if (!(Test-Path $File)) { Write-Error "$File does not exist" -ErrorAction Stop }
+
+    write-Host "[+] Installing Microsoft Visual C++ Redistributable.."
+    & $File /q /passive /norestart
+    start-sleep -s 5
+}
+
 # Installing LDAP Firewall
 write-Host "[+] Installing LDAP Firewall.."
 Set-Location $LDAPFWFolder
