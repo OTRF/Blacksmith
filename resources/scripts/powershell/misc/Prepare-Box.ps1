@@ -83,6 +83,7 @@ regKey,name,value,type
 "HKCU:\SOFTWARE\Microsoft\Internet Explorer\Control Panel","HomePage",1,"DWord"
 "HKCU:\SOFTWARE\Policies\Microsoft\Internet Explorer\Main","DisableFirstRunCustomize",1,"DWord"
 "HKLM:\SYSTEM\CurrentControlSet\Services\LicenseManager","Start",4,"DWord"
+"HKLM:\SOFTWARE\Policies\Microsoft\Edge","HideFirstRunExperience",1,"DWord"
 "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main","PreventFirstRunPage",1,"DWord"
 "HKLM:\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main","AllowPrelaunch", 0, "Dword"
 "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CurrentVersion\PushNotifications","NoCloudApplicationNotification",1,"DWord"
