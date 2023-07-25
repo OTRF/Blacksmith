@@ -92,18 +92,21 @@
         },
         "vmSize": {
             "type": "string",
-            "metadata": {
-                "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
-            },
-            "defaultValue": "Standard_B2s",
+            "defaultValue": "Standard_B2ms",
             "allowedValues": [
                 "Standard_A2",
                 "Standard_A3",
                 "Standard_B2s",
                 "Standard_B2ms",
+                "Standard_B4ms",
+                "Standard_B8ms",
                 "Standard_A2_v2",
-                "Standard_A4_v2"
-            ]
+                "Standard_A4_v2",
+                "Standard_A8_v2"
+            ],
+            "metadata": {
+                "description": "Size of the virtual machine. Reference: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-general"
+            }
         },
         "enableCEFCollector": {
             "type": "bool",
