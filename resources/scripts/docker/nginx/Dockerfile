@@ -1,9 +1,8 @@
 # Author: Roberto Rodriguez (@Cyb3rWard0g)
 # License: GPL-3.0
 
-FROM nginx:1.17.9
+FROM nginx:1.25.1
 LABEL maintainer="Roberto Rodriguez @Cyb3rWard0g"
-LABEL description="Dockerfile base for the HELK Nginx."
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -19,7 +18,7 @@ RUN apt-get -qy clean \
 COPY scripts/nginx-entrypoint.sh /opt/scripts/
 RUN chmod +x /opt/scripts/nginx-entrypoint.sh
 
-# *********** RUN HELK ***************
+# *********** RUN Nginx ***************
 EXPOSE 80 443
 WORKDIR "/opt/scripts/"
 ENTRYPOINT ["./nginx-entrypoint.sh"]
