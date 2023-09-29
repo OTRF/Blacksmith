@@ -45,5 +45,9 @@ foreach ($asset in $assets){
 }
 
 # Installing JonMon
+$JonMonLocation = Join-Path $JonMonFolder "JonMon"
+
+Set-Location $JonMonLocation
+
 write-Host "[+] Installing JonMon..."
-& $JonMonFolder\JonMon\JonMon-Service.exe -i
+& $JonMonLocation\JonMon-Service.exe -i
