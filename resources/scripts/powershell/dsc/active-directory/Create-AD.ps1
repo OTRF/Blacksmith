@@ -8,6 +8,9 @@ configuration Create-AD {
         [Parameter(Mandatory)]
         [String]$DomainFQDN,
 
+        [Parameter(Mandatory=$false)]
+        [String]$DomainNetbiosName,
+
         [Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]$AdminCreds,
 
@@ -17,8 +20,9 @@ configuration Create-AD {
     
     Import-DscResource -ModuleName ActiveDirectoryDsc, NetworkingDsc, xPSDesiredStateConfiguration, xDnsServer, ComputerManagementDsc
     
-    [String] $DomainNetbiosName = (Get-NetBIOSName -DomainFQDN $DomainFQDN)
-    [System.Management.Automation.PSCredential]$DomainCreds = New-Object System.Management.Automation.PSCredential ("${DomainNetbiosName}\$($Admincreds.UserName)", $Admincreds.Password)
+    if (!($DomainNetbiosName)) {
+        [String] $DomainNetbiosName = (Get-NetBIOSName -DomainFQDN $DomainFQDN)
+    }
 
     $Interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
     $InterfaceAlias = $($Interface.Name)
@@ -95,8 +99,9 @@ configuration Create-AD {
         ADDomain CreateADForest 
         {
             DomainName                      = $DomainFQDN
-            Credential                      = $DomainCreds
-            SafemodeAdministratorPassword   = $DomainCreds
+            DomainNetBiosName               = $DomainNetBiosName
+            Credential                      = $AdminCreds
+            SafemodeAdministratorPassword   = $AdminCreds
             DatabasePath                    = "C:\NTDS"
             LogPath                         = "C:\NTDS"
             SysvolPath                      = "C:\SYSVOL"
@@ -114,7 +119,7 @@ configuration Create-AD {
             DomainName              = $DomainFQDN
             WaitTimeout             = 300
             RestartCount            = 3
-            Credential              = $DomainCreds
+            Credential              = $AdminCreds
             WaitForValidCredentials = $true
             DependsOn               = "[PendingReboot]RebootOnSignalFromCreateADForest"
         }
