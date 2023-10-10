@@ -11,6 +11,9 @@
         "domainFQDN": {
             "type": "string"
         },
+        "DomainNetbiosName": {
+            "type": "string"
+        },
         "adminUsername": {
             "type": "string"
         },
@@ -46,7 +49,8 @@
                         "function": "Create-AD"
                     },
                     "configurationArguments": {
-                        "DomainFQDN": "[parameters('DomainFQDN')]"
+                        "DomainFQDN": "[parameters('DomainFQDN')]",
+                        "DomainNetbiosName": "[parameters('DomainNetbiosName')]"
                     }
                 },
                 "protectedSettings": {
