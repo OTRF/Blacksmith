@@ -14,6 +14,9 @@
         "domainFQDN": {
             "type": "string"
         },
+        "domainNetbiosName": {
+            "type": "string"
+        },
         "adminUsername": {
             "type": "string"
         },
@@ -57,6 +60,7 @@
                     },
                     "configurationArguments": {
                         "DomainFQDN": "[parameters('DomainFQDN')]",
+                        "DomainNetbiosName": "[parameters('domainNetbiosName')]",
                         "DCIPAddress": "[parameters('dcIpAddress')]",
                         "JoinOU": "[parameters('joinOU')]"
                     }
