@@ -6,6 +6,9 @@ configuration Join-Domain {
         [Parameter(Mandatory)]
         [String]$DomainFQDN,
 
+        [Parameter(Mandatory=$false)]
+        [String]$DomainNetbiosName,
+
         [Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]$AdminCreds,
 
@@ -18,7 +21,11 @@ configuration Join-Domain {
     
     Import-DscResource -ModuleName NetworkingDsc, ActiveDirectoryDsc, xPSDesiredStateConfiguration, ComputerManagementDsc
 
-    [System.Management.Automation.PSCredential]$DomainAdminCreds = New-Object System.Management.Automation.PSCredential ("${$DomainFQDN}\$($Admincreds.UserName)", $Admincreds.Password)
+    if (!($DomainNetbiosName)) {
+        [String] $DomainNetbiosName = (Get-NetBIOSName -DomainFQDN $DomainFQDN)
+    }
+    
+    [System.Management.Automation.PSCredential]$DomainAdminCreds = New-Object System.Management.Automation.PSCredential ("$DomainNetbiosName\$($Admincreds.UserName)", $Admincreds.Password)
 
     $Interface = Get-NetAdapter | Where-Object Name -Like "Ethernet*" | Select-Object -First 1
     $InterfaceAlias = $($Interface.Name)
@@ -62,6 +69,29 @@ configuration Join-Domain {
         { 
             Name = "RebootServer"
             DependsOn = "[Computer]JoinDomain"
+        }
+    }
+}
+
+function Get-NetBIOSName {
+    [OutputType([string])]
+    param(
+        [string]$DomainFQDN
+    )
+
+    if ($DomainFQDN.Contains('.')) {
+        $length = $DomainFQDN.IndexOf('.')
+        if ( $length -ge 16) {
+            $length = 15
+        }
+        return $DomainFQDN.Substring(0, $length)
+    }
+    else {
+        if ($DomainFQDN.Length -gt 15) {
+            return $DomainFQDN.Substring(0, 15)
+        }
+        else {
+            return $DomainFQDN
         }
     }
 }
