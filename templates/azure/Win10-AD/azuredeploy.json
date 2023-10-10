@@ -38,7 +38,7 @@
             },
             "defaultValue": "blacksmith.local"
         },
-        "DomainNetbiosName": {
+        "domainNetbiosName": {
             "type": "string",
             "metadata": {
                 "description": "NetBIOS name for the new AD domain"
@@ -751,8 +751,8 @@
                     "domainFQDN": {
                         "value": "[parameters('domainFQDN')]"
                     },
-                    "DomainNetbiosName": {
-                        "value": "[parameters('DomainNetbiosName')]"
+                    "domainNetbiosName": {
+                        "value": "[parameters('domainNetbiosName')]"
                     },
                     "adminUsername": {
                         "value": "[parameters('adminUsername')]"
