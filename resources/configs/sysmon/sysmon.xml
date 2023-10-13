@@ -35,7 +35,9 @@
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
 			<!-- Event ID 2 == File Creation Time. POC - Log file modified creation time -->
-			<FileCreateTime onmatch="exclude"/>
+			<FileCreateTime onmatch="exclude">
+				<Image condition="begin with">C:\Packages\Plugins\Microsoft.Azure.Monitor.AzureMonitorWindowsAgent\</Image>
+			</FileCreateTime>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
 			<!-- Event ID 3 == Network Connection. Log all initiated network connection except -->
