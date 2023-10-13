@@ -644,6 +644,9 @@
                     "networkSecurityGroupName": {
                         "value": "[parameters('networkSecurityGroupName')]"
                     },
+                    "identityType": {
+                        "value": "[variables('identity')]",
+                    },
                     "remoteAccessMode": {
                         "value": "[parameters('remoteAccessMode')]"
                     },
