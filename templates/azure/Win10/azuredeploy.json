@@ -55,7 +55,9 @@
                 "win10-21h2-pro",
                 "win10-22h2-pro",
                 "win11-21h2-pro",
-                "win11-22h2-pro"
+                "win11-22h2-pro",
+                "win11-23h2-pro",
+                "win11-24h2-pro"
             ]
         },
         "windowsDesktopVersion": {
