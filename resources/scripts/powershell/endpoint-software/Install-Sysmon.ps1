@@ -55,9 +55,6 @@ write-Host "[+] Setting up Channel Access permissions for Microsoft-Windows-Sysm
 wevtutil set-log Microsoft-Windows-Sysmon/Operational /ca:'O:BAG:SYD:(A;;0xf0005;;;SY)(A;;0x5;;;BA)(A;;0x1;;;S-1-5-32-573)(A;;0x1;;;NS)'
 #New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WINEVT\Channels\Microsoft-Windows-Sysmon/Operational" -Name "ChannelAccess" -PropertyType String -Value "O:BAG:SYD:(A;;0xf0005;;;SY)(A;;0x5;;;BA)(A;;0x1;;;S-1-5-32-573)(A;;0x1;;;NS)" -Force
 
-write-Host "[+] Restarting Sysmon .."
-Restart-Service -Name Sysmon -Force
-
 write-Host "  [*] Verifying if Sysmon is running.."
 $s = Get-Service -Name Sysmon
 while ($s.Status -ne 'Running') { Start-Service Sysmon; Start-Sleep 3 }
