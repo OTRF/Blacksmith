@@ -103,6 +103,10 @@
 				<Image condition="begin with">C:\WindowsAzure\</Image> <!--Azure -->
 				<Image condition="begin with">C:\Program Files\Windows Defender Advanced Threat Protection\</Image>
 				<ImageLoaded condition="begin with">C:\Program Files\Microsoft Monitoring Agent\</ImageLoaded> <!--Azure Microsoft Monitoring Aget-->
+				<Rule name="SystemMicrosoftEdgeUpdate" groupRelation="and">
+					<Image condition="is">C:\Program Files (x86)\Microsoft\EdgeUpdate\MicrosoftEdgeUpdate.exe</Image>
+					<User condition="is">NT AUTHORITY\SYSTEM</User>
+				</Rule>
 			</ImageLoad>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -186,6 +190,10 @@
 				<Image condition="begin with">C:\Program Files\Microsoft Azure AD Sync\</Image> <!--Azure AD Connect Agent -->
 				<Image condition="begin with">C:\Program Files\Microsoft Azure AD Connect Health Sync Agent\</Image> <!--Azure AD Connect Agent -->
 				<TargetFilename condition="begin with">C:\Windows\System32\winevt\Logs\</TargetFilename>
+				<Rule name="MMCTempFiles" groupRelation="and">
+					<Image condition="is">C:\Windows\system32\mmc.exe</Image>
+					<TargetFilename condition="begin with">C:\Users\wardpg\AppData\Local\Temp\</TargetFilename>
+				</Rule>
 			</FileCreate>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -231,7 +239,35 @@
 				<TargetObject condition="begin with">HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppReadiness\</TargetObject>
 				<TargetObject condition="begin with">HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModel\StateRepository\Cache\Package</TargetObject> <!--Windows app package-->
 				<TargetObject condition="begin with">HKLM\SOFTWARE\Microsoft\Windows\Windows Error Reporting\TermReason</TargetObject>
+				<TargetObject condition="begin with">HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Notifications\Data\</TargetObject>
+				<TargetObject condition="begin with">C:\Windows\SystemApps\MicrosoftWindows.Client</TargetObject>
 				<TargetObject condition="end with">HKLM\SOFTWARE\Policies\Microsoft\Windows\TenantRestrictions\Payload</TargetObject>
+				<Rule name="Ctfmon" groupRelation="and">
+					<Image condition="is">C:\Windows\system32\ctfmon.exe</Image>
+					<TargetObject condition="contains">\Software\Microsoft\input\TypingInsights</TargetObject>
+				</Rule>
+				<Rule name="ExplorerUserAssist" groupRelation="and">
+					<Image condition="is">C:\Windows\Explorer.EXE</Image>
+					<TargetObject condition="contains">\Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist\</TargetObject>
+				</Rule>
+				<Rule name="SvcHostSystemPolicies" groupRelation="and">
+					<Image condition="is">C:\Windows\System32\svchost.exe</Image>
+					<TargetObject condition="is">HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System</TargetObject>
+					<User condition="is">NT AUTHORITY\LOCAL SERVICE</User>
+				</Rule>
+				<Rule name="SvcHostVolatileNotifications" groupRelation="and">
+					<Image condition="is">C:\Windows\System32\svchost.exe</Image>
+					<TargetObject condition="begin with">HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\VolatileNotifications\</TargetObject>
+					<User condition="is">NT AUTHORITY\SYSTEM</User>
+				</Rule>
+				<Rule name="ExplorerWindowsSecurityandMaintenance" groupRelation="and">
+					<Image condition="is">C:\Windows\Explorer.EXE</Image>
+					<TargetObject condition="contains">\Software\Microsoft\Windows\CurrentVersion\Security and Maintenance\Checks\</TargetObject>
+				</Rule>
+				<Rule name="SystemMicrosoftEdgeUpdate" groupRelation="and">
+					<Image condition="is">C:\Program Files (x86)\Microsoft\EdgeUpdate\MicrosoftEdgeUpdate.exe</Image>
+					<User condition="is">NT AUTHORITY\SYSTEM</User>
+				</Rule>
 			</RegistryEvent>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
@@ -284,6 +320,10 @@
 			<FileDeleteDetected onmatch="exclude">
 				<Image condition="begin with">C:\WindowsAzure\</Image> <!--Azure -->
 				<Image condition="begin with">C:\Packages\Plugins\</Image> <!--Azure ARM Extensions -->
+				<Rule name="MMCTempFiles" groupRelation="and">
+					<Image condition="is">C:\Windows\system32\mmc.exe</Image>
+					<TargetFilename condition="begin with">C:\Users\wardpg\AppData\Local\Temp\</TargetFilename>
+				</Rule>
 			</FileDeleteDetected>
 		</RuleGroup>
 		<RuleGroup name="" groupRelation="or">
