@@ -683,8 +683,11 @@
                 "name": "vmPublicIpCopy",
                 "count": "[length(variables('allEndpoints'))]"
             },
+            "sku": {
+                "name": "Standard"
+            },
             "properties": {
-                "publicIPAllocationMethod": "Dynamic",
+                "publicIPAllocationMethod": "Static",
                 "dnsSettings": {
                     "domainNameLabel": "[toLower(concat(variables('allEndpoints')[copyIndex('vmPublicIpCopy')].vmName, '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
                 }

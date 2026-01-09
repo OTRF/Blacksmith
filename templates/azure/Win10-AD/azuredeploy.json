@@ -548,11 +548,14 @@
         {
             "condition": "[equals(parameters('remoteAccessMode'),'AllowPublicIP')]",
             "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2018-11-01",
+            "apiVersion": "2021-05-01",
             "name": "[concat('pip-', variables('domainController')[0].vmName)]",
             "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard"
+            },
             "properties": {
-                "publicIPAllocationMethod": "Dynamic",
+                "publicIPAllocationMethod": "Static",
                 "dnsSettings": {
                     "domainNameLabel": "[toLower(concat(variables('domainController')[0].vmName, '-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
                 }

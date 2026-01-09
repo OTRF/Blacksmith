@@ -184,8 +184,11 @@
             "apiVersion": "2018-11-01",
             "name": "[concat('pip-', variables('VMName'))]",
             "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard"
+            },
             "properties": {
-                "publicIPAllocationMethod": "Dynamic",
+                "publicIPAllocationMethod": "Static",
                 "dnsSettings": {
                     "domainNameLabel": "[toLower(concat('pip-', uniquestring(resourceGroup().id, parameters('utcValue'))))]"
                 }
